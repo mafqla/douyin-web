@@ -1,0 +1,30 @@
+//https://www.douyin.com/aweme/v1/web/aweme/post/?device_platform=webapp&aid=6383&channel=channel_pc_web&sec_user_id=MS4wLjABAAAAdm2lYqAo0KFSGFxE2jHSUKgDcJNRdXUDlAhHlPBb13MhE7lnALMspEyUpPdeOXpB&max_cursor=0&locate_query=false&show_live_replay_strategy=1&need_time_list=1&time_list_query=0&whale_cut_token=&cut_version=1&count=18&publish_video_strategy_type=2&pc_client_type=1&version_code=170400&version_name=17.4.0&cookie_enabled=true&screen_width=1707&screen_height=1067&browser_language=zh-CN&browser_platform=Win32&browser_name=Edge&browser_version=117.0.2045.43&browser_online=true&engine_name=Blink&engine_version=117.0.0.0&os_name=Windows&os_version=10&cpu_core_num=12&device_memory=8&platform=PC&downlink=10&effective_type=4g&round_trip_time=50&webid=7249371961804539404&msToken=RaRu2BQmC7h4AI0gXOxEQuN0qVQFpjm9D9rLBkebl19zcaCXiHbU9Xu6LEwxvVATs4n8MBZaXs0fgra13T5_G5zIZoaQC5pJfBjoiIVmxIdd0cQFsm8gaXhwe3jZk03_iTWKOw==&X-Bogus=DFSzswVOng2AN96rtO8uLUteJnxH
+export const defalutParams = {
+  device_platform: 'webapp',
+  aid: 6383,
+  pc_client_type: 1,
+  version_code: 170400,
+  version_name: '17.4.0',
+  cookie_enabled: true,
+  screen_width: 1707,
+  screen_height: 1067,
+  browser_language: 'zh-CN',
+  browser_platform: 'Win32',
+  browser_name: 'Edge',
+  browser_version: '117.0.2045.43',
+  browser_online: true,
+  engine_name: 'Blink',
+  engine_version: '117.0.0.0',
+  os_name: 'Windows',
+  os_version: '10',
+  cpu_core_num: 12,
+  device_memory: 8,
+  platform: 'PC',
+  downlink: 10,
+  effective_type: '4g',
+  round_trip_time: 50,
+  webid: '7249371961804539404',
+  msToken:
+    'RaRu2BQmC7h4AI0gXOxEQuN0qVQFpjm9D9rLBkebl19zcaCXiHbU9Xu6LEwxvVATs4n8MBZaXs0fgra13T5_G5zIZoaQC5pJfBjoiIVmxIdd0cQFsm8gaXhwe3jZk03_iTWKOw==',
+  'X-Bogus': 'DFSzswVOng2AN96rtO8uLUteJnxH'
+}

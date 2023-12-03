@@ -1,0 +1,16 @@
+.cmt-emoji {
+  max-width: 532px;
+  max-height: 254px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 9px 6px;
+  box-sizing: border-box;
+  user-select: none;
+  img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    margin: 10px;
+    cursor: pointer;
+  }
+}

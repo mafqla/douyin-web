@@ -1,0 +1,13 @@
+      <svg
+        width="10"
+        height="7"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 10 7"
+      >
+        <path
+          d="M1.032.932a.964.964 0 000 1.364l3.5 3.5a.964.964 0 001.364 0l.008-.008 3.493-3.492A.964.964 0 108.033.932L5.215 3.75 2.396.932a.964.964 0 00-1.364 0z"
+          fill="currentColor"
+          fill-opacity="0.5"
+        ></path>
+      </svg>

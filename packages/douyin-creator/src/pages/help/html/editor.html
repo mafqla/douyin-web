@@ -1,0 +1,962 @@
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+/>
+<meta name="format-detection" content="telephone=no" />
+<meta name="description" content="" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="screen-orientation" content="portrait" />
+<meta name="x5-orientation" content="portrait" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1" />
+<link
+  href="https://lf3-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/draft-theme/douyin_web_home.css?d=1698141288002"
+  rel="stylesheet"
+/>
+<title>抖音云剪使用帮助</title>
+<script>
+  !(function (e) {
+    function t() {
+      var t = l.getBoundingClientRect().width
+      375 < t / n && (t = 375 * n),
+        (t /= 16),
+        (l.style.fontSize = t + 'px'),
+        (e.rem = t)
+    }
+    function i(e, t, i, n) {
+      var a
+      return function () {
+        var r = n || this,
+          o = arguments,
+          d = i && !a
+        clearTimeout(a),
+          (a = setTimeout(function () {
+            ;(a = null), i || e.apply(r, o)
+          }, t)),
+          d && e.apply(r, o)
+      }
+    }
+    var n,
+      a,
+      r,
+      o = e.document,
+      d = e.navigator,
+      l = o.documentElement,
+      c = o.querySelector('meta[name="viewport"]')
+    ;(r = o.querySelector('meta[name="flexible"]')),
+      c
+        ? (r = c
+            .getAttribute('content')
+            .match(/initial-scale=(["']?)([d.]+)(["']?)/)) &&
+          ((a = parseFloat(r[2])), (n = parseInt(1 / a)))
+        : r &&
+          (r = r
+            .getAttribute('content')
+            .match(/initial-dpr=(["']?)([d.]+)(["']?)/)) &&
+          ((n = parseFloat(j[2])), (a = parseFloat((1 / n).toFixed(2)))),
+      !n &&
+        !a &&
+        ((n = e.devicePixelRatio),
+        (a =
+          1 /
+          (n =
+            d.appVersion.match(/android/gi) || d.appVersion.match(/iphone/gi)
+              ? 3 <= n
+                ? 3
+                : 2 <= n
+                ? 2
+                : 1
+              : 1))),
+      l.setAttribute('data-dpr', n),
+      c ||
+        ((a =
+          '<meta name="viewport" content="width=device-width, initial-scale=' +
+          a +
+          ', maximum-scale=' +
+          a +
+          ', minimum-scale=' +
+          a +
+          ', user-scalable=no" />'),
+        l.firstElementChild
+          ? (((d = o.createElement('div')).innerHTML = a),
+            l.firstElementChild.appendChild(d.firstChild))
+          : o.write(a)),
+      (e.dpr = n),
+      e.addEventListener('resize', i(t, 50), !1),
+      e.addEventListener(
+        'pageshow',
+        i(function (e) {
+          e.persisted && t()
+        }, 300),
+        !1
+      ),
+      'complete' === o.readyState
+        ? (o.body.style.fontSize = 16 * 1 + 'px')
+        : o.addEventListener(
+            'DOMContentLoaded',
+            function () {
+              o.body.style.fontSize = 16 * 1 + 'px'
+            },
+            !1
+          ),
+      t()
+  })(window)
+</script>
+
+<div class="draft-container">
+  <p>
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 16px"
+          >一、抖音云剪是什么？有什么特点？
+        </span></span
+      ></span
+    >
+  </p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.抖音云剪是一款内嵌在抖音创作服务平台的线上音视频编辑工具，无需下载，素材和草稿工程全部存储在云端，可直接在浏览器网页中进行操作；</span
+        ></span
+      ></span
+    ><br />
+  </p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >2.云剪提供在线音视频编辑能力，支持实时预览编辑效果和云端渲染合成，无需导出即可一键发布投稿；</span
+        ></span
+      ></span
+    ><br />
+  </p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >3.背靠抖音品牌，拥有丰富素材库及曲库，可满足用户对于内容和配乐的多样化和个性化需求；</span
+        ></span
+      ></span
+    >
+  </p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >4.轨道区的剪辑操作简单易懂，提供字幕、文字、转场、滤镜、贴纸、特效等功能，方便小白和专业使用者快速上手；</span
+        ></span
+      ></span
+    ><br /><br /><span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >5.在编辑的同时，可实时预览在抖音中的播放效果，为创作服务平台用户带来绝佳的使用和投稿体验。</span
+        ></span
+      ></span
+    ><br /><br />
+  </p>
+  <h3 id="二、为了保障可正常使用产品，对于设备和环境的配置要求是什么？">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 16px"
+          >二、为了保障可正常使用产品，对于设备和环境的配置要求是什么？</span
+        ></span
+      ></span
+    >
+  </h3>
+  <p>
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.内存：最低8G内存，16G内存效果更佳。</span
+        ></span
+      ></span
+    ><br /><br /><span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px">2.CPU：四核处理器及以上。</span></span
+      ></span
+    ><br /><br /><span style="font-size: 14px"
+      ><span style="color: #000000"
+        ><span style="background-color: #ffffff">3.浏览器：</span></span
+      >Chrome（最低80版本）以及windows10自带的Edge（最低87版本），暂时只支持PC端的浏览器，手机和平板电脑的浏览器暂不支持。</span
+    ><br /><br /><span style="font-size: 14px"
+      ><span style="color: #000000"
+        ><span style="background-color: #ffffff">4.网络：</span></span
+      >请保证现场网络在50Mbps及以上（网络环境会直接影响使用流畅度）。</span
+    >
+  </p>
+  <p style="text-align: left">
+    <span style="font-size: 14px"
+      ><span style="color: #000000"
+        ><span style="background-color: #ffffff"
+          >5.操作系统：建议Win10及MacOS最新版本。</span
+        ></span
+      ></span
+    ><br />
+  </p>
+  <h3 id="三、如何进入抖音云剪？" style="text-align: start">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 16px">三、如何进入抖音云剪？</span></span
+      ></span
+    >
+  </h3>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.在发布视频页面，可以通过点击在线创作直接进入编辑器；</span
+        ></span
+      ></span
+    >
+  </p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf26-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/57d13e19b625d97480f4ad3c6428d06a"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >2.
+          通过抖音创作服务后台的“视频剪辑”也可进入到抖音云剪相关模块，包括管理历史草稿的“我的剪辑”和管理素材的“个人素材”。</span
+        ></span
+      ></span
+    >
+  </p>
+  <p></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf3-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/10027a7471e6076601951d7dcb7beed1"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >3.可以通过新建草稿或者在已经上传的个人素材中选择想进行创作的素材，直接进入编辑器进行创作。</span
+        ></span
+      ></span
+    >
+  </p>
+  <p>
+    <br /><span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >4.如果针对已经先在创作服务平台上传投稿的视频，也可以通过点击发布页的“视频剪辑”直接丢上传的视频进行二次修改。</span
+        ></span
+      ></span
+    ><br /><br />
+  </p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf9-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/6b12a86eed6e43fed9db4a37a24ca77b"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left"><br /></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><strong>四、如何管理个人素材？</strong></span
+      ></span
+    >
+  </p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.可在视频剪辑-个人素材处，进行对素材的管理（包括新增、删除、重命名等）以及使用（包括预览素材、单个或者批量选中后直接去进行创作）。</span
+        ></span
+      ></span
+    >
+  </p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >2.在个人素材上传成功的素材可在编辑器内直接选用，在编辑器中上传的素材也会自动同步到个人素材库中。</span
+        ></span
+      ></span
+    >
+  </p>
+  <p></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf3-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/e47dc53a21281ad0bc7f01e72a93ca03"
+      width="219.375px"
+      height="auto"
+      style="width: 219.375px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left"><br /></p>
+  <p></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf3-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/bd6df7cc4986f382740c21a48ef72f32"
+      width="219.375px"
+      height="auto"
+      style="width: 219.375px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <h3 id="五、支持上传的素材格式有哪些？" style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 16px"
+          >五、支持上传的素材格式有哪些？</span
+        ></span
+      ></span
+    >
+  </h3>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.音频格式：mp3、flac、wave、aiff、au、aac</span
+        ></span
+      ></span
+    >
+  </p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >2.视频格式：ave、mov、mp4、webm，asf、rm、rmvb、mpeg、mov、mkv、wmv、3gp、flv</span
+        ></span
+      ></span
+    >
+  </p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >3.图片格式：webp、bmp、jpeg、jpg、png、raw</span
+        ></span
+      ></span
+    ><br />
+  </p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 16px"
+          ><strong>六、如何在云剪中选用素材？</strong></span
+        ></span
+      ></span
+    >
+  </p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.本地上传：在左侧功能区点击资源库模块后，在红色虚线框内点击上传文件或直接将文件拖拽到此区域，也可以点击右侧“导入”进行上传。</span
+        ></span
+      ></span
+    >
+  </p>
+  <p></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >2.个人素材选用：点击个人素材按钮，选中需要的素材后，点击确定即可。</span
+        ></span
+      ></span
+    ><br />
+  </p>
+  <p></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf9-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/35ba51f15edf1695720122e4bdcbd94d"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >3.在线素材选用：点击“在线素材”按钮，可选择对应的在线素材内容。</span
+        ></span
+      ></span
+    >
+  </p>
+  <h3
+    id="七、如何将素材添加至轨道区？如何从轨道区删除素材？"
+    style="text-align: left"
+  >
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 16px"
+          >七、如何将素材添加至轨道区？如何从轨道区删除素材？</span
+        ></span
+      ></span
+    >
+  </h3>
+  <p style="text-align: start">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px">1.添加素材：</span></span
+      ></span
+    ><br /><span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.1选中需要的素材，点击添加按钮，且支持批量框选。</span
+        ></span
+      ></span
+    >
+  </p>
+  <p></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf3-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/4483796025be99b8d14b48315850163d"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.2直接选中单个或多个素材拖拽至轨道区。</span
+        ></span
+      ></span
+    >
+  </p>
+  <p style="text-align: left"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.3双击某个素材可直接添加到轨道区。</span
+        ></span
+      ></span
+    >
+  </p>
+  <p style="text-align: left"></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf9-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/1cff97227d950e0b8394e7f98e0ad67a"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.4平台提供的配乐，在选中后单击使用或者直接双击即可添加至轨道。</span
+        ></span
+      ></span
+    ><br />
+  </p>
+  <p></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf9-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/4286a978b857698420794078ac637454"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <br /><span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px">2.删除素材：</span></span
+      ></span
+    ><br />
+  </p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >2.1可以选中素材（支持批量框选）后直接通过键盘“backspace（回退键）”直接删除；</span
+        ></span
+      ></span
+    >
+  </p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >2.2可以选中素材（支持批量框选）后点击轨道功能区的删除按钮执行。</span
+        ></span
+      ></span
+    ><br />
+  </p>
+  <p></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf26-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/b796b1a9325cbdf4688c13e0eb7a701d"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <br /><span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><strong>八、如何在轨道区剪辑素材？</strong></span
+      ></span
+    >
+  </p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.轨道上点击切割标志，或在片段首尾进行拖拽可改变素材时长。</span
+        ></span
+      ></span
+    >
+  </p>
+  <p></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf9-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/43c932f32ce4090edece309a28132204"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <br /><span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >2.拖拽片段则可改变其在轨道上的位置和层级（画中画）</span
+        ></span
+      ></span
+    >
+  </p>
+  <p style="text-align: start"></p>
+  <p></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf9-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/5cd4cfe98992046f1dad451a1d541aa2"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >3.通过轨道菜单栏可进行撤销、音轨分离、删除、复制和检验公开性等操作</span
+        ></span
+      ></span
+    >
+  </p>
+  <p style="text-align: left"></p>
+  <p></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf3-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/70ac5f2c359425dacb9e79b20a3866bd"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >4.移动游标指针可在监视区实时预览当前帧的效果。</span
+        ></span
+      ></span
+    ><br />
+  </p>
+  <p></p>
+  <p></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf9-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/8b40b8bcc9e46fe9dd5af6418337033a"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <br /><strong
+      ><span style="color: #000000"
+        ><span style="background-color: #ffffff"
+          >九、如何调整素材片段的位置、滤镜、音量等参数？</span
+        ></span
+      ></strong
+    >
+  </p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.在轨道区选中想要调整的素材片段，对应界面右上方出现高级面板区后则可以在高级面板区调整参数。</span
+        ></span
+      ></span
+    >
+  </p>
+  <p></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf9-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/cdd412f237ae1553a68c17010710c0c3"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <br /><strong
+      ><span style="color: #000000"
+        ><span style="background-color: #ffffff"
+          >十、如何为视频片段添加字幕&amp;文字？</span
+        ></span
+      ></strong
+    >
+  </p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.添加字幕：点击左侧功能区的字幕模块后，在轨道区勾选想要生成字幕的音频或者视频轨道，然后点击生成字幕即可。</span
+        ></span
+      ></span
+    >
+  </p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >2.可对生成的字幕进行修改和格式的设置：</span
+        ></span
+      ></span
+    >
+  </p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >2.1可在左侧字幕编辑区域直接选中对应片段并进行编辑；</span
+        ></span
+      ></span
+    >
+  </p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >2.2可在右侧高级设置区域进行内容和格式的设置；</span
+        ></span
+      ></span
+    ><br /><br />
+  </p>
+  <p></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf26-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/c649b946e35cd3601f5da5fafa026e6d"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left"><br /></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf9-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/bba78735933a19ddab0465e83f543cd5"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >3.添加文字：点击左侧功能区的文字模块后，可手动输入文字并添加在视频中，并可在右侧高级设置区域进行格式和内容设置。</span
+        ></span
+      ></span
+    ><br />
+  </p>
+  <p></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf9-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/1e5e39d82dd0f240504ef72cb0f32a25"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <br /><strong
+      ><span style="color: #000000"
+        ><span style="background-color: #ffffff"
+          >十一、如何添加贴纸和特效？</span
+        ></span
+      ></strong
+    >
+  </p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.选中贴纸或者滤镜后（等待下载完成），可双击直接添加、点击效果右下角的“+”、直接拖拽到轨道区域。</span
+        ></span
+      ></span
+    >
+  </p>
+  <p></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf9-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/85abc9fecced0e78f0d934b8287be302"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <br /><strong
+      ><span style="color: #000000"
+        ><span style="background-color: #ffffff"
+          >十二、如何添加或删除转场？</span
+        ></span
+      ></strong
+    >
+  </p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.添加前提：保证主轨道至少有两段视频且时长不短于0.1秒</span
+        ></span
+      ></span
+    >
+  </p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.1点击左侧功能区的转场模块后，选中某个转场效果，直接点击右下方的➕添加</span
+        ></span
+      ></span
+    >
+  </p>
+  <p></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf9-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/4b26fe7059c1ae859a96cbeb97a0a504"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.2点击左侧功能区的转场模块后，选中某个转场效果，拖拽至主轨道两片段之间即可</span
+        ></span
+      ></span
+    >
+  </p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf9-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/c129e1310493750459b632820f5a4d4e"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <br /><span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px">2.删除：</span></span
+      ></span
+    >
+  </p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >2.1在轨道区选中转场效果，敲击键盘上的删除键、点击轨道菜单栏的删除按钮或弹出框中的删除按钮，即可删除转场。</span
+        ></span
+      ></span
+    >
+  </p>
+  <p></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf9-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/7dad64669a4d3832fc393f4d62f2d481"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <h3
+    id="十三、如何在编辑视频过程中预览在抖音App播放的效果？"
+    style="text-align: left"
+  >
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 16px"
+          >十三、如何在编辑视频过程中预览在抖音App播放的效果？</span
+        ></span
+      ></span
+    >
+  </h3>
+  <p style="text-align: start"></p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.点击预览区域右下角点击“抖音预览”，即可实时查看在抖音App中的播放效果，可根据需要进行内容或者位置调整，再次点击“正常模式”即可回复正常样式</span
+        ></span
+      ></span
+    >
+  </p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf3-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/4cac7c1bdd4b2dc69d185542d1375b86"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <h3 style="text-align: start"></h3>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><strong>十四、如何验证音频是否有抖音版权风险？</strong></span
+      ></span
+    >
+  </p>
+  <p style="text-align: left">
+    <span style="color: #000000"
+      ><span style="background-color: #ffffff"
+        ><span style="font-size: 14px"
+          >1.在轨道区域选中音频或者带音频的视频，然后点击“检测音频是否能在抖音公开”按钮，等待检测完成后会出现相应结果，当出现“抖音检测通过”的结果时，则表示无风险。</span
+        ></span
+      ></span
+    ><br />
+  </p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf26-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/e4b212727027c90d2ae9ff5aeb779b20"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p></p>
+  <div class="media-wrap image-wrap">
+    <img
+      src="https://lf3-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/960bca9eb95690705d5a736eb46571c8"
+      width="438.75px"
+      height="auto"
+      style="width: 438.75px; height: auto"
+    />
+  </div>
+  <p></p>
+  <p style="text-align: start"></p>
+  <p style="text-align: left"><br /></p>
+  <p style="text-align: start"><br /></p>
+</div>

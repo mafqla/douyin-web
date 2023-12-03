@@ -1,0 +1,90 @@
+.container {
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  flex-direction: column;
+  display: flex;
+
+  .title {
+    display: inline-block;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 24px;
+    line-height: 34px;
+    color: rgba(28, 31, 35, 0.9);
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+}
+.tip-header {
+  display: flex;
+  margin-bottom: 24px;
+  align-items: center;
+
+  .add {
+    margin-left: 10px;
+  }
+}
+.tip-text {
+  color: rgba(22, 24, 35, 0.5) !important;
+  font-size: 14px !important;
+  margin: 0;
+  line-height: 22px;
+
+  strong {
+    margin: 0 5px;
+    color: #161823;
+  }
+}
+
+.table-semi {
+  width: 100%;
+  font-size: 14px;
+  line-height: 20px;
+
+  :global(.semi-table-row-head) {
+    background-color: rgba(46, 50, 56, 0.05) !important;
+    border-bottom: 1px solid #f2f2f4 !important;
+  }
+}
+
+.custom-head {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+
+  .icon-circle {
+    width: 12px;
+    height: 12px;
+    margin-left: 6px;
+    &.not-active {
+      color: #c4c4c4;
+    }
+    &.active {
+      color: #fe2c56;
+    }
+  }
+}
+.custom-head-tips {
+  font-size: 12px;
+  color: #fff;
+  line-height: 16px;
+}
+
+.empty-data {
+  color: rgba(28, 31, 35, 0.35);
+  font-size: 14px;
+  text-align: center;
+  flex: 1 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  img {
+    margin-bottom: 16px;
+    width: 180px;
+    height: 180px;
+  }
+}

@@ -1,0 +1,28 @@
+                      <svg
+                        width="32"
+                        height="32"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="lI8OjXhd"
+                        viewBox="0 0 32 32"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M9 5a4 4 0 00-4 4v14a4 4 0 004 4h14a4 4 0 004-4V9a4 4 0 00-4-4H9zm5.96 6.438a1.222 1.222 0 00-1.913 1.008v7.108a1.222 1.222 0 001.914 1.008l5.183-3.554a1.222 1.222 0 000-2.016l-5.183-3.554z"
+                          fill="url(#header-aweme_svg__paint0_linear_23248_192487)"
+                        ></path>
+                        <defs>
+                          <linearGradient
+                            id="header-aweme_svg__paint0_linear_23248_192487"
+                            x1="19.208"
+                            y1="19.208"
+                            x2="6.833"
+                            y2="5.917"
+                            gradientUnits="userSpaceOnUse"
+                          >
+                            <stop stop-color="#2DB3FF"></stop>
+                            <stop offset="1" stop-color="#96DAFF"></stop>
+                          </linearGradient>
+                        </defs>
+                      </svg>

@@ -1,0 +1,29 @@
+$color-white: #ffffff;
+$color-black: #181818;
+$color-indigo: #2c3e50;
+
+$divider-light-1: rgba(60, 60, 60, 0.29);
+$divider-light-2: rgba(60, 60, 60, 0.12);
+$divider-dark-1: rgba(84, 84, 84, 0.65);
+$divider-dark-2: rgba(84, 84, 84, 0.48);
+
+$color-text-light-1: $color-indigo;
+$color-text-light-2: rgba(60, 60, 60, 0.66);
+
+$color-text-dark-1: $color-white;
+$color-text-dark-2: rgba(235, 235, 235, 0.64);
+
+$color-navigation-bg-light: rgba(242, 243, 243, 1);
+$color-navigation-bg-black: #060716;
+
+//侧边栏宽度最大172px，最小72px
+$sidebar-width-max: 160px;
+$sidebar-width-min: 72px;
+
+$sidebar-width: $sidebar-width-max;
+$color-text: $color-text-light-1;
+$color-background: $color-white;
+$color-border: $divider-light-2;
+$color-border-hover: $divider-light-1;
+$color-navigation-bg: $color-navigation-bg-light;
+

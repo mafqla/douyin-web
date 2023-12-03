@@ -1,0 +1,24 @@
+        <svg
+          width="24"
+          height="24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          class="eeJb6JHd"
+          viewBox="0 0 24 24"
+          data-e2e="home-top-hot-svg"
+        >
+          <rect
+            x="5.5"
+            y="4"
+            width="13"
+            height="2.167"
+            rx="1.083"
+            fill="#FACE15"
+          ></rect>
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M10.916 10.934L8.13 13.722a1.083 1.083 0 11-1.532-1.532l4.622-4.623a1.08 1.08 0 01.776-.317H12a1.081 1.081 0 01.766.318l4.62 4.619a1.083 1.083 0 11-1.533 1.532l-2.77-2.77v8.218a1.083 1.083 0 11-2.167 0v-8.233z"
+            fill="#FACE15"
+          ></path>
+        </svg>

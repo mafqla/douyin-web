@@ -1,0 +1,19 @@
+// 重用scss
+// @mixin border-radius($radius) {
+//   -webkit-border-radius: $radius;
+//   -moz-border-radius: $radius;
+//   -ms-border-radius: $radius;
+//   border-radius: $radius;
+// }
+
+// .box {
+//   @include border-radius(10px);
+// }
+
+// 禁止选中
+@mixin user-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
+}

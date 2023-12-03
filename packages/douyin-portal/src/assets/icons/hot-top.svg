@@ -1,0 +1,35 @@
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                class="num-icon"
+                viewBox="0 0 16 16"
+              >
+                <rect
+                  x="4"
+                  y="3"
+                  width="8.003"
+                  height="1.538"
+                  rx="0.769"
+                  fill="#598FFF"
+                ></rect>
+                <path
+                  d="M8.002 5.308a.8.8 0 01.8.8V12.2a.8.8 0 01-1.6 0V6.108a.8.8 0 01.8-.8z"
+                  fill="#598FFF"
+                ></path>
+                <rect
+                  width="5.494"
+                  height="1.57"
+                  rx="0.785"
+                  transform="scale(-1.01959 -.98002) rotate(45 6.328 -17.589)"
+                  fill="#598FFF"
+                ></rect>
+                <rect
+                  width="5.494"
+                  height="1.57"
+                  rx="0.785"
+                  transform="matrix(.72096 -.69298 .72096 .69298 4 8.346)"
+                  fill="#598FFF"
+                ></rect>
+              </svg>

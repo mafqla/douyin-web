@@ -1,0 +1,26 @@
+                     <svg
+                        width="32"
+                        height="32"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="lI8OjXhd"
+                        viewBox="0 0 32 32"
+                      >
+                        <path
+                          d="M14.676 6.451a1.4 1.4 0 012.648 0l2.074 5.704 5.914.266c1.307.058 1.842 1.753.819 2.59l-4.633 3.791 1.582 5.868c.349 1.296-1.053 2.344-2.143 1.602L16 22.91l-4.937 3.36c-1.09.743-2.492-.305-2.143-1.6l1.582-5.869-4.633-3.79c-1.023-.838-.488-2.533.819-2.591l5.914-.266 2.074-5.704z"
+                          fill="url(#header-collect_svg__paint0_linear_13052_192056)"
+                        ></path>
+                        <defs>
+                          <linearGradient
+                            id="header-collect_svg__paint0_linear_13052_192056"
+                            x1="6.422"
+                            y1="7.222"
+                            x2="26.37"
+                            y2="26.821"
+                            gradientUnits="userSpaceOnUse"
+                          >
+                            <stop stop-color="#FFDEB0"></stop>
+                            <stop offset="1" stop-color="#FF952C"></stop>
+                          </linearGradient>
+                        </defs>
+                      </svg>

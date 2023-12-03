@@ -1,0 +1,24 @@
+{
+  "name": "douyin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "portal": "pnpm --filter \"douyin-portal\" dev",
+    "admin": "pnpm --filter \"douyin-admin\" dev",
+    "creator": "pnpm --filter \"douyin-creator\" dev",
+    "build:portal-dev": "pnpm --filter \"douyin-portal\" build:dev",
+    "build:portal": "pnpm --filter \"douyin-portal\" build:prod",
+    "build:creator": "pnpm --filter \"douyin-creator\" build",
+    "build:admin": "pnpm --filter \"douyin-admin\" build",
+    "preview:portal": "pnpm --filter \"douyin-portal\" preview",
+    "preview:creator": "pnpm --filter \"douyin-creator\" preview",
+    "preview:admin": "pnpm --filter \"douyin-admin\" preview"
+  },
+  "keywords": [],
+  "author": "yalis",
+  "license": "MIT"
+}

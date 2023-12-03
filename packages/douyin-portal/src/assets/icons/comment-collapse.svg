@@ -1,0 +1,24 @@
+     <svg
+        width="13"
+        height="13"
+        fill="#4F5168"
+        xmlns="http://www.w3.org/2000/svg"
+        class="u1O5vnab _H7kC7rM"
+        viewBox="0 0 13 13"
+      >
+        <g clip-path="url(#above_small_svg__clip0_36629_145967)">
+          <path
+            d="M2.141 7.837a.439.439 0 00.683 0l3.035-3.496 3.036 3.496a.439.439 0 00.682 0 .617.617 0 000-.785L6.2 3.162A.453.453 0 005.86 3a.453.453 0 00-.342.163L2.141 7.052a.617.617 0 000 .785z"
+            fill="currentColor"
+          ></path>
+        </g>
+        <defs>
+          <clipPath id="above_small_svg__clip0_36629_145967">
+            <path
+              fill="currentColor"
+              transform="rotate(90 6 6)"
+              d="M0 0h12v12H0z"
+            ></path>
+          </clipPath>
+        </defs>
+      </svg>

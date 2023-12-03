@@ -1,0 +1,39 @@
+                      <svg
+                        width="32"
+                        height="32"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="lI8OjXhd"
+                        viewBox="0 0 32 32"
+                      >
+                        <mask
+                          id="history_svg__a"
+                          maskUnits="userSpaceOnUse"
+                          x="0"
+                          y="0"
+                          width="32"
+                          height="32"
+                          style="mask-type: alpha"
+                        >
+                          <path fill="#C4C4C4" d="M0 0h32v32H0z"></path>
+                        </mask>
+                        <g mask="url(#history_svg__a)">
+                          <path
+                            d="M16 5a11 11 0 100 22 11 11 0 000-22zm4.626 13.988H15.03A1.03 1.03 0 0114 17.964v-7.142a1.03 1.03 0 112.055 0v6.123h4.571a1.03 1.03 0 010 2.055v-.012z"
+                            fill="url(#history_svg__paint0_linear_23845_188397)"
+                          ></path>
+                        </g>
+                        <defs>
+                          <linearGradient
+                            id="history_svg__paint0_linear_23845_188397"
+                            x1="4"
+                            y1="5"
+                            x2="24.98"
+                            y2="25.653"
+                            gradientUnits="userSpaceOnUse"
+                          >
+                            <stop stop-color="#DDFDF7"></stop>
+                            <stop offset="0.797" stop-color="#25AA62"></stop>
+                          </linearGradient>
+                        </defs>
+                      </svg>

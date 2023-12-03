@@ -1,0 +1,231 @@
+.login-card-wrapper {
+  padding: 24px;
+  background: url('https://lf3-static.bytednsdoc.com/obj/eden-cn/lm-yvahlyj-upfbvk/ljhwZthlaukjlkulzlp/pc/login-bg.jpg');
+  background-size: auto;
+  background-size: cover;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  width: 452px;
+  height: 544px;
+  box-sizing: border-box;
+}
+.login-card-title {
+  text-align: center;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 32px;
+  margin-bottom: 24px;
+}
+.login-card-header {
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 0 16px;
+  height: 46px;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #fff;
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(5px);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.login-card-header-title {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 46px;
+}
+.login-card-body {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #fff;
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(5px);
+  border-radius: 8px;
+  height: 382px;
+}
+.login-card-header-radio :global(.semi-radio-checked .semi-radio-addon) {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--semi-color-primary);
+}
+
+:global(.semi-radioGroup-horizontal .semi-radio) {
+  margin-right: 16px;
+}
+
+:global(.semi-radio-inner) {
+  position: absolute;
+  display: inline-block;
+  top: 2px;
+  left: 0;
+  width: 16px;
+  height: 16px;
+}
+:global(.semi-radio) {
+  position: relative;
+  flex-wrap: wrap;
+}
+
+:global(.semi-radio-addon) {
+  padding-left: 8px;
+  margin-left: 16px;
+}
+
+.account-phone {
+  :global(.semi-form-field) {
+    padding-bottom: 0;
+  }
+  :global(.semi-input-suffix) {
+    -moz-box-pack: end;
+    -ms-flex-pack: end;
+    justify-content: flex-end;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    margin-left: 16px;
+
+    :global(span) {
+      cursor: pointer;
+    }
+  }
+
+  .toggle {
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+    float: right;
+    margin-bottom: 12px;
+    cursor: pointer;
+    color: rgba(40, 40, 40, 0.5);
+  }
+  .toggle {
+    cursor: pointer;
+    color: rgba(40, 40, 40, 0.5);
+  }
+  p.err {
+    height: 12px;
+    margin: 0;
+    padding-right: 130px;
+    color: var(--semi-color-danger);
+  }
+  p {
+    color: var(--semi-color-text-2);
+  }
+}
+.agreement {
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  color: var(--semi-color-text-2);
+  width: fit-content;
+  margin: 12px 0 0;
+  a {
+    margin: 0 2px;
+    text-decoration: none;
+    &.link {
+      cursor: pointer;
+      color: #04498d;
+    }
+  }
+}
+
+.send-code-timer {
+  color: var(--semi-color-text-2);
+  cursor: none;
+}
+
+.account-qrcode {
+  text-align: center;
+  .qrcode-image {
+    width: 200px;
+    height: 200px;
+    margin: 18px auto;
+    position: relative;
+  }
+
+  p {
+    margin-top: 0;
+    margin-bottom: 28px;
+    padding: 0 20px;
+    color: var(--semi-color-text-2);
+    font-size: 16px;
+    line-height: 28px;
+  }
+  p.error {
+    color: var(--semi-color-danger);
+  }
+  .circle-icon-text {
+    transform: scale(0.8);
+  }
+  .qrcode-image > div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .qrcode-image > img,
+  .qrcode-image > div {
+    width: 100%;
+    height: 100%;
+  }
+  .qrcode-image .logo {
+    width: 38px;
+    height: 38px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    border-radius: 8px;
+    background: white;
+    border: 2px solid white;
+  }
+}
+
+.account-qrcode-desc {
+  color: var(--semi-color-text-0);
+  font-size: 12px;
+  line-height: 18px;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -moz-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -moz-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  em {
+    color: var(--semi-color-primary);
+    font-style: normal;
+  }
+}
+
+.circle-icon {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 1px solid var(--semi-color-primary);
+  color: var(--semi-color-primary);
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  align-items: center;
+
+  justify-content: center;
+
+  box-sizing: border-box;
+  margin: 0 4px;
+}

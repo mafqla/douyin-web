@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "module": "ESNext", // 打包模块类型ESNext
+    "declaration": false, // 默认不要声明⽂件
+    "noImplicitAny": false, // ⽀持类型不标注可以默认any
+    "removeComments": true, // 删除注释
+    "moduleResolution": "node", // 按照node模块来解析
+    "esModuleInterop": true, // ⽀持es6,commonjs模块
+    "jsx": "preserve", // jsx 不转
+    "noLib": false, // 不处理类库
+    "target": "es6", // 遵循es6版本
+    "sourceMap": true,
+    "lib": [
+      // 编译时⽤的库
+      "ESNext",
+      "DOM"
+    ],
+    "allowSyntheticDefaultImports": true, // 允许没有导出的模块中导⼊
+    "experimentalDecorators": true, // 装饰器语法
+    "forceConsistentCasingInFileNames": true, // 强制区分⼤⼩写
+    "resolveJsonModule": true, // 解析json模块
+    "strict": true, // 是否启动严格模式
+    "skipLibCheck": true, // 跳过类库检测
+    // "types": ["unplugin-vue-define-options"] // sfc 添加 name属性的包需要的
+  },
+  "exclude": [
+    // 排除掉哪些类库
+    "node_modules",
+    "**/__tests__",
+    "dist/**"
+  ]
+}

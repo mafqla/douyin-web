@@ -1,0 +1,65 @@
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                class="num-icon"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M7.2.462a1.6 1.6 0 011.6 0l5.328 3.076c.495.286.8.814.8 1.386v6.152a1.6 1.6 0 01-.8 1.386L8.8 15.538a1.6 1.6 0 01-1.6 0l-5.328-3.076a1.6 1.6 0 01-.8-1.386V4.924c0-.572.305-1.1.8-1.386L7.2.462z"
+                  fill="url(#hot-top2_svg__paint0_linear_2723_113252)"
+                ></path>
+                <g filter="url(#hot-top2_svg__filter0_d_2723_113252)">
+                  <path
+                    d="M5.164 9.82a.212.212 0 01.09-.15l2.74-2.71c.2-.2.34-.377.42-.53.086-.16.13-.327.13-.5 0-.16-.044-.283-.13-.37-.087-.093-.21-.14-.37-.14a.72.72 0 00-.5.19c-.14.12-.247.317-.32.59-.014.073-.054.103-.12.09l-1.24-.2c-.054-.007-.074-.043-.06-.11.066-.267.17-.517.31-.75.14-.233.316-.433.53-.6.213-.173.46-.307.74-.4.286-.1.603-.15.95-.15.286 0 .543.04.77.12.226.08.42.193.58.34.16.14.28.31.36.51.086.193.13.403.13.63 0 .413-.09.783-.27 1.11a3.96 3.96 0 01-.77.98l-1.91 1.85v.02h2.18c.073 0 .103.033.09.1l-.21 1.16c-.014.067-.05.1-.11.1h-4.13c-.067 0-.094-.033-.08-.1l.2-1.08z"
+                    fill="#fff"
+                  ></path>
+                </g>
+                <defs>
+                  <linearGradient
+                    id="hot-top2_svg__paint0_linear_2723_113252"
+                    x1="10"
+                    y1="14"
+                    x2="7.2"
+                    y2="-0.4"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop stop-color="#B9B6C6"></stop>
+                    <stop offset="1" stop-color="#E1DFEA"></stop>
+                  </linearGradient>
+                  <filter
+                    id="hot-top2_svg__filter0_d_2723_113252"
+                    x="4.944"
+                    y="4.08"
+                    width="5.23"
+                    height="7.72"
+                    filterUnits="userSpaceOnUse"
+                    color-interpolation-filters="sRGB"
+                  >
+                    <feFlood
+                      flood-opacity="0"
+                      result="BackgroundImageFix"
+                    ></feFlood>
+                    <feColorMatrix
+                      in="SourceAlpha"
+                      values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                      result="hardAlpha"
+                    ></feColorMatrix>
+                    <feOffset dy="0.8"></feOffset>
+                    <feComposite in2="hardAlpha" operator="out"></feComposite>
+                    <feColorMatrix
+                      values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"
+                    ></feColorMatrix>
+                    <feBlend
+                      in2="BackgroundImageFix"
+                      result="effect1_dropShadow_2723_113252"
+                    ></feBlend>
+                    <feBlend
+                      in="SourceGraphic"
+                      in2="effect1_dropShadow_2723_113252"
+                      result="shape"
+                    ></feBlend>
+                  </filter>
+                </defs>
+              </svg>

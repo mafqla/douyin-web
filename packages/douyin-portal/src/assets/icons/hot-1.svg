@@ -1,0 +1,70 @@
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                class="num-icon"
+                viewBox="0 0 16 16"
+              >
+                <g clip-path="url(#hot-top1_svg__clip0_2723_113244)">
+                  <path
+                    d="M7.2.462a1.6 1.6 0 011.6 0l5.328 3.076c.495.286.8.814.8 1.386v6.152a1.6 1.6 0 01-.8 1.386L8.8 15.538a1.6 1.6 0 01-1.6 0l-5.328-3.076a1.6 1.6 0 01-.8-1.386V4.924c0-.572.305-1.1.8-1.386L7.2.462z"
+                    fill="url(#hot-top1_svg__paint0_linear_2723_113244)"
+                  ></path>
+                  <g filter="url(#hot-top1_svg__filter0_d_2723_113244)">
+                    <path
+                      d="M7.57 5.96h-.02l-1.25.77c-.033.02-.063.027-.09.02-.02-.013-.023-.04-.01-.08l.24-1.41a.19.19 0 01.08-.14l1.35-.86c.06-.04.12-.06.18-.06H9.4c.074 0 .104.033.09.1l-1.17 6.6c-.013.067-.05.1-.11.1H6.78c-.073 0-.103-.033-.09-.1l.88-4.94z"
+                      fill="#fff"
+                    ></path>
+                  </g>
+                </g>
+                <defs>
+                  <linearGradient
+                    id="hot-top1_svg__paint0_linear_2723_113244"
+                    x1="8"
+                    y1="14.8"
+                    x2="5.22"
+                    y2="1.853"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop stop-color="#FF8B03"></stop>
+                    <stop offset="1" stop-color="#FFC452"></stop>
+                  </linearGradient>
+                  <clipPath id="hot-top1_svg__clip0_2723_113244">
+                    <path fill="#fff" d="M0 0h16v16H0z"></path>
+                  </clipPath>
+                  <filter
+                    id="hot-top1_svg__filter0_d_2723_113244"
+                    x="6.18"
+                    y="4.2"
+                    width="3.33"
+                    height="7.6"
+                    filterUnits="userSpaceOnUse"
+                    color-interpolation-filters="sRGB"
+                  >
+                    <feFlood
+                      flood-opacity="0"
+                      result="BackgroundImageFix"
+                    ></feFlood>
+                    <feColorMatrix
+                      in="SourceAlpha"
+                      values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                      result="hardAlpha"
+                    ></feColorMatrix>
+                    <feOffset dy="0.8"></feOffset>
+                    <feComposite in2="hardAlpha" operator="out"></feComposite>
+                    <feColorMatrix
+                      values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"
+                    ></feColorMatrix>
+                    <feBlend
+                      in2="BackgroundImageFix"
+                      result="effect1_dropShadow_2723_113244"
+                    ></feBlend>
+                    <feBlend
+                      in="SourceGraphic"
+                      in2="effect1_dropShadow_2723_113244"
+                      result="shape"
+                    ></feBlend>
+                  </filter>
+                </defs>
+              </svg>
