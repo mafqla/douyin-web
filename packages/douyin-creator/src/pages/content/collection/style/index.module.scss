@@ -1,0 +1,72 @@
+//---收藏--
+.micro--collection {
+  font-size: 14px;
+  min-height: 845px;
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+.container--collection {
+  position: relative;
+  min-height: 100%;
+  flex: 1;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 40px;
+  margin-bottom: 20px;
+
+  .title--collection {
+    display: flex;
+    align-items: center;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 28px;
+    color: #323538;
+  }
+}
+
+//--content--
+.empty--collection {
+  height: 304px;
+  margin-top: 16px;
+  background: rgba(46, 50, 56, 0.05);
+  border: 1px dashed rgba(28, 31, 35, 0.08);
+  border-radius: 6px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.empty-icon--collection {
+  margin-bottom: 8px;
+}
+.empty-title--collection {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: rgba(28, 31, 35, 0.8);
+  margin-bottom: 8px;
+}
+.empty-subTitle--collection {
+  font-size: 12px;
+  line-height: 16px;
+  color: rgba(28, 31, 35, 0.6);
+}
+//---加载更多--
+.load-more--manage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0 82px;
+  padding-top: 34px;
+}
+.loading-text--manage {
+  margin-left: 8px;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(28, 31, 35, 0.55);
+  line-height: 20px;
+}

@@ -11,6 +11,7 @@ import {
   Comment,
   Chat
 } from './pages/data'
+import { Collection, Create, Manage } from './pages/content'
 
 export type IRoute = AuthParams & {
   name: string
@@ -52,11 +53,15 @@ export const routes = createBrowserRouter([
       },
       {
         path: 'content/manage',
-        element: <div>content/material/manage/:id</div>
+        element: <Manage />
       },
       {
         path: 'content/collection/manage',
-        element: <div>content/collection/manage</div>
+        element: <Collection />
+      },
+      {
+        path: 'content/collection/create',
+        element: <Create />
       },
       {
         path: 'content/original_protection',

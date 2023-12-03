@@ -24,6 +24,17 @@ body,
   background: #f7f8f9;
   color: #161823;
 }
+input,
+textarea {
+  -webkit-appearance: none;
+  outline: none;
+  border-style: solid;
+  pointer-events: initial !important;
+  line-height: 100%;
+}
+p {
+  margin: 0;
+}
 
 :root {
   --var-sidebar-width: 200px;
