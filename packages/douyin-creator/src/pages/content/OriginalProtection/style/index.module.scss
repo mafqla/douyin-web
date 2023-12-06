@@ -1,0 +1,40 @@
+.micro {
+  font-size: 14px;
+  min-height: 845px;
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+.homePage--original {
+  position: relative;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+
+  .background--original {
+    -o-object-fit: cover;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    overflow: hidden;
+    z-index: 0;
+    height: 224px;
+  }
+
+  .wrapper--original {
+    z-index: 10;
+    position: relative;
+    padding: 0 24px;
+
+    .title--original {
+      font-weight: 600;
+      font-size: 24px;
+      line-height: 32px;
+      color: #fff;
+      padding: 24px 0;
+    }
+  }
+}
+
+

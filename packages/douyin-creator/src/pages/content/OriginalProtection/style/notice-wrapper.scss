@@ -1,0 +1,58 @@
+.noticeWrapper {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  gap: 12px;
+  .noticeContent {
+    flex: 1;
+    background: #f9f9fa;
+    display: flex;
+    align-items: center;
+    padding: 18px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    &:hover {
+      background: #f2f2f4;
+    }
+
+    .dot {
+      border-radius: 50%;
+      width: 4px;
+      height: 4px;
+      background: rgba(22, 24, 35, 0.34);
+    }
+
+    .text {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .new--Fag {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      line-height: 18px;
+      background: #ffe8e9;
+      border-radius: 3px;
+      color: #ff2c55;
+      width: 20px;
+      height: 20px;
+      padding: 1px 4px;
+    }
+
+    & > div + div {
+      margin-left: 8px;
+    }
+  }
+}
+
+iframe {
+  border: none;
+}
+:global(.semi-sidesheet-body) {
+  overflow: hidden;
+}

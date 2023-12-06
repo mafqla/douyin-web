@@ -1,0 +1,60 @@
+.interestWrapper {
+  display: flex;
+  flex-direction: row;
+  padding: 12px 0;
+  justify-content: space-between;
+
+  .interestContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1 0;
+    min-width: 80px;
+    padding: 12px 0;
+    border-radius: 4px;
+    flex-direction: column;
+    cursor: not-allowed;
+
+    &.cursor {
+      cursor: pointer;
+      &:hover {
+        background: #f2f2f4;
+        -webkit-backdrop-filter: blur(2px);
+        backdrop-filter: blur(2px);
+        .circleText {
+          color: #ff2c55;
+        }
+        .circleBG {
+          background: #fff;
+        }
+
+        path {
+          fill: #ff2c55;
+        }
+      }
+    }
+
+    .circleBG {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      width: 52px;
+      height: 52px;
+      background: #f2f2f4;
+      border-radius: 50%;
+
+      .lock--icon {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+      }
+    }
+    .circleText {
+      padding: 12px 0;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+    }
+  }
+}

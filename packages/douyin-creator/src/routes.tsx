@@ -11,7 +11,7 @@ import {
   Comment,
   Chat
 } from './pages/data'
-import { Collection, Create, Manage } from './pages/content'
+import { Collection, Create, Manage, OriginalProtection } from './pages/content'
 
 export type IRoute = AuthParams & {
   name: string
@@ -65,7 +65,7 @@ export const routes = createBrowserRouter([
       },
       {
         path: 'content/original_protection',
-        element: <div>content/original_protection</div>
+        element: <OriginalProtection />
       },
       {
         path: 'data/following/following',

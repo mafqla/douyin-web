@@ -1,0 +1,31 @@
+.titleWrapper {
+  position: relative;
+  margin: 24px 0 12px;
+  display: flex;
+  align-items: center;
+
+  & > .title {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+  }
+  & > .subTitle {
+    margin-left: 12px;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 18px;
+    color: rgba(37, 38, 50, 0.6);
+  }
+
+  .hasMore {
+    position: absolute;
+    right: 0;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 18px;
+    display: flex;
+    align-items: center;
+    color: rgba(37, 38, 50, 0.6);
+    cursor: pointer;
+  }
+}

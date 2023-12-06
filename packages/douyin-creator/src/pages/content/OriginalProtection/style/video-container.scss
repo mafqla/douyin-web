@@ -1,0 +1,51 @@
+.video-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.video-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 24px;
+  width: 100%;
+
+  .video-content {
+    cursor: pointer;
+
+    .cover {
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    .title {
+      width: 159px;
+      margin-top: 8px;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+  }
+}
+.video-user {
+  position: absolute;
+  bottom: 9px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+
+  .name {
+    margin-left: 4px;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 18px;
+    color: #fff;
+  }
+}

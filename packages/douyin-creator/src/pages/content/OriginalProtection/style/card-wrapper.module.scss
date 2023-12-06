@@ -1,0 +1,54 @@
+.cardWrapper {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 8px 24px rgba(164, 208, 231, 0.15);
+  .cardContent {
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    & > .dashed {
+      flex: 1;
+      border-top: 1px dashed #c9c9cc;
+    }
+
+    & > .item-wrapper {
+      margin: 0 12px;
+      padding: 8px 21px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+
+      & > .item--2 {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        & > .info--3 {
+          padding-left: 10px;
+
+          & > .text--info {
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 22px;
+            color: #252632;
+          }
+          & > .buttom--info {
+            font-size: 14px;
+            line-height: 20px;
+            color: #ffc2c6;
+          }
+        }
+      }
+
+      &.item-current {
+        cursor: pointer;
+      }
+    }
+  }
+}

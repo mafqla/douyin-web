@@ -1,0 +1,45 @@
+.rulesWrapper {
+  display: inline-flex;
+  width: 100%;
+  gap: 24px;
+  padding-bottom: 24px;
+
+  .oneSide {
+    width: 50%;
+  }
+  .line {
+    margin: 24px 0;
+    height: auto;
+    border-left: 1px solid #f2f2f4;
+  }
+}
+.QAWrapper {
+  display: flex;
+  margin-top: 12px;
+  .QAContent {
+    flex: 1;
+    margin-left: 9.5px;
+
+    .question {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 20px;
+      cursor: pointer;
+    }
+    .answer {
+      margin-top: 8px;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: rgba(37, 38, 50, 0.6);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+  }
+}
+:global(.semi-sidesheet-body) {
+  overflow: hidden;
+}
