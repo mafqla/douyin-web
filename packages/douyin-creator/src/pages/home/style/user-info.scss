@@ -1,0 +1,163 @@
+.user-info-container {
+  -webkit-align-items: center;
+  align-items: center;
+  border-radius: 8px;
+  box-sizing: border-box;
+  display: -webkit-flex;
+  display: flex;
+  margin-bottom: 16px;
+  margin-right: 280px;
+  width: 100%;
+}
+
+.avatar-container {
+  cursor: pointer;
+  position: relative;
+  .user-avatar {
+    height: 64px;
+    width: 64px;
+
+    border: 1px solid #e4e4e6;
+    border-radius: 50%;
+  }
+}
+
+.user-details {
+  box-sizing: border-box;
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  height: 54px;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  margin-left: 16px;
+  min-width: 0;
+
+  .user-details-content {
+    align-items: center;
+    height: 24px;
+
+    & a,
+    & button,
+    & div,
+    & span {
+      font-size: 14px;
+    }
+  }
+}
+.user-details,
+.user-details-content {
+  display: flex;
+}
+
+.name-status-name {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+}
+
+.user-name {
+  color: #1e2828;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.status-divider {
+  display: flex;
+}
+
+.authorization-button-container {
+  -webkit-align-items: center;
+  align-items: center;
+  color: rgba(35, 35, 35, 0.6);
+  display: -webkit-flex;
+  display: flex;
+  margin-left: 8px;
+
+  &,
+  .authorization-button {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 12px;
+  }
+}
+
+.authorization-button {
+  color: rgba(37, 38, 50, 0.6) !important;
+  margin-left: 4px;
+  padding: 6px 8px;
+  padding-right: 12px;
+
+  &:hover {
+    background-color: transparent !important;
+    color: rgba(37, 38, 50, 0.8) !important;
+  }
+}
+
+.user-id {
+  padding: 0 12px;
+  position: relative;
+
+  &:before {
+    background-color: #c9c9cc;
+
+    content: '';
+    display: block;
+    height: 14px;
+    left: 0;
+    position: absolute;
+    top: 2px;
+    width: 1px;
+  }
+}
+
+.user-id,
+.user-bio {
+  color: rgba(35, 35, 35, 0.6);
+  font-size: 14px;
+  line-height: 18px;
+  padding: 0 12px;
+  text-align: center;
+  white-space: nowrap;
+}
+.user-bio {
+  max-width: 500px;
+  overflow: hidden;
+  position: relative;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  &:before {
+    background-color: #c9c9cc;
+    content: '';
+    display: block;
+    height: 14px;
+    left: 0;
+    position: absolute;
+    top: 2px;
+    width: 1px;
+  }
+}
+
+.user-stats {
+  color: rgba(37, 38, 50, 0.6);
+  display: flex;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.stat-item {
+  margin-right: 24px;
+
+  &.ac {
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+  }
+}
+
+.stat-count {
+  color: #252632;
+  font-weight: 600; // Count within the statistic item styles
+}

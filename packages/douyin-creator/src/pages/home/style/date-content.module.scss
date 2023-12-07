@@ -1,0 +1,58 @@
+.data-conent {
+  margin-top: 4px;
+  padding: 12px;
+  padding-bottom: 16px;
+  padding-top: 0;
+  display: flex;
+}
+.date-range-card {
+  align-items: flex-start;
+  border-radius: 4px;
+  box-sizing: border-box;
+  cursor: pointer;
+  flex: 1 1;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 10px;
+  min-width: 192px;
+  padding: 8px 12px;
+
+  &:hover {
+    background: #f9f9fa;
+  }
+}
+
+.date-header {
+  display: flex;
+  font-family: PingFang SC;
+  margin-bottom: 6px;
+
+  .date-label {
+    color: #252632;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+
+  .date-range {
+    color: rgba(37, 38, 50, 0.6);
+    font-size: 12px;
+  }
+}
+
+.price-info {
+  align-items: end;
+  color: #252632;
+  display: flex;
+  font-style: normal;
+  font-weight: 600;
+  gap: 4px;
+
+  .currency-symbol {
+    font-size: 14px;
+    padding-bottom: 2px;
+  }
+  .price-graph {
+    font-size: 20px;
+  }
+}

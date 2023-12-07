@@ -1,0 +1,82 @@
+.interaction-management {
+  display: flex;
+  padding: 0 12px 12px;
+  & > div {
+    flex: 1 1;
+    min-width: 0;
+
+    .section-content {
+      border-radius: 4px;
+      border-radius: var(--semi-border-radius-small, 4px);
+      cursor: pointer;
+      padding: 12px;
+    }
+
+    .section-header {
+      align-items: center;
+      display: flex;
+
+      .icon-container {
+        color: rgba(37, 38, 50, 0.35);
+        height: 18px;
+        justify-content: center;
+        width: 18px;
+        align-items: center;
+        display: flex;
+      }
+
+      .header-text {
+        color: #252632;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 20px;
+        margin: 0 8px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .no-comments-message,
+    .no-messages-message {
+      color: #252632;
+      font-size: 14px;
+      line-height: 20px;
+      margin: 4px 0;
+      white-space: nowrap;
+
+      &.empty {
+        color: rgba(37, 38, 50, 0.35);
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .management {
+      color: rgba(37, 38, 50, 0.6);
+      display: flex;
+      font-size: 12px;
+      line-height: 18px;
+
+      .management-label {
+        align-items: center;
+        display: flex;
+        flex: 1 0 auto;
+        justify-content: flex-end;
+        margin-left: 8px;
+
+        .chevron-icon {
+          margin-left: 4px;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+
+  .separator {
+    background: #f2f2f4;
+    border-radius: 0;
+    border-radius: var(--semi-border-radius-none, 0);
+    margin: 12px;
+    width: 1px;
+  }
+}

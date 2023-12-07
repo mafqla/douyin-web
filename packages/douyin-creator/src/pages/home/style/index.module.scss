@@ -1,0 +1,99 @@
+.home {
+  background-image: url(https://lf6-cdn-tos.bytescm.com/obj/static/douyin_creator/fe/pc/static/image/background.786062ca.png);
+  background-image:
+    url(https://lf6-cdn-tos.bytescm.com/obj/static/douyin_creator/fe/pc/static/image/background.786062ca.png),
+    - webkit-linear-gradient(left, #f9f9fa, hsla(240, 9%, 98%, 0) 9.72%);
+  background-image: url(https://lf6-cdn-tos.bytescm.com/obj/static/douyin_creator/fe/pc/static/image/background.786062ca.png),
+    linear-gradient(90deg, #f9f9fa, hsla(240, 9%, 98%, 0) 9.72%);
+  background-position: 100% 0;
+  background-repeat: no-repeat;
+  background-size: 1440px 900px;
+  min-height: 800px;
+  padding-right: 24px;
+  padding-top: 60px;
+  position: relative;
+}
+
+.bg {
+  background: -webkit-linear-gradient(
+    left,
+    #f9f9fa,
+    hsla(240, 9%, 98%, 0) 9.72%
+  );
+  background: linear-gradient(90deg, #f9f9fa, hsla(240, 9%, 98%, 0) 9.72%);
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+.container {
+  position: relative;
+}
+.content {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 3fr 1fr;
+}
+
+.left-content {
+  flex: 1 1;
+}
+.left-content,
+.right-content {
+  min-width: 0;
+}
+.right-content {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.content-item {
+  background: #fff;
+  border-radius: 8px;
+  margin-bottom: 24px;
+
+  .title {
+    color: #252632;
+
+    display: flex;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 26px;
+    padding: 24px 24px 0;
+
+    .eye-close {
+      color: rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      margin-left: 8px;
+    }
+    .eye-open {
+      color: rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      margin-left: 8px;
+    }
+  }
+
+  .text {
+    display: flex;
+    align-items: center;
+  }
+  .show-more {
+    cursor: pointer;
+    margin-left: auto;
+    text-align: right;
+    transition: all 0.25s ease-in-out;
+
+    align-items: center;
+    color: rgba(37, 38, 50, 0.6);
+    display: flex;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+  }
+}
+
+
