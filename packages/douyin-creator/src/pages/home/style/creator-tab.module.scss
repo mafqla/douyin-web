@@ -1,0 +1,128 @@
+.creator-tab {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  padding-bottom: 24px;
+}
+
+.img-list {
+  height: 506px;
+}
+.img-container {
+  cursor: pointer;
+  display: -webkit-flex;
+  display: flex;
+  font-size: 14px;
+  padding: 12px;
+  padding: var(--semi-spacing-base-tight, 12px);
+
+  &:hover {
+    background: #f9f9fa;
+    border-radius: 4px;
+  }
+}
+.img-content {
+  margin-right: 12px;
+  position: relative;
+}
+.img-content,
+.img {
+  border-radius: 4px;
+  height: 70px;
+  object-fit: cover;
+  width: 52px;
+}
+
+.rank {
+  align-items: flex-start;
+  background: #929399;
+  border: 1px solid hsla(0, 0%, 100%, 0.8);
+  border-radius: 4px 0 10px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial;
+  font-size: 10px;
+  font-weight: 700;
+  gap: 10px;
+  left: 0;
+  line-height: normal;
+  padding: 1.5px 4px;
+  padding-bottom: 2px;
+  padding-right: 5px;
+  position: absolute;
+  top: 0;
+
+  &.color-1 {
+    background: #ff2c55;
+  }
+  &.color-2 {
+    background: #ff7a45;
+  }
+  &.color-3 {
+    background: #face15;
+  }
+}
+
+.details {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .caption {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    color: #252632;
+    font-size: 14px;
+    line-height: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+  }
+  .popularity {
+    color: rgba(37, 38, 50, 0.8);
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    align-items: center;
+    display: flex;
+    font-size: 12px;
+    gap: 4px;
+    line-height: 18px;
+  }
+  .popularity-count {
+    font-weight: 600;
+  }
+}
+
+.view-all {
+  border-radius: 4px;
+  border-radius: var(--semi-border-radius-semi-border-radius-small, 4px);
+  color: rgba(37, 38, 50, 0.6);
+  cursor: pointer;
+  flex: 1 0;
+  justify-content: center;
+  margin-top: 12px;
+  padding: 3px 8px;
+  display: flex;
+  font-size: 12px;
+  gap: 4px;
+  line-height: 18px;
+  align-items: center;
+
+  .dux-icon {
+    display: inline-block;
+    line-height: 0;
+  }
+}
+
+.line {
+  align-self: stretch;
+  background: #f2f2f4;
+  width: 1px;
+}
+
+.tabs {
+  flex: 1 1;
+}

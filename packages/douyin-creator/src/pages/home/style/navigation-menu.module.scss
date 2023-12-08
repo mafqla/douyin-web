@@ -38,6 +38,10 @@
   .navigation-container {
     grid-template-columns: repeat(3, 33.3%);
   }
+
+  .navigation-item:last-child {
+    display: none;
+  }
 }
 .navigation-modal {
   flex-wrap: wrap;

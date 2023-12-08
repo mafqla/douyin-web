@@ -1,8 +1,10 @@
 import {
   IconChevronRight,
   IconEyeClosed,
-  IconEyeOpened
+  IconEyeOpened,
+  IconPlusCircle
 } from '@douyinfe/semi-icons'
+import cs from 'classnames'
 import Creator from './Creator'
 import Help from './Help'
 import InteractionManagement from './InteractionManagement'
@@ -11,7 +13,9 @@ import styles from './style/index.module.scss'
 import DateContent from './DateContent'
 import { useState } from 'react'
 import NavigationMenu from './NavigationMenu'
-import { Modal } from '@douyinfe/semi-ui'
+import { Button, Modal } from '@douyinfe/semi-ui'
+import ImportantUser from './ImportantUser'
+import CreatorTab from './CreatorTab'
 
 const Home = () => {
   const [isShowPrice, setIsShowPrice] = useState(false)
@@ -73,7 +77,7 @@ const Home = () => {
     }
   ]
 
-  const visibleItems = menuItems.slice(0, 3)
+  const visibleItems = menuItems.slice(0, 4)
   const [isShortcutNavigationVisible, setShortcutNavigationVisible] =
     useState(false)
 
@@ -83,6 +87,110 @@ const Home = () => {
   const handleCancelShortcutNavigation = () => {
     setShortcutNavigationVisible(false)
   }
+
+  // 重点关心列表
+  const users = [
+    {
+      uid: '1',
+      name: '章若楠',
+      avatar:
+        'https://p26.douyinpic.com/aweme/100x100/aweme-avatar/f5d59bdfb9352cfdb5eabddf5ca03bad.jpeg?from=4010531038',
+      followers: '1548.10万',
+      works: '128',
+      yesterdayFollowers: '+1.39万',
+      yesterdayWorks: '0'
+    },
+    {
+      uid: '2',
+      name: '章若楠',
+      avatar:
+        'https://p26.douyinpic.com/aweme/100x100/aweme-avatar/f5d59bdfb9352cfdb5eabddf5ca03bad.jpeg?from=4010531038',
+      followers: '1548.10万',
+      works: '128',
+      yesterdayFollowers: '+1.39万',
+      yesterdayWorks: '0'
+    },
+    {
+      uid: '3',
+      name: '章若楠',
+      avatar:
+        'https://p26.douyinpic.com/aweme/100x100/aweme-avatar/f5d59bdfb9352cfdb5eabddf5ca03bad.jpeg?from=4010531038',
+      followers: '1548.10万',
+      works: '128',
+      yesterdayFollowers: '+1.39万',
+      yesterdayWorks: '0'
+    },
+    {
+      uid: '4',
+      name: '章若楠',
+      avatar:
+        'https://p26.douyinpic.com/aweme/100x100/aweme-avatar/f5d59bdfb9352cfdb5eabddf5ca03bad.jpeg?from=4010531038',
+      followers: '1548.10万',
+      works: '128',
+      yesterdayFollowers: '+1.39万',
+      yesterdayWorks: '0'
+    },
+    {
+      uid: '5',
+      name: '章若楠',
+      avatar:
+        'https://p26.douyinpic.com/aweme/100x100/aweme-avatar/f5d59bdfb9352cfdb5eabddf5ca03bad.jpeg?from=4010531038',
+      followers: '1548.10万',
+      works: '128',
+      yesterdayFollowers: '+1.39万',
+      yesterdayWorks: '0'
+    },
+    {
+      uid: '6',
+      name: '章若楠',
+      avatar:
+        'https://p26.douyinpic.com/aweme/100x100/aweme-avatar/f5d59bdfb9352cfdb5eabddf5ca03bad.jpeg?from=4010531038',
+      followers: '1548.10万',
+      works: '128',
+      yesterdayFollowers: '+1.39万',
+      yesterdayWorks: '0'
+    },
+    {
+      uid: '7',
+      name: '章若楠',
+      avatar:
+        'https://p26.douyinpic.com/aweme/100x100/aweme-avatar/f5d59bdfb9352cfdb5eabddf5ca03bad.jpeg?from=4010531038',
+      followers: '1548.10万',
+      works: '128',
+      yesterdayFollowers: '+1.39万',
+      yesterdayWorks: '0'
+    },
+    {
+      uid: '8',
+      name: '章若楠',
+      avatar:
+        'https://p26.douyinpic.com/aweme/100x100/aweme-avatar/f5d59bdfb9352cfdb5eabddf5ca03bad.jpeg?from=4010531038',
+      followers: '1548.10万',
+      works: '128',
+      yesterdayFollowers: '+1.39万',
+      yesterdayWorks: '0'
+    },
+    {
+      uid: '9',
+      name: '章若楠',
+      avatar:
+        'https://p26.douyinpic.com/aweme/100x100/aweme-avatar/f5d59bdfb9352cfdb5eabddf5ca03bad.jpeg?from=4010531038',
+      followers: '1548.10万',
+      works: '128',
+      yesterdayFollowers: '+1.39万',
+      yesterdayWorks: '0'
+    },
+    {
+      uid: '10',
+      name: '章若楠',
+      avatar:
+        'https://p26.douyinpic.com/aweme/100x100/aweme-avatar/f5d59bdfb9352cfdb5eabddf5ca03bad.jpeg?from=4010531038',
+      followers: '1548.10万',
+      works: '128',
+      yesterdayFollowers: '+1.39万',
+      yesterdayWorks: '0'
+    }
+  ]
   return (
     <div className={styles.home}>
       <div className={styles.bg}></div>
@@ -115,6 +223,7 @@ const Home = () => {
             </div>
             <div className={styles['content-item']}>
               <div className={styles.title}>创作中心</div>
+              <CreatorTab />
             </div>
           </div>
 
@@ -158,7 +267,7 @@ const Home = () => {
                 />
               </Modal>
             </div>
-            <div className={styles['content-item']}>
+            <div className={cs(styles['content-item'], styles['import-f'])}>
               <div className={styles.title}>
                 <div className={styles.text}>重点关心</div>
                 <div className={styles['show-more']}>
@@ -166,6 +275,22 @@ const Home = () => {
                   <IconChevronRight />
                 </div>
               </div>
+
+              <ImportantUser users={users} />
+              {users.length < 10 && (
+                <div className={styles['add-follow']}>
+                  <Button
+                    type="tertiary"
+                    block
+                    icon={<IconPlusCircle />}
+                    style={{
+                      color: 'var(--semi-color-text-2)'
+                    }}
+                  >
+                    添加关心(3/10)
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
