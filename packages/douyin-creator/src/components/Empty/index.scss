@@ -1,0 +1,22 @@
+.empty-container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+}
+
+.empty-image {
+  height: 100px;
+  margin-bottom: 8px;
+  width: 100px;
+}
+
+.empty-text {
+  color: rgba(37, 38, 50, 0.6);
+  font-size: 12px;
+  line-height: 18px;
+  padding: 0 27px;
+  text-align: center;
+}

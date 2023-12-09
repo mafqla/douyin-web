@@ -11,7 +11,13 @@ import {
   Comment,
   Chat
 } from './pages/data'
-import { Collection, Create, Manage, OriginalProtection } from './pages/content'
+import {
+  Collection,
+  Create,
+  Manage,
+  OriginalProtection,
+  Upload
+} from './pages/content'
 
 export type IRoute = AuthParams & {
   name: string
@@ -43,6 +49,10 @@ export const routes = createBrowserRouter([
         element: <Navigate to="home" />
       },
 
+      {
+        path: 'content/upload',
+        element: <Upload />
+      },
       {
         path: 'home',
         element: <Home />

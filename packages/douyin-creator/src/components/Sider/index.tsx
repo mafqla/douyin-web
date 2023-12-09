@@ -259,7 +259,10 @@ const Sider = () => {
             className={styles['dropdown-wrapper']}
             render={
               <Dropdown.Menu>
-                <Dropdown.Item className={styles['dropdown-item']}>
+                <Dropdown.Item
+                  className={styles['dropdown-item']}
+                  onClick={() => router('content/upload')}
+                >
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path
                       fillRule="evenodd"
@@ -271,7 +274,10 @@ const Sider = () => {
                   </svg>
                   发布视频
                 </Dropdown.Item>
-                <Dropdown.Item className={styles['dropdown-item']}>
+                <Dropdown.Item
+                  className={styles['dropdown-item']}
+                  onClick={() => router('content/upload?default-tab=3')}
+                >
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path
                       fillRule="evenodd"
@@ -283,7 +289,10 @@ const Sider = () => {
                   </svg>
                   发布图文
                 </Dropdown.Item>
-                <Dropdown.Item className={styles['dropdown-item']}>
+                <Dropdown.Item
+                  className={styles['dropdown-item']}
+                  onClick={() => router('content/upload?default-tab=4')}
+                >
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path
                       d="M5.068 2c-.783 0-1.477.496-1.725 1.23l-.192.57h9.697l-.191-.57A1.817 1.817 0 0010.932 2H5.068z"
@@ -308,6 +317,7 @@ const Sider = () => {
               size="large"
               block
               className={styles['header-button']}
+              onClick={() => router('content/upload')}
             >
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <rect

@@ -105,15 +105,6 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/:pageName', // 使用动态路径，匹配不同的页面
-    name: 'dynamicPage',
-    component: () => import('@/components/common/modal.vue'),
-    props: (route) => ({
-      pageName: route.params.pageName,
-      modalId: route.query.modal_id
-    })
-  },
-  {
     path: '/post',
     name: 'post',
     component: () => import('@/views/post.vue')
@@ -131,13 +122,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
-  const modalId = to.query.modal_id
-  if (modalId) {
-    // 在这里根据 modalId 打开模态框
-    // 或者触发事件告知应用打开模态框
-  } else {
-    // 没有 modal_id 查询参数，正常进入路由
-  }
+
 })
 
 export default router
