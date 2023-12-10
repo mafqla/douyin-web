@@ -16,6 +16,7 @@ import {
   Create,
   Manage,
   OriginalProtection,
+  Publish,
   Upload
 } from './pages/content'
 
@@ -52,6 +53,10 @@ export const routes = createBrowserRouter([
       {
         path: 'content/upload',
         element: <Upload />
+      },
+      {
+        path: 'content/publish',
+        element: <Publish />
       },
       {
         path: 'home',
