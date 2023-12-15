@@ -49,8 +49,9 @@ export const Index = () => {
   useEffect(() => {
     if (checkLogin()) {
       // fetchUserInfo()
+      
     } else if (window.location.pathname.replace(/\//g, '') !== '/') {
-      window.location.pathname = '/'
+      // window.location.pathname = '/'
     }
   }, [])
 

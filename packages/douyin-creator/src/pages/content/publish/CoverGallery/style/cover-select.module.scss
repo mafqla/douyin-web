@@ -1,0 +1,119 @@
+.cover-content {
+  width: 100%;
+  height: 100%;
+}
+
+.close-icon {
+  cursor: pointer;
+  position: absolute;
+  right: 28px;
+  top: 24px;
+  z-index: 10;
+}
+.cover-select {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+
+  .tabs-content {
+    flex: 1;
+
+    .extract-content {
+      opacity: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .extract-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        background-color: #f7f8f9;
+        position: relative;
+      }
+
+      .extract-footer {
+        width: 100%;
+        height: 64px;
+        padding-right: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+
+        .edit {
+          padding: 6px 12px;
+          margin-right: 12px;
+          color: #41464c;
+          margin-right: 8px;
+        }
+        .finish {
+          padding: 6px 12px;
+          background: var(--semi-color-primary);
+          color: #fff;
+          margin-right: 8px;
+        }
+      }
+    }
+
+    .dragMainText {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 20px;
+      color: rgba(28, 31, 35, 0.8);
+    }
+    .dragSubText-sub {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 16px;
+      color: rgba(28, 31, 35, 0.6);
+    }
+    :global(.semi-upload) {
+      height: 100%;
+      width: 100%;
+
+      :global(.semi-upload-drag-area) {
+        border: unset;
+        &:hover {
+          background-color: unset;
+          border-color: unset;
+        }
+      }
+      :global(.semi-upload-drag-area-icon) {
+        color: unset;
+      }
+    }
+  }
+}
+
+.tabs-items {
+  display: flex;
+  height: 56px;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+  color: #1c1f23;
+  border-bottom: 1px solid #ebebeb;
+  padding: 0 24px;
+  .tabs-item-content {
+    display: flex;
+    .tbas-item {
+      opacity: 0.35;
+      cursor: pointer;
+      height: 56px;
+      line-height: 56px;
+
+      &.selected {
+        opacity: 1;
+        border-bottom: 2px solid #ff2c55;
+      }
+      &:not(:first-child) {
+        margin-left: 24px;
+      }
+    }
+  }
+}

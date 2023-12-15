@@ -1,0 +1,122 @@
+.anchor-part {
+  .header {
+    display: flex;
+    align-items: center;
+    margin: 0 0 4px;
+
+    .title {
+      margin: 24px 0 4px;
+      position: relative;
+
+      .title-main {
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: bold;
+        color: #404346;
+        margin: 0;
+      }
+    }
+    .icon {
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+      margin: 24px 0 4px;
+      margin-left: 4px;
+    }
+  }
+
+  .anchor-container {
+    display: flex;
+    width: 100%;
+    align-items: flex-start;
+
+    .select {
+      width: 104px;
+      flex-shrink: 0;
+    }
+
+    .anchor-component {
+      margin-left: 8px;
+      flex-grow: 1;
+      min-width: 0;
+
+      .anchor-item {
+        display: flex;
+        position: relative;
+      }
+    }
+  }
+
+  .sub-title-global {
+    width: 100%;
+
+    .recommend {
+      margin-top: 4px;
+      display: flex;
+      overflow: hidden;
+
+      .recommend-label {
+        flex-shrink: 0;
+        color: #6b7075;
+        padding-top: 3px;
+      }
+
+      .scroll-container {
+        overflow: hidden;
+        position: relative;
+
+        .scroll-content {
+          overflow: hidden;
+          position: relative;
+
+          .recommend-list {
+            flex: 1;
+            display: flex;
+
+            .recommend-list-item {
+              font-size: 12px;
+              color: #1c1f23;
+              padding: 0 8px;
+              align-items: center;
+              white-space: nowrap;
+              border: 1px solid rgba(28, 31, 35, 0.08);
+              border-radius: 3px;
+              margin-right: 8px;
+              display: flex;
+              line-height: 21px;
+              cursor: pointer;
+
+              svg {
+                margin-right: 6px;
+              }
+            }
+          }
+        }
+
+        .left-scroll {
+          width: 48px;
+          background: linear-gradient(
+            91.2deg,
+            #fff 48.1%,
+            rgba(255, 255, 255, 0) 99.11%
+          );
+          position: absolute;
+          left: 0;
+          z-index: 1;
+          display: none;
+        }
+        .right-scroll {
+          width: 48px;
+          background: linear-gradient(
+            268.8deg,
+            #fff 48.1%,
+            rgba(255, 255, 255, 0) 99.11%
+          );
+          position: absolute;
+          right: 0;
+          z-index: 1;
+        }
+      }
+    }
+  }
+}

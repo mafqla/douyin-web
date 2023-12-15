@@ -1,0 +1,24 @@
+.container-hot {
+  margin-top: 24px;
+
+  .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    .title-hot {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 20px;
+      color: #404346;
+    }
+    .icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: 4px;
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
+  }
+}

@@ -1,0 +1,74 @@
+.container-chapter {
+  margin-top: 24px;
+  width: 100%;
+
+  .title {
+    margin: 24px 0 4px;
+    position: relative;
+    .titleMain {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: bold;
+      color: #404346;
+      margin: 0;
+
+      .header {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        .addChapterText {
+          margin: 0 4px 0 0;
+        }
+      }
+    }
+  }
+
+  .content {
+    background: #f2f2f4;
+    border-radius: 6px;
+    height: 52px;
+    cursor: pointer;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 8px;
+    &.disabled {
+      cursor: not-allowed;
+    }
+
+    .icon {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #fff;
+      border-radius: 3px;
+
+      &.disabled {
+        svg path {
+          fill: rgba(35, 35, 35, 0.35);
+        }
+      }
+    }
+    .text {
+      margin: 0;
+      flex-grow: 1;
+      margin-left: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 20px;
+      color: rgba(28, 31, 35, 0.8);
+
+      &.disabled {
+        color: rgba(35, 35, 35, 0.35);
+      }
+    }
+    .edit {
+      padding: 6px 12px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import SemiPlugin from './src/utils/SemiPlugin'
+import svgr from 'vite-plugin-svgr'
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
@@ -24,7 +25,8 @@ export default defineConfig(({ mode }) => {
       react(),
       SemiPlugin({
         theme: '@semi-bot/semi-theme-doucreator'
-      })
+      }),
+      svgr()
     ],
     css: {
       preprocessorOptions: {

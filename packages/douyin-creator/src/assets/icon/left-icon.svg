@@ -1,0 +1,50 @@
+  <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none">
+                <g filter="url(#left_icon_svg__filter0_d)">
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="8"
+                    transform="rotate(-180 12 12)"
+                    fill="#fff"
+                  ></circle>
+                </g>
+                <path
+                  d="M13 9l-3 3 3 3"
+                  stroke="#6B7075"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                ></path>
+                <defs>
+                  <filter
+                    id="left_icon_svg__filter0_d"
+                    x="2"
+                    y="2.5"
+                    width="20"
+                    height="20"
+                    filterUnits="userSpaceOnUse"
+                    colorInterpolationFilters="sRGB"
+                  >
+                    <feFlood
+                      floodOpacity="0"
+                      result="BackgroundImageFix"
+                    ></feFlood>
+                    <feColorMatrix
+                      in="SourceAlpha"
+                      values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                    ></feColorMatrix>
+                    <feOffset dy="0.5"></feOffset>
+                    <feGaussianBlur stdDeviation="1"></feGaussianBlur>
+                    <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"></feColorMatrix>
+                    <feBlend
+                      in2="BackgroundImageFix"
+                      result="effect1_dropShadow"
+                    ></feBlend>
+                    <feBlend
+                      in="SourceGraphic"
+                      in2="effect1_dropShadow"
+                      result="shape"
+                    ></feBlend>
+                  </filter>
+                </defs>
+              </svg>

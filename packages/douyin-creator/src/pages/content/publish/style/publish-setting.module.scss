@@ -1,0 +1,78 @@
+.download-content {
+  position: relative;
+}
+
+.radio {
+  font-size: 14px;
+  color: #161823;
+  display: inline-flex;
+  align-items: center;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  padding: 4px 12px;
+  background: #f8f9f9;
+  border-radius: 3px;
+  margin-right: 8px;
+  color: #121225;
+  font-weight: bold;
+  width: 132px;
+
+  :global(.semi-radio-inner) {
+    width: 20px !important;
+    height: 20px !important;
+    left: 6px !important;
+    top: 6px !important;
+  }
+}
+
+.publish-settings {
+  width: 100%;
+
+  .publish-settings-title {
+    font-size: 18px;
+    line-height: 40px;
+    font-weight: bold;
+    color: rgba(28, 31, 35, 0.9);
+    border-bottom: 1px solid rgba(22, 24, 35, 0.06);
+    margin-top: 30px;
+    margin-bottom: 6px;
+  }
+
+  .mytitle {
+    font-size: 14px;
+    line-height: 20px;
+    color: #404346;
+    font-weight: bold;
+    margin-top: 24px;
+    margin-bottom: 5px;
+  }
+
+  .title-schedule {
+    margin: 24px 0 4px;
+    position: relative;
+    .title-main-schedule {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: bold;
+      color: #404346;
+      margin: 0;
+    }
+  }
+  .row--schedule {
+    display: flex;
+    height: 32px;
+  }
+
+  .container-schedule {
+    position: relative;
+  }
+  .highlight--2 {
+    position: absolute;
+    right: 25px;
+    top: 5.5px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+}

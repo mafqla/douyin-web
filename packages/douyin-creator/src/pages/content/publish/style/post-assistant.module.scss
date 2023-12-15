@@ -1,0 +1,139 @@
+.post-assistant {
+  position: relative;
+  margin-top: 74px;
+  width: 243px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  .fold-btn-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 134px;
+    height: 40px;
+    background: rgba(46, 50, 56, 0.05);
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  .content--fold {
+    margin-left: 4px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    color: rgba(28, 31, 35, 0.9);
+  }
+
+  .fold-head {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 250ms linear;
+  }
+  .unfold--head {
+    opacity: 1;
+    visibility: visible;
+    transition: all 250ms linear;
+    margin: 0 auto;
+  }
+
+  .fold-main {
+    opacity: 0;
+    visibility: hidden;
+    transition: all 250ms linear;
+  }
+  .unfold-main {
+    opacity: 1;
+    visibility: visible;
+    transition: all 250ms linear;
+  }
+  .main-wrapper {
+    // width: 243px;
+    background: #f8f9fd;
+    border-radius: 12px;
+    padding: 24px 16px 16px;
+  }
+
+  .title-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    justify-content: center;
+
+    .title-unfold {
+      margin-left: 4px;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 26px;
+      color: #2f3035;
+      font-weight: 500;
+    }
+  }
+}
+
+.onlyQuickContentWrapper {
+  margin: 0;
+  flex-direction: column;
+}
+.normalContentWrapper {
+  align-items: center;
+}
+.contentWrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+.resultWrapper {
+  margin-top: 16px;
+}
+.titleWrapper-2 {
+  display: flex;
+  justify-content: space-between;
+}
+.title--ai {
+  display: flex;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+}
+.contentWrapper--2 {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(47, 48, 53, 0.9);
+}
+.onlyQuickContentBtn {
+  height: 32px;
+  width: 211px;
+  margin-top: 16px !important;
+}
+.btn--quickContent {
+  margin: 0;
+  padding: 4px 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #eff0f3;
+  border-radius: 3px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(47, 48, 53, 0.9);
+  cursor: pointer;
+}
+
+.fold-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 24px;
+  border: 1px solid rgba(22, 24, 35, 0.06);
+  border-radius: 22px;
+  cursor: pointer;
+}

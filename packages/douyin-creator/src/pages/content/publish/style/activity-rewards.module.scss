@@ -1,0 +1,112 @@
+.title-activity {
+  margin: 24px 0 4px;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+}
+.new-icon {
+  margin-left: 5px;
+}
+.more-text {
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  color: rgba(37, 38, 50, 0.6);
+}
+
+.activity-list-container {
+  display: flex;
+}
+.activity--content {
+  background: #f2f2f4;
+  border-radius: 4px;
+  padding: 8px 12px;
+  width: 164px;
+  // height: 54px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+
+  &:hover {
+    background: #ffe8e9;
+  }
+
+  margin-right: 8px;
+}
+.activity--top {
+  display: inline-flex;
+  align-items: center;
+
+  .activity--logo {
+    margin: 0 2px;
+    width: 12px;
+    height: 13px;
+  }
+  .title--activity {
+    display: inline-block;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 18px;
+    color: #252632;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
+.activity--bottom {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  justify-content: space-between;
+
+  .score--activity {
+    color: rgba(37, 38, 50, 0.6);
+  }
+  &.add {
+    color: #ff2c55;
+  }
+
+  .added {
+    cursor: pointer;
+    .hover {
+      display: flex;
+      align-items: center;
+    }
+
+    .add-icon {
+      width: 12px;
+      height: 12px;
+      margin-right: 2px;
+    }
+  }
+  .detail {
+    cursor: pointer;
+    color: #d21b46;
+  }
+}
+.more--content {
+  background: #f2f2f4;
+  border-radius: 3px;
+  text-align: center;
+  width: 36px;
+  height: 54px;
+  line-height: 54px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(37, 38, 50, 0.6);
+}
+
+.title-upload {
+  margin: 24px 0 4px;
+  position: relative;
+  .title-main {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: bold;
+    color: #404346;
+    margin: 0;
+  }
+}
