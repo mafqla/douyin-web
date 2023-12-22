@@ -80,84 +80,118 @@ const translateYValues = ref<number[]>([])
  * @param {number} numItems: 子项的个数
  * @param {number[]} listHeight: 高度列表
  */
+// function generateTranslateYValues(
+//   itemHeight: number,
+//   hotHeight: number,
+//   numItems: number,
+//   listHeight: number[]
+// ): number[] {
+//   const translateYValues: number[] = []
+//   // 子项之间的间隔
+//   const spacing = 16
+
+//   // 如果listHeight的子项等于0 使用itemHeight创建一个长度20的数组，在numItems-1的位置插入698.062
+//   if (listHeight.length === 0) {
+//     const updatedListHeight = new Array(20).fill(itemHeight)
+//     updatedListHeight.splice(numItems - 1, 0, 698.062)
+
+//     // 初始化每列的高度为0
+//     const columnHeights = new Array(numItems).fill(0)
+
+//     // 生成瀑布流列表的高度
+//     for (let i = 0; i < updatedListHeight.length; i++) {
+//       // 查找当前列中总高度最小的列索引
+//       const minHeightColumnIndex = columnHeights.indexOf(
+//         Math.min(...columnHeights)
+//       )
+//       // 获取当前列的总高度作为 translateY 值，考虑间隔
+//       const translateY = columnHeights[minHeightColumnIndex] + spacing
+
+//       translateYValues.push(translateY)
+//       // 更新当前列的高度
+//       columnHeights[minHeightColumnIndex] = translateY + itemHeight
+//     }
+//     // console.log(columnHeights)
+//   } else {
+//     // 复制一份 listHeight 的副本以防止修改原数组
+//     const updatedListHeight = [...listHeight]
+
+//     // 在第 numItems-1 的位置插入特定的值
+//     updatedListHeight.splice(numItems - 1, 0, hotHeight)
+//     // 初始化每列的高度为0
+//     const columnHeights = new Array(numItems).fill(0)
+
+//     let rowIndex = 0 // 当前行的索引
+//     let currentRowItems = 0 // 当前行内的子项数量
+
+//     // 生成瀑布流列表的高度
+//     for (let i = 0; i < updatedListHeight.length; i++) {
+//       let translateY = 0
+
+//       if (rowIndex === 0) {
+//         // 第一行从16开始
+//         translateY = 16
+//       } else {
+//         // console.log(columnHeights, currentRowItems, i)
+//         // 计算 translateY 值，考虑上一行的总高度和间隔
+//         translateY = columnHeights[currentRowItems] + spacing
+//       }
+
+//       // 更新当前列的高度
+//       columnHeights[currentRowItems] += updatedListHeight[i] + spacing
+//       translateYValues.push(translateY)
+//       currentRowItems++
+
+//       // 如果当前行内的子项数量等于 numItems，切换到下一行
+//       if (currentRowItems === numItems) {
+//         currentRowItems = 0
+//         rowIndex++
+//       }
+//     }
+//   }
+
+//   // const translateYObjects = []
+//   // for (let i = 0; i < translateYValues.length; i += numItems) {
+//   //   const rowTranslateYValues = translateYValues.slice(i, i + numItems)
+//   //   translateYObjects.push({ row: i / numItems, values: rowTranslateYValues })
+//   // }
+
+//   // // 打印对象数组
+//   // console.log(translateYObjects, translateYValues)
+//   return translateYValues
+// }
+
 function generateTranslateYValues(
   itemHeight: number,
   hotHeight: number,
   numItems: number,
   listHeight: number[]
-): number[] {
-  const translateYValues: number[] = []
-  // 子项之间的间隔
+) {
+  const translateYValues = []
   const spacing = 16
 
-  // 如果listHeight的子项等于0 使用itemHeight创建一个长度20的数组，在numItems-1的位置插入698.062
-  if (listHeight.length === 0) {
-    const updatedListHeight = new Array(20).fill(itemHeight)
-    updatedListHeight.splice(numItems - 1, 0, 698.062)
+  let updatedListHeight =
+    listHeight.length === 0
+      ? Array(20).fill(itemHeight)
+      : [...listHeight, hotHeight]
+  updatedListHeight = updatedListHeight.map((height, i) => ({
+    height,
+    index: i
+  }))
+  updatedListHeight.sort((a, b) => a.height - b.height)
 
-    // 初始化每列的高度为0
-    const columnHeights = new Array(numItems).fill(0)
+  const columnHeights = Array(numItems).fill(0)
 
-    // 生成瀑布流列表的高度
-    for (let i = 0; i < updatedListHeight.length; i++) {
-      // 查找当前列中总高度最小的列索引
-      const minHeightColumnIndex = columnHeights.indexOf(
-        Math.min(...columnHeights)
-      )
-      // 获取当前列的总高度作为 translateY 值，考虑间隔
-      const translateY = columnHeights[minHeightColumnIndex] + spacing
+  for (const { height, index } of updatedListHeight) {
+    const minHeightColumnIndex = columnHeights.indexOf(
+      Math.min(...columnHeights)
+    )
+    const translateY = columnHeights[minHeightColumnIndex] + spacing
 
-      translateYValues.push(translateY)
-      // 更新当前列的高度
-      columnHeights[minHeightColumnIndex] = translateY + itemHeight
-    }
-    // console.log(columnHeights)
-  } else {
-    // 复制一份 listHeight 的副本以防止修改原数组
-    const updatedListHeight = [...listHeight]
-
-    // 在第 numItems-1 的位置插入特定的值
-    updatedListHeight.splice(numItems - 1, 0, hotHeight)
-    // 初始化每列的高度为0
-    const columnHeights = new Array(numItems).fill(0)
-
-    let rowIndex = 0 // 当前行的索引
-    let currentRowItems = 0 // 当前行内的子项数量
-
-    // 生成瀑布流列表的高度
-    for (let i = 0; i < updatedListHeight.length; i++) {
-      let translateY = 0
-
-      if (rowIndex === 0) {
-        // 第一行从16开始
-        translateY = 16
-      } else {
-        // console.log(columnHeights, currentRowItems, i)
-        // 计算 translateY 值，考虑上一行的总高度和间隔
-        translateY = columnHeights[currentRowItems] + spacing
-      }
-
-      // 更新当前列的高度
-      columnHeights[currentRowItems] += updatedListHeight[i] + spacing
-      translateYValues.push(translateY)
-      currentRowItems++
-
-      // 如果当前行内的子项数量等于 numItems，切换到下一行
-      if (currentRowItems === numItems) {
-        currentRowItems = 0
-        rowIndex++
-      }
-    }
+    translateYValues[index] = translateY
+    columnHeights[minHeightColumnIndex] += height + spacing
   }
 
-  // const translateYObjects = []
-  // for (let i = 0; i < translateYValues.length; i += numItems) {
-  //   const rowTranslateYValues = translateYValues.slice(i, i + numItems)
-  //   translateYObjects.push({ row: i / numItems, values: rowTranslateYValues })
-  // }
-
-  // // 打印对象数组
-  // console.log(translateYObjects, translateYValues)
   return translateYValues
 }
 
@@ -216,29 +250,30 @@ watchEffect(() => {
   currentWidth.value = Math.max(currentWidth.value, minWidth)
   // console.log(currentHeight.value, currentWidth.value)
   //如果currentWeight小于等于1491设置项的个数为4，小于等于1020设置项的个数为3，小于等于768设置项的个数为2
-  if (currentWidth.value >= 1680 && currentWidth.value < 1920) {
-    numItems.value = 7
-    widthGap.value = 32
-  } else if (currentWidth.value >= 1500 && currentWidth.value < 1680) {
-    numItems.value = 6
-    widthGap.value = 16
-  } else if (currentWidth.value >= 1440 && currentWidth.value < 1500) {
-    numItems.value = 5
-    widthGap.value = 26
-  } else if (currentWidth.value >= 1020 && currentWidth.value < 1440) {
-    numItems.value = 4
-    widthGap.value = 20
-  } else if (currentWidth.value >= 768 && currentWidth.value < 1020) {
-    numItems.value = 3
-    widthGap.value = 4
-  } else if (currentWidth.value >= 0 && currentWidth.value < 768) {
-    numItems.value = 2
-    widthGap.value = 32
-    marginWidth.value = 0
-  } else {
-    numItems.value = 8
-    widthGap.value = 74
-  }
+  const breakpoints = [
+    { range: [1680, 1920], items: 7, gap: 32 },
+    { range: [1500, 1680], items: 6, gap: 16 },
+    { range: [1440, 1500], items: 5, gap: 26 },
+    { range: [1020, 1440], items: 4, gap: 20 },
+    { range: [768, 1020], items: 3, gap: 4 },
+    { range: [0, 768], items: 2, gap: 32, margin: 0 }
+  ]
+
+  const defaultConfig = { items: 8, gap: 74 }
+
+  const {
+    items,
+    gap,
+    margin
+  }: { items: number; gap: number; margin?: number } =
+    breakpoints.find(({ range }) => {
+      const [min, max] = range
+      return currentWidth.value >= min && currentWidth.value < max
+    }) || defaultConfig
+
+  numItems.value = items
+  widthGap.value = gap
+  marginWidth.value = margin !== undefined ? margin : marginWidth.value
 
   // console.log(numItems.value)
 
@@ -278,7 +313,6 @@ onBeforeUnmount(() => {
   discoverStore().$reset()
 })
 //组件卸载前清除数据
-
 
 const router = useRouter()
 const visible = ref(false)

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect, computed } from 'vue'
+import { ref, watchEffect } from 'vue'
 
 import hot_boom from '@/assets/hot/hot_boom.png'
 import hot_first from '@/assets/hot/hot_first.png'

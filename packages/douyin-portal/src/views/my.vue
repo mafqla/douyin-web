@@ -9,7 +9,6 @@ import { videoStore } from '@/stores/videos'
 import backgroundurlLightURL from '@/assets/personal_light.png'
 import backgroundurlDarkURL from '@/assets/personal_dark.png'
 import { useInfiniteScroll, useScroll } from '@vueuse/core'
-import useTheme from '@/hooks/useTheme'
 import { settingStore } from '@/stores/setting'
 
 const background = ref(`url('${backgroundurlLightURL}')`)
@@ -60,9 +59,13 @@ const fetchVideoData = async (page: number, size: number) => {
 }
 
 //设置浏览器标题
-document.title = store.userInfo.userAuth
-  ? `${store.userInfo.username}的主页 - ${store.userInfo.userAuth} - 抖音`
-  : `${store.userInfo.username}的主页 - 抖音`
+if (store.userInfo.userAuth) {
+  document.title = `${store.userInfo.username}的主页 - ${store.userInfo.userAuth} - 抖音`
+} else if (store.userInfo.userAuth === '') {
+  document.title = `${store.userInfo.username}的主页 - 抖音`
+} else {
+  document.title = '抖音-记录美好生活'
+}
 onBeforeUnmount(() => {
   document.title = '抖音-记录美好生活'
 })
@@ -341,81 +344,4 @@ html.dark {
     }
   }
 }
-
-// @media (max-width: 840px) {
-//   .user-detail {
-//     .user-detail-content {
-//       margin: 0 20px;
-//     }
-//   }
-// }
-
-// :deep(.header) {
-//   border-bottom: 1px solid hsla(0, 0%, 100%, 0.1) !important;
-// }
-
-// :global(.header-search-icon) {
-//   :global(button) {
-//     background-color: transparent !important;
-
-//     :global(.icon-search) {
-//       color: #fff;
-//     }
-//     :global(.btn-title) {
-//       color: #fff !important;
-//     }
-
-//     :global(&:hover) {
-//       background-color: hsla(0, 0%, 100%, 0.3) !important;
-//       :global(.icon-search) {
-//         color: #fff;
-//       }
-//       :global(.btn-title) {
-//         color: #fff;
-//       }
-//     }
-//   }
-// }
-
-// :global(.header-search-input) {
-//   background-color: transparent !important;
-//   border: 2px solid hsla(0, 0%, 100%, 0.3) !important;
-//   caret-color: #fe2c55;
-
-//   :global(&::placeholder) {
-//     color: rgba(255, 255, 255, 1);
-//   }
-
-//   :global(&:active) {
-//     border: 2px solid hsla(0, 0%, 100%, 0.3) !important;
-//   }
-// }
-
-// :global(.header-right-item-overplay) {
-//   background-color: hsla(0, 0%, 100%, 0.17) !important;
-// }
-
-// :global(.header-right-item:hover) {
-//   p {
-//     color: rgba(255, 255, 255, 1) !important;
-//   }
-//   .icon {
-//     opacity: 1;
-//   }
-// }
-// :global(.header-right) {
-//   :global(.header-right-item) {
-//     p {
-//       color: rgba(255, 255, 255, 0.75) !important;
-//     }
-//     :global(.icon) {
-//       opacity: 0.8;
-//       color: #fff;
-
-//       path {
-//         fill: rgba(255, 255, 255, 1) !important;
-//       }
-//     }
-//   }
-// }
 </style>

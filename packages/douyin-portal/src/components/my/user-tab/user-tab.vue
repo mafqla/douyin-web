@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { ref, watchEffect, type Ref, reactive, onMounted } from 'vue'
+import { ref, watchEffect, type Ref, reactive } from 'vue'
 import { UserCollect, UserHistory, UserLike, UserPost } from '.'
 import { ElTabPane, ElTabs, type TabsPaneContext } from 'element-plus'
 import { useRoute, useRouter } from 'vue-router'
 import { userStore } from '@/stores/user'
 import { videoStore } from '@/stores/videos'
-import { useScroll } from '@vueuse/core'
 const route = useRoute()
 const router = useRouter()
 
@@ -62,7 +61,7 @@ watchEffect(() => {
 <template>
   <div class="user-tab">
     <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane label="作品" name="post" :lazy="true">
+      <el-tab-pane label="作品" name="post" :lazy="true" :disabled="!isLogin">
         <template #label v-if="isLogin">
           <span class="tab-title">作品</span>
           <span class="tab-video-num" v-if="isLogin || tabData.isHide">
@@ -78,7 +77,7 @@ watchEffect(() => {
         </template>
       </el-tab-pane>
 
-      <el-tab-pane label="喜欢" name="like" :lazy="true">
+      <el-tab-pane label="喜欢" name="like" :lazy="true" :disabled="!isLogin">
         <template #label v-if="isLogin">
           <span class="tab-title">喜欢</span>
           <span class="tab-video-num" v-if="tabData.isHide">
@@ -94,7 +93,12 @@ watchEffect(() => {
         </template>
       </el-tab-pane>
 
-      <el-tab-pane label="收藏" name="favorite_collection" :lazy="true">
+      <el-tab-pane
+        label="收藏"
+        name="favorite_collection"
+        :lazy="true"
+        :disabled="!isLogin"
+      >
         <template #label v-if="isLogin">
           <span class="tab-title">收藏 </span>
           <span class="tab-video-num" v-if="tabData.isHide">
@@ -109,7 +113,12 @@ watchEffect(() => {
         </template>
       </el-tab-pane>
 
-      <el-tab-pane label="观看历史" name="record" :lazy="true">
+      <el-tab-pane
+        label="观看历史"
+        name="record"
+        :lazy="true"
+        :disabled="!isLogin"
+      >
         <template v-if="isLogin">
           <Loading :show="videoStore().loading">
             <user-history />

@@ -179,7 +179,9 @@ const openConnectionsPopup = (name: string) => {
       </div>
 
       <div class="edit-content-small">
-        <button class="edit-content-btn" @click="edit">编辑资料</button>
+        <button class="edit-content-btn" v-if="isLogin" @click="edit">
+          编辑资料
+        </button>
       </div>
       <div class="edit-btn-collect">
         <div class="edit-content">

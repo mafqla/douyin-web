@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import miniPlayer from '@/components/video-player/mini-player.vue'
-import { useElementSize } from '@vueuse/core'
 import { useCount } from '@/hooks'
 
 const props = defineProps({
