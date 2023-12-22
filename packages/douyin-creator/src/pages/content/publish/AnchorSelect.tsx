@@ -80,7 +80,7 @@ const AnchorSelect: React.FC = () => {
     let result = []
     if (inputValue) {
       const length = Math.ceil(Math.random() * 100)
-      result = Array.from({ length }, (v, i) => {
+      result = Array.from({ length }, (_v, i) => {
         return {
           value: inputValue + i,
           label: `相近业务 ${inputValue}${i}`,

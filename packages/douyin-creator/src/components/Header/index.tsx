@@ -4,10 +4,13 @@ import { Badge, Dropdown } from '@douyinfe/semi-ui'
 import defaultLogo from '@/assets/default~120x256.png'
 const Header = () => {
   //1.头像地址
-  const [avatar, setAuatar] = useState(
-    'https://p6.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813c001_fddf54d2b1544d0aa4f0987fefc73f65.jpeg?from=2956013662'
-  )
+  const [avatar, setAuatar] = useState('')
 
+  useEffect(() => {
+    setAuatar(
+      'https://p6.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813c001_fddf54d2b1544d0aa4f0987fefc73f65.jpeg?from=2956013662'
+    )
+  }, [])
   const [headerBg, setHeaderBg] = useState('rgba(var(--semi-grey-0),0)')
   const listenScrollEvent = () => {
     if (window.scrollY > 100) {

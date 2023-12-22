@@ -1,8 +1,10 @@
 import PageContainer from '@/components/PageContainer'
 import { useRef, useState } from 'react'
-import convention from './html/convention.html'
+import * as _convention from '@/assets/test/convention.html'
 import { Spin } from '@douyinfe/semi-ui'
 import styles from './style/index.module.scss'
+
+const convention = _convention.default
 
 const Convention = () => {
   const [loading, setLoading] = useState(true)

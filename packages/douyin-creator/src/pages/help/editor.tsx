@@ -2,7 +2,10 @@ import PageContainer from '@/components/PageContainer'
 import { Spin } from '@douyinfe/semi-ui'
 import styles from './style/index.module.scss'
 import { useRef, useState } from 'react'
-import editor from './html/editor.html'
+import * as _editor from '@/assets/test/editor.html'
+
+const editor = _editor.default
+
 const Editor = () => {
   const [loading, setLoading] = useState(true)
   const handleLoad = () => {

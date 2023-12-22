@@ -168,7 +168,7 @@ const Following = () => {
     {
       title: '操作',
       dataIndex: 'operate',
-      render: (text, record) => (
+      render: (_text, record) => (
         <a
           style={{
             color: 'rgb(254, 44, 85)',
@@ -220,7 +220,7 @@ const Following = () => {
     let result = []
     if (inputValue) {
       const length = Math.ceil(Math.random() * 100)
-      result = Array.from({ length }, (v, i) => {
+      result = Array.from({ length }, (_v, i) => {
         return {
           value: inputValue + i,
           label: `相近业务 ${inputValue}${i}`,

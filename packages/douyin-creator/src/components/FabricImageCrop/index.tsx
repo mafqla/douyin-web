@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect } from 'react'
 import { fabric } from 'fabric'
 
@@ -20,7 +19,6 @@ const FabricImageCrop: React.FC<FabricImageCropProps> = ({
       height: 432,
       selection: false
     })
-
     // 加载图像
     fabric.Image.fromURL(imagePath, (img) => {
       const targetHeight = canvas.height // Set the target height to the canvas height
@@ -107,25 +105,14 @@ const FabricImageCrop: React.FC<FabricImageCropProps> = ({
       )
     }
 
-    let isResizing = false
-    let originalWidth = 0
-    let originalHeight = 0
     // 应用裁剪效果
     cropRect.clipTo = (ctx) => {
       fabric.util.clipImage(ctx, canvas.getActiveObject(), cropRect)
     }
 
-    canvas.on('mouse:down', (event) => {
-      if (event.target === cropRect) {
-        isResizing = true
-        originalWidth = cropRect.width
-        originalHeight = cropRect.height
-      }
-    })
+    canvas.on('mouse:down', () => {})
 
-    canvas.on('mouse:up', () => {
-      isResizing = false
-    })
+    canvas.on('mouse:up', () => {})
 
     canvas.on('object:moving', () => {
       // 裁剪框移动时，限制移动范围

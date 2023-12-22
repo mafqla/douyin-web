@@ -59,7 +59,7 @@ const Following = () => {
     {
       title: '头像/用户名称',
       dataIndex: 'user',
-      render(text, record) {
+      render(_text, record) {
         return (
           <>
             <Avatar
@@ -92,7 +92,7 @@ const Following = () => {
     {
       title: '操作',
       dataIndex: 'operate',
-      render: (text, record) => (
+      render: (_text, record) => (
         <a
           style={{
             color: 'rgb(22, 24, 35)',

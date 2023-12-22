@@ -6,6 +6,7 @@ import svgr from 'vite-plugin-svgr'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
+    base: './',
     server: {
       open: true,
       port: 3001,
@@ -43,6 +44,17 @@ export default defineConfig(({ mode }) => {
       '**/*.gif',
       '**/*.svg',
       '**/*.html'
-    ]
+    ],
+    build: {
+      outDir: 'dist',
+      assetsDir: 'assets',
+      sourcemap: false,
+      minify: 'esbuild',
+      cssCodeSplit: true
+    },
+    esbuild: {
+      drop: ['console', 'debugger'],
+      format: 'esm'
+    }
   }
 })
