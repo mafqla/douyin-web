@@ -42,8 +42,7 @@ export default defineConfig(({ mode }) => {
       '**/*.jpg',
       '**/*.jpeg',
       '**/*.gif',
-      '**/*.svg',
-      '**/*.html'
+      '**/*.svg'
     ],
     build: {
       outDir: 'dist',
