@@ -1,0 +1,38 @@
+const i18n = {
+  'en-US': {
+    login: 'Login Log',
+    'menu.monitor.login': 'Query Table',
+    'login.form.search': 'Search',
+    'login.form.reset': 'Reset',
+    'login.columns.id': 'User ID',
+    'login.columns.nickname': 'User Nickname',
+    'login.columns.status': 'Login Status',
+    'login.columns.ip': 'IP Address',
+    'login.columns.location': 'Login Location',
+    'login.columns.system': 'Login System',
+    'login.columns.browser': 'Browser',
+    'login.columns.time': 'Login Time',
+    'login.columns.operations': 'Operations',
+    'login.columns.operations.remove': 'Remove Log',
+    'login.nickname.placeholder': 'Enter Nickname',
+  },
+  'zh-CN': {
+    login: '登录日志',
+    'menu.monitor.login': '查询表格',
+    'login.form.search': '查询',
+    'login.form.reset': '重置',
+    'login.columns.status': '登录状态',
+    'login.columns.id': '用户ID',
+    'login.columns.nickname': '用户昵称',
+    'login.columns.ip': 'IP地址',
+    'login.columns.location': '登录地点',
+    'login.columns.system': '登录系统',
+    'login.columns.browser': '浏览器',
+    'login.columns.time': '登录时间',
+    'login.columns.operations': '操作',
+    'login.columns.operations.remove': '删除',
+    'login.nickname.placeholder': '请输入昵称',
+  },
+}
+
+export default i18n

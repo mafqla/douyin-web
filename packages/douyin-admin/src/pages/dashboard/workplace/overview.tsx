@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react'
 import {
   Grid,
   Card,
@@ -6,31 +6,31 @@ import {
   Divider,
   Skeleton,
   Link,
-} from '@arco-design/web-react';
-import { useSelector } from 'react-redux';
-import { IconCaretUp } from '@arco-design/web-react/icon';
-import OverviewAreaLine from '@/components/Chart/overview-area-line';
-import axios from 'axios';
-import locale from './locale';
-import useLocale from '@/utils/useLocale';
-import styles from './style/overview.module.less';
-import IconCalendar from './assets/calendar.svg';
-import IconComments from './assets/comments.svg';
-import IconContent from './assets/content.svg';
-import IconIncrease from './assets/increase.svg';
+} from '@arco-design/web-react'
+import { useSelector } from 'react-redux'
+import { IconCaretUp } from '@arco-design/web-react/icon'
+import OverviewAreaLine from '@/components/Chart/overview-area-line'
+import axios from 'axios'
+import locale from './locale'
+import useLocale from '@/utils/useLocale'
+import styles from './style/overview.module.less'
+import IconCalendar from './assets/calendar.svg'
+import IconComments from './assets/comments.svg'
+import IconContent from './assets/content.svg'
+import IconIncrease from './assets/increase.svg'
 
-const { Row, Col } = Grid;
+const { Row, Col } = Grid
 
 type StatisticItemType = {
-  icon?: ReactNode;
-  title?: ReactNode;
-  count?: ReactNode;
-  loading?: boolean;
-  unit?: ReactNode;
-};
+  icon?: ReactNode
+  title?: ReactNode
+  count?: ReactNode
+  loading?: boolean
+  unit?: ReactNode
+}
 
 function StatisticItem(props: StatisticItemType) {
-  const { icon, title, count, loading, unit } = props;
+  const { icon, title, count, loading, unit } = props
   return (
     <div className={styles.item}>
       <div className={styles.icon}>{icon}</div>
@@ -44,46 +44,46 @@ function StatisticItem(props: StatisticItemType) {
         </Skeleton>
       </div>
     </div>
-  );
+  )
 }
 
 type DataType = {
-  allContents?: string;
-  liveContents?: string;
-  increaseComments?: string;
-  growthRate?: string;
-  chartData?: { count?: number; date?: string }[];
-  down?: boolean;
-};
+  allContents?: string
+  liveContents?: string
+  increaseComments?: string
+  growthRate?: string
+  chartData?: { count?: number; date?: string }[]
+  down?: boolean
+}
 
 function Overview() {
-  const [data, setData] = useState<DataType>({});
-  const [loading, setLoading] = useState(true);
-  const t = useLocale(locale);
+  const [data, setData] = useState<DataType>({})
+  const [loading, setLoading] = useState(true)
+  const t = useLocale(locale)
 
-  const userInfo = useSelector((state: any) => state.userInfo || {});
+  const userInfo = useSelector((state: any) => state.userInfo || {})
 
   const fetchData = () => {
-    setLoading(true);
+    setLoading(true)
     axios
       .get('/api/workplace/overview-content')
       .then((res) => {
-        setData(res.data);
+        setData(res.data)
       })
       .finally(() => {
-        setLoading(false);
-      });
-  };
+        setLoading(false)
+      })
+  }
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   return (
     <Card>
       <Typography.Title heading={5}>
         {t['workplace.welcomeBack']}
-        {userInfo.name}
+        {userInfo.nickname}
       </Typography.Title>
       <Divider />
       <Row>
@@ -150,7 +150,7 @@ function Overview() {
         <OverviewAreaLine data={data.chartData} loading={loading} />
       </div>
     </Card>
-  );
+  )
 }
 
-export default Overview;
+export default Overview

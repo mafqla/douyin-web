@@ -1,25 +1,22 @@
-import React, { useEffect } from 'react';
-import Footer from '@/components/Footer';
-import Logo from '@/assets/logo.svg';
-import LoginForm from './form';
-import LoginBanner from './banner';
-import styles from './style/index.module.less';
+import React, { useEffect } from 'react'
+import Footer from '@/components/Footer'
+import LoginForm from './form'
+import styles from './style/index.module.less'
 
 function Login() {
   useEffect(() => {
-    document.body.setAttribute('arco-theme', 'light');
-  }, []);
+    document.body.setAttribute('arco-theme', 'light')
+  }, [])
 
   return (
     <div className={styles.container}>
-      <div className={styles.logo}>
-        <Logo />
-        <div className={styles['logo-text']}>douyin</div>
-      </div>
       <div className={styles.banner}>
-        <div className={styles['banner-inner']}>
-          <LoginBanner />
-        </div>
+        <video
+          src="https://lf1-cdn-tos.bytegoofy.com/goofy/ies/douyin_home_web/medias/banner_video2.27b8eb28.mp4"
+          muted
+          autoPlay
+          loop
+        />
       </div>
       <div className={styles.content}>
         <div className={styles['content-inner']}>
@@ -30,8 +27,8 @@ function Login() {
         </div>
       </div>
     </div>
-  );
+  )
 }
-Login.displayName = 'LoginPage';
+Login.displayName = 'LoginPage'
 
-export default Login;
+export default Login

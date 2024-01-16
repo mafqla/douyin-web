@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Arco Design Pro",
   "scripts": {
-    "start": "vite",
-    "dev": "vite",
+    "start": "vite --mode dev",
+    "dev": "vite --mode dev",
     "preview": "vite preview",
-    "build": "vite build",
+    "build": "vite build --mode prod",
     "eslint": "eslint src/ --ext .ts,.tsx,.js,.jsx --fix --cache",
     "stylelint": "stylelint 'src/**/*.less' 'src/**/*.css' --fix --cache",
     "pre-commit": "pretty-quick --staged && npm run eslint && npm run stylelint"

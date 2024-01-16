@@ -1,0 +1,36 @@
+const i18n = {
+  'en-US': {
+    online: 'Online Users',
+    'menu.monitor.online': 'Query Table',
+    'online.form.search': 'Search',
+    'online.form.reset': 'Reset',
+    'online.columns.id': 'User ID',
+    'online.columns.nickname': 'User Nickname',
+    'online.columns.ip': 'IP Address',
+    'online.columns.location': 'Login Location',
+    'online.columns.system': 'Login System',
+    'online.columns.browser': 'Browser',
+    'online.columns.time': 'Login Time',
+    'online.columns.operations': 'Operations',
+    'online.columns.operations.remove': 'Force Logout',
+    'online.nickname.placeholder': 'Enter Nickname',
+  },
+  'zh-CN': {
+    online: '在线用户',
+    'menu.monitor.online': '查询表格',
+    'online.form.search': '查询',
+    'online.form.reset': '重置',
+    'online.columns.id': '用户ID',
+    'online.columns.nickname': '用户昵称',
+    'online.columns.ip': 'IP地址',
+    'online.columns.location': '登录地点',
+    'online.columns.system': '登录系统',
+    'online.columns.browser': '浏览器',
+    'online.columns.time': '登录时间',
+    'online.columns.operations': '操作',
+    'online.columns.operations.remove': '强制下线',
+    'online.nickname.placeholder': '请输入昵称',
+  },
+}
+
+export default i18n

@@ -28,6 +28,12 @@ const i18n = {
     'menu.user.role.admin': 'Admin',
     'menu.user.role.user': 'General User',
     'menu.dashboard.workplace': 'Workplace',
+    'menu.monitor': 'System Monitor',
+    'menu.monitor.login': 'Login Log',
+    'menu.monitor.online': 'Online User',
+    'menu.monitor.operation': 'Operation Log',
+    'menu.monitor.system': 'System Log',
+
     'navbar.logout': 'Logout',
     'settings.title': 'Settings',
     'settings.themeColor': 'Theme Color',
@@ -86,6 +92,12 @@ const i18n = {
     'menu.user.role.admin': '管理员',
     'menu.user.role.user': '普通用户',
     'menu.dashboard.workplace': '工作台',
+    'menu.monitor': '系统监控',
+    'menu.monitor.login': '登录日志',
+    'menu.monitor.online': '在线用户',
+    'menu.monitor.operation': '操作日志',
+    'menu.monitor.system': '系统日志',
+
     'navbar.logout': '退出登录',
     'settings.title': '页面配置',
     'settings.themeColor': '主题色',
@@ -116,6 +128,6 @@ const i18n = {
     'message.lang.tips': '语言切换至 ',
     'navbar.search.placeholder': '输入内容查询',
   },
-};
+}
 
-export default i18n;
+export default i18n

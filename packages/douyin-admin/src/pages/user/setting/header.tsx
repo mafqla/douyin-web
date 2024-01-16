@@ -1,36 +1,36 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import {
-  Button,
   Avatar,
   Upload,
   Descriptions,
   Tag,
   Skeleton,
   Link,
-} from '@arco-design/web-react';
-import { IconCamera, IconPlus } from '@arco-design/web-react/icon';
-import useLocale from '@/utils/useLocale';
-import locale from './locale';
-import styles from './style/header.module.less';
+} from '@arco-design/web-react'
+import { IconCamera, IconPlus } from '@arco-design/web-react/icon'
+import useLocale from '@/utils/useLocale'
+import locale from './locale'
+import styles from './style/header.module.less'
+import { UserInfo } from '@/api/types'
 
 export default function Info({
   userInfo = {},
   loading,
 }: {
-  userInfo: any;
-  loading: boolean;
+  userInfo: UserInfo
+  loading: boolean
 }) {
-  const t = useLocale(locale);
+  const t = useLocale(locale)
 
-  const [avatar, setAvatar] = useState('');
+  const [avatar, setAvatar] = useState('')
 
   function onAvatarChange(_, file) {
-    setAvatar(file.originFile ? URL.createObjectURL(file.originFile) : '');
+    setAvatar(file.originFile ? URL.createObjectURL(file.originFile) : '')
   }
 
   useEffect(() => {
-    setAvatar(userInfo.avatar);
-  }, [userInfo]);
+    setAvatar(userInfo.avatar_thumb)
+  }, [userInfo])
 
   const loadingImg = (
     <Skeleton
@@ -38,9 +38,9 @@ export default function Info({
       style={{ width: '100px', height: '100px' }}
       animation
     />
-  );
+  )
 
-  const loadingNode = <Skeleton text={{ rows: 1 }} animation />;
+  const loadingNode = <Skeleton text={{ rows: 1 }} animation />
   return (
     <div className={styles['info-wrapper']}>
       <Upload showUploadList={false} onChange={onAvatarChange}>
@@ -64,7 +64,7 @@ export default function Info({
         data={[
           {
             label: t['userSetting.label.name'],
-            value: loading ? loadingNode : userInfo.name,
+            value: loading ? loadingNode : userInfo.nickname,
           },
           {
             label: t['userSetting.label.verified'],
@@ -72,7 +72,7 @@ export default function Info({
               loadingNode
             ) : (
               <span>
-                {userInfo.verified ? (
+                {userInfo.verification_type ? (
                   <Tag color="green" className={styles['verified-tag']}>
                     {t['userSetting.value.verified']}
                   </Tag>
@@ -89,7 +89,7 @@ export default function Info({
           },
           {
             label: t['userSetting.label.accountId'],
-            value: loading ? loadingNode : userInfo.accountId,
+            value: loading ? loadingNode : userInfo.uid,
           },
           {
             label: t['userSetting.label.phoneNumber'],
@@ -97,7 +97,7 @@ export default function Info({
               loadingNode
             ) : (
               <span>
-                {userInfo.phoneNumber}
+                {userInfo.cellPhone}
                 <Link role="button" className={styles['edit-btn']}>
                   {t['userSetting.btn.edit']}
                 </Link>
@@ -106,10 +106,10 @@ export default function Info({
           },
           {
             label: t['userSetting.label.registrationTime'],
-            value: loading ? loadingNode : userInfo.registrationTime,
+            value: loading ? loadingNode : userInfo.createTime,
           },
         ]}
       ></Descriptions>
     </div>
-  );
+  )
 }
