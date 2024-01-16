@@ -2,9 +2,6 @@ import PageContainer from '@/components/PageContainer'
 import { Spin } from '@douyinfe/semi-ui'
 import styles from './style/index.module.scss'
 import { useRef, useState } from 'react'
-import * as _editor from '@/assets/test/editor.html'
-
-const editor = _editor.default
 
 const Editor = () => {
   const [loading, setLoading] = useState(true)
@@ -20,7 +17,7 @@ const Editor = () => {
       <Spin size="large" spinning={loading}>
         <div className={styles['help-article']}>
           <iframe
-            src={editor}
+            src="https://lf3-cdn-tos.draftstatic.com/obj/ies-hotsoon-draft/douyin_creator/5c822925-61af-4261-a1c2-aab5a6a66efb.html"
             scrolling="no"
             frameBorder="0"
             width="100%"

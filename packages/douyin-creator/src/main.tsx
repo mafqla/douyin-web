@@ -14,7 +14,7 @@ import changeTheme from './utils/changeTheme'
 import useStorage from './utils/useStorage'
 // import  useStore  from './store'
 
-import './mock'
+
 
 export const Index = () => {
   const [lang, setLang] = useStorage('semi-lang', 'zh-CN')
