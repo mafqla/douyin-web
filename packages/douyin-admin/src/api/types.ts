@@ -174,3 +174,118 @@ export type UserInfo = {
    */
   createTime?: string
 }
+
+/**
+ * @description 分页参数
+ */
+export type PageParams = {
+  /**
+   * @description 页码
+   */
+  pageNo?: number
+  /**
+   * @description 页数
+   */
+  pageSize: number
+
+  /**
+   * @description 排序
+   */
+  isAsc?: string
+
+  /**
+   * @description 排序字段
+   */
+  sortBy?: string
+}
+
+/**
+ * @description 角色分页返回
+ */
+export type RolePageResponse = {
+  /**
+   * @description 角色列表
+   */
+  list: Role[]
+
+  /**
+   * @description 总页码数
+   */
+  pages: number
+  /**
+   * @description 总数
+   */
+  total: number
+}
+
+/**
+ * @description 角色
+ */
+export type Role = {
+  /**
+   * @description 角色id
+   */
+  id: number
+  /**
+   * @description 角色名称
+   */
+  name: string
+  /**
+   * @description 角色类型
+   */
+  type: string
+  /**
+   * @description 角色代码
+   */
+  code: number
+  /**
+   * @description 创建人
+   */
+  creater: string
+  /**
+   * @description 更新人
+   */
+  updater: string
+  /**
+   * @description 创建时间
+   */
+  createTime: string
+  /**
+   * @description 更新时间
+   */
+  updateTime: string
+}
+
+/**
+ * @description 新增角色
+ */
+export type AddRoleParams = {
+  /**
+   * @description 角色id
+   */
+  id: number
+  /**
+   * @description 角色名称
+   */
+  name: string
+  /**
+   * @description 角色类型
+   */
+  type: string
+  /**
+   * @description 角色代码
+   */
+  code: number
+}
+
+/**
+ * @description 编辑角色
+ */
+
+export type EditRoleParams = {
+  /**
+   * @description id
+   */
+  id: number
+  editRole: AddRoleParams
+}

@@ -1,12 +1,17 @@
-import React from 'react';
-import { Result, Button } from '@arco-design/web-react';
-import locale from './locale';
-import useLocale from '@/utils/useLocale';
-import styles from './style/index.module.less';
+import React from 'react'
+import { Result, Button } from '@arco-design/web-react'
+import locale from './locale'
+import useLocale from '@/utils/useLocale'
+import styles from './style/index.module.less'
+import { useHistory } from 'react-router-dom'
 
 function Exception500() {
-  const t = useLocale(locale);
+  const t = useLocale(locale)
 
+  const history = useHistory()
+  const goBack = () => {
+    history.goBack()
+  }
   return (
     <div className={styles.wrapper}>
       <Result
@@ -14,13 +19,13 @@ function Exception500() {
         status="500"
         subTitle={t['exception.result.500.description']}
         extra={
-          <Button key="back" type="primary">
+          <Button key="back" type="primary" onClick={goBack}>
             {t['exception.result.500.back']}
           </Button>
         }
       />
     </div>
-  );
+  )
 }
 
-export default Exception500;
+export default Exception500

@@ -8,7 +8,7 @@ import {
   Menu,
   Divider,
   Message,
-  Button,
+  Button
 } from '@arco-design/web-react'
 import {
   IconLanguage,
@@ -22,13 +22,13 @@ import {
   IconDashboard,
   IconInteraction,
   IconTag,
-  IconLoading,
+  IconLoading
 } from '@arco-design/web-react/icon'
 import { useSelector, useDispatch } from 'react-redux'
 import { GlobalState } from '@/store'
 import { GlobalContext } from '@/context'
 import useLocale from '@/utils/useLocale'
-// import Logo from '@/assets/logo.svg'
+import Logo from '@/assets/logo.svg'
 import MessageBox from '@/components/MessageBox'
 import IconButton from './IconButton'
 import Settings from '../Settings'
@@ -70,9 +70,9 @@ function Navbar({ show }: { show: boolean }) {
       payload: {
         userInfo: {
           ...userInfo,
-          permissions: generatePermission(role),
-        },
-      },
+          permissions: generatePermission(role)
+        }
+      }
     })
   }, [])
 
@@ -148,8 +148,8 @@ function Navbar({ show }: { show: boolean }) {
     <div className={styles.navbar}>
       <div className={styles.left}>
         <div className={styles.logo}>
-          {/* <Logo /> */}
-          <div className={styles['logo-name']}>抖音管理后台</div>
+          <Logo />
+          <div className={styles['logo-name']}>抖音内容管理平台</div>
         </div>
       </div>
       <ul className={styles.right}>
@@ -164,13 +164,13 @@ function Navbar({ show }: { show: boolean }) {
             triggerElement={<IconButton icon={<IconLanguage />} />}
             options={[
               { label: '中文', value: 'zh-CN' },
-              { label: 'English', value: 'en-US' },
+              { label: 'English', value: 'en-US' }
             ]}
             value={lang}
             triggerProps={{
               autoAlignPopupWidth: false,
               autoAlignPopupMinWidth: true,
-              position: 'br',
+              position: 'br'
             }}
             trigger="hover"
             onChange={(value) => {

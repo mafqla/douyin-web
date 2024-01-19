@@ -62,7 +62,7 @@ const i18n = {
     'message.empty': 'Empty',
     'message.empty.tips': 'No Content',
     'message.lang.tips': 'Language switch to ',
-    'navbar.search.placeholder': 'Please search',
+    'navbar.search.placeholder': 'Please search'
   },
   'zh-CN': {
     'menu.dashboard': '仪表盘',
@@ -92,6 +92,18 @@ const i18n = {
     'menu.user.role.admin': '管理员',
     'menu.user.role.user': '普通用户',
     'menu.dashboard.workplace': '工作台',
+    'menu.system': '系统管理',
+    'menu.user.role': '角色管理',
+    'menu.user.permission': '权限管理',
+    'menu.user.permission.list': '权限列表',
+    'menu.user.permission.create': '创建权限',
+    'menu.user.permission.edit': '编辑权限',
+    'menu.user.manage': '用户管理',
+    'menu.user.manage.list': '用户列表',
+    'menu.user.manage.create': '创建用户',
+    'menu.user.manage.edit': '编辑用户',
+    'menu.user.manage.role': '用户角色',
+    'menu.user.menu': '菜单管理',
     'menu.monitor': '系统监控',
     'menu.monitor.login': '登录日志',
     'menu.monitor.online': '在线用户',
@@ -126,8 +138,8 @@ const i18n = {
     'message.empty': '清空',
     'message.empty.tips': '暂无内容',
     'message.lang.tips': '语言切换至 ',
-    'navbar.search.placeholder': '输入内容查询',
-  },
+    'navbar.search.placeholder': '输入内容查询'
+  }
 }
 
 export default i18n

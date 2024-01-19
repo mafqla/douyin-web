@@ -18,16 +18,38 @@ export const routes: IRoute[] = [
     children: [
       {
         name: 'menu.dashboard.workplace',
-        key: 'dashboard/workplace',
+        key: 'dashboard/workplace'
       },
       {
         name: 'menu.dashboard.monitor',
         key: 'dashboard/monitor',
         requiredPermissions: [
-          { resource: 'menu.dashboard.monitor', actions: ['write'] },
-        ],
+          { resource: 'menu.dashboard.monitor', actions: ['write'] }
+        ]
+      }
+    ]
+  },
+  {
+    name: 'menu.system',
+    key: 'system',
+    children: [
+      {
+        name: 'menu.user.manage',
+        key: 'system/manage'
       },
-    ],
+      {
+        name: 'menu.user.role',
+        key: 'system/role'
+      },
+      {
+        name: 'menu.user.permission',
+        key: 'system/permission'
+      },
+      {
+        name: 'menu.user.menu',
+        key: 'system/menu'
+      }
+    ]
   },
   {
     name: 'menu.visualization',
@@ -37,8 +59,8 @@ export const routes: IRoute[] = [
         name: 'menu.visualization.dataAnalysis',
         key: 'visualization/data-analysis',
         requiredPermissions: [
-          { resource: 'menu.visualization.dataAnalysis', actions: ['read'] },
-        ],
+          { resource: 'menu.visualization.dataAnalysis', actions: ['read'] }
+        ]
       },
       {
         name: 'menu.visualization.multiDimensionDataAnalysis',
@@ -46,16 +68,16 @@ export const routes: IRoute[] = [
         requiredPermissions: [
           {
             resource: 'menu.visualization.dataAnalysis',
-            actions: ['read', 'write'],
+            actions: ['read', 'write']
           },
           {
             resource: 'menu.visualization.multiDimensionDataAnalysis',
-            actions: ['write'],
-          },
+            actions: ['write']
+          }
         ],
-        oneOfPerm: true,
-      },
-    ],
+        oneOfPerm: true
+      }
+    ]
   },
   {
     name: 'menu.list',
@@ -63,13 +85,13 @@ export const routes: IRoute[] = [
     children: [
       {
         name: 'menu.list.searchTable',
-        key: 'list/search-table',
+        key: 'list/search-table'
       },
       {
         name: 'menu.list.cardList',
-        key: 'list/card',
-      },
-    ],
+        key: 'list/card'
+      }
+    ]
   },
   {
     name: 'menu.form',
@@ -79,17 +101,15 @@ export const routes: IRoute[] = [
         name: 'menu.form.group',
         key: 'form/group',
         requiredPermissions: [
-          { resource: 'menu.form.group', actions: ['read', 'write'] },
-        ],
+          { resource: 'menu.form.group', actions: ['read', 'write'] }
+        ]
       },
       {
         name: 'menu.form.step',
         key: 'form/step',
-        requiredPermissions: [
-          { resource: 'menu.form.step', actions: ['read'] },
-        ],
-      },
-    ],
+        requiredPermissions: [{ resource: 'menu.form.step', actions: ['read'] }]
+      }
+    ]
   },
   {
     name: 'menu.profile',
@@ -97,9 +117,9 @@ export const routes: IRoute[] = [
     children: [
       {
         name: 'menu.profile.basic',
-        key: 'profile/basic',
-      },
-    ],
+        key: 'profile/basic'
+      }
+    ]
   },
 
   {
@@ -109,32 +129,33 @@ export const routes: IRoute[] = [
       {
         name: 'menu.result.success',
         key: 'result/success',
-        breadcrumb: false,
+        breadcrumb: false
       },
       {
         name: 'menu.result.error',
         key: 'result/error',
-        breadcrumb: false,
-      },
-    ],
+        breadcrumb: false
+      }
+    ]
   },
   {
     name: 'menu.exception',
     key: 'exception',
+    ignore: true,
     children: [
       {
         name: 'menu.exception.403',
-        key: 'exception/403',
+        key: 'exception/403'
       },
       {
         name: 'menu.exception.404',
-        key: 'exception/404',
+        key: 'exception/404'
       },
       {
         name: 'menu.exception.500',
-        key: 'exception/500',
-      },
-    ],
+        key: 'exception/500'
+      }
+    ]
   },
   {
     name: 'menu.user',
@@ -142,13 +163,13 @@ export const routes: IRoute[] = [
     children: [
       {
         name: 'menu.user.info',
-        key: 'user/info',
+        key: 'user/info'
       },
       {
         name: 'menu.user.setting',
-        key: 'user/setting',
-      },
-    ],
+        key: 'user/setting'
+      }
+    ]
   },
   {
     name: 'menu.monitor',
@@ -156,22 +177,22 @@ export const routes: IRoute[] = [
     children: [
       {
         name: 'menu.monitor.online',
-        key: 'monitor/online',
+        key: 'monitor/online'
       },
       {
         name: 'menu.monitor.operation',
-        key: 'monitor/operation',
+        key: 'monitor/operation'
       },
       {
         name: 'menu.monitor.login',
-        key: 'monitor/login',
+        key: 'monitor/login'
       },
       {
         name: 'menu.monitor.system',
-        key: 'monitor/system',
-      },
-    ],
-  },
+        key: 'monitor/system'
+      }
+    ]
+  }
 ]
 
 export const getName = (path: string, routes) => {

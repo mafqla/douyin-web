@@ -9,7 +9,7 @@ export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
     resolve: {
-      alias: [{ find: '@', replacement: '/src' }],
+      alias: [{ find: '@', replacement: '/src' }]
     },
     server: {
       host: '0.0.0.0',
@@ -18,29 +18,29 @@ export default defineConfig(({ command, mode }) => {
         '/api': {
           target: env.VITE_BASE_URL,
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
-        },
-      },
+          rewrite: (path) => path.replace(/^\/api/, '')
+        }
+      }
     },
     plugins: [
       react(),
       svgrPlugin({
-        svgrOptions: {},
+        svgrOptions: {}
       }),
       vitePluginForArco({
         theme: '@arco-themes/react-arco-pro',
         modifyVars: {
-          'arcoblue-6': setting.themeColor,
-        },
-      }),
+          'arcoblue-6': setting.themeColor
+        }
+      })
     ],
 
     css: {
       preprocessorOptions: {
         less: {
-          javascriptEnabled: true,
-        },
-      },
-    },
+          javascriptEnabled: true
+        }
+      }
+    }
   }
 })

@@ -1,11 +1,11 @@
-import { Message } from '@arco-design/web-react'
+import { Message, Modal } from '@arco-design/web-react'
 import axios from 'axios'
 import { tryRefreshToken } from './refreshToken'
 
 const request = axios.create({
   baseURL: import.meta.env.VITE_BASE_API,
   timeout: import.meta.env.VITE_TIME_OUT,
-  withCredentials: false,
+  withCredentials: false
 })
 
 // 请求拦截器
@@ -13,7 +13,7 @@ request.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token')
     config.headers = {
-      authorization: token,
+      authorization: token
     }
 
     //等于post请求，且请求参数为对象
@@ -35,7 +35,12 @@ async function refreshToken(err) {
     return request(err.config)
   }
 
-  Message.error('登录超时，请重新登录')
+  Modal.confirm({
+    title: '登录超时，请重新登录',
+    onOk: () => {
+      window.location.pathname = '/login'
+    }
+  })
   //清空localstorage
   localStorage.clear()
   // window.location.pathname = '/login'
@@ -45,6 +50,9 @@ async function refreshToken(err) {
 request.interceptors.response.use(
   (response) => {
     if (response.status === 200) {
+      if (response.data.code !== 200) {
+        Message.error(response.data.msg)
+      }
       return response.data
     }
   },
