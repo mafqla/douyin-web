@@ -137,7 +137,6 @@ const handlePost = () => {
               center
               :append-to-body="true"
               :destroy-on-close="true"
-              :modal="false"
               class="login-pannel"
             >
               <div class="login-pannel__header-title-desc">
@@ -396,8 +395,7 @@ const handlePost = () => {
 
 <style lang="scss">
 .login-pannel {
-  background: url(@assets/login-resetpwd-bg.png) 0% 0% / 100% no-repeat
-    rgb(255, 255, 255);
+  background: url(../assets/login-resetpwd-bg.png) 0% 0% / 100% no-repeat rgb(255, 255, 255);
   border-radius: 8px;
   box-shadow: 0 0 24px rgba(0, 0, 0, 0.1);
   // min-height: 568px;

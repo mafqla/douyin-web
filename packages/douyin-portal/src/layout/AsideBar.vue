@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import useTheme from '@/hooks/useTheme'
 import { settingStore } from '@/stores/setting'
-import { computed, ref, toRef } from 'vue'
+import { computed, ref, toRef, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -67,11 +67,18 @@ const activeMenu = computed(() => {
 })
 
 const theme = toRef(settingStore(), 'theme')
+const isSearchRoute = ref(false)
+watchEffect(() => {
+  isSearchRoute.value = router.currentRoute.value.path.includes('search')
+})
 </script>
 
 <template>
   <div class="aside">
-    <div class="aside-bar">
+    <div
+      class="aside-bar"
+      :style="isSearchRoute ? { background: 'unset' } : {}"
+    >
       <div class="aside-top">
         <div class="aside-logo">
           <a href="/" class="aside-logo-a"></a>

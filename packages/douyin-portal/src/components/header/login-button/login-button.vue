@@ -97,7 +97,7 @@ const { toggleTheme } = useTheme()
   height: 36px;
   line-height: 36px;
   margin-left: 16px;
-  border-radius: 4px;
+  border-radius: 12px;
   color: rgb(255, 255, 255);
   font-size: 15px;
   font-weight: 400;

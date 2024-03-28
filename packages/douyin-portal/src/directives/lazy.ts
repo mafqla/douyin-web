@@ -1,22 +1,22 @@
-import {useIntersectionObserver} from '@vueuse/core'
+import { useIntersectionObserver } from '@vueuse/core'
 
 /**
  * @description: 懒加载指令
  */
 export const lazy = {
-    mounted(el: any, binding: any) {
-        const {stop} = useIntersectionObserver(
-            el,
-            ([{isIntersecting}], observerElement) => {
-                // console.log(isIntersecting)
-                if (isIntersecting) {
-                    el.src = binding.value
-                    // 停止监听
-                    stop()
-                }
-            }
-        )
+  mounted(el: null | HTMLImageElement, binding: { value: string }) {
+    if (el) {
+      const { stop } = useIntersectionObserver(
+        el,
+        ([{ isIntersecting }], observerElement) => {
+          if (isIntersecting) {
+            el.src = binding.value
+            stop()
+          }
+        }
+      )
     }
+  }
 }
 
 // 第二种写法

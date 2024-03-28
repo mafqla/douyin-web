@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, reactive, ref, watchEffect } from 'vue'
+import {
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  ref,
+  watchEffect
+} from 'vue'
 import HotItem from '@/components/discover/hot-item/index.vue'
 import DiscoverItem from '@/components/discover/discover-item/discover-item.vue'
 import { getVideoList } from '@/service/videos/videos'
 import type { IFeedParams, IVideoList } from '@/service/videos/videosType'
 import { useInfiniteScroll } from '@vueuse/core'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import modelPlayer from '@/components/video-player/modal-player.vue'
 import { discoverStore } from '@/stores/discover'
 
@@ -315,7 +322,8 @@ onBeforeUnmount(() => {
 //组件卸载前清除数据
 
 const router = useRouter()
-const visible = ref(false)
+const route = useRoute()
+
 // 点击获取数据
 const modalData = reactive({
   id: 0,
@@ -358,7 +366,7 @@ const handleModal = (item: IVideoList) => {
       modal_id: item.id
     }
   })
-  visible.value = true
+  // visible.value = true
 }
 
 //关闭modal
@@ -372,6 +380,20 @@ const handleClose = () => {
     }
   })
 }
+
+const visible = ref<boolean>(false)
+const computedVisible = computed({
+  get() {
+    // console.log(route.query)
+    return route.query.modal_id !== undefined
+  },
+  set(val) {
+    if (!val) {
+      router.go(-1)
+    }
+  }
+})
+visible.value = computedVisible.value
 </script>
 <template>
   <div class="discover" ref="scrollRef">

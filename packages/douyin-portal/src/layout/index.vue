@@ -25,14 +25,16 @@ window.addEventListener(
 //获取路由地址
 const router = useRouter()
 const isUserRoute = ref(false)
+const isSearchRoute = ref(false)
 watchEffect(() => {
   isUserRoute.value = router.currentRoute.value.path.includes('user')
+  isSearchRoute.value = router.currentRoute.value.path.includes('search')
 })
 </script>
 
 <template>
   <div class="main" :class="{ user: isUserRoute }">
-    <div class="bg"></div>
+    <div class="bg" :style="isSearchRoute ? { background: 'unset' } : {}"></div>
     <aside-bar />
 
     <div class="right-container min">

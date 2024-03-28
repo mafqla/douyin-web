@@ -23,23 +23,21 @@ const routes: RouteRecordRaw[] = [
         name: 'follow',
         component: () => import('@/views/follow.vue')
       },
+      {
+        path: '/search/:keyword',
+        name: 'search',
+        component: () => import('@/views/search/index.vue')
+      },
 
       {
         path: '/user/:id',
         name: 'user',
         component: () => import('@/views/user.vue')
-        // redirect: '/user/self?showTab=like',
-        // children: [
-        //   {
-        //     path: 'self',
-        //     component: () => import('@/views/my.vue')
-        //   }
-        // ]
       },
       {
         path: '/user/self',
         name: 'self',
-        component: () => import('@/views/my.vue'),
+        component: () => import('@/views/my.vue')
       },
       {
         path: '/friend',
@@ -121,8 +119,6 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to) => {
-
-})
+router.beforeEach((to) => {})
 
 export default router

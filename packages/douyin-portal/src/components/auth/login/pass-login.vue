@@ -75,7 +75,7 @@ const handleLogin = (email: string, password: string) => {
     .el-input {
       background: #f2f2f4;
       border: none;
-      border-radius: 4px;
+      border-radius: 10px;
       color: rgba(22, 24, 35, 0.34);
       height: 52px;
       line-height: 24px;
@@ -148,7 +148,7 @@ const handleLogin = (email: string, password: string) => {
       vertical-align: middle;
 
       border: none;
-      border-radius: 4px;
+      border-radius: 10px;
       color: #fff;
       cursor: pointer;
       font-size: 16px;

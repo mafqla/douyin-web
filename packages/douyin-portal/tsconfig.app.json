@@ -2,10 +2,10 @@
   "extends": "@vue/tsconfig/tsconfig.web.json",
   "include": [
     "env.d.ts",
-    "src/**/*",
-    "src/**/*.vue",
-    "src/**/*.ts",
-    "src/**/*.d.ts"
+    "./src/**/*",
+    "./src/**/*.vue",
+    "./src/**/*.ts",
+    "./src/**/*.d.ts"
   ],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {

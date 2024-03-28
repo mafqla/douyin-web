@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
+import { onMounted, ref, watchEffect } from 'vue'
+import { useRouter } from 'vue-router'
 const isInputClicked = ref(false)
 const isResult = ref(false)
 const searchQuery = ref('')
@@ -61,6 +62,20 @@ const handleClickOutside = (event: Event) => {
     handleBlur()
   }
 }
+
+const router = useRouter()
+/**
+ * @description: 点击搜索按钮，跳转路由进行搜索
+ * @return {*}
+ */
+const handleSearch = () => {
+  console.log('搜索关键词：', searchQuery.value)
+  if (searchQuery.value.trim() !== '') {
+    router.push({
+      path: `/search/${searchQuery.value}`
+    })
+  }
+}
 </script>
 <template>
   <div class="search" @click="handleClick" ref="search">
@@ -98,11 +113,12 @@ const handleClickOutside = (event: Event) => {
         placeholder="搜索你感兴趣的内容"
         v-model="searchQuery"
         @input="handleInput"
+        @keyup.enter="handleSearch"
         :maxlength="100"
         ref="input"
       />
     </form>
-    <button>
+    <button @click="handleSearch">
       <svg-icon class="icon-search" icon="search" />
       <span class="btn-title">搜索</span>
     </button>

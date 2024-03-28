@@ -4,6 +4,7 @@ import { ref } from 'vue'
 
 const email = ref('')
 const code = ref('')
+const errorInfo = ref('')
 
 console.log(email, code)
 const handleLogin = (email: string, code: string) => {
@@ -14,19 +15,24 @@ const handleLogin = (email: string, code: string) => {
 }
 
 const countdown = ref(0)
-const handleSendCode = (email: any) => {
+const handleSendCode = (email: string) => {
   // 调用发送验证码接口
   const store = userStore()
+  if (!email) {
+    errorInfo.value = '手机号不能为空'
+    return
+  }
   store.postCode(email)
   countdown.value = 60
   const intervalId = setInterval(() => {
     if (countdown.value > 0) {
       countdown.value--
     } else {
-      clearInterval(intervalId) // clear the interval when the countdown reaches zero
+      clearInterval(intervalId)
     }
   }, 1000)
 }
+
 </script>
 <template>
   <div class="code-login">
@@ -45,13 +51,15 @@ const handleSendCode = (email: any) => {
       <el-form-item>
         <el-input placeholder="请输入验证码" v-model="code">
           <template #append>
-            <button @click="handleSendCode(email)">
+            <span @click="handleSendCode(email)">
               <template v-if="!countdown">获取验证码</template>
               <template v-else>{{ countdown }} 秒后重新获取</template>
-            </button>
+            </span>
           </template>
         </el-input>
       </el-form-item>
+
+      <div class="login-error">{{ errorInfo }}</div>
 
       <el-form-item>
         <div class="web-login-confirm-info">
@@ -91,7 +99,7 @@ const handleSendCode = (email: any) => {
     .el-input {
       background: #f2f2f4;
       border: none;
-      border-radius: 4px;
+      border-radius: 10px;
       color: rgba(22, 24, 35, 0.34);
       height: 52px;
       line-height: 24px;
@@ -138,7 +146,7 @@ const handleSendCode = (email: any) => {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-top: 40px;
+      // margin-top: 40px;
       font-size: 14px;
       height: 22px;
       line-height: 22px;
@@ -163,7 +171,7 @@ const handleSendCode = (email: any) => {
       vertical-align: middle;
 
       border: none;
-      border-radius: 4px;
+      border-radius: 10px;
       color: #fff;
       cursor: pointer;
       font-size: 16px;
@@ -176,6 +184,19 @@ const handleSendCode = (email: any) => {
       background: #ffc2c6;
       cursor: default;
     }
+  }
+
+  .login-error {
+    color: #fe3824;
+    height: 20px;
+    letter-spacing: 0.6px;
+    border: none;
+    outline: none;
+    margin-top: 4px;
+    margin-bottom: 30px;
+    padding-left: 12px;
+    font-size: 12px;
+    line-height: 20px;
   }
 }
 </style>
