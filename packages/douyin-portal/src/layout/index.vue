@@ -7,6 +7,9 @@ import { userStore } from '@/stores/user'
 // 设置背景颜色
 const backgroundColor = ref(true)
 const isScrolled = ref(false)
+const router = useRouter()
+const isUserRoute = ref(false)
+const isSearchRoute = ref(false)
 // 滚动监听
 window.addEventListener(
   'scroll',
@@ -19,13 +22,16 @@ window.addEventListener(
       backgroundColor.value = true
       isScrolled.value = false
     }
+
+    if (isSearchRoute.value) {
+      backgroundColor.value = false
+      isScrolled.value = false
+    }
   },
   true
 )
 //获取路由地址
-const router = useRouter()
-const isUserRoute = ref(false)
-const isSearchRoute = ref(false)
+
 watchEffect(() => {
   isUserRoute.value = router.currentRoute.value.path.includes('user')
   isSearchRoute.value = router.currentRoute.value.path.includes('search')
@@ -37,10 +43,19 @@ watchEffect(() => {
     <div class="bg" :style="isSearchRoute ? { background: 'unset' } : {}"></div>
     <aside-bar />
 
-    <div class="right-container min">
+    <div
+      class="right-container min"
+      :class="{
+        searchLayout: isSearchRoute
+      }"
+    >
       <div
         class="douyin-header"
-        :class="{ scrolled: isScrolled, user: isUserRoute }"
+        :class="{
+          scrolled: isScrolled,
+          user: isUserRoute,
+          search: isSearchRoute
+        }"
       >
         <div class="douyin-header-content" :class="{ none: backgroundColor }">
           <header-nav :class="{ scrolled: isScrolled }" />
@@ -95,6 +110,11 @@ watchEffect(() => {
   .douyin-header.scrolled {
     background-position-x: calc(var(--navigation-expend-width) * -1);
   }
+  .douyin-header.search {
+    position: fixed;
+    top: 0;
+    width: calc(100% - var(--navigation-expend-width));
+  }
 }
 .right-container {
   // width: calc(100% - $sidebar-width);
@@ -108,6 +128,11 @@ watchEffect(() => {
 
   &.min {
     min-height: 450px;
+  }
+  &.searchLayout {
+    padding-top: var(--header-height);
+    position: relative;
+    width: 100%;
   }
 }
 .douyin-header-content {

@@ -85,47 +85,69 @@ watchEffect(() => {
         </div>
       </div>
 
-      <div class="aside-container">
-        <div class="menu-container" :default-active="activeMenu">
-          <template v-for="item in menuItems" :key="item.index">
-            <div
-              class="menu-item"
-              :index="item.index"
-              @click="handleSelect(item.index)"
-              :class="{ active: activeIndex === item.index }"
-            >
-              <div class="item-container">
-                <div
-                  class="icon dark"
-                  style="background-size: 816px auto"
-                  :style="{
-                    'background-position': calculateBackgroundPosition(
-                      item.index
-                    )
-                  }"
-                  v-show="theme === 'dark'"
-                ></div>
-                <div
-                  class="icon light"
-                  :style="{
-                    'background-position': calculateBackgroundPosition(
-                      item.index
-                    ),
-                    'background-size': '816px auto'
-                  }"
-                  v-show="theme === 'light'"
-                ></div>
+      <div class="aside-content">
+        <div class="douyin-navigation">
+          <div class="menu-container" :default-active="activeMenu">
+            <template v-for="item in menuItems" :key="item.index">
+              <div
+                class="menu-item"
+                :index="item.index"
+                @click="handleSelect(item.index)"
+                :class="{ active: activeIndex === item.index }"
+              >
+                <div class="item-container">
+                  <div
+                    class="icon dark"
+                    :style="{
+                      'background-position': calculateBackgroundPosition(
+                        item.index
+                      ),
+                      'background-size': '864px auto'
+                    }"
+                    v-show="theme === 'dark'"
+                  ></div>
+                  <div
+                    class="icon light"
+                    :style="{
+                      'background-position': calculateBackgroundPosition(
+                        item.index
+                      ),
+                      'background-size': '864px auto'
+                    }"
+                    v-show="theme === 'light'"
+                  ></div>
 
-                <div class="title-container">
-                  <span class="title">{{ item.title }}</span>
+                  <div class="title-container">
+                    <span class="title">{{ item.title }}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="horizontal-line" v-if="item.index === '5'"></div>
-          </template>
-        </div>
+              <div class="horizontal-line" v-if="item.index === '5'"></div>
+            </template>
+          </div>
 
-        <div class="aside-bottom"></div>
+          <div class="aside-bottom">
+            <div class="aside-bottom-item">
+              <div
+                class="aside-bottom-icon setting light"
+                v-if="theme === 'light'"
+              ></div>
+              <div
+                class="aside-bottom-icon setting dark"
+                v-if="theme === 'dark'"
+              ></div>
+              <div class="aside-bottom-title"><span>设置</span></div>
+            </div>
+            <div class="aside-bottom-item">
+              <div
+                class="aside-bottom-icon light"
+                v-if="theme === 'light'"
+              ></div>
+              <div class="aside-bottom-icon dark" v-if="theme === 'dark'"></div>
+              <div class="aside-bottom-title"><span>业务合作</span></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -203,7 +225,13 @@ watchEffect(() => {
       }
     }
 
-    .aside-container {
+    .aside-content {
+      z-index: 20;
+      height: calc(100vh - var(--header-height) - 64px);
+      position: relative;
+      overflow: hidden;
+    }
+    .douyin-navigation {
       background-position: 0 100%;
       background-size: cover;
       bottom: 0;
@@ -275,10 +303,10 @@ watchEffect(() => {
               opacity: 0.5;
             }
             .icon.light {
-              background-image: url(@/assets/nav_light.png);
+              background-image: url(@/assets/nav_light-new.png);
             }
             .icon.dark {
-              background-image: url(@/assets/nav_dark.png);
+              background-image: url(@/assets/nav_dark-new.png);
             }
             .title-container {
               display: flex;
@@ -315,13 +343,81 @@ watchEffect(() => {
       }
 
       .aside-bottom {
-        width: $sidebar-width;
-        height: 540px;
-        display: block;
-        position: absolute;
-        bottom: -400px;
-        z-index: 1;
+        // width: $sidebar-width;
+        // height: 540px;
+        // display: block;
+        // position: absolute;
+        // bottom: -400px;
+        // z-index: 1;
+
+        bottom: 0;
+        position: fixed;
+        z-index: 2;
+        background: var(--color-bg-b0);
+
+        &::before {
+          background-color: var(--color-line-l3);
+          content: ' ';
+          height: 1px;
+          left: 8px;
+          position: absolute;
+          width: calc(100% - 16px);
+        }
       }
+    }
+  }
+}
+
+.aside-bottom-item {
+  color: var(--color-text-t3);
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 70px;
+  margin: 12px 0px;
+  padding: 8px 0px 8px 8px;
+
+  &:hover {
+    background: var(--color-fill-hover);
+
+    .aside-bottom-icon {
+      opacity: 1;
+    }
+  }
+
+  .aside-bottom-icon {
+    background-size: 864px;
+    height: 24px;
+    opacity: 0.5;
+    width: 24px;
+    background-position: -1632px center;
+
+    &.light {
+      background-image: url(@/assets/nav_light-new.png);
+
+      &.setting {
+        background-position: -1680px center;
+      }
+    }
+    &.dark {
+      background-image: url(@/assets/nav_dark-new.png);
+
+      &.setting {
+        background-position: -1680px center;
+      }
+    }
+  }
+  .aside-bottom-title {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+
+    span {
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 20px;
     }
   }
 }
@@ -330,11 +426,11 @@ watchEffect(() => {
     flex-basis: $sidebar-width;
     .aside-bar {
       width: $sidebar-width;
-      // .aside-container {
+      // .douyin-navigation {
       //   width: $sidebar-width;
       // }
 
-      .aside-container {
+      .douyin-navigation {
         width: $sidebar-width !important;
         bottom: 2px;
 
@@ -377,6 +473,19 @@ watchEffect(() => {
           width: 112px;
         }
       }
+
+      .aside-bottom-item {
+        align-items: center !important;
+        flex-direction: row !important;
+        height: 38px;
+        width: 128px !important;
+        padding: 8px 0px 8px 16px !important;
+        margin: 4px 16px !important;
+      }
+
+      .aside-bottom-icon {
+        margin-right: 12px;
+      }
     }
   }
   .aside-logo {
@@ -393,6 +502,20 @@ watchEffect(() => {
 
       background: var(--logo-url) no-repeat !important;
     }
+  }
+  .aside-content {
+    height: calc(100vh - var(--header-height) - 88px);
+  }
+}
+
+@media (max-width: 1240px) {
+  .aside-bottom-item {
+    width: 52px;
+    height: 52px;
+    justify-content: center;
+    align-items: center;
+    margin: 6px 10px;
+    padding: 0;
   }
 }
 </style>

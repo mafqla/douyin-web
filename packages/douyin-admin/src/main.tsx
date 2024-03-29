@@ -37,29 +37,25 @@ function Index() {
   async function fetchUserInfo() {
     store.dispatch({
       type: 'update-userInfo',
-      payload: { userLoading: true },
+      payload: { userLoading: true }
     })
 
     try {
       const res = await apis.getUserInfo()
       store.dispatch({
         type: 'update-userInfo',
-        payload: { userInfo: res.data, userLoading: false },
+        payload: { userInfo: res.data, userLoading: false }
       })
     } catch (error) {
       console.error(error)
     }
   }
 
+
   useEffect(() => {
     if (checkLogin()) {
       fetchUserInfo()
-    } else if (window.location.pathname.replace(/\//g, '') !== 'login') {
-      window.location.pathname = '/login'
     }
-  }, [])
-
-  useEffect(() => {
     changeTheme(theme)
   }, [theme])
 
@@ -67,7 +63,7 @@ function Index() {
     lang,
     setLang,
     theme,
-    setTheme,
+    setTheme
   }
 
   return (
@@ -76,14 +72,14 @@ function Index() {
         locale={getArcoLocale()}
         componentConfig={{
           Card: {
-            bordered: false,
+            bordered: false
           },
           List: {
-            bordered: false,
+            bordered: false
           },
           Table: {
-            border: false,
-          },
+            border: false
+          }
         }}
       >
         <Provider store={store}>

@@ -129,6 +129,7 @@
   --header-height: 68px;
   --navigation-fold-width: 72px;
   --navigation-expend-width: 160px;
+  --navigation-width: 160px;
 }
 
 :root {
@@ -438,6 +439,4 @@
     rgba(32, 32, 53, 0.35) 74.08%,
     rgba(33, 33, 57, 0.2) 99.53%
   );
-
-  --navigation-width: 160px;
 }
