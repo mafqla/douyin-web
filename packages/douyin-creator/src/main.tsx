@@ -14,8 +14,6 @@ import changeTheme from './utils/changeTheme'
 import useStorage from './utils/useStorage'
 // import  useStore  from './store'
 
-
-
 export const Index = () => {
   const [lang, setLang] = useStorage('semi-lang', 'zh-CN')
   const [theme, setTheme] = useStorage('semi-theme', 'light')
@@ -37,7 +35,6 @@ export const Index = () => {
       // window.location.pathname = '/'
     }
   }, [])
-
   useEffect(() => {
     changeTheme(theme)
   }, [theme])

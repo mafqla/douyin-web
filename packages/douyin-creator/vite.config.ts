@@ -3,10 +3,11 @@ import react from '@vitejs/plugin-react-swc'
 import SemiPlugin from './src/utils/SemiPlugin'
 import svgr from 'vite-plugin-svgr'
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
-    base: './',
+   
     server: {
       open: true,
       port: 3001,
@@ -45,21 +46,17 @@ export default defineConfig(({ mode }) => {
       '**/*.svg'
     ],
     build: {
-      sourcemap: false,
       minify: 'esbuild',
       cssCodeSplit: true,
       rollupOptions: {
         output: {
+          chunkFileNames: 'js/[name]-[hash].js', // 引入文件名的名称
+          entryFileNames: 'js/[name]-[hash].js', // 包的入口文件名称
+          assetFileNames: '[ext]/[name]-[hash].[ext]', // 资源文件像 字体，图片等
+
           manualChunks(id) {
             if (id.includes('node_modules')) {
               return 'vendor'
-            }
-            if (id.includes('/index')) {
-              const fileName = id.substring(
-                id.lastIndexOf('/') + 1,
-                id.lastIndexOf('.')
-              )
-              return `index-${fileName}`
             }
             if (id.includes('/home/')) {
               const fileName = id.substring(
@@ -67,6 +64,13 @@ export default defineConfig(({ mode }) => {
                 id.lastIndexOf('.')
               )
               return `home-${fileName}`
+            }
+            if (id.includes('/content')) {
+              const fileName = id.substring(
+                id.lastIndexOf('/') + 1,
+                id.lastIndexOf('.')
+              )
+              return `content-${fileName}`
             }
           }
         }

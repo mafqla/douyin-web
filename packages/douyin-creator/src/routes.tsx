@@ -3,7 +3,7 @@ import { Navigate, createBrowserRouter } from 'react-router-dom'
 import PageLayout from './layout'
 import Index from '@/pages/index'
 import { lazy, Suspense } from 'react'
-import { Upload } from './pages/content'
+import Upload from '@/pages/content/upload/index'
 
 const lazyLoad = (Component) => (
   <Suspense>
@@ -11,27 +11,30 @@ const lazyLoad = (Component) => (
   </Suspense>
 )
 
-// const upload = lazy(() => import('./pages/content/upload/index'))
-const publish = lazy(() => import('./pages/content/publish/index'))
-const manage = lazy(() => import('./pages/content/manage/index'))
-const home = lazy(() => import('./pages/home/Home'))
-const collectionManage = lazy(() => import('./pages/content/collection/index'))
-const collectionCreate = lazy(() => import('./pages/content/collection/create'))
-const originalProtection = lazy(
-  () => import('./pages/content/OriginalProtection')
-)
-const following = lazy(() => import('./pages/data/following/following'))
-const importantFollowing = lazy(
-  () => import('./pages/data/important/following')
-)
-const follower = lazy(() => import('./pages/data/following/follower'))
-const followingComment = lazy(() => import('./pages/data/following/comment'))
-const followingChat = lazy(() => import('./pages/data/following/chat'))
+const test = import.meta.glob('./pages/**/*.tsx')
+console.log('test', test)
 
-const intro = lazy(() => import('./pages/help/intro'))
-const contact = lazy(() => import('./pages/help/contact'))
-const convention = lazy(() => import('./pages/help/convention'))
-const editor = lazy(() => import('./pages/help/editor'))
+// const upload = lazy(() => import('@/pages/content/upload/index'))
+const publish = lazy(() => import('@/pages/content/publish/index'))
+const manage = lazy(() => import('@/pages/content/manage/index'))
+const home = lazy(() => import('@/pages/home/Home'))
+const collectionManage = lazy(() => import('@/pages/content/collection/index'))
+const collectionCreate = lazy(() => import('@/pages/content/collection/create'))
+const originalProtection = lazy(
+  () => import('@/pages/content/OriginalProtection')
+)
+const following = lazy(() => import('@/pages/data/following/following'))
+const importantFollowing = lazy(
+  () => import('@/pages/data/important/following')
+)
+const follower = lazy(() => import('@/pages/data/following/follower'))
+const followingComment = lazy(() => import('@/pages/data/following/comment'))
+const followingChat = lazy(() => import('@/pages/data/following/chat'))
+
+const intro = lazy(() => import('@/pages/help/intro'))
+const contact = lazy(() => import('@/pages/help/contact'))
+const convention = lazy(() => import('@/pages/help/convention'))
+const editor = lazy(() => import('@/pages/help/editor'))
 export type IRoute = AuthParams & {
   name: string
   key: string
