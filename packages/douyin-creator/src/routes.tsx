@@ -2,24 +2,36 @@ import { AuthParams } from '@/utils/authentication'
 import { Navigate, createBrowserRouter } from 'react-router-dom'
 import PageLayout from './layout'
 import Index from '@/pages/index'
-import Home from './pages/home/Home'
-import { Contact, Convention, Editor, Intro } from './pages/help'
-import {
-  Follower,
-  Following,
-  ImportantFocus,
-  Comment,
-  Chat
-} from './pages/data'
-import {
-  Collection,
-  Create,
-  Manage,
-  OriginalProtection,
-  Publish,
-  Upload
-} from './pages/content'
+import { lazy, Suspense } from 'react'
+import { Upload } from './pages/content'
 
+const lazyLoad = (Component) => (
+  <Suspense>
+    <Component />
+  </Suspense>
+)
+
+// const upload = lazy(() => import('./pages/content/upload/index'))
+const publish = lazy(() => import('./pages/content/publish/index'))
+const manage = lazy(() => import('./pages/content/manage/index'))
+const home = lazy(() => import('./pages/home/Home'))
+const collectionManage = lazy(() => import('./pages/content/collection/index'))
+const collectionCreate = lazy(() => import('./pages/content/collection/create'))
+const originalProtection = lazy(
+  () => import('./pages/content/OriginalProtection')
+)
+const following = lazy(() => import('./pages/data/following/following'))
+const importantFollowing = lazy(
+  () => import('./pages/data/important/following')
+)
+const follower = lazy(() => import('./pages/data/following/follower'))
+const followingComment = lazy(() => import('./pages/data/following/comment'))
+const followingChat = lazy(() => import('./pages/data/following/chat'))
+
+const intro = lazy(() => import('./pages/help/intro'))
+const contact = lazy(() => import('./pages/help/contact'))
+const convention = lazy(() => import('./pages/help/convention'))
+const editor = lazy(() => import('./pages/help/editor'))
 export type IRoute = AuthParams & {
   name: string
   key: string
@@ -56,11 +68,11 @@ export const routes = createBrowserRouter([
       },
       {
         path: 'content/publish',
-        element: <Publish />
+        element: lazyLoad(publish)
       },
       {
         path: 'home',
-        element: <Home />
+        element: lazyLoad(home)
       },
       {
         path: 'content/material/manage',
@@ -68,39 +80,39 @@ export const routes = createBrowserRouter([
       },
       {
         path: 'content/manage',
-        element: <Manage />
+        element: lazyLoad(manage)
       },
       {
         path: 'content/collection/manage',
-        element: <Collection />
+        element: lazyLoad(collectionManage)
       },
       {
         path: 'content/collection/create',
-        element: <Create />
+        element: lazyLoad(collectionCreate)
       },
       {
         path: 'content/original_protection',
-        element: <OriginalProtection />
+        element: lazyLoad(originalProtection)
       },
       {
         path: 'data/following/following',
-        element: <Following />
+        element: lazyLoad(following)
       },
       {
         path: 'data/important/following',
-        element: <ImportantFocus />
+        element: lazyLoad(importantFollowing)
       },
       {
         path: 'data/following/follower',
-        element: <Follower />
+        element: lazyLoad(follower)
       },
       {
         path: 'data/following/comment',
-        element: <Comment />
+        element: lazyLoad(followingComment)
       },
       {
         path: 'data/following/chat',
-        element: <Chat />
+        element: lazyLoad(followingChat)
       },
       {
         path: 'data/stats/overview',
@@ -140,19 +152,19 @@ export const routes = createBrowserRouter([
       },
       {
         path: 'creator/help/intro',
-        element: <Intro />
+        element: lazyLoad(intro)
       },
       {
         path: 'creator/help/contact',
-        element: <Contact />
+        element: lazyLoad(contact)
       },
       {
         path: 'creator/help/convention',
-        element: <Convention />
+        element: lazyLoad(convention)
       },
       {
         path: 'creator/help/editor',
-        element: <Editor />
+        element: lazyLoad(editor)
       }
     ]
   },

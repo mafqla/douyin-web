@@ -163,7 +163,7 @@ const Upload = () => {
     <div className={styles['micro--upload']}>
       <div className={styles['card--upload']}>
         <Tabs
-          className={styles.tabs}
+          className={styles['upload-tabs']}
           activeKey={activeKey}
           onTabClick={handleTabClick}
         >

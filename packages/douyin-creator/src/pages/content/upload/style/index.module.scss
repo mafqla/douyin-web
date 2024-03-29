@@ -13,13 +13,14 @@
 
   min-height: 100%;
 }
-.tabs {
+
+.upload-tabs {
   :global(.semi-tabs-bar-top) {
     height: 48px !important;
   }
 
   :global(.semi-tabs-bar .semi-tabs-tab) {
-    margin-right: 32px;
+    margin-right: 32px !important;
     height: 48px;
     font-size: 18px;
     line-height: 48px;
