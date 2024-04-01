@@ -106,16 +106,6 @@ watchEffect(() => {
   background-position-x: -72px;
 }
 
-@media (min-width: 1240px) {
-  .douyin-header.scrolled {
-    background-position-x: calc(var(--navigation-expend-width) * -1);
-  }
-  .douyin-header.search {
-    position: fixed;
-    top: 0;
-    width: calc(100% - var(--navigation-expend-width));
-  }
-}
 .right-container {
   // width: calc(100% - $sidebar-width);
   display: flex;
@@ -173,11 +163,29 @@ watchEffect(() => {
 @media (min-width: 1240px) {
   .douyin-header {
     background-position-x: calc(var(--navigation-expend-width) * -1);
-  }
-  .douyin-header.user {
-    position: fixed;
 
-    width: calc(100% - var(--navigation-expend-width));
+    &.scrolled {
+      background-position-x: calc(var(--navigation-expend-width) * -1);
+    }
+    &.user {
+      position: fixed;
+
+      width: calc(100% - var(--navigation-expend-width));
+    }
+
+    &.search {
+      position: fixed;
+      top: 0;
+      width: calc(100% - var(--navigation-expend-width));
+    }
+  }
+}
+
+@media (max-width: 1240px) {
+  .right-container {
+    &.searchLayout {
+      padding-top: unset;
+    }
   }
 }
 </style>

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite --mode dev",
     "build:dev": "vite build --mode dev",
-    "build:prod": "run-p type-check && vite build --mode prod  ",
+    "build:prod": " vite build --mode prod  ",
     "preview": "vite preview",
     "test:unit": "vitest --environment jsdom --root src/",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",

@@ -1,15 +1,22 @@
-<script setup>
+<script setup lang="ts">
 import {} from 'vue'
+
+interface SearchItem {
+  id: number
+  query: string
+  description: string
+}
+
 const props = defineProps({
   searchData: {
-    type: Array,
+    type: Array as () => SearchItem[],
     required: true,
-    validator: (propValue) => {
+    validator: (propValue: SearchItem[]) => {
       const isValid = propValue.every((item) => {
         return (
-          item.id !== undefined &&
-          item.query !== undefined &&
-          item.description !== undefined
+          typeof item.id === 'number' &&
+          typeof item.query === 'string' &&
+          typeof item.description === 'string'
         )
       })
       return isValid

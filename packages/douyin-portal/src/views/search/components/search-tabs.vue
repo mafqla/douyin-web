@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router';
 
 //切换布局
 const currentLayout = ref(true)
+
+const route = useRoute()
+const router = useRouter()
 //当前切换的选项
-const currentTab = ref('general')
+const currentTab = ref(route.query.type || 'general')
 const handleClick = (tabName: string) => {
   currentTab.value = tabName
+  router.push({ query: { tabName } })
 }
 </script>
 <template>
@@ -38,7 +43,6 @@ const handleClick = (tabName: string) => {
       >
       <div
         class="swiper-layout-1"
-        style="margin-left: auto"
         :class="{ active: !currentLayout }"
         @click="currentLayout = !currentLayout"
       >
@@ -136,6 +140,7 @@ const handleClick = (tabName: string) => {
   color: var(--color-text-3);
 }
 .swiper-layout-1 {
+  margin-left: auto;
   &:hover,
   &.active {
     color: var(--color-text-0-hover);
@@ -146,6 +151,11 @@ const handleClick = (tabName: string) => {
       color: var(--color-text-0-hover);
       font-weight: 500;
     }
+  }
+}
+@media (max-width: 1240px) {
+  .swiper-layout-1 {
+    margin-left: unset;
   }
 }
 .swiper-layout-2 {

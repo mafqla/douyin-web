@@ -71,15 +71,13 @@ const router = useRouter()
 const handleSearch = () => {
   console.log('搜索关键词：', searchQuery.value)
   if (searchQuery.value.trim() !== '') {
-    router.push({
-      path: `/search/${searchQuery.value}`
-    })
+    window.open(`/search/${searchQuery.value}?type=general`, '_blank')
   }
 }
 </script>
 <template>
   <div class="search" @click="handleClick" ref="search">
-    <form action="" class="header-search-form">
+    <div class="header-search-form">
       <div class="clear-search" v-if="searchQuery !== ''" @click="clearSearch">
         <svg
           width="12"
@@ -117,7 +115,7 @@ const handleSearch = () => {
         :maxlength="100"
         ref="input"
       />
-    </form>
+    </div>
     <button @click="handleSearch">
       <svg-icon class="icon-search" icon="search" />
       <span class="btn-title">搜索</span>
