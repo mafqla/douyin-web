@@ -1,43 +1,64 @@
 <script setup lang="ts">
-import {} from 'vue'
-
-interface SearchItem {
-  id: number
-  query: string
-  description: string
-}
+import type { Word } from '@/api/tyeps/request_response/searchResponse'
+import { ref } from 'vue'
 
 const props = defineProps({
   searchData: {
-    type: Array as () => SearchItem[],
-    required: true,
-    validator: (propValue: SearchItem[]) => {
-      const isValid = propValue.every((item) => {
-        return (
-          typeof item.id === 'number' &&
-          typeof item.query === 'string' &&
-          typeof item.description === 'string'
-        )
-      })
-      return isValid
-    }
+    type: Array as () => Word[],
+    required: true
+  },
+  query: {
+    type: String,
+    required: true
   }
 })
+
+const word = ref(props.searchData)
+const highlightText = (text: string, query: string): string => {
+  const regexQuery = new RegExp(`[${query}]+`, 'gi')
+  const matches: string[] = []
+
+  // 将每个连续匹配的字符串存储到数组中
+  text.replace(regexQuery, (match) => {
+    matches.push(match)
+    return match
+  })
+
+  // 处理过滤后的文本
+  const filteredText: string[] = []
+  let currentIndex = 0
+
+  matches.forEach((match) => {
+    const index = text.indexOf(match, currentIndex)
+    if (index > currentIndex) {
+      filteredText.push(
+        `<span class="default-margin">${text.substring(
+          currentIndex,
+          index
+        )}</span>`
+      )
+    }
+    filteredText.push(`<span class="highlight-text">${match}</span>`)
+    currentIndex = index + match.length
+  })
+
+  if (currentIndex < text.length) {
+    filteredText.push(
+      `<span class="default-margin">${text.substring(currentIndex)}</span>`
+    )
+  }
+
+  return filteredText.join('')
+}
 </script>
 
 <template>
   <div class="sidebar-content">
     <div class="sidebar-title">相关搜索</div>
     <ul class="sidebar-list">
-      <li class="sidebar-item" v-for="item in props.searchData" :key="item.id">
+      <li class="sidebar-item" v-for="item in word" :key="item.id">
         <svg-icon icon="sider-search" class="sidebar-item-icon" />
-        <span>
-          <span class="highlight-text">{{ item.query }}</span>
-        </span>
-        <span>
-          <span class="default-text"></span>
-          {{ item.description }}
-        </span>
+        <span v-html="highlightText(item.word, query)"></span>
       </li>
     </ul>
   </div>
@@ -90,11 +111,11 @@ const props = defineProps({
         color: var(--color-text-t4);
         margin-top: -3px;
       }
-      .highlight-text {
+      :deep(.highlight-text) {
         color: var(--color-text-t3);
       }
     }
-    .default-text {
+    :deep(.default-margin) {
       margin-right: 1px;
     }
   }
