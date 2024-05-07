@@ -1,0 +1,64 @@
+export interface IAuthor {
+  uid: string // 作者的唯一用户ID
+  nickname: string // 作者的昵称
+  avatar_thumb: IAvatarInfo // 作者头像的缩略图信息
+  follow_status: number // 作者的关注状态，具体含义取决于平台
+  follower_count: number // 作者的粉丝数量
+  total_favorited: number // 作者被收藏的总数
+  custom_verify: string // 作者的自定义验证信息，可能表示账号认证类型
+  room_id: number // 作者关联的直播间ID
+  enterprise_verify_reason: string // 企业认证说明，如果是企业认证账号
+  followers_detail: null // 粉丝详情，具体含义未知
+  platform_sync_info: null // 平台同步信息，具体含义未知
+  secret: number // 保密标志，具体含义未知
+  geofencing: null // 地理围栏信息，具体含义未知
+  follower_status: number // 粉丝状态，具体含义未知
+  cover_url: string // 封面URL，具体含义未知
+  item_list: null // 项目列表，具体含义未知
+  new_story_cover: string // 新故事封面，具体含义未知
+  type_label: string // 类型标签，用于标识作者的类型或分类
+  ad_cover_url: string // 广告封面URL，如果作者有关联的广告或品牌合作
+  relative_users: null // 相关用户信息，具体含义未知
+  cha_list: null // 可能与挑战赛列表相关的字段，具体含义未知
+  sec_uid: string // 安全用户ID，可能用于安全验证
+  need_points: null // 需要的积分或者点数，具体含义取决于平台
+  homepage_bottom_toast: null // 首页底部提示信息，可能用于显示给用户的提示
+  room_data: string // 直播间数据，具体含义未知
+  can_set_geofencing: null // 是否可以设置地理围栏，具体含义未知
+  room_id_str: string // 直播间ID字符串形式
+  white_cover_url: string // 白底封面URL，具体含义未知
+  user_tags: null // 用户标签信息，具体含义未知
+  ban_user_functions: null // 被禁止的用户功能，具体含义未知
+  card_entries: null // 卡片条目信息，具体含义未知
+  display_info: null // 展示信息，具体含义未知
+  card_entries_not_display: null // 不展示的卡片条目信息，具体含义未知
+  card_sort_priority: number // 卡片排序优先级，具体含义未知
+  interest_tags: null // 兴趣标签信息，具体含义未知
+  link_item_list: null // 链接项目列表，具体含义未知
+  user_permissions: null // 用户权限信息，具体含义未知
+  offline_info_list: null // 离线信息列表，具体含义未知
+  signature_extra: string // 签名额外信息，具体含义未知
+  personal_tag_list: null // 个人标签列表，具体含义未知
+  cf_list: null // 可能与内容过滤相关的列表，具体含义未知
+  im_role_ids: null // 即时通讯角色ID列表，具体含义未知
+  not_seen_item_id_list: string[] // 未查看项目的ID列表
+  follower_list_secondary_information_struct: null // 粉丝列表次要信息结构，具体含义未知
+  endorsement_info_list: null // 背书信息列表，具体含义未知
+  text_extra: string // 文本额外信息，具体含义未知
+  contrail_list: null // 可能与追踪相关的列表，具体含义未知
+  data_label_list: null // 数据标签列表，具体含义未知
+  not_seen_item_id_list_v2: string[] // 另一个未查看项目的ID列表，版本2
+  special_people_labels: null // 特殊人群标签，具体含义未知
+  familiar_visitor_user: null // 熟悉的访问用户信息，具体含义未知
+  avatar_schema_list: null // 头像模式列表，具体含义未知
+  profile_mob_params: null // 移动端资料参数，具体含义未知
+  verification_permission_ids: string[] // 验证权限ID列表
+}
+
+export interface IAvatarInfo {
+  uri: string // 头像图片的URI，用于标识图片资源
+  url_list: string[] // 头像图片的URL列表，通常包含不同分辨率的图片
+  width: number // 头像图片的宽度
+  height: number // 头像图片的高度
+}
+
