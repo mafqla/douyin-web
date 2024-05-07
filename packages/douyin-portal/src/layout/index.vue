@@ -10,6 +10,7 @@ const isScrolled = ref(false)
 const router = useRouter()
 const isUserRoute = ref(false)
 const isSearchRoute = ref(false)
+const isVideoRoute = ref(false)
 // 滚动监听
 window.addEventListener(
   'scroll',
@@ -25,7 +26,7 @@ window.addEventListener(
 
     if (isSearchRoute.value) {
       backgroundColor.value = false
-      isScrolled.value = false
+      // isScrolled.value = false
     }
   },
   true
@@ -35,18 +36,23 @@ window.addEventListener(
 watchEffect(() => {
   isUserRoute.value = router.currentRoute.value.path.includes('user')
   isSearchRoute.value = router.currentRoute.value.path.includes('search')
+  isVideoRoute.value = router.currentRoute.value.path.includes('video')
 })
 </script>
 
 <template>
-  <div class="main" :class="{ user: isUserRoute }">
-    <div class="bg" :style="isSearchRoute ? { background: 'unset' } : {}"></div>
+  <div
+    class="main"
+    :class="{ user: isUserRoute, video: isVideoRoute, search: isSearchRoute }"
+  >
+    <div class="bg" :class="{ search: isSearchRoute }"></div>
     <aside-bar />
 
     <div
       class="right-container min"
       :class="{
-        searchLayout: isSearchRoute
+        searchLayout: isSearchRoute,
+        videoLayout: isVideoRoute
       }"
     >
       <div
@@ -54,7 +60,8 @@ watchEffect(() => {
         :class="{
           scrolled: isScrolled,
           user: isUserRoute,
-          search: isSearchRoute
+          search: isSearchRoute,
+          video: isVideoRoute
         }"
       >
         <div class="douyin-header-content" :class="{ none: backgroundColor }">
@@ -81,7 +88,9 @@ watchEffect(() => {
   height: 100vh;
   width: 100%;
 
-  &.user {
+  &.user,
+  &.video,
+  &.search {
     height: auto;
 
     // .bg {
@@ -99,11 +108,11 @@ watchEffect(() => {
     height: 100vh;
     position: fixed;
     width: 100vw;
+
+    &.search {
+      background: unset;
+    }
   }
-}
-.douyin-header.scrolled {
-  background: no-repeat url(@/assets/test.png) var(--color-bg-b0);
-  background-position-x: -72px;
 }
 
 .right-container {
@@ -123,6 +132,12 @@ watchEffect(() => {
     padding-top: var(--header-height);
     position: relative;
     width: 100%;
+    overflow-y: auto;
+  }
+  &.videoLayout {
+    padding-top: var(--header-height);
+    position: relative;
+    overflow-y: auto;
   }
 }
 .douyin-header-content {
@@ -148,6 +163,19 @@ watchEffect(() => {
   // position: relative;
   // width: 100%;
   z-index: 502;
+
+  &.video,
+  &.search {
+    position: fixed;
+    top: 0;
+  }
+  &.scrolled {
+    background: no-repeat url(@/assets/test.png) var(--color-bg-b0);
+    background-position-x: -72px;
+  }
+  &.search.scrolled {
+    background: var(--color-bg-b0);
+  }
 }
 .douyin-header.user {
   position: fixed;
@@ -178,13 +206,10 @@ watchEffect(() => {
       top: 0;
       width: calc(100% - var(--navigation-expend-width));
     }
-  }
-}
-
-@media (max-width: 1240px) {
-  .right-container {
-    &.searchLayout {
-      padding-top: unset;
+    &.video {
+      position: fixed;
+      top: 0;
+      width: calc(100% - var(--navigation-expend-width));
     }
   }
 }

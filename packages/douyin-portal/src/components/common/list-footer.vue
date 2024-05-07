@@ -15,7 +15,7 @@ import {} from 'vue'
   text-align: center;
 
   .list-footer-title {
-    color: rgba(22, 24, 25, 0.34);
+    color: var(--color-text-t4);
     font-size: 12px;
     line-height: 20px;
     text-align: center;

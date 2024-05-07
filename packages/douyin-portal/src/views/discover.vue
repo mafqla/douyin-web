@@ -449,6 +449,7 @@ visible.value = computedVisible.value
           top="0vh"
           :append-to-body="true"
           :destroy-on-close="true"
+          style="padding: 0"
         >
           <model-player v-bind="modalData" @closeBtn="handleClose" />
         </el-dialog>

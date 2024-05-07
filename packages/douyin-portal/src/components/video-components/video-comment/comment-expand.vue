@@ -1,25 +1,51 @@
 <script setup lang="ts">
-import {} from 'vue'
+import { ref, watchEffect } from 'vue'
 
 const props = defineProps({
   commentCount: {
     type: Number
     // required: true
+  },
+  isExpanded: {
+    type: Boolean,
+    required: false
+  },
+  noMore: {
+    type: Boolean,
+    required: false
   }
+})
+
+const isExpandedRef = ref(props.isExpanded)
+const noMoreRef = ref(props.noMore)
+
+watchEffect(() => {
+  isExpandedRef.value = props.isExpanded
+  noMoreRef.value = props.noMore
 })
 </script>
 <template>
   <div class="comment-expand">
-    <button class="comment-expand-btn">
+    <button
+      class="comment-expand-btn"
+      @click="$emit('onExpand')"
+      v-if="!noMoreRef"
+    >
       <div class="comment-line"></div>
       <div class="comment-content">
-        <span class="comment-content-text"
-          >展开{{ props.commentCount }}100条回复</span
-        >
+        <span class="comment-content-text" v-if="!isExpandedRef">
+          展开{{ props.commentCount }}条回复
+        </span>
+        <span class="comment-content-text" v-else>展开更多</span>
         <svg-icon icon="comment-expand" class="icon" />
       </div>
     </button>
-    <button type="button" class="comment-content-collapse">
+    <button
+      type="button"
+      class="comment-content-collapse"
+      v-if="isExpandedRef"
+      @click="$emit('onCollapse')"
+    >
       <span>收起</span>
       <svg-icon icon="comment-collapse" class="icon" />
     </button>
@@ -34,9 +60,7 @@ const props = defineProps({
   .comment-content-collapse {
     background-color: transparent;
     border: none;
-    // color: rgba(22,24,35, 0.34);
-    color: rgba(255, 255, 255, 0.34);
-    font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
+
     font-size: 12px;
     font-weight: 400;
     height: 20px;
@@ -47,9 +71,10 @@ const props = defineProps({
 
     margin-top: 8px;
     padding-left: 35px;
+
+    color: var(--color-text-t4);
     .comment-line {
-      // background: rgba(231, 231, 236, 0.6);
-      background: rgba(231, 231, 236, 0.6);
+      background: var(--btn-line);
       content: '';
       height: 1px;
       left: 0;
@@ -60,12 +85,10 @@ const props = defineProps({
     }
     .comment-content {
       cursor: pointer;
-      .comment-content-text {
-      }
       .icon {
         width: 13px;
         height: 13px;
-        color: rgba(255, 255, 255, 0.34);
+        color: var(--color-text-t4);
       }
     }
   }
@@ -77,7 +100,7 @@ const props = defineProps({
     .icon {
       width: 13px;
       height: 13px;
-      color: rgba(255, 255, 255, 0.34);
+      color: var(--color-text-t4);
     }
   }
 }

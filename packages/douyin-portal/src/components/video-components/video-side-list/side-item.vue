@@ -114,7 +114,6 @@ import {} from 'vue'
               align-items: center;
               // border-radius: 4px;
               display: inline-flex;
-              font-family: PingFang SC, DFPKingGothicGB-Medium, sans-serif;
               font-size: 12px;
               font-weight: 500;
               height: 20px;
@@ -136,7 +135,6 @@ import {} from 'vue'
           color: #fff;
           display: flex;
           flex-direction: row;
-          font-family: PingFang SC, DFPKingGothicGB-Medium, sans-serif;
           // font-size: 14px;
           font-weight: 500;
           justify-content: center;
@@ -208,7 +206,6 @@ import {} from 'vue'
       .side-playing-title {
         color: #fff;
         color: rgba(255, 255, 255, 1);
-        font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
         font-size: 12px;
         font-weight: 400;
         line-height: 20px;

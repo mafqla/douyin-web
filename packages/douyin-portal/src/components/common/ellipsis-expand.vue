@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, nextTick, watchEffect, watch } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 const props = defineProps({
   description: {
@@ -42,21 +42,25 @@ const toggleExpand = () => {
 }
 
 const formattedDescription = computed(() => {
-  const tags = props.description.split(' ')
-  const formattedParts = tags.map((tag) => {
-    if (tag.startsWith('#')) {
-      return `<a href="#" class="tag"><span>${tag}</span></a>`
+  // 使用正则表达式匹配所有以 # 开头的单词
+  const tags = props.description.split(/(#\S+)/)
+  const formattedParts = tags.map((tag, index) => {
+    if (index === 1) {
+      return `<span class="tag"><span>${tag}</span></span>`
+    } else if (tag.startsWith('#')) {
+      return `<span><span> </span></span>
+      <span class="tag"><span>${tag}</span></span>`
     } else {
-      return tag
+      return `<span><span>${tag}</span></span>`
     }
   })
-  return formattedParts.join(' ')
+  return formattedParts.join('')
 })
 </script>
 <template>
   <div class="video-title">
     <div
-      class="video-info-desc"
+      class="ellipsis-expand"
       :class="{ 'text-expanded': expanded }"
       ref="spanText"
     >
@@ -77,13 +81,11 @@ const formattedDescription = computed(() => {
   overflow: hidden;
   pointer-events: all;
 }
-.video-info-desc {
-  font-size: 14px;
-  max-height: 44px;
-  line-height: 22px;
-
+.ellipsis-expand {
   max-height: calc(2 * 22px + 2px);
+  max-height: calc(var(--lineClamp) * var(--lineHeight) + 2px);
   -webkit-line-clamp: 2;
+  -webkit-line-clamp: var(--lineClamp);
   -webkit-box-orient: vertical;
   display: -webkit-box;
   position: relative;
@@ -97,6 +99,7 @@ const formattedDescription = computed(() => {
     content: '';
     float: right;
     height: calc(100% - 22px + 1px);
+    height: calc(100% - var(--lineHeight) + 1px);
     width: 0px;
   }
   &.text-expanded {
@@ -106,9 +109,15 @@ const formattedDescription = computed(() => {
 }
 
 .show::before {
-  content: '...';
-  left: -14px;
-  position: absolute;
+  // content: '...';
+  // left: -14px;
+  // position: absolute;
+
+  content: '';
+  float: right;
+  height: 100%;
+  margin-bottom: -22px;
+  width: 0;
 }
 
 .btn-content {
@@ -121,14 +130,14 @@ const formattedDescription = computed(() => {
   clear: both;
 
   .btn {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--color-text-t3);
 
     font-weight: 400;
     height: 20px;
     line-height: 20px;
     width: 40px;
     min-width: 40px;
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--color-secondary-default);
     border-width: initial;
     border-style: none;
     border-color: initial;
@@ -142,14 +151,55 @@ const formattedDescription = computed(() => {
 
 <style lang="scss">
 .text {
+  font-size: 14px;
+  max-height: 44px;
+  line-height: 22px;
   .tag {
     color: #f1c40f;
     text-decoration: none;
     padding: 0 5px;
-
+    span {
+      font-weight: 500;
+      color: var(--color-text-t1);
+      font-size: 18px;
+      line-height: 26px;
+    }
     &:hover {
       text-decoration: underline;
       background-color: transparent;
+    }
+  }
+}
+
+.video-info-desc {
+  &.search {
+    .tag {
+      padding: unset !important;
+    }
+    .text,
+    .tag span {
+      font-size: 16px !important;
+      line-height: 24px !important;
+    }
+  }
+  .text {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 26px;
+    .tag {
+      text-decoration: none;
+      padding: 0 5px;
+      span {
+        font-weight: 500;
+        color: var(--color-text-t1);
+        font-size: 18px;
+        line-height: 26px;
+      }
+      &:hover {
+        span {
+          color: #ff2c55;
+        }
+      }
     }
   }
 }

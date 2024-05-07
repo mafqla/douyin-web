@@ -3,7 +3,7 @@ import { computed, nextTick, onMounted, ref, watchEffect } from 'vue'
 
 const props = defineProps<{
   username: string
-  uploadTime: string
+  uploadTime: string | number
   description: string
 }>()
 </script>

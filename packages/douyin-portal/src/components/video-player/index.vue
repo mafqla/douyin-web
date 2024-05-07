@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ViliPlayer from './vili-player.vue'
+import BasePlayer from './base-player.vue'
 // import ControlBar from './ControlBar.vue'
 import { ref, watchEffect } from 'vue'
 
@@ -110,9 +110,9 @@ const toggleComments = (id: any) => {
   store.getVideoCommentList(id) as any
 }
 </script>
-
+ 
 <template>
-  <ViliPlayer
+  <BasePlayer
     :options="playerOptions"
     :img="props.img"
     :dianzan="props.dianzan"

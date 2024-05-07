@@ -4,6 +4,7 @@ import { ElAvatar } from 'element-plus'
 import { attention } from '@/service/attention'
 import { applaud } from '@/service/applaud'
 import { collection } from '@/service/collection'
+import { useCount } from '@/hooks/useCount'
 
 const props = defineProps({
   id: Number,
@@ -14,7 +15,11 @@ const props = defineProps({
   shoucang: Number,
   isLike: Boolean,
   isCollect: Boolean,
-  isAttention: Number
+  isAttention: Number,
+  isShowAvatar: {
+    type: Boolean,
+    default: true
+  }
 })
 
 const dianzan = ref(props.dianzan) as any
@@ -74,7 +79,7 @@ const handleAttention = async () => {
 }
 
 watchEffect(() => {
-  console.log(isAttent.value)
+  // console.log(isAttent.value)
   if (isAttent.value === 1 || isAttent.value === 3) {
     width.value = 384
     maXWidth.value = 'unset'
@@ -107,7 +112,7 @@ const showMoreBox = ref(false)
   >
     <slot />
     <div class="video-action-content">
-      <div class="video-action-item">
+      <div class="video-action-item" v-if="isShowAvatar">
         <div class="avatar-content">
           <div class="video-action-avatar">
             <ElAvatar size="small" :src="props.avatar" />
@@ -142,7 +147,7 @@ const showMoreBox = ref(false)
           </div>
         </div>
         <svg-icon class="icon" :class="{ liked: liked }" icon="dianzan" />
-        <span class="num">{{ dianzan }}</span>
+        <span class="num">{{ useCount(dianzan) }}</span>
       </div>
       <div
         class="video-action-item"
@@ -168,8 +173,8 @@ const showMoreBox = ref(false)
             评论<span class="like-box-text">X</span>
           </div>
         </div>
-        <svg-icon class="icon" icon="comment" :class="{ liked: liked }" />
-        <span class="num">{{ props.comment }}</span>
+        <svg-icon class="icon" icon="comment" />
+        <span class="num">{{ useCount(props.comment ?? 0) }}</span>
       </div>
       <div
         class="video-action-item"
@@ -182,7 +187,7 @@ const showMoreBox = ref(false)
           icon="collection"
           :class="{ collect: isCollect }"
         />
-        <span class="num">{{ shoucang }}</span>
+        <span class="num">{{ useCount(shoucang) }}</span>
 
         <div class="collection-box" v-if="showCollectionBox">
           <div class="collection-box-content">
@@ -529,37 +534,10 @@ const showMoreBox = ref(false)
       width: 50px;
       color: #fff;
       opacity: 1;
-
-      &:hover {
-        animation: swing 0.5s infinite;
-      }
-      @keyframes swing {
-        0% {
-          transform: translateX(-5px);
-        }
-        25% {
-          transform: translateX(0) translateY(-5px);
-          transform-origin: center;
-          animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
-        }
-        50% {
-          transform: translateX(5px);
-          transform-origin: center;
-          animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
-        }
-        75% {
-          transform: translateX(0) translateY(-5px);
-          transform-origin: center;
-          animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
-        }
-        100% {
-          transform: translateX(-5px);
-        }
-      }
     }
     .icon-collect {
-      height: 50px;
-      width: 26px;
+      height: 42px;
+      width: 42px;
       color: #fff;
       opacity: 1;
       margin-left: 5px;
@@ -575,14 +553,9 @@ const showMoreBox = ref(false)
 }
 
 .like-box {
-  // background-color: #323442;
   background-color: var(--color-bg-toast);
-  // background-color: rgba(65, 66, 67, 1);
   border-radius: 6px;
-  // color: #fff;
-  // color: rgba(255, 255, 255, 1);
   color: var(--color-const-text-white);
-  font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
   font-size: 12px;
   font-weight: 400;
   line-height: 40px;
@@ -595,9 +568,7 @@ const showMoreBox = ref(false)
     transform: translateY(-50%);
   }
   &.swiper {
-    // background-color: #41424c;
     background-color: var(--color-bg-toast);
-    // background-color: rgba(65, 66, 67, 1);
     top: 10px !important;
     transform: translateY(0) !important;
   }
@@ -622,7 +593,6 @@ const showMoreBox = ref(false)
       color: #323442;
       display: flex;
       display: inline-flex;
-      font-family: PingFang SC, DFPKingGothicGB-Medium, sans-serif;
       font-size: 13px;
       font-weight: 500;
       height: 18px;
@@ -639,10 +609,8 @@ const showMoreBox = ref(false)
   align-items: center;
   // background: #fff;
   background: var(--color-bg-b1-white);
-  // background: rgba(255, 255, 255, 1);
   border-radius: 4px;
   bottom: 0;
-  // box-shadow: 0 0 24px rgba(0, 0, 0, 0.1);
   box-shadow: var(--shadow-1);
   box-sizing: border-box;
   display: flex;
@@ -673,7 +641,6 @@ const showMoreBox = ref(false)
 
       .more-box-icon {
         align-items: center;
-        // background: #f2f2f4;
         background: var(--color-bg-b2);
         border-radius: 24px;
         display: flex;
@@ -685,7 +652,6 @@ const showMoreBox = ref(false)
 
         &:hover {
           background: var(--color-bg-b3);
-          // background: rgba(228, 228, 230, 1);
           transform: scale(1.05);
         }
 
@@ -709,9 +675,7 @@ const showMoreBox = ref(false)
       }
 
       .more-box-title {
-        // color: rgba(22, 24, 35, 0.6);
         color: var(--color-text-t3);
-        font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
         font-size: 11px;
         font-weight: 400;
         line-height: 16px;
@@ -722,7 +686,6 @@ const showMoreBox = ref(false)
 
   .more-music-detail {
     align-items: center;
-    // border-top: 1px solid rgba(22, 24, 35, 0.06);
     border-top: 1px solid var(--color-line-l3);
     display: flex;
     font-size: 12px;
@@ -745,7 +708,6 @@ const showMoreBox = ref(false)
         overflow: hidden;
 
         .more-music-icon {
-          // color: rgba(22, 24, 35, 0.6);
           color: var(--color-text-t3);
           font-size: 12px;
           line-height: 18px;
@@ -763,7 +725,6 @@ const showMoreBox = ref(false)
         }
 
         .more-music-num {
-          // color: rgba(22, 24, 35, 0.34);
           color: var(--color-text-t4);
           font-size: 12px;
           overflow: hidden;
@@ -803,19 +764,15 @@ const showMoreBox = ref(false)
 
       &:hover {
         //添加背景阴影
-        // background: rgba(210, 27, 70, 1);
         background-color: var(--color-primary-hover);
       }
       .favorite-badge {
-        // background-color: #fe2c55;
         background-color: var(--color-primary);
-        // color: #fff;
         color: var(--color-const-text-white);
       }
 
       .favorite-label {
         border-radius: 4px;
-        font-family: PingFang SC, DFPKingGothicGB-Medium, sans-serif;
         font-size: 14px;
         font-weight: 500;
         height: 36px;
@@ -840,11 +797,9 @@ const showMoreBox = ref(false)
 
 .collection-box {
   background-color: var(--color-bg-b1);
-  // background-color: rgba(249, 249, 249, 1);
   border-radius: 4px;
   bottom: 0;
   box-shadow: var(--shadow-2);
-  // box-shadow: 0 0 24px rgba(0, 0, 0, 0.12);
   cursor: auto;
   overflow: hidden;
   position: absolute;
@@ -868,7 +823,6 @@ const showMoreBox = ref(false)
     .collection-box-icon {
       align-items: center;
       background-color: var(--color-bg-b2);
-      // background-color: rgba(242, 242, 243, 1);
       border-radius: 100%;
       cursor: pointer;
       display: flex;
@@ -883,11 +837,9 @@ const showMoreBox = ref(false)
 
         &.collection-folder-icon path {
           stroke: var(--color-text-1);
-          // stroke: rgba(22, 24, 35, 0.75);
         }
 
         &.video-collection {
-          // fill: rgba(22, 24, 35, 0.75);
           height: 24px;
           width: 24px;
           path {
@@ -899,13 +851,11 @@ const showMoreBox = ref(false)
 
     &:hover .collection-box-icon {
       background: var(--color-bg-b3);
-      // background: rgba(228, 228, 230, 1);
       transform: scale(1.05);
     }
 
     .collection-box-title {
       color: var(--color-text-t3);
-      // color: rgba(22, 24, 35, 0.6);
       font-size: 12px;
       line-height: 20px;
       margin-top: 8px;

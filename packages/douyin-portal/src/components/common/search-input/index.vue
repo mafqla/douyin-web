@@ -76,7 +76,7 @@ const handleSearch = () => {
 }
 </script>
 <template>
-  <div class="search" @click="handleClick" ref="search">
+  <div class="search-input" @click="handleClick" ref="search">
     <div class="header-search-form">
       <div class="clear-search" v-if="searchQuery !== ''" @click="clearSearch">
         <svg
@@ -126,7 +126,7 @@ const handleSearch = () => {
 </template>
 
 <style lang="scss" scoped>
-.search {
+.search-input {
   border-radius: 12px;
   // background-color: var(--color-bg-b0);
   border: 2px solid var(--input-border);
@@ -240,7 +240,7 @@ const handleSearch = () => {
   }
 }
 
-html.dark .search {
+html.dark .search-input {
   &:hover {
     .btn-title,
     .icon-search {
@@ -282,7 +282,7 @@ html.dark .search {
   // }
 
   .header.scrolled {
-    .search {
+    .search-input {
       background-color: var(--color-bg-b0) !important;
       border: 2px solid var(--input-border) !important;
       .header-search-input {

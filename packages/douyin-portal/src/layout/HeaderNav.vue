@@ -168,7 +168,6 @@ const handlePost = () => {
   width: 100%;
   height: 100%;
   // border-bottom: rgba(231, 231, 236, 0.4) 1px solid;
-  margin-right: 16px;
 
   // position: fixed;
 
@@ -176,7 +175,8 @@ const handlePost = () => {
     align-items: center;
     display: flex;
     height: 100%;
-    margin: 0 32px 0 22px;
+    // margin: 0 32px 0 22px;
+    margin-right: 16px;
     width: 100%;
 
     .header-content {
@@ -220,7 +220,7 @@ const handlePost = () => {
       }
       @media (min-width: 1197px) {
         .header-left {
-          // left: calc(50vw - 84.456px - 13.9%);
+          left: calc(50vw - 84.456px - 13.9%);
           width: calc(27.8% + 28.912px);
         }
       }
@@ -395,7 +395,8 @@ const handlePost = () => {
 
 <style lang="scss">
 .login-pannel {
-  background: url(../assets/login-resetpwd-bg.png) 0% 0% / 100% no-repeat rgb(255, 255, 255);
+  background: url(../assets/login-resetpwd-bg.png) 0% 0% / 100% no-repeat
+    rgb(255, 255, 255);
   border-radius: 8px;
   box-shadow: 0 0 24px rgba(0, 0, 0, 0.1);
   // min-height: 568px;

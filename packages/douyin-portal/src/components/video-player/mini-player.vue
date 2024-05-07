@@ -97,6 +97,31 @@ onBeforeUnmount(() => {
 </style>
 
 <style>
+.loading-content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+.loading-content-img {
+  animation: loading 1s steps(60, start) infinite;
+  background-image: url(@/assets/loading.png);
+  background-size: 48px;
+  display: inline-block;
+  font-size: 0;
+  height: 48px;
+  transform: scale(0.7);
+  width: 48px;
+  overflow: hidden;
+}
+@keyframes loading {
+  to {
+    background-position-y: -2880px;
+  }
+}
 .mini-play video {
   background: var(--color-bg-b1) !important;
 }

@@ -1,18 +1,7 @@
 <script setup lang="ts">
-import ViliPlayer from './vili-player.vue'
+import BasePlayer from './base-player.vue'
 import SwiperControl from '@/components/swper/swiper-control.vue'
 import { ref } from 'vue'
-import startPlay from '@/assets/videos-player-icon/all-play.svg'
-import startPause from '@/assets/videos-player-icon/all-pause.svg'
-import play from '@/assets/videos-player-icon/play.svg'
-import pause from '@/assets/videos-player-icon/pause.svg'
-import fullscreen from '@/assets/videos-player-icon/get-fullscreen.svg'
-import fullscreenExit from '@/assets/videos-player-icon/exit-fullscreen.svg'
-import volume from '@/assets/videos-player-icon/volume.svg'
-import volumeMute from '@/assets/videos-player-icon/volume-mute.svg'
-import volumeSmall from '@/assets/videos-player-icon/volume-small.svg'
-import cssFullScreen from '@/assets/videos-player-icon/cssFullscreen.svg'
-import exitCssFullScreen from '@/assets/videos-player-icon/exit-cssFullscreen.svg'
 
 import {
   VideoInfo,
@@ -93,28 +82,6 @@ const playerOptions = {
   controls: {
     autoHide: false,
     initShow: true
-  },
-  enter: {
-    innerHtml: `  
-      <div class="xg-douyin-loading"></div>`
-  },
-  icons: {
-    startPlay: startPlay,
-    // startPause: startPause,
-    startPause: startPlay,
-    play: play,
-    pause: pause,
-    fullscreen: fullscreen,
-    exitFullscreen: fullscreenExit,
-    volumeLarge: volume,
-    volumeMuted: volumeMute,
-    volumeSmall: volumeSmall,
-    fullscreenExit: fullscreenExit,
-    cssFullscreen: cssFullScreen,
-    exitCssFullscreen: exitCssFullScreen,
-    loadingIcon: `   <div class="loading-content">
-      <div class="loading-content-img"></div>
-    </div>`
   }
 } as any
 
@@ -163,7 +130,7 @@ const toggleComments = (id: any) => {
 <template>
   <div class="modal-player" id="modalall">
     <div class="videos-container" :style="{ width: currentWidth }">
-      <ViliPlayer :options="playerOptions" />
+      <BasePlayer :options="playerOptions" />
       <div class="close-btn" @click="$emit('closeBtn')">
         <svg-icon class="icon" icon="close-big" />
       </div>
@@ -215,7 +182,6 @@ const toggleComments = (id: any) => {
     height: 100%;
     z-index: 2;
 
-  
     .close-btn {
       position: fixed;
       top: 20px;

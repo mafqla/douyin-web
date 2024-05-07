@@ -17,7 +17,6 @@
     "allowJs": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-
     /* Type Checking */
     "strict": false,
     "ignoreDeprecations": "5.0"

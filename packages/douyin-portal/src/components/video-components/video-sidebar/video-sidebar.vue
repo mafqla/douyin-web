@@ -43,7 +43,7 @@ const props = defineProps({
   position: relative;
   scrollbar-width: none;
   transform: translateZ(0);
-  z-index: 1300;
+  z-index: 3;
   position: absolute;
   right: 0;
   top: 0;

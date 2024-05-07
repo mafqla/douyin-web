@@ -19,6 +19,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/recommend.vue')
       },
       {
+        path: '/video/:id',
+        name: 'video',
+        component: () => import('@/views/video/index.vue')
+      },
+      {
         path: '/follow',
         name: 'follow',
         component: () => import('@/views/follow.vue')

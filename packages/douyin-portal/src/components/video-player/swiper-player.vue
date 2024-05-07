@@ -39,7 +39,7 @@ const props = defineProps({
     required: true
   },
   uploadTime: {
-    type: String,
+    type: [String, Number],
     required: true
   },
   description: {
@@ -90,6 +90,16 @@ const props = defineProps({
   isAttention: {
     type: Number,
     required: false
+  },
+  isShowInfo: {
+    type: Boolean,
+    required: false,
+    default: true
+  },
+  isShowAvatar: {
+    type: Boolean,
+    required: false,
+    default: true
   }
 })
 
@@ -232,7 +242,7 @@ watch(isPlay, () => {
     }
   })
 
-  console.log(playerOptions.value)
+  // console.log(playerOptions.value)
 })
 
 const playerId = ref(`xgplayer-${uniqueId}`)
@@ -292,11 +302,10 @@ const toggleComments = (id: any) => {
       :style="{ width: currentWidth }"
       id="videos-controll"
     >
-      <!-- <ViliPlayer :options="playerOptions" :isPlay="isPlay" /> -->
-
       <div class="slide-video">
         <div class="swiper" ref="player" :id="playerId">
           <video-info
+            v-if="props.isShowInfo"
             :username="props.username"
             :uploadTime="props.uploadTime"
             :description="props.description"
@@ -311,6 +320,7 @@ const toggleComments = (id: any) => {
             :isLike="props.isLike"
             :isCollect="props.isCollect"
             :isAttention="props.isAttention"
+            :isShowAvatar="props.isShowAvatar"
             @toggleComments="toggleComments(props.id)"
           >
           </video-action>
@@ -321,14 +331,13 @@ const toggleComments = (id: any) => {
         v-show="control.isShowComment"
       />
     </div>
-
+    <slot></slot>
     <video-sidebar
       :id="props.id"
       :username="props.username"
       @closeComments="closeComments"
       v-show="!control.isShowComment"
     />
-
     <div class="video-blur">
       <img :src="props.poster" :alt="props.description" />
     </div>
@@ -352,6 +361,9 @@ const toggleComments = (id: any) => {
     height: 100%;
     z-index: 2;
     background-color: transparent;
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 297px;
 
     .slide-video {
       bottom: 0;
@@ -393,19 +405,23 @@ const toggleComments = (id: any) => {
   }
 
   .video-blur {
-    bottom: 0px;
-    left: 0px;
-    position: absolute;
-    right: 0px;
-    top: 0px;
+    bottom: 0;
+    left: 0;
     overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 0;
     z-index: 0;
+    transform: scale(1.2);
 
     img {
-      width: 100%;
-      height: 100%;
       filter: blur(60px);
+      height: 100%;
       opacity: 0.8;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      width: 100%;
     }
   }
 }
@@ -421,21 +437,12 @@ const toggleComments = (id: any) => {
     width: calc(100% - 656px);
   }
 }
-
-// @media screen and (min-width: 1440px) and (max-width: 2560px) {
-//   .modal {
-//     width: 71.4285714286%;
-//   }
-// }
-
-// @media screen and (min-width: 2560px) {
-//   .modal {
-//     width: calc(100% - 656px);
-//   }
-// }
 </style>
 
 <style lang="scss">
+.swiper {
+  background-color: transparent;
+}
 .swiper .xgplayer-time {
   font-size: 14px;
   margin: unset;
@@ -454,17 +461,6 @@ const toggleComments = (id: any) => {
   // height: 38px;
   height: 27px;
   font-size: 12px;
-  // left: auto;
-  // padding: 10px;
-  // position: absolute;
-  // right: 0;
-  // text-align: center;
-  // top: auto;
-  // transition-delay: 0.05s !important;
-  // -webkit-transition-delay: 0.05s !important;
-  // transition-property: visibility;
-  // -webkit-transition-property: visibility;
-  // visibility: hidden;
   white-space: nowrap;
 }
 .xgplayer xg-icon {
@@ -494,20 +490,6 @@ const toggleComments = (id: any) => {
   z-index: 10;
 }
 
-// .xg-douyin-loading {
-//   animation: loading 1s steps(60, start) infinite;
-//   background-image: url(@/assets/loading.png);
-//   background-size: 48px;
-//   display: inline-block;
-//   font-size: 0;
-//   height: 48px;
-//   left: 50%;
-//   position: relative;
-//   top: 50%;
-//   transform: scale(0.7) translateX(-50%) translateY(-50%);
-//   transform-origin: left top;
-//   width: 48px;
-// }
 .loading-content {
   align-items: center;
   display: flex;
@@ -560,9 +542,6 @@ const toggleComments = (id: any) => {
 </style>
 
 <style>
-.xgplayer {
-  background-color: transparent !important;
-}
 .xgplayer.xgplayer-is-fullscreen {
   position: absolute !important;
   z-index: auto !important;

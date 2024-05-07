@@ -1,5 +1,13 @@
-export default function formatTime(time: any): string {
-  //2023-02-11T15:31:35.753Z
+export default function formatTime(time: string | number): string {
+  //2023-02-11T15:31:35.753Z | 1713259792
+  //转换为时间戳
+  if (typeof time === 'number') {
+    if (time < 1e12) {
+      time = time * 1000
+    } else {
+      time = time
+    }
+  }
   const date = new Date(time)
 
   //转换为几秒前，几分钟前，几小时前，几天前，几月前，几年前
@@ -11,14 +19,18 @@ export default function formatTime(time: any): string {
   const minuteC = diffValue / 1000 / 60
   const hourC = diffValue / 1000 / 3600
   const dayC = diffValue / 1000 / 3600 / 24
+  const weekC = diffValue / 1000 / 3600 / 24 / 7
   const monthC = diffValue / 1000 / 3600 / 24 / 30
   const yearC = diffValue / 1000 / 3600 / 24 / 30 / 12
 
-  // 返回刚刚，几秒前，几分钟前，几小时前，几天前，几月前，几年前
-  if (yearC >= 1) {
-    return `${Math.floor(yearC)}年前`
+  if (yearC > 1) {
+    return `${date.getFullYear()}-${
+      date.getMonth() + 1
+    }-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
   } else if (monthC >= 1) {
     return `${Math.floor(monthC)}月前`
+  } else if (weekC >= 1) {
+    return `${Math.floor(weekC)}周前`
   } else if (dayC >= 1) {
     return `${Math.floor(dayC)}天前`
   } else if (hourC >= 1) {

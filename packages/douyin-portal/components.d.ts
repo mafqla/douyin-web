@@ -8,6 +8,8 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     ActionMore: typeof import('./src/components/header/message-box/action-more.vue')['default']
+    AtBox: typeof import('./src/components/common/dy-input/at-box.vue')['default']
+    BasePlayer: typeof import('./src/components/video-player/base-player.vue')['default']
     Button: typeof import('./src/components/common/button.vue')['default']
     ClientBox: typeof import('./src/components/header/client-box/index.vue')['default']
     CodeLogin: typeof import('./src/components/auth/login/code-login.vue')['default']
@@ -17,6 +19,7 @@ declare module '@vue/runtime-core' {
     CollectList: typeof import('./src/components/my/user-tab/collect-list/collect-list.vue')['default']
     CommentExpand: typeof import('./src/components/video-components/video-comment/comment-expand.vue')['default']
     CommentItem: typeof import('./src/components/video-components/video-comment/comment-item.vue')['default']
+    CommentItemTag: typeof import('./src/components/video-components/video-comment/comment-item-tag.vue')['default']
     CooperateBox: typeof import('./src/components/header/cooperate-box/index.vue')['default']
     DiscoverBottom: typeof import('./src/components/discover/discover-bottom/discover-bottom.vue')['default']
     DiscoverClassify: typeof import('./src/components/discover/discover-classify/discover-classify.vue')['default']
@@ -26,6 +29,8 @@ declare module '@vue/runtime-core' {
     DiscoverRecommend: typeof import('./src/components/discover/discover-recommend/discover-recommend.vue')['default']
     DiscoverVideo: typeof import('./src/components/discover/discover-item/discover-video.vue')['default']
     DownloadBtn: typeof import('./src/components/common/download-btn.vue')['default']
+    DyAvatar: typeof import('./src/components/common/dy-avatar.vue')['default']
+    DyInput: typeof import('./src/components/common/dy-input/index.vue')['default']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElDialog: typeof import('element-plus/es')['ElDialog']
@@ -42,6 +47,7 @@ declare module '@vue/runtime-core' {
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElUpload: typeof import('element-plus/es')['ElUpload']
+    EmojiBox: typeof import('./src/components/common/dy-input/emoji-box.vue')['default']
     Entertainment: typeof import('./src/components/my/user-tab/entertainment/entertainment.vue')['default']
     EntertainmentItem: typeof import('./src/components/my/user-tab/entertainment/entertainment-item.vue')['default']
     EntertainmentList: typeof import('./src/components/my/user-tab/entertainment/entertainment-list.vue')['default']
@@ -74,6 +80,7 @@ declare module '@vue/runtime-core' {
     SearchInput: typeof import('./src/components/common/search-input/index.vue')['default']
     SearchRecommend: typeof import('./src/components/common/search-input/search-recommend/index.vue')['default']
     SearchResult: typeof import('./src/components/common/search-input/search-result.vue')['default']
+    SearchSuggestion: typeof import('./src/components/common/search-suggestion.vue')['default']
     SideItem: typeof import('./src/components/video-components/video-side-list/side-item.vue')['default']
     SvgIcon: typeof import('./src/components/common/svg-icon.vue')['default']
     SwiperControl: typeof import('./src/components/swper/swiper-control.vue')['default']
@@ -103,6 +110,5 @@ declare module '@vue/runtime-core' {
     VideoSidebar: typeof import('./src/components/video-components/video-sidebar/video-sidebar.vue')['default']
     VideoSidebarBtn: typeof import('./src/components/video-components/video-sidebar-btn/video-sidebar-btn.vue')['default']
     VideoSideList: typeof import('./src/components/video-components/video-side-list/video-side-list.vue')['default']
-    ViliPlayer: typeof import('./src/components/video-player/vili-player.vue')['default']
   }
 }
