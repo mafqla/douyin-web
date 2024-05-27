@@ -5,10 +5,17 @@ import formatTime from '@/utils/date-format'
 const props = defineProps({
   title: String,
   author: String,
-  fellow: Boolean,
+  fellow: Number,
   comment: Number,
   collect: Number,
-  time: String
+  time: {
+    type: [String, Number],
+    default: 0
+  }
+})
+
+const video_uploadtime = computed(() => {
+  return formatTime(props.time)
 })
 </script>
 <template>
@@ -20,17 +27,17 @@ const props = defineProps({
           ><span class="item-title-author-f">@</span
           ><span class="item-title-author-name">{{ props.author }}</span>
         </span>
-        <!-- <span class="item-title-tag fellow">
-          <span class="item-title-tag-name">已关注</span>
+        <span class="item-title-tag fellow" v-if="fellow">
+          <span class="item-title-tag-name">你的关注</span>
         </span>
-        <span class="item-title-tag comment">
+        <!-- <span class="item-title-tag comment">
           <span class="item-title-tag-name">评论</span>
         </span>
         <span class="item-title-tag collect">
           <span class="item-title-tag-name">收藏</span>
-        </span> -->
+        </span>  -->
 
-        <span class="item-title-time"> · {{ formatTime(props.time) }}</span>
+        <span class="item-title-time"> · {{ video_uploadtime }}</span>
         <div class="more">
           <svg
             width="22"
@@ -58,7 +65,6 @@ const props = defineProps({
   // padding: 12px 20px 22px;
   padding: 12px;
   background: var(--color-bg-b1);
-  // background: rgba(37, 38, 50, 1);
   .item-title-content {
     position: relative;
 
@@ -72,9 +78,7 @@ const props = defineProps({
     .item-title-content-title {
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
-      // color: rgba(22, 24, 35, 1);
       color: var(--color-text-t1);
-      // color: rgb(255, 255, 255, .9);
       display: -webkit-box;
       font-size: 15px;
       height: 46px;
@@ -92,9 +96,7 @@ const props = defineProps({
       // text-wrap: nowrap;
       width: 100%;
 
-      // color: rgba(22, 24, 35, 0.34);
       color: var(--color-text-t3);
-      // color: rgba(255, 255, 255, 0.5);
       .item-title-bottom {
         backface-visibility: hidden;
         display: inline-block;
@@ -133,8 +135,8 @@ const props = defineProps({
         }
       }
       .item-title-tag.fellow {
-        background: rgba(242, 242, 243, 1);
-        color: rgba(22, 24, 35, 0.34);
+        color: #13c15a;
+        background: rgba(19, 193, 90, 0.06);
       }
       .item-title-tag.comment {
         background: rgba(108, 208, 136, 0.1);
@@ -146,10 +148,7 @@ const props = defineProps({
       }
 
       .item-title-time {
-        // color: rgba(22, 24, 35, 0.34);
         color: var(--color-text-t3);
-        // color: rgba(255, 255, 255, 0.5);
-        font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
         font-size: 12px;
         font-weight: 400;
         line-height: 23px;
@@ -162,7 +161,6 @@ const props = defineProps({
         right: 0;
 
         path {
-          // fill: rgba(22, 24, 35, 0.6);
           fill: var(--color-text-t3);
         }
       }

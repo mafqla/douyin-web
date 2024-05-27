@@ -34,7 +34,7 @@ const sizeClass = computed(() => {
 const isImageLoadingFailed = ref(false)
 
 const imageErrorHandler = (event: any) => {
-  console.log('图片加载失败')
+  // console.log('图片加载失败')
   isImageLoadingFailed.value = true
 }
 </script>

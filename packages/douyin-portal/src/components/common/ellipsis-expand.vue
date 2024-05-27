@@ -161,8 +161,8 @@ const formattedDescription = computed(() => {
     span {
       font-weight: 500;
       color: var(--color-text-t1);
-      font-size: 18px;
-      line-height: 26px;
+      font-size: 14px;
+      line-height: 22px;
     }
     &:hover {
       text-decoration: underline;

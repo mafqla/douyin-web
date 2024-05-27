@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 import { useCount } from '@/hooks/useCount'
+import { videosCtrolStore } from '@/stores/videos-control'
 import { type PropType } from 'vue'
 
 defineProps({
@@ -9,17 +10,23 @@ defineProps({
     default: () => []
   }
 })
-
-const isClose = ref(true)
+const control = videosCtrolStore()
+const closeRelated = () => {
+  control.isShowRelated = false
+}
 </script>
 <template>
-  <div class="search-side-card" style="width: 124px" v-show="isClose">
+  <div
+    class="search-side-card"
+    style="width: 124px"
+    v-show="control.isShowRelated"
+  >
     <div class="search-side-card__header">
       <div class="search-side-card__header-title">相关内容</div>
       <svg-icon
         icon="close-big"
         class="search-side-card__header-icon"
-        @click="() => (isClose = false)"
+        @click="closeRelated"
       />
     </div>
     <div class="search-side-card__body">

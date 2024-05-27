@@ -18,7 +18,15 @@ const props = defineProps<{
       </div>
     </div>
 
-    <ellipsis-expand :description="props.description" />
+    <ellipsis-expand
+      style="
+        --lineClamp: 2;
+        --lineHeight: 22px;
+        --maxHeight: 48px;
+        margin: 16px 0;
+      "
+      :description="props.description"
+    />
   </div>
 </template>
 
@@ -31,7 +39,8 @@ const props = defineProps<{
   // height: 100px;
   padding: 16px 95px 16px 16px;
   width: 100%;
-  color: #fff;
+  color: var(--color-const-text-white);
+
   user-select: none;
   z-index: 2;
 
@@ -59,58 +68,5 @@ const props = defineProps<{
       white-space: nowrap;
     }
   }
-
-  .video-info-desc.text-ellipsis {
-    // max-width: 100%;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    vertical-align: middle;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    // white-space: nowrap;
-  }
-  // .video-info-desc {
-  //   // display: flex;
-  //   // align-items: center;
-  //   font-size: 14px;
-
-  //   height: 44px;
-  //   cursor: auto;
-
-  //   .btn {
-  //     color: rgba(255, 255, 255, 0.9);
-  //     font-weight: 400;
-  //     height: 20px;
-  //     line-height: 20px;
-  //     width: 40px;
-  //     min-width: 40px;
-  //     background: rgba(255, 255, 255, 0.15);
-  //     border-width: initial;
-  //     border-style: none;
-  //     border-color: initial;
-  //     border-image: initial;
-  //     padding: 0px !important;
-  //     margin-left: 15px;
-  //   }
-  //   span {
-  //     display: inline-block;
-  //   }
-
-  //   .video-info-tag {
-  //     padding: 0 10px;
-  //     font-size: 14px;
-
-  //     a {
-  //       color: #f1c40f;
-  //       text-decoration: none;
-  //       padding: 0 5px;
-
-  //       &:hover {
-  //         text-decoration: underline;
-  //         background-color: transparent;
-  //       }
-  //     }
-  //   }
-  // }
 }
 </style>

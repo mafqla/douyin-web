@@ -16,28 +16,30 @@ export default function formatTime(time: string | number): string {
   if (diffValue < 0) {
     return ''
   }
-  const minuteC = diffValue / 1000 / 60
-  const hourC = diffValue / 1000 / 3600
-  const dayC = diffValue / 1000 / 3600 / 24
-  const weekC = diffValue / 1000 / 3600 / 24 / 7
-  const monthC = diffValue / 1000 / 3600 / 24 / 30
-  const yearC = diffValue / 1000 / 3600 / 24 / 30 / 12
+  const seconds = diffValue / 1000
+  const units = [
+    { unit: '年', factor: 3600 * 24 * 30 * 12 },
+    { unit: '月', factor: 3600 * 24 * 30 },
+    { unit: '周', factor: 3600 * 24 * 7 },
+    { unit: '天', factor: 3600 * 24 },
+    { unit: '小时', factor: 3600 },
+    { unit: '分钟', factor: 60 },
+    { unit: '刚刚', factor: 1 }
+  ]
 
-  if (yearC > 1) {
-    return `${date.getFullYear()}-${
+  if (seconds / (3600 * 24 * 30 * 12) >= 1) {
+    return `${date.getFullYear()}.${
       date.getMonth() + 1
-    }-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-  } else if (monthC >= 1) {
-    return `${Math.floor(monthC)}月前`
-  } else if (weekC >= 1) {
-    return `${Math.floor(weekC)}周前`
-  } else if (dayC >= 1) {
-    return `${Math.floor(dayC)}天前`
-  } else if (hourC >= 1) {
-    return `${Math.floor(hourC)}小时前`
-  } else if (minuteC >= 1) {
-    return `${Math.floor(minuteC)}分钟前`
-  } else {
-    return '刚刚'
+    }.${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
   }
+  for (const unitData of units) {
+    const unitValue = seconds / unitData.factor
+    if (unitValue >= 1) {
+      return unitData.unit === '刚刚'
+        ? unitData.unit
+        : `${Math.floor(unitValue)}${unitData.unit}前`
+    }
+  }
+
+  return '刚刚'
 }

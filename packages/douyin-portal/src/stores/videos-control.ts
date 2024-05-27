@@ -4,6 +4,8 @@ import { ref, watch } from 'vue'
 export const videosCtrolStore = defineStore('control', () => {
   //是否显示评论
   const isShowComment = ref(true)
+  //是否打开相关内容
+  const isShowRelated = ref(true)
   const isMuted = ref(true)
   const page = ref(1)
   const size = ref(10)
@@ -59,6 +61,7 @@ export const videosCtrolStore = defineStore('control', () => {
 
   return {
     isShowComment,
+    isShowRelated,
     isMuted,
     page,
     size,

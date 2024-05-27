@@ -44,9 +44,9 @@ const props = defineProps({
   scrollbar-width: none;
   transform: translateZ(0);
   z-index: 3;
-  position: absolute;
-  right: 0;
-  top: 0;
+  // position: absolute;
+  // right: 0;
+  // top: 0;
 
   .video-sidebar-close {
     position: absolute;

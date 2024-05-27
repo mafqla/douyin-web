@@ -193,6 +193,41 @@ xg-start-inner {
   position: fixed !important;
 }
 .xgplayer {
+  .xgplayer-time {
+    margin: unset;
+    min-height: 40px;
+  }
+  .xg-tips {
+    background-color: #41424c;
+    border-radius: 4px;
+    // bottom: 36px;
+    bottom: 53px;
+    color: #fff;
+    // height: 38px;
+    height: 27px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .xg-options-list {
+    width: 57px;
+    background-color: #41424c;
+    border-radius: 4px;
+    bottom: 40px;
+    /* bottom: 53px; */
+    color: #fff;
+    font-size: 14px;
+    opacity: 1;
+    /* padding: 20px 0 0; */
+    top: auto;
+    li {
+      cursor: pointer;
+      line-height: 18px;
+      margin-bottom: 16px;
+      opacity: 0.7;
+      text-align: center;
+      width: 100%;
+    }
+  }
   .xgplayer-controls {
     height: 48px;
     background-image: linear-gradient(transparent 0%, rgba(0, 0, 0, 0.6) 100%);
@@ -211,6 +246,11 @@ xg-start-inner {
     left: 0 !important;
     right: 0 !important;
     height: 46px !important;
+  }
+  xg-icon {
+    margin-left: 0;
+    margin-right: 0;
+    height: 32px;
   }
   .xg-center-grid {
     z-index: 2;

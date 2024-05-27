@@ -1,5 +1,6 @@
 import request from './request'
 import type { searchParams } from './tyeps/request_params/searchParams'
+import type { IhomeFeedRes } from './tyeps/request_response/homeFeedRes'
 import type {
   SearchResponse,
   searchSuggestResponse
@@ -8,6 +9,16 @@ import type {
 import urls from './urls'
 
 export default {
+  /**
+   * @description 获取首页视频流
+   */
+  homeFeed: (count: number): Promise<IhomeFeedRes> => {
+    return request.get(urls.home_feed, {
+      params: {
+        count
+      }
+    })
+  },
   /**
    * @description 搜索
    */

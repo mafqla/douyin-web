@@ -71,7 +71,7 @@ defineProps({
     }
 
     .loading-content-text {
-      color: rgba(22, 24, 35, 0.6);
+      color: var(--color-text-t3);
       font-size: 14px;
       font-weight: 400;
       line-height: 22px;

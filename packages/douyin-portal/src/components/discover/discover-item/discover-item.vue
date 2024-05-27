@@ -8,7 +8,7 @@ import { discoverStore } from '@/stores/discover'
 
 const props = defineProps({
   img: String,
-  videoTime: String,
+  videoTime: Number,
   like: Number,
   title: String,
   author: String,

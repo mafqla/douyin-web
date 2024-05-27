@@ -293,6 +293,11 @@ const toggleComments = (id: any) => {
   const store = commentStore()
   store.getVideoCommentList(id) as any
 }
+
+//打开相关内容
+const openRelated = () => {
+  control.isShowRelated = true
+}
 </script>
 
 <template>
@@ -326,6 +331,7 @@ const toggleComments = (id: any) => {
           </video-action>
         </div>
       </div>
+      <video-search-btn @click="openRelated" v-show="!control.isShowRelated" />
       <video-side-bar-btn
         @click="openComments"
         v-show="control.isShowComment"
@@ -354,6 +360,7 @@ const toggleComments = (id: any) => {
   position: relative;
   transition: all 0.15s linear;
   width: 100%;
+  display: flex;
 
   .videos-container {
     position: relative;
@@ -364,6 +371,7 @@ const toggleComments = (id: any) => {
     flex-grow: 1;
     flex-shrink: 1;
     min-width: 297px;
+    display: inline-block;
 
     .slide-video {
       bottom: 0;
@@ -440,9 +448,9 @@ const toggleComments = (id: any) => {
 </style>
 
 <style lang="scss">
-.swiper {
-  background-color: transparent;
-}
+//  .swiper {
+//   background-color: transparent;
+// }
 .swiper .xgplayer-time {
   font-size: 14px;
   margin: unset;
