@@ -16,7 +16,6 @@ const props = defineProps({
     }
   }
 })
-
 const isEdited = ref(false)
 // 记录初始的用户名和个性签名
 const usernameInitial = ref(props.userInfo.username)
@@ -92,29 +91,15 @@ const uploadAvatar = () => {
 <template>
   <Teleport to="body">
     <div class="user-modal" v-if="open">
-      <input
-        type="file"
-        accept=".png,.webp,.jpeg,.pjpeg,.bmp,.jpg"
-        style="display: none"
-        ref="avatarInput"
-      />
+      <input type="file" accept=".png,.webp,.jpeg,.pjpeg,.bmp,.jpg" style="display: none" ref="avatarInput" />
       <div class="content">
         <div class="head">
           <span class="title">编辑资料</span>
           <span class="close" @click="cancelEdit">
-            <svg
-              width="36"
-              height="36"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              class=""
-              viewBox="0 0 36 36"
-            >
+            <svg width="36" height="36" fill="none" xmlns="http://www.w3.org/2000/svg" class="" viewBox="0 0 36 36">
               <path
                 d="M24.601 24.6a1.362 1.362 0 01-1.927 0L18.5 20.427l-4.174 4.175a1.362 1.362 0 01-1.927-1.927l4.174-4.174-4.174-4.175a1.362 1.362 0 011.927-1.926l4.174 4.174 4.174-4.174a1.362 1.362 0 111.927 1.927L20.427 18.5l4.174 4.174a1.362 1.362 0 010 1.927z"
-                fill="#fff"
-                fill-opacity="0.8"
-              ></path>
+                fill="#fff" fill-opacity="0.8"></path>
             </svg>
           </span>
         </div>
@@ -128,35 +113,22 @@ const uploadAvatar = () => {
         <div class="username">
           <div class="title">名字</div>
           <div class="input-box">
-            <input
-              type="text"
-              placeholder="记得填写呢称"
-              maxlength="20"
-              v-model="userInfo.username"
-            />
+            <input type="text" placeholder="记得填写呢称" maxlength="20" v-model="userInfo.username" />
             <span class="size">{{ usernameLength }}/20</span>
           </div>
         </div>
         <div class="signature">
           <div class="title">简介</div>
           <div class="input-box">
-            <el-input
-              v-model="userInfo.signature"
-              placeholder="介绍一下自己"
-              resize="none"
-              type="textarea"
-            />
+            <el-input v-model="userInfo.signature" placeholder="介绍一下自己" resize="none" type="textarea" />
           </div>
         </div>
         <div class="btn-content">
-          <button
-            class="save common"
-            :disabled="!isEdited"
-            @click="saveProfile"
-          >
+          <button class="cancel common" @click="cancelEdit">取消</button>
+          <button class="save common" :disabled="!isEdited" @click="saveProfile">
             保存
           </button>
-          <button class="cancel common" @click="cancelEdit">取消</button>
+
         </div>
       </div>
     </div>
@@ -171,7 +143,6 @@ const uploadAvatar = () => {
   left: 0;
   bottom: 0;
   right: 0;
-  // background: rgba(0, 0, 0, 0.6);
   background: var(--color-mask-m1);
   display: flex;
   justify-content: center;
@@ -179,7 +150,7 @@ const uploadAvatar = () => {
 
   .content {
     background: var(--color-bg-b1);
-    border-radius: 4px;
+    border-radius: 16px;
     height: 588px;
     left: 50%;
     padding: 0 40px;
@@ -195,9 +166,9 @@ const uploadAvatar = () => {
 
     .title {
       color: var(--color-text-t1);
-      // color: rgba(22, 24, 35, 1);
       font-size: 18px;
     }
+
     .close {
       cursor: pointer;
       position: absolute;
@@ -262,20 +233,17 @@ const uploadAvatar = () => {
       color: var(--color-text-t1);
       font-size: 14px;
     }
+
     .input-box {
       margin-top: 4px;
       position: relative;
       width: 100%;
 
       input {
-        // background: #f2f2f4;
         background: var(--color-bg-b2);
-        // background: rgba(242, 242, 243, 1);
         border: none;
-        border-radius: 4px;
-        // caret-color: rgba(22, 24, 35, 0.75);
+        border-radius: 10px;
         caret-color: var(--color-text-t2);
-        // color: rgba(22, 24, 35, 0.75);
         color: var(--color-text-t2);
         font-size: 14px;
         height: 32px;
@@ -317,10 +285,8 @@ const uploadAvatar = () => {
           background: var(--color-bg-b2);
           border: none;
           box-shadow: none;
-          border-radius: 4px;
-          // caret-color: rgba(22, 24, 35, 0.75);
+          border-radius: 10px;
           caret-color: var(--color-text-t2);
-          // color: rgba(22, 24, 35, 0.75);
           color: var(--color-text-t2);
           font-size: 14px;
           max-height: 300px;
@@ -340,7 +306,6 @@ const uploadAvatar = () => {
           font-size: 14px;
           font-weight: 400;
           line-height: 22px;
-          // color: #9197a3;
           color: var(--color-bg-b2);
         }
       }
@@ -348,17 +313,17 @@ const uploadAvatar = () => {
   }
 
   .btn-content {
+    justify-content: center;
     margin-top: 32px;
+    display: flex;
 
     .common {
-      border-radius: 4px;
-      font-family: PingFang SC, DFPKingGothicGB-Medium, sans-serif;
+      border-radius: 10px;
       font-size: 14px;
       font-weight: 500;
       height: 36px;
       line-height: 22px;
       min-width: 88px;
-
       align-items: center;
       border: 0;
       cursor: pointer;
@@ -368,31 +333,28 @@ const uploadAvatar = () => {
       outline: none;
       padding: 0 16px;
       position: relative;
+
+      width: 148px;
     }
+
     .save {
-      // background-color: #fe2c55;
       background-color: var(--color-primary);
-      // color: #fff;
       color: var(--color-const-text-white);
       margin: 0 !important;
 
       &:hover {
-        // background-color: #d21b46;
         background-color: var(--color-primary-hover);
       }
+
       &:disabled {
-        // background-color: #ffc2c6;
         background-color: var(--color-primary-disable);
         cursor: not-allowed;
       }
     }
 
     .cancel {
-      // background-color: #ebedef;
       background-color: var(--secondary-bg-color);
-      // color: rgba(22, 24, 35, 0.6);
       color: var(--color-text-t3);
-
       margin-left: 16px;
     }
   }

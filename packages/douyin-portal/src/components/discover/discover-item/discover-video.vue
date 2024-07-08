@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import miniPlayer from '@/components/video-player/mini-player.vue'
 import { useCount } from '@/hooks'
+import { formatMillisecondsToTime } from '@/utils/date-format';
 
 const props = defineProps({
   img: String,
@@ -13,7 +14,10 @@ const props = defineProps({
     type: Number,
     default: 0
   },
-  videoUrl: String,
+  videoUrl: {
+    type: [String, Array],
+    default: ''
+  },
   itemWidth: Number,
   itemHeight: Number
 })
@@ -51,68 +55,30 @@ const paddingTop = computed(() => {
 
 const newWidth = Math.round(props.itemWidth as any)
 
-/**
- * 将秒数转换为时分秒格式字符串
- *
- * @param time 毫秒数
- * @returns 返回形如 "HH:mm:ss" 的字符串，不足两位的分钟和秒数前面会补零
- */
-const formatMillisecondsToTime = (time: number) => {
-  // 将毫秒转换为秒
-  const totalSeconds = time / 1000
-  // 计算小时、分钟和秒
-  const hours = Math.floor(totalSeconds / 3600)
-  const minutes = Math.floor((totalSeconds % 3600) / 60)
-  const seconds = Math.floor(totalSeconds % 60)
 
-  // 构建时间字符串，如果小时数不为0，则包含小时，否则只包含分钟和秒
-  const timeString =
-    hours > 0
-      ? `${hours.toString().padStart(2, '0')}:${minutes
-          .toString()
-          .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-      : `${minutes.toString().padStart(2, '0')}:${seconds
-          .toString()
-          .padStart(2, '0')}`
-
-  return timeString
-}
 const video_time = computed(() => {
   return formatMillisecondsToTime(props.videoTime)
 })
 
 const video_like = useCount(props.like)
+const img_url = ref(props.img)
+const isShowImg = ref(true)
+const onError = () => {
+  isShowImg.value = false
+}
 </script>
 <template>
-  <div
-    class="item-video videoImage"
-    :style="{ paddingTop: `${paddingTop}%` }"
-    @mouseenter="showVideo"
-    @mouseleave="hideVideo"
-  >
+  <div class="item-video videoImage" :style="{ paddingTop: `${paddingTop}%` }" @mouseenter="showVideo"
+    @mouseleave="hideVideo">
     <div class="item-video-content" ref="renderedImg">
       <div class="item-video-content-img item-video-content-img-hover">
         <div class="item-video-content-img-item-defalut"></div>
         <div class="item-video-content-img-item-block"></div>
-        <img
-          :src="props.img"
-          alt="null"
-          fetchpriority="high"
-          decoding="async"
-          :width="newWidth"
-          :height="Math.round(props.itemHeight as any)"
-        />
-        <miniPlayer
-          v-if="isVideoVisible"
-          class="video-player"
-          :url="videoUrl"
-          :volume="volume"
-        />
-        <div
-          class="overlay"
-          v-if="isVideoVisible"
-          @click="$emit('openModal')"
-        ></div>
+        <img :src="img_url" alt="video-cut" fetchpriority="high" decoding="async" :width="newWidth"
+          :height="Math.round(props.itemHeight as any)" @error="onError" v-if="isShowImg" />
+        <svg-icon class="icon" icon="loading-logo" v-if="!isShowImg" />
+        <miniPlayer v-if="isVideoVisible" class="video-player" :url="videoUrl" :volume="volume" />
+        <div class="overlay" v-if="isVideoVisible" @click="$emit('openModal')"></div>
       </div>
 
       <div class="item-video-info" v-if="!isVideoVisible">
@@ -122,20 +88,11 @@ const video_like = useCount(props.like)
           <div class="info-content-blank2"></div>
           <div class="video-time">{{ video_time }}</div>
           <div class="likes">
-            <svg
-              width="24"
-              height="24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              class="BnHuaqS7"
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+            <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg" class="BnHuaqS7"
+              viewBox="0 0 24 24">
+              <path fill-rule="evenodd" clip-rule="evenodd"
                 d="M9.224 4.667C6.326 4.667 4 7.151 4 10.043l.002.169a1.078 1.078 0 00-.002.094c.009.387.097.855.195 1.245.096.382.23.806.38 1.113.605 1.301 1.664 2.563 2.683 3.6a30.679 30.679 0 003.425 3.008l.02.017.015.012c.226.226.703.7 1.554.7h.025c.241 0 .816-.001 1.331-.502.009-.008.022-.02.042-.035l.182-.151.004-.004c.565-.465 1.886-1.554 3.188-2.867.834-.836 1.698-1.807 2.359-2.81.09-.136.176-.273.258-.41.033-.055.06-.112.082-.17.03-.077.044-.108.055-.13.013-.025.034-.063.088-.146.038-.06.07-.122.096-.188.037-.093.064-.156.085-.199l.004-.009c.087-.11.152-.238.19-.374.162-.576.273-1.082.284-1.705 0-.03 0-.058-.002-.087a7.123 7.123 0 00.001-.206c-.019-2.876-2.338-5.341-5.224-5.341-1.094 0-2.159.339-2.999 1.021-.909-.658-1.957-1.021-3.097-1.021zm9.162 5.377v.134a2.388 2.388 0 000 .14c-.01.294-.057.559-.156.935-.043.07-.076.135-.1.186a4.313 4.313 0 00-.116.26c-.108.173-.178.31-.251.492-.05.082-.104.167-.16.252h-.001c-.55.834-1.304 1.69-2.087 2.476l-.003.002c-1.223 1.234-2.474 2.266-3.033 2.727l-.041.034c-.05.04-.105.086-.157.13l-.06-.061c-.065-.064-.154-.135-.197-.17l-.008-.006a28.517 28.517 0 01-3.214-2.817l-.003-.004c-.968-.985-1.824-2.042-2.27-3.009a4.077 4.077 0 01-.24-.719 4.491 4.491 0 01-.129-.715l.001-.036v-.098l-.001-.005-.002-.129c0-1.778 1.436-3.218 3.066-3.218.857 0 1.667.348 2.393 1.102a1.079 1.079 0 001.66-.129c.428-.61 1.155-.973 2.043-.973 1.63 0 3.066 1.441 3.066 3.218v.001z"
-                fill="#fff"
-              ></path>
+                fill="#fff"></path>
             </svg>
             <span>{{ video_like }}</span>
           </div>
@@ -151,6 +108,7 @@ const video_like = useCount(props.like)
   padding-top: 75%;
   position: relative;
   width: 100%;
+
   .item-video-content {
     align-items: center;
     background-image: initial;
@@ -174,6 +132,7 @@ const video_like = useCount(props.like)
 
     width: 100%;
     height: 100%;
+
     .item-video-content-img {
       align-items: center;
       display: flex;
@@ -190,11 +149,13 @@ const video_like = useCount(props.like)
         right: 0px;
         top: 0px;
       }
+
       .item-video-content-img-item-defalut {
         background-size: cover;
         filter: blur(20px);
         background-repeat: no-repeat;
       }
+
       .item-video-content-img-item-block {
         background-color: rgba(0, 0, 0, 0.3);
       }
@@ -209,7 +170,14 @@ const video_like = useCount(props.like)
         position: relative;
         // transition: all 0.3s linear 0s;
       }
+
+      .icon {
+        width: 100px;
+        height: 100px;
+        color: rgba(22, 23, 34, 1);
+      }
     }
+
     .item-video-content-img-hover {
       animation-timeline: unset !important;
       // animation-range-start: unset !important;
@@ -231,22 +199,26 @@ const video_like = useCount(props.like)
         width: 100%;
         background: linear-gradient(transparent, rgba(0, 0, 0, 0.3));
       }
+
       .item-video-info-content {
         height: 100%;
         position: relative;
         width: 100%;
+
         .info-content-blank2 {
           display: flex;
           left: 12px;
           position: absolute;
           top: 12px;
         }
+
         .info-content-blank {
           display: flex;
           left: 8px;
           position: absolute;
           top: 8px;
         }
+
         .video-time {
           background-color: rgba(0, 0, 0, 0.7);
           bottom: 10px;
@@ -260,6 +232,7 @@ const video_like = useCount(props.like)
           border-radius: 4px;
           padding: 0px 5px;
         }
+
         .likes {
           align-items: center;
           bottom: 8px;
@@ -285,6 +258,7 @@ const video_like = useCount(props.like)
       cursor: pointer;
       z-index: 1;
     }
+
     .overlay {
       position: absolute;
       top: 0;
@@ -301,5 +275,4 @@ const video_like = useCount(props.like)
 //   .item-video-content-img-hover {
 //     transform: scale(1.05);
 //   }
-// }
-</style>
+// }</style>

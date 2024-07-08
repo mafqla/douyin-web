@@ -1,32 +1,59 @@
 <script setup lang="ts">
-import {} from 'vue'
+import { } from 'vue'
 import RelatedVideoItem from './related-video-item.vue'
+import { useCount } from '@/hooks';
+import type { IAuthor } from '@/api/tyeps/common/author';
+import apis from '@/api/apis';
+import type { IAwemeInfo } from '@/api/tyeps/common/aweme';
+import { formatMillisecondsToTime } from '@/utils/date-format';
+
+interface Props {
+  author: IAuthor
+  awemeId: string
+}
+const props = defineProps<Props>();
+
+const followers = useCount(props.author.follower_count);
+const likes = useCount(props.author.total_favorited);
+//是否关注
+const isFollow = ref(Boolean(props.author.follow_status))
+const awemeList = ref<IAwemeInfo[]>([])
+const getVideoRelated = async (awemeId: string) => {
+  try {
+    const res = await apis.getVideoRelated(Number(awemeId))
+    awemeList.value = res.aweme_list
+
+  } catch (error) {
+    console.log(error)
+  }
+}
+onMounted(() => {
+  getVideoRelated(props.awemeId)
+})
+
 </script>
 <template>
   <div class="related-video">
     <div class="user-info">
       <div class="avatar-content">
         <div class="live-avatar">
-          <img
-            class="avatar"
-            src="//p3-pc.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-avt-0015_efd7067eff5cd3e49d18b328d2a5700e.jpeg?from=116350172"
-          />
+          <img class="avatar" :src="props.author.avatar_thumb.url_list[0]" :alt="props.author.nickname" />
         </div>
       </div>
       <div class="info-content">
         <div class="username">
-          <span class="username-text">Blueblue.</span>
+          <span class="username-text">{{ props.author.nickname }}</span>
         </div>
         <p class="stats-container">
           <span class="stats-label">粉丝</span>
-          <span class="stats-value">16.1万</span>
+          <span class="stats-value">{{ followers }}</span>
           <span class="stats-label">获赞</span>
-          <span class="stats-value">3142.6万</span>
+          <span class="stats-value">{{ likes }}</span>
         </p>
       </div>
 
       <div class="btn-content">
-        <button type="button" class="btn">关注</button>
+        <button type="button" class="btn" :class="{ follow: isFollow }"> {{ isFollow ? '已关注' : '关注' }}</button>
       </div>
     </div>
     <div class="line"></div>
@@ -36,17 +63,15 @@ import RelatedVideoItem from './related-video-item.vue'
       </div>
 
       <ul>
-        <related-video-item
-          v-for="item in 20"
-          :key="item"
-          videoTitle="还得是湖南妹妹真的太顶了，照片视频都绝了 #大长腿 #陌生人拍照"
-          videoLink="//www.douyin.com/video/7347978613007863066"
-          thumbnailSrc="//p9-pc-sign.douyinpic.com/image-cut-tos-priv/7ee7ec9cd08dfdaae500c675cbffe766~tplv-dy-resize-origshort-autoq-75:330.jpeg?biz_tag=pcweb_cover&from=3213915784&s=PackSourceEnum_WEBPC_RELATED_AWEME&sc=cover&se=false&x-expires=2027689200&x-signature=AcHqYcX6m9y9HPJ2zUEYLHSz5eE%3D"
-          videoDuration="03:05"
-          likeCount="5.1万"
-          userName="七玖📸"
-        />
+        <related-video-item v-for="item in awemeList" :key="item.aweme_id" :videoTitle="item.desc"
+          :videoLink="`/video/${item.aweme_id}`" :thumbnailSrc="item.video.cover.url_list[0]"
+          :videoDuration="formatMillisecondsToTime(item.video.duration)"
+          :likeCount="useCount(item.statistics.digg_count)" :userName="item.author.nickname"
+          :sec_uid="item.author.sec_uid" />
       </ul>
+      <div class="load-container">
+        <button type="button" class="load-more-button">点击加载更多</button>
+      </div>
     </div>
   </div>
 </template>
@@ -55,6 +80,7 @@ import RelatedVideoItem from './related-video-item.vue'
 .related-video {
   width: 100%;
 }
+
 .user-info {
   height: 90px;
   justify-content: center;
@@ -67,6 +93,7 @@ import RelatedVideoItem from './related-video-item.vue'
 .avatar-content {
   transition: all 0.3s ease-in;
   transform: scale(1);
+
   &:hover {
     transition: all 0.3s ease-out;
     transform: scale(1.1);
@@ -92,6 +119,7 @@ import RelatedVideoItem from './related-video-item.vue'
     }
   }
 }
+
 .info-content {
   flex: 1;
   margin: 0 8px;
@@ -102,6 +130,7 @@ import RelatedVideoItem from './related-video-item.vue'
     white-space: nowrap;
     overflow: hidden;
   }
+
   .username {
     color: var(--color-text-t1);
     height: 28px;
@@ -118,6 +147,7 @@ import RelatedVideoItem from './related-video-item.vue'
       line-height: 22px;
     }
   }
+
   .stats-container {
     color: var(--color-text-t4);
     font-size: 12px;
@@ -129,6 +159,7 @@ import RelatedVideoItem from './related-video-item.vue'
       font-weight: 400;
       line-height: 20px;
     }
+
     .stats-value {
       color: var(--color-text-t1);
       margin-right: 8px;
@@ -189,6 +220,24 @@ import RelatedVideoItem from './related-video-item.vue'
       flex: 1 1 0%;
       overflow: hidden;
     }
+  }
+
+
+  .load-container {
+    margin-top: 24px;
+    margin-bottom: 48px;
+  }
+
+  .load-more-button {
+    color: var(--color-text-t4);
+    width: 100%;
+    cursor: pointer;
+    border: 1px solid var(--color-bg-b3);
+    background-color: transparent;
+    border-radius: 8px;
+    outline: none;
+    font-size: 12px;
+    line-height: 32px;
   }
 }
 </style>

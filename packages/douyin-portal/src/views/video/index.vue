@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { toRef } from 'vue'
+import { toRef, } from 'vue'
 import VideoDetailInfo from './components/video-detail-info.vue'
 import RelatedVideo from './components/related-video.vue'
 import BasePlayer from '@/components/video-player/base-player.vue'
 import RelatedComment from './components/related-comment.vue'
+import PageFooter from '@/layout/page-footer.vue'
 import testVideo from '/test-video/test1.mp4?url'
 import testImg from '@/assets/test-img/test-img.jpeg'
 import { settingStore } from '@/stores/setting'
 import { useRoute } from 'vue-router'
+import apis from '@/api/apis'
+import type { IawemeDetail } from '@/api/tyeps/request_response/videoDetailRes'
 const playerOptions = {
-  url: testVideo,
   miniScreen: {
     disable: false,
     height: 197,
@@ -30,7 +32,7 @@ const isShowSwitchControl = toRef(settingStore(), 'isShowSwitchControl')
 
 //获取当前请求参数
 const route = useRoute()
-console.log(route.params)
+const awemeId = Number(route.params.id)
 /**
  * todo
  * 调用接口获取视频信息
@@ -39,30 +41,52 @@ console.log(route.params)
  * 3. 分享接口
  * 4. 相关推荐视频接口
  */
+
+
+const videoDetail = ref<IawemeDetail>()
+provide('videoDetail', videoDetail)
+const getVideoDetail = async (awemeId: number) => {
+  try {
+    const res = await apis.getVideoDetail(awemeId)
+    videoDetail.value = res.aweme_detail
+  } catch (error) {
+    console.log(error)
+  }
+}
+onMounted(() => {
+  getVideoDetail(awemeId)
+})
+const awemeUrl = computed(() => {
+  return videoDetail.value?.video.play_addr.url_list ?? []
+})
+
+watchEffect(() => {
+  useTitle(`${videoDetail.value?.desc} - 抖音` ?? '抖音-记录美好生活')
+})
+
+
 </script>
 <template>
-  <div class="video">
+  <div class="video" v-if="videoDetail">
     <div class="video-detail">
       <div class="left-content">
         <div class="video-detail-container">
-          <BasePlayer :options="playerOptions" class="related-video">
+          <BasePlayer :url="awemeUrl" :options="playerOptions" class="related-video">
             <template v-slot:switch>
-              <swiper-control-modal
-                class="swiper-control"
-                v-show="isShowSwitchControl"
-                style="justify-content: center; height: auto; bottom: 50%"
-              />
+              <swiper-control-modal class="swiper-control" v-show="isShowSwitchControl"
+                style="justify-content: center; height: auto; bottom: 50%" />
             </template>
           </BasePlayer>
         </div>
-        <video-detail-info />
-        <related-video class="left-content-recommend" />
-        <related-comment />
+        <video-detail-info :description="videoDetail?.desc" :seo-description="videoDetail?.seo_info.ocr_content" />
+        <related-video :author="videoDetail?.author" :aweme-id="videoDetail?.aweme_id" class="left-content-recommend" />
+        <related-comment :aweme_id="videoDetail?.aweme_id" :author_id="videoDetail.author.uid" />
       </div>
       <div class="right-content">
-        <related-video />
+        <related-video :author="videoDetail?.author" :aweme-id="videoDetail?.aweme_id" />
       </div>
     </div>
+    <page-footer />
   </div>
 </template>
 
@@ -91,6 +115,7 @@ console.log(route.params)
     // margin-top: 24px;
     position: relative;
     overflow: hidden;
+
     &:before {
       width: 100%;
       height: 0;
@@ -119,9 +144,11 @@ console.log(route.params)
     }
   }
 }
+
 .right-content {
   margin-bottom: 40px;
 }
+
 @media (min-width: 1240px) {
   .video-detail {
     padding: 0 24px 0 0;
@@ -131,36 +158,43 @@ console.log(route.params)
 @media (min-width: 1032px) {
   .video-detail {
     max-width: calc(175.2vh + 57.816px) !important;
+
     .right-content {
       width: 25%;
       display: block !important;
     }
   }
+
   .left-content {
     width: 75%;
     padding-right: 20px;
   }
+
   .left-content-recommend {
     display: none;
   }
 }
+
 @media (min-width: 1032px) {
   .video-detail {
     // max-width: 175.2vh;
     display: flex;
   }
 }
+
 @media (min-width: 1024px) {
   .video-detail {
     padding: 0 24px 0 0;
   }
 }
+
 @media (min-width: 0) {
   .video-detail {
     min-width: 852px;
     max-width: 134.2vh;
     margin-left: auto;
     margin-right: auto;
+
     .right-content {
       display: none;
     }

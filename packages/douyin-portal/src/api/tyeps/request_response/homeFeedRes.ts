@@ -1,3 +1,5 @@
+import type { IAwemeInfo } from '../common/aweme'
+
 export interface IhomeFeedRes {
   /**
    * @description 状态码
@@ -10,7 +12,7 @@ export interface IhomeFeedRes {
   /**
    * @description 数据
    */
-  cards: []
+  cards: ICards[]
   /**
    * @description 是否还有更多
    */
@@ -23,5 +25,5 @@ export interface IhomeFeedRes {
 
 export interface ICards {
   type: number
-  aweme: string
+  aweme: IAwemeInfo
 }

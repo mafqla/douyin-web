@@ -58,3 +58,16 @@ export interface IVideoControl {
   // 禁用录制的原因，如果为空字符串表示没有禁用原因
   disable_record_reason: string
 }
+
+export interface IAwemeControl {
+  can_comment: boolean
+  can_forward: boolean
+  can_share: boolean
+  can_show_comment: boolean
+}
+
+export interface IVideoTag {
+  level: number
+  tag_id: number
+  tag_name: string
+}

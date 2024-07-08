@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, toRef, watchEffect } from 'vue'
-import { UserTab, UserFooter } from '@/components/my'
+import { UserTab } from '@/components/my'
+import PageFooter from '@/layout/page-footer.vue'
 import { userStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 import { videoStore } from '@/stores/videos'
@@ -71,8 +72,8 @@ onMounted(async () => {
     if (res) {
       userInfo.value = res.data
       document.title = userInfo.value.userAuth
-        ? `${userInfo.value.username}的主页 - ${userInfo.value.userAuth} - 抖音`
-        : `${userInfo.value.username}的主页 - 抖音`
+        ? `${userInfo.value.username}的抖音 - ${userInfo.value.userAuth} - 抖音`
+        : `${userInfo.value.username}的抖音 - 抖音`
     }
   } catch (e) {
     console.log(e)
@@ -151,7 +152,7 @@ useInfiniteScroll(window, load, {
         <user-tab-other />
       </div>
     </div>
-    <user-footer />
+    <page-footer />
   </div>
 </template>
 
@@ -159,6 +160,7 @@ useInfiniteScroll(window, load, {
 .scrolled::before {
   opacity: 0; // 滚动后使背景图片消失
 }
+
 .my {
   display: flex;
   flex: 1;
@@ -168,12 +170,14 @@ useInfiniteScroll(window, load, {
   // overflow-x: hidden;
   user-select: none;
   min-height: 100%;
+
   .user-detail {
     // padding-top: 60px;
     display: flex;
     flex: 1 1;
     min-height: 100%;
     width: 100%;
+
     // &::before {
     //   background-image: v-bind(background);
     //   background-position: 50%;
@@ -205,6 +209,7 @@ useInfiniteScroll(window, load, {
       right: 0;
       top: 0;
     }
+
     .user-detail-content {
       margin: 0 auto;
       max-width: none;
@@ -216,6 +221,7 @@ useInfiniteScroll(window, load, {
     }
   }
 }
+
 @media (max-width: 1475px) {
   .user-detail {
     .user-detail-content.max {
@@ -224,6 +230,7 @@ useInfiniteScroll(window, load, {
     }
   }
 }
+
 @media (max-width: 1328px) {
   .user-detail {
     .user-detail-content {

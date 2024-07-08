@@ -26,6 +26,7 @@ const props = defineProps({
 const sizeClass = computed(() => {
   return {
     'avatar-size-small': props.size === 'small',
+    'avatar-size-common': props.size === 'common',
     'avatar-size-medium': props.size === 'medium',
     'avatar-size-large': props.size === 'large'
   }
@@ -40,37 +41,17 @@ const imageErrorHandler = (event: any) => {
 </script>
 
 <template>
-  <div
-    class="dy-avatar"
-    :class="{ 'enable-transition': props.enableTransition }"
-  >
-    <a
-      v-if="props.userLink"
-      :href="props.userLink"
-      class="avatar-link"
-      target="_blank"
-    >
+  <div class="dy-avatar" :class="{ 'enable-transition': props.enableTransition }">
+    <a v-if="props.userLink" :href="props.userLink" class="avatar-link" target="_blank">
       <div class="avatar-wrapper" :class="sizeClass">
-        <img
-          class="avatar-image"
-          :src="props.src"
-          :alt="`用户头像`"
-          @error="imageErrorHandler"
-          @load="isImageLoadingFailed = false"
-          v-if="!isImageLoadingFailed"
-        />
+        <img class="avatar-image" :src="props.src" :alt="`用户头像`" @error="imageErrorHandler"
+          @load="isImageLoadingFailed = false" v-if="!isImageLoadingFailed" />
         <div class="default-img" v-if="isImageLoadingFailed"></div>
       </div>
     </a>
     <div v-else class="avatar-wrapper" :class="sizeClass">
-      <img
-        class="avatar-image"
-        :src="props.src"
-        :alt="`用户头像`"
-        @error="imageErrorHandler"
-        @load="isImageLoadingFailed = false"
-        v-if="!isImageLoadingFailed"
-      />
+      <img class="avatar-image" :src="props.src" :alt="`用户头像`" @error="imageErrorHandler"
+        @load="isImageLoadingFailed = false" v-if="!isImageLoadingFailed" />
       <div class="default-img" v-if="isImageLoadingFailed"></div>
     </div>
   </div>
@@ -80,11 +61,13 @@ const imageErrorHandler = (event: any) => {
 .enable-transition {
   transition: all 0.3s ease-in;
   transform: scale(1);
+
   &:hover {
     transition: all 0.3s ease-out;
     transform: scale(1.1);
   }
 }
+
 .dy-avatar {
   cursor: pointer;
   flex: 0;
@@ -105,9 +88,15 @@ const imageErrorHandler = (event: any) => {
     overflow: hidden;
     border: 1px solid var(--color-line-l3) !important;
   }
+
   .avatar-size-small {
     width: 40px;
     height: 40px;
+  }
+
+  .avatar-size-common {
+    width: 50px;
+    height: 50px;
   }
 
   .avatar-size-medium {

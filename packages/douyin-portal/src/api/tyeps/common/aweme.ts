@@ -122,7 +122,7 @@ interface ReviewResult {
 }
 
 // 定义一个表示额外文本信息的接口
-interface ITextExtra {
+export interface ITextExtra {
   // 起始位置
   start: number
   // 结束位置
@@ -138,7 +138,7 @@ interface ITextExtra {
 }
 
 // 定义一个表示分享信息的接口
-interface IShareInfo {
+export interface IShareInfo {
   // 分享链接
   share_url: string
   // 分享描述

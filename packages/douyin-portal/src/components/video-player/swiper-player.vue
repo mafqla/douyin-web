@@ -25,6 +25,8 @@ import {
 import { commentStore } from '@/stores/comment'
 import { videosCtrolStore } from '@/stores/videos-control'
 
+
+type UrlType = string | string[];
 const props = defineProps({
   id: {
     type: Number,
@@ -47,7 +49,7 @@ const props = defineProps({
     required: true
   },
   url: {
-    type: String,
+    type: [String, Array],
     required: true
   },
   poster: {
@@ -106,11 +108,28 @@ const props = defineProps({
 const player = ref<any>(null)
 const uniqueId = uuidv4()
 
+
+/**
+ * 处理播放器url数组，转为{
+ *  src: 'url', type: 'video/mp4'}
+ */
+const url = computed(() => {
+  if (Array.isArray(props.url)) {
+    return (props.url as string[]).map((item: string) => {
+      return {
+        src: item,
+        type: ''
+      }
+    })
+  } else {
+    return props.url
+  }
+})
 const { isPlay } = toRefs(props)
 //西瓜播放器选项
 const playerOptions = ref({
   id: `xgplayer-${uniqueId}`,
-  url: props.url,
+  url: url.value,
   width: '100%',
   height: '100%',
   playsinline: true,
@@ -302,48 +321,24 @@ const openRelated = () => {
 
 <template>
   <div class="swiper-player">
-    <div
-      class="videos-container"
-      :style="{ width: currentWidth }"
-      id="videos-controll"
-    >
+    <div class="videos-container" :style="{ width: currentWidth }" id="videos-controll">
       <div class="slide-video">
         <div class="swiper" ref="player" :id="playerId">
-          <video-info
-            v-if="props.isShowInfo"
-            :username="props.username"
-            :uploadTime="props.uploadTime"
-            :description="props.description"
-          />
-          <video-action
-            :id="props.id"
-            :userId="props.userId"
-            :avatar="props.img"
-            :dianzan="props.dianzan"
-            :comment="props.comment"
-            :shoucang="props.shoucang"
-            :isLike="props.isLike"
-            :isCollect="props.isCollect"
-            :isAttention="props.isAttention"
-            :isShowAvatar="props.isShowAvatar"
-            @toggleComments="toggleComments(props.id)"
-          >
+          <video-info v-if="props.isShowInfo" :username="props.username" :uploadTime="props.uploadTime"
+            :description="props.description" />
+          <video-action :id="props.id" :userId="props.userId" :avatar="props.img" :dianzan="props.dianzan"
+            :comment="props.comment" :shoucang="props.shoucang" :isLike="props.isLike" :isCollect="props.isCollect"
+            :isAttention="props.isAttention" :isShowAvatar="props.isShowAvatar"
+            @toggleComments="toggleComments(props.id)">
           </video-action>
         </div>
       </div>
       <video-search-btn @click="openRelated" v-show="!control.isShowRelated" />
-      <video-side-bar-btn
-        @click="openComments"
-        v-show="control.isShowComment"
-      />
+      <video-side-bar-btn @click="openComments" v-show="control.isShowComment" />
     </div>
     <slot></slot>
-    <video-sidebar
-      :id="props.id"
-      :username="props.username"
-      @closeComments="closeComments"
-      v-show="!control.isShowComment"
-    />
+    <video-sidebar :id="props.id" :username="props.username" @closeComments="closeComments"
+      v-show="!control.isShowComment" />
     <div class="video-blur">
       <img :src="props.poster" :alt="props.description" />
     </div>
@@ -456,10 +451,12 @@ const openRelated = () => {
   margin: unset;
   min-height: 40px;
 }
+
 .xgplayer .xg-center-grid {
   top: -1px;
   transform: translateY(-50%);
 }
+
 .xgplayer .xg-tips {
   background-color: #41424c;
   border-radius: 4px;
@@ -471,11 +468,13 @@ const openRelated = () => {
   font-size: 12px;
   white-space: nowrap;
 }
+
 .xgplayer xg-icon {
   margin-left: 0;
   margin-right: 0;
   height: 32px;
 }
+
 .xgplayer .xg-left-grid {
   align-items: center;
   display: flex;
@@ -486,12 +485,14 @@ const openRelated = () => {
   margin-left: 8px;
   margin-right: 50px;
 }
+
 .xgplayer .xg-right-grid {
   align-items: center;
   display: flex;
   height: 40px;
   margin-right: 16px;
 }
+
 .xgplayer-pause.xgplayer .xgplayer-start.hide {
   display: block;
   pointer-events: auto;
@@ -518,25 +519,31 @@ const openRelated = () => {
     overflow: hidden;
   }
 }
+
 @keyframes loading {
   to {
     background-position-y: -2880px;
   }
 }
+
 .xgplayer xg-start-inner {
   background: none;
 }
+
 .xgplayer .xgplayer-start .xg-icon-play,
 .xg-icon-pause {
   width: 100%;
   height: 100%;
 }
+
 .xgplayer-skin-default .xgplayer-progress-played {
   background: rgba(255, 255, 255, 0.4);
 }
+
 .xgplayer-skin-default .xgplayer-progress-cache {
   background: transparent;
 }
+
 .xgplayer-skin-default .xgplayer-playbackrate ul {
   width: 48px;
   border-radius: 4px;
@@ -554,9 +561,11 @@ const openRelated = () => {
   position: absolute !important;
   z-index: auto !important;
 }
+
 .xgplayer .xgplayer-controls {
   background: transparent;
 }
+
 .xgplayer .btn-text span {
   font-size: 14px;
   font-weight: 500;
@@ -565,6 +574,7 @@ const openRelated = () => {
   color: #e4e4e6;
   background: unset;
 }
+
 .xgplayer .xg-options-list {
   width: 57px;
   background-color: #41424c;
@@ -577,6 +587,7 @@ const openRelated = () => {
   /* padding: 20px 0 0; */
   top: auto;
 }
+
 .xgplayer .xg-options-list li {
   cursor: pointer;
   line-height: 18px;
@@ -585,18 +596,23 @@ const openRelated = () => {
   text-align: center;
   width: 100%;
 }
+
 .xgplayer.xgplayer-pc .xgplayer-progress-outer {
   height: 2px;
 }
+
 .xgplayer-progress-inner .xgplayer-progress-played {
   background: hsla(0, 0%, 100%, 0.4);
 }
+
 .xgplayer-skin-default .xgplayer-progress-inner {
   background: transparent;
 }
+
 .xgplayer-progress-inner .xgplayer-progress-cache {
   background: transparent;
 }
+
 .xgplayer-progress-inner .xgplayer-progress-played {
   background: hsla(0, 0%, 100%, 0.4);
 }
@@ -610,53 +626,35 @@ const openRelated = () => {
 
 .xgplayer.xgplayer-pc .xgplayer-progress.active .xgplayer-progress-inner,
 .xgplayer.xgplayer-pc .xgplayer-progress.active .xgplayer-progress-inner {
-  background: linear-gradient(
-    180deg,
-    transparent,
-    transparent 3px,
-    hsla(0, 0%, 100%, 0.4) 0,
-    hsla(0, 0%, 100%, 0.4) 9px,
-    transparent 0,
-    transparent
-  );
+  background: linear-gradient(180deg,
+      transparent,
+      transparent 3px,
+      hsla(0, 0%, 100%, 0.4) 0,
+      hsla(0, 0%, 100%, 0.4) 9px,
+      transparent 0,
+      transparent);
 }
 
-.xgplayer.xgplayer-pc
-  .xgplayer-progress.active
-  .xgplayer-progress-inner
-  .xgplayer-progress-cache,
-.xgplayer.xgplayer-pc
-  .xgplayer-progress.active
-  .xgplayer-progress-inner
-  .xgplayer-progress-cache {
-  background: linear-gradient(
-    180deg,
-    transparent,
-    transparent 3px,
-    hsla(0, 0%, 100%, 0.6) 0,
-    hsla(0, 0%, 100%, 0.6) 9px,
-    transparent 0,
-    transparent
-  );
+.xgplayer.xgplayer-pc .xgplayer-progress.active .xgplayer-progress-inner .xgplayer-progress-cache,
+.xgplayer.xgplayer-pc .xgplayer-progress.active .xgplayer-progress-inner .xgplayer-progress-cache {
+  background: linear-gradient(180deg,
+      transparent,
+      transparent 3px,
+      hsla(0, 0%, 100%, 0.6) 0,
+      hsla(0, 0%, 100%, 0.6) 9px,
+      transparent 0,
+      transparent);
 }
 
-.xgplayer.xgplayer-pc
-  .xgplayer-progress.active
-  .xgplayer-progress-inner
-  .xgplayer-progress-played,
-.xgplayer.xgplayer-pc
-  .xgplayer-progress.active
-  .xgplayer-progress-inner
-  .xgplayer-progress-played {
-  background: linear-gradient(
-    180deg,
-    transparent,
-    transparent 3px,
-    #fff 0,
-    #fff 9px,
-    transparent 0,
-    transparent
-  );
+.xgplayer.xgplayer-pc .xgplayer-progress.active .xgplayer-progress-inner .xgplayer-progress-played,
+.xgplayer.xgplayer-pc .xgplayer-progress.active .xgplayer-progress-inner .xgplayer-progress-played {
+  background: linear-gradient(180deg,
+      transparent,
+      transparent 3px,
+      #fff 0,
+      #fff 9px,
+      transparent 0,
+      transparent);
 }
 
 .xgplayer.xgplayer-pc .xgplayer-progress.active .xgplayer-progress-btn:before,
@@ -664,10 +662,12 @@ const openRelated = () => {
   background-clip: content-box;
   border: 5px solid hsla(0, 0%, 100%, 0.2);
 }
+
 .xgplayer.xgplayer-pc .xgplayer-progress-btn {
   background: none;
   box-shadow: none;
 }
+
 .xgplayer .xgplayer-progress-btn {
   background: rgba(255, 94, 94, 0.304);
   border: 0.5px solid rgba(255, 94, 94, 0.057);
@@ -682,6 +682,7 @@ const openRelated = () => {
   width: 20px;
   z-index: 1;
 }
+
 .xgplayer .xgplayer-progress-btn:before {
   background: #fff;
   border-radius: 30px;
@@ -693,6 +694,7 @@ const openRelated = () => {
   position: relative;
   /* width: 12px; */
 }
+
 .xgplayer .xgplayer-progress-btn,
 .xgplayer .xgplayer-progress-btn:before {
   display: block;
@@ -701,16 +703,19 @@ const openRelated = () => {
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
+
 .xgplayer.xgplayer-pc .xgplayer-progress-btn {
   -webkit-transform: translate(-50%, -50%) scale(0);
   -ms-transform: translate(-50%, -50%) scale(0);
   transform: translate(-50%, -50%) scale(0);
 }
+
 .xgplayer.xgplayer-pc .xgplayer-progress.active .xgplayer-progress-btn {
   -webkit-transform: translate(-50%, -50%) scale(1);
   -ms-transform: translate(-50%, -50%) scale(1);
   transform: translate(-50%, -50%) scale(1);
 }
+
 .swiper.xgplayer-pc .xg-inner-controls {
   left: 0 !important;
   right: 0 !important;

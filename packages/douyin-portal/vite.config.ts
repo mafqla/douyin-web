@@ -77,7 +77,7 @@ export default defineConfig(({ command, mode }) => {
       minify: 'esbuild'
     },
     esbuild: {
-      drop: ['console', 'debugger'],
+      // drop: ['console', 'debugger'],
       format: 'esm'
     }
   }

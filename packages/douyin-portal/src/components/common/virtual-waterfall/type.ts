@@ -1,56 +1,33 @@
-import type { CSSProperties } from 'vue'
+import { useSlots } from 'vue'
 
-export interface IVirtualWaterFallProps {
-  gap: number
-  column: number
-  enterSize?: number
-  request: () => Promise<ICardItem[]>
+export type WaterfallList<T = any> = T[]
+export type HeightHook<T, U = any> =
+  | null
+  | ((slots: T, item: U, width: number, errorImgSrc: string) => Promise<number>)
+
+// 定义 props 类型
+export interface WaterfallProps<T> {
+  list?: WaterfallList<T>
+  isLoading?: boolean
+  isOver?: boolean
+  active?: boolean
+  swipeableDelay?: number
+  animation?: boolean
+  distanceToScroll?: number
+  scrollBodySelector?: string
+  isMounted?: boolean
+  virtualTime?: number
+  virtualLength?: number
 }
 
-export interface ICardItem {
-  aweme_id: number | string
-  [key: string]: any
+// 内部需要生成的一些属性
+export interface WaterfallInnerProperty {
+  width?: number
+  height?: number
+  transform?: number
 }
 
-export interface IColumnQueue {
-  list: IRenderItem[]
-  height: number
-}
-
-// 渲染视图项
-export interface IRenderItem {
-  item: ICardItem
-  y: number
-  h: number
-  style: CSSProperties
-}
-
-export interface IItemRect {
-  width: number
-  height: number
-}
-
-export interface ITemporaryItem {
-  item: ICardItem
-  y: number
-  h: number
-  itemHeight: number
-  style: CSSProperties
-}
-
-export interface IVirtualWaterfallItem {
-  item: ICardItem
-  itemWidth: number
-  itemHeight: number
-  style: CSSProperties
-}
-
-export interface IVirtualWaterfallOptions {
-  items: { id: string }[]
-  columns: number
-  columnWidth: number
-  rowHeight: number
-  containerWidth: number
-  containerHeight: number
-  scrollTop: number
+export interface WaterfallExpose<T = any> {
+  reRender: () => void
+  insertBefore: (insertList: WaterfallList<T>) => Promise<void>
 }

@@ -2,46 +2,32 @@
 import SearchSuggestion from '@/components/common/search-suggestion.vue'
 import DyAvatar from '@/components/common/dy-avatar.vue'
 import DyInput from '@/components/common/dy-input/index.vue'
+import apis from '@/api/apis';
+import type { IComments } from '@/api/tyeps/request_response/commentListRes'
 
-const list = [
+
+const props = defineProps(
   {
-    id: 1,
-    user: {
-      userAvatar:
-        'https://p3-pc-sign.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813c001_fddf54d2b1544d0aa4f0987fefc73f65.jpeg?x-expires=1712570400&x-signature=sHygsuEx4uBSOb8ErbKxTlqV8b8%3D&from=2480802190',
-      username: '笙歌落'
-    },
-    address: '北京',
-    commentLike: 100,
-    commentTime: '2024-04-12 12:00:00',
-    commentInfo:
-      '今天晚上刚看完 怎么说呢 其实这部电影挺深奥啊 我个人理解是真人接受自己恶的一面(对新母亲的厌恶 对学校的厌恶 自己撒过的谎 自己受过的伤 )我个人感觉那个苍鹭和真人很像 像是自己阴暗的一面 所以那个苍鹭才会成为真人去另一个所创造的黑暗的世界的领路人 他们在这途中遇到过很多困难 他们从一开始的互相厌恶到最后成为朋友 接受了对方 也就是接受了自己恶的一面 和自己和解 最后真人没有自己一个人逃离那个世界 而是带着他的新母亲还有那只苍鹭回到了自己的世界 他也和自己的亲生母亲做了告别 他的亲生母亲也选择了自己应该打开的那扇门 那个世界 生活并不是只充满恶的 在另一个世界婆婆们也都守护着真人 好好的爱着真人 最后那个恶的世界坍陷 真人回到了自己的世界之中 带着善意去对待世界 对待自己 “你想活出怎样的人生”你的人生其实由你自己选择 但是请永远热爱这个世界 因为这个世界永远不缺乏的就是“爱”(个人理解 勿喷)'
-  },
-  {
-    id: 2,
-    user: {
-      userAvatar:
-        'https://p3-pc-sign.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813c001_fddf54d2b1544d0aa4f0987fefc73f65.jpeg?x-expires=1712570400&x-signature=sHygsuEx4uBSOb8ErbKxTlqV8b8%3D&from=2480802190',
-      username: '笙歌落'
-    },
-    address: '江苏',
-    commentLike: 100,
-    commentTime: '2021-09-09 12:00:00',
-    commentInfo: '这个视频真的很好看@笙歌落 你看了吗？'
-  },
-  {
-    id: 3,
-    user: {
-      userAvatar:
-        'https://p3-pc-sign.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813c001_fddf54d2b1544d0aa4f0987fefc73f65.jpeg?x-expires=1712570400&x-signature=sHygsuEx4uBSOb8ErbKxTlqV8b8%3D&from=2480802190',
-      username: '笙歌落'
-    },
-    address: '上海',
-    commentLike: 100,
-    commentTime: '2021-09-09 12:00:00',
-    commentInfo: '想看看你们拍的照片[玫瑰]'
+    aweme_id: String,
+    author_id: String
   }
-]
+)
+
+const commentList = ref<IComments[]>([])
+
+// 获取评论列表
+const getCommentList = async () => {
+  try {
+    const res = await apis.getCommentList(Number(props.aweme_id), 0, 10)
+    console.log(res)
+    commentList.value = res.comments
+  } catch (error) {
+    console.log(error)
+  }
+}
+onMounted(() => {
+  getCommentList()
+})
 </script>
 <template>
   <div class="related-comment">
@@ -55,11 +41,9 @@ const list = [
         </div>
 
         <div class="search-input-content">
-          <dy-avatar
-            userLink="//www.douyin.com/user/MS4wLjABAAAAqy1OO-UP9J2LJ1xSg_lsryKCicbLFLGzBgTRRT4W14Y"
+          <dy-avatar userLink="//www.douyin.com/user/MS4wLjABAAAAqy1OO-UP9J2LJ1xSg_lsryKCicbLFLGzBgTRRT4W14Y"
             src="//p3-pc-sign.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813c001_fddf54d2b1544d0aa4f0987fefc73f65.jpeg?x-expires=1712570400&x-signature=sHygsuEx4uBSOb8ErbKxTlqV8b8%3D&from=2480802190"
-            size="small"
-          />
+            size="small" />
           <dy-input />
         </div>
 
@@ -71,16 +55,11 @@ const list = [
         </div>
       </div>
       <div class="comment-list">
-        <template v-for="it in list" :key="it.id">
-          <comment-item
-            :uid="it.id"
-            :srcd="it.user.userAvatar"
-            :username="it.user.username"
-            :likenum="it.commentLike"
-            :time="it.commentTime"
-            :comment="it.commentInfo"
-            :address="it.address"
-          />
+        <template v-for="it in commentList" :key="it.cid">
+          <comment-item :author_id="props.author_id" :uid="Number(it.user.uid)"
+            :avatar="it.user.avatar_thumb.url_list[0]" :sec_uid="it.user.sec_uid" :username="it.user.nickname"
+            :likenum="it.digg_count" :time="it.create_time" :comment="it.text" :address="it.ip_label"
+            :imageList="it.image_list" :is-folded="it.is_folded" :reply-comment-total="it.reply_comment_total" />
         </template>
       </div>
     </div>

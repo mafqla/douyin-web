@@ -1,40 +1,37 @@
+/* eslint-disable */
 <script setup lang="ts">
-import { ref } from 'vue'
+import type { IawemeDetail } from '@/api/tyeps/request_response/videoDetailRes';
+import { useCount } from '@/hooks';
+import formatTime from '@/utils/date-format';
+import { ref, type Ref } from 'vue'
 
-const dianzan = 100
-const shoucang = 100
-const comment = 100
 
-const isLiked = ref()
-const isCollect = ref()
+const videoDetail = inject<Ref<IawemeDetail>>('videoDetail')
+
+
+const isLiked = ref(Boolean(videoDetail?.value.user_digged))
+const isCollect = ref(Boolean(videoDetail?.value.collect_stat))
+
 </script>
 <template>
-  <div class="video-detail-action">
+  <div class="video-detail-action" v-if="videoDetail">
     <div class="video-detail-action-left">
       <div class="video-detail-action-item">
-        <svg-icon
-          :class="{ liked: isLiked }"
-          icon="dianzan"
-          style="width: 42px; height: 42px"
-        />
-        <span class="num">{{ dianzan }}</span>
+        <svg-icon :class="{ liked: isLiked }" icon="dianzan" style="width: 42px; height: 42px" />
+        <span class="num">{{ useCount(videoDetail.statistics.digg_count) }}</span>
       </div>
       <div class="video-detail-action-item">
         <svg-icon icon="comment" style="width: 42px; height: 42px" />
-        <span class="num">{{ comment }}</span>
+        <span class="num">{{ useCount(videoDetail.statistics.collect_count) }}</span>
       </div>
       <div class="video-detail-action-item">
-        <svg-icon
-          icon="collection"
-          :class="{ collect: isCollect }"
-          style="width: 42px; height: 42px"
-        />
-        <span class="num">{{ shoucang }}</span>
+        <svg-icon icon="collection" :class="{ collect: isCollect }" style="width: 42px; height: 42px" />
+        <span class="num">{{ useCount(videoDetail.statistics.share_count) }}</span>
       </div>
 
       <div class="video-detail-action-item">
         <svg-icon icon="fenxiang" style="width: 42px; height: 42px" />
-        <span class="num">9</span>
+        <span class="num">{{ useCount(videoDetail.statistics.share_count) }}</span>
       </div>
     </div>
     <div class="video-detail-action-right">
@@ -42,7 +39,7 @@ const isCollect = ref()
         <svg-icon icon="report" />
         <span class="report-text">举报</span>
       </div>
-      <span>发布时间：2024-04-02 17:00</span>
+      <span>发布时间：{{ formatTime(videoDetail.create_time) }}</span>
     </div>
   </div>
 </template>
@@ -55,12 +52,14 @@ const isCollect = ref()
   margin-bottom: 4px;
   display: flex;
 }
+
 .video-detail-action-left {
   margin-left: -5px;
   display: flex;
 
-  & > div {
+  &>div {
     margin-right: 24px;
+
     * {
       vertical-align: middle;
     }
@@ -80,6 +79,7 @@ const isCollect = ref()
       &.liked {
         color: red !important;
       }
+
       &.collect {
         color: rgb(255, 184, 2) !important;
       }
@@ -93,6 +93,7 @@ const isCollect = ref()
     line-height: 23px;
   }
 }
+
 .video-detail-action-right {
   color: var(--color-text-t4);
   justify-content: flex-end;

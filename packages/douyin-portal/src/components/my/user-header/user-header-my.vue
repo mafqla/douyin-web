@@ -197,8 +197,6 @@ const openConnectionsPopup = (name: string) => {
 <style lang="scss" scoped>
 .user-detail-header {
   display: flex;
-  // margin-bottom: 24px;
-  // margin-top: 32px;
   margin: 28px auto 21px;
   max-width: 1208px;
   position: relative;
@@ -213,13 +211,7 @@ const openConnectionsPopup = (name: string) => {
   }
 
   .user-info {
-    // flex: 1 1;
-    // align-items: flex-start;
-    // display: flex;
-    // flex-direction: column;
-    // justify-content: center;
-    // margin-left: 40px;
-    // min-width: 560px;
+ 
 
     align-content: center;
     align-items: center;
@@ -264,7 +256,6 @@ const openConnectionsPopup = (name: string) => {
 
       span {
         color: var(--color-text-t3);
-        // color: rgba(255, 255, 255, 0.5);
         font-size: 12px;
         line-height: 20px;
       }
@@ -275,8 +266,6 @@ const openConnectionsPopup = (name: string) => {
 
       .user-account-info {
         align-items: center;
-        // border: 1px solid #f2f2f4;
-        // border: 1px solid rgba(242, 242, 243, 0.08);
         background: var(--color-secondary-default);
         color: var(--color-text-t2);
         border-radius: 2px;
@@ -316,7 +305,6 @@ const openConnectionsPopup = (name: string) => {
       width: 100%;
 
       span {
-        // color: rgba(22, 24, 35, 0.6);
         color: var(--color-text-t1);
         font-size: 12px;
         line-height: 20px;
@@ -325,7 +313,6 @@ const openConnectionsPopup = (name: string) => {
     }
 
     .user-info-detail {
-      // justify-content: flex-start;
       display: flex;
       margin-top: 4px;
       width: 100%;
@@ -419,13 +406,9 @@ const openConnectionsPopup = (name: string) => {
       display: none;
     }
     .edit-content-btn {
-      // background: #e4e4e6 !important;
       background: var(--bgbg-input) !important;
-      // background: rgba(228, 228, 230, 1) !important;
       border: none;
-      // color: #161823 !important;
       color: var(--btn-color) !important;
-      // color: rgba(22, 24, 35, 1) !important;
       font-size: 13px;
       font-weight: 400;
       margin: 0;

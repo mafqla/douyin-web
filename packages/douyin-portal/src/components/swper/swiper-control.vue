@@ -4,25 +4,18 @@ import { videosCtrolStore } from '@/stores/videos-control'
 
 <template>
   <div class="carousel-controls">
-    <div class="carousel-controls-switch">
-      <div
-        class="carousel-controls-switch-up"
-        :class="{ disabled: videosCtrolStore().activeVideoIndex === 0 }"
-        @click="videosCtrolStore().handlePrev()"
-      >
+    <div class="xgplayer-playswitch-tab">
+      <div class="xgplayer-playswitch-prev" :class="{ disabled: videosCtrolStore().activeVideoIndex === 0 }"
+        @click="videosCtrolStore().handlePrev()">
         <svg-icon class="icon" icon="video-switch-prev-arrow" />
       </div>
-      <div
-        class="carousel-controls-switch-down"
-        :class="{
-          disabled: videosCtrolStore().stopScroll
-        }"
-        @click="
-          videosCtrolStore().stopScroll === true
-            ? null
-            : videosCtrolStore().handleNext()
-        "
-      >
+      <div class="xgplayer-playswitch-next" :class="{
+        disabled: videosCtrolStore().stopScroll
+      }" @click="
+        videosCtrolStore().stopScroll === true
+          ? null
+          : videosCtrolStore().handleNext()
+        ">
         <svg-icon class="icon" icon="video-switch-next-arrow" />
       </div>
     </div>
@@ -34,18 +27,21 @@ import { videosCtrolStore } from '@/stores/videos-control'
   width: 100%;
   height: 100%;
 
-  .carousel-controls-switch {
-    // background-color: rgb(50, 52, 66);
-    background-color: rgba(242, 242, 243, 1);
+  .xgplayer-playswitch-tab {
+    background-color: var(--color-bg-b1-white);
     height: 88px;
     opacity: 0.7;
     position: relative;
     width: 44px;
-    border-radius: 18px;
+    border-radius: 22px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, .06);
+
+
     &:hover {
       opacity: 0.9;
     }
-    .carousel-controls-switch-up {
+
+    .xgplayer-playswitch-prev {
       height: 44px;
       position: absolute;
       top: 0px;
@@ -60,20 +56,21 @@ import { videosCtrolStore } from '@/stores/videos-control'
         top: 7px;
         height: 26px !important;
         width: 26px !important;
-        // color: #fff;
-        color: rgba(22, 24, 35, 0.6);
+        color: var(  --xgplayer-playswitch-icon);
       }
     }
-    .carousel-controls-switch-up.disabled {
-      cursor: not-allowed;
-      opacity: 0.3;
-    }
-    .carousel-controls-switch-down.disabled {
+
+    .xgplayer-playswitch-prev.disabled {
       cursor: not-allowed;
       opacity: 0.3;
     }
 
-    .carousel-controls-switch-down {
+    .xgplayer-playswitch-next.disabled {
+      cursor: not-allowed;
+      opacity: 0.3;
+    }
+
+    .xgplayer-playswitch-next {
       bottom: 0px;
       height: 40px;
       opacity: 0.7;
@@ -88,10 +85,16 @@ import { videosCtrolStore } from '@/stores/videos-control'
         top: 7px;
         height: 26px !important;
         width: 26px !important;
-        // color: #fff;
-        color: rgba(22, 24, 35, 0.6);
+        color: var(  --xgplayer-playswitch-icon);
       }
+    }
+
+    .xgplayer-playswitch-prev:not(.disabled):hover,
+    .xgplayer-playswitch-next:not(.disabled):hover {
+      cursor: pointer;
+      opacity: 1;
     }
   }
 }
 </style>
+

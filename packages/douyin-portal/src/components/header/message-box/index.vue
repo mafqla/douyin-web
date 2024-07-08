@@ -162,7 +162,7 @@ const handleExpand = () => {
   right: 24px;
   top: 16px;
 }
-html.dark .conversation-item.clicked {
+html[dark] .conversation-item.clicked {
   background: linear-gradient(
     90deg,
     #252632,

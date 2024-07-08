@@ -41,29 +41,20 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div
-    class="main"
-    :class="{ user: isUserRoute, video: isVideoRoute, search: isSearchRoute }"
-  >
+  <div class="main" :class="{ user: isUserRoute, video: isVideoRoute, search: isSearchRoute }">
     <div class="bg" :class="{ search: isSearchRoute }"></div>
     <aside-bar />
 
-    <div
-      class="right-container min"
-      :class="{
-        searchLayout: isSearchRoute,
-        videoLayout: isVideoRoute
-      }"
-    >
-      <div
-        class="douyin-header"
-        :class="{
-          scrolled: isScrolled,
-          user: isUserRoute,
-          search: isSearchRoute,
-          video: isVideoRoute
-        }"
-      >
+    <div class="right-container min" :class="{
+      searchLayout: isSearchRoute,
+      videoLayout: isVideoRoute
+    }">
+      <div class="douyin-header" :class="{
+        scrolled: isScrolled,
+        user: isUserRoute,
+        search: isSearchRoute,
+        video: isVideoRoute
+      }">
         <div class="douyin-header-content" :class="{ none: backgroundColor }">
           <header-nav :class="{ scrolled: isScrolled }" />
         </div>
@@ -85,7 +76,7 @@ watchEffect(() => {
   background-size: cover;
   display: flex;
   flex-direction: row;
-  height: 100vh;
+  height: 100%;
   width: 100%;
 
   &.user,
@@ -103,6 +94,7 @@ watchEffect(() => {
     //   background: unset !important;
     // }
   }
+
   .bg {
     background: no-repeat url(@/assets/test.png) var(--color-bg-b0);
     height: 100vh;
@@ -117,6 +109,7 @@ watchEffect(() => {
 
 .right-container {
   // width: calc(100% - $sidebar-width);
+  padding-top: var(--header-height);
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -128,18 +121,21 @@ watchEffect(() => {
   &.min {
     min-height: 450px;
   }
+
   &.searchLayout {
     padding-top: var(--header-height);
     position: relative;
     width: 100%;
     overflow-y: auto;
   }
+
   &.videoLayout {
     padding-top: var(--header-height);
     position: relative;
     overflow-y: auto;
   }
 }
+
 .douyin-header-content {
   // height: 60px;
   height: var(--header-height);
@@ -150,9 +146,13 @@ watchEffect(() => {
     background-color: transparent;
   }
 }
+
 .douyin-header {
   background-position-x: -72px;
   width: calc(100% - 72px);
+  position: fixed;
+  top: 0;
+  right: 0;
 
   height: var(--header-height);
   transition: height 0.4s ease 0s;
@@ -169,17 +169,21 @@ watchEffect(() => {
     position: fixed;
     top: 0;
   }
+
   &.scrolled {
     background: no-repeat url(@/assets/test.png) var(--color-bg-b0);
     background-position-x: -72px;
   }
+
   &.search.scrolled {
     background: var(--color-bg-b0);
   }
 }
+
 .douyin-header.user {
   position: fixed;
 }
+
 // .affix {
 //   background: no-repeat url(@/assets/test.png) var(--color-bg-b0);
 //   background-position-x: -72px;
@@ -191,10 +195,12 @@ watchEffect(() => {
 @media (min-width: 1240px) {
   .douyin-header {
     background-position-x: calc(var(--navigation-expend-width) * -1);
+    width: calc(100% - var(--navigation-expend-width));
 
     &.scrolled {
       background-position-x: calc(var(--navigation-expend-width) * -1);
     }
+
     &.user {
       position: fixed;
 
@@ -206,6 +212,7 @@ watchEffect(() => {
       top: 0;
       width: calc(100% - var(--navigation-expend-width));
     }
+
     &.video {
       position: fixed;
       top: 0;

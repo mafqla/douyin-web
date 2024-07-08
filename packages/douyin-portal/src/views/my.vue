@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, toRef, watchEffect } from 'vue'
-import { UserHeaderMy, LoginCode, UserTab, UserFooter } from '@/components/my'
+import { UserHeaderMy, LoginCode, UserTab } from '@/components/my'
+import PageFooter from '@/layout/page-footer.vue'
 import { userStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 import { videoStore } from '@/stores/videos'
@@ -59,13 +60,11 @@ const fetchVideoData = async (page: number, size: number) => {
 }
 
 //设置浏览器标题
-if (store.userInfo.userAuth) {
-  document.title = `${store.userInfo.username}的主页 - ${store.userInfo.userAuth} - 抖音`
-} else if (store.userInfo.userAuth === '') {
-  document.title = `${store.userInfo.username}的主页 - 抖音`
-} else {
-  document.title = '抖音-记录美好生活'
-}
+
+const metaTitle = computed(() => {
+  return store.userInfo.username ? `${store.userInfo.username}的抖音 - 抖音` : `抖音-记录美好生活`
+})
+document.title = metaTitle.value
 onBeforeUnmount(() => {
   document.title = '抖音-记录美好生活'
 })
@@ -145,12 +144,9 @@ useInfiniteScroll(window, load, {
       <div class="user-detail-content max">
         <div class="user-header-background">
           <div class="header-img-content">
-            <div
-              class="header-img"
-              :style="{
-                backgroundImage: `url(${backgroundurl})`
-              }"
-            ></div>
+            <div class="header-img" :style="{
+              backgroundImage: `url(${backgroundurl})`
+            }"></div>
           </div>
           <div class="header-down-bg"></div>
           <div class="header-down-bg-1"></div>
@@ -162,38 +158,38 @@ useInfiniteScroll(window, load, {
         <login-code v-if="!isLogin" />
       </div>
     </div>
-    <user-footer />
+    <page-footer />
   </div>
 </template>
 
 <style lang="scss" scoped>
-html.dark {
+html[dark] {
   .header-img {
     opacity: 1 !important;
   }
+
   .header-down-bg-1 {
-    background-image: linear-gradient(
-      180deg,
-      rgba(29, 29, 36, 0),
-      #161823
-    ) !important;
+    background-image: linear-gradient(180deg,
+        rgba(29, 29, 36, 0),
+        #161823) !important;
     top: auto !important;
   }
+
   .header-down-bg-2 {
-    background-image: linear-gradient(
-      0deg,
-      rgba(25, 26, 36, 0) 27.08%,
-      #161823 104.06%
-    ) !important;
+    background-image: linear-gradient(0deg,
+        rgba(25, 26, 36, 0) 27.08%,
+        #161823 104.06%) !important;
   }
 
   .header-down-bg-3 {
     background-image: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.5));
   }
 }
+
 .scrolled::before {
   opacity: 0; // 滚动后使背景图片消失
 }
+
 .my {
   display: flex;
   flex: 1;
@@ -203,12 +199,14 @@ html.dark {
   // overflow-x: hidden;
   user-select: none;
   min-height: 100%;
+
   .user-detail {
     // padding-top: 60px;
     display: flex;
     flex: 1 1;
     min-height: 100%;
     width: 100%;
+
     // &::before {
     //   background-image: v-bind(background);
     //   background-position: 50%;
@@ -270,34 +268,37 @@ html.dark {
         top: 0;
         width: 100%;
       }
+
       .header-down-bg-1 {
         background-image: linear-gradient(180deg, hsla(0, 0%, 100%, 0), #fff);
         bottom: -48px;
         height: 126px;
         top: 110px;
       }
+
       .header-down-bg-2 {
         background-image: linear-gradient(0deg, hsla(0, 0%, 100%, 0), #fff);
         height: 244px;
         top: 0;
       }
+
       .header-down-bg-1,
       .header-down-bg-2 {
         position: absolute;
         right: 0;
         width: calc(50% + 494px);
       }
+
       .header-down-3 {
-        background-image: linear-gradient(
-          90deg,
-          hsla(0, 0%, 100%, 0),
-          hsla(0, 0%, 100%, 0.3)
-        );
+        background-image: linear-gradient(90deg,
+            hsla(0, 0%, 100%, 0),
+            hsla(0, 0%, 100%, 0.3));
         height: 240px;
         right: 0;
         width: 281px;
       }
     }
+
     .user-detail-content {
       margin: 0 auto;
       max-width: none;
@@ -308,12 +309,14 @@ html.dark {
       min-width: 682px;
       // min-width: 760px;
     }
+
     .user-detail-content.max {
       max-width: none !important;
       width: 100% !important;
     }
   }
 }
+
 @media (max-width: 1475px) {
   .user-detail {
     .user-detail-content.max {
@@ -322,6 +325,7 @@ html.dark {
     }
   }
 }
+
 @media (max-width: 1328px) {
   .user-detail {
     .user-detail-content {
@@ -329,6 +333,7 @@ html.dark {
       width: calc(100% - 120px);
     }
   }
+
   .header-down-bg-1,
   .header-down-bg-2 {
     width: calc(100% - 230px) !important;

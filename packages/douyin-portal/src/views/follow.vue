@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import CarouselControls from '@/components/swper/swiper-control.vue'
-
+import testVideo from '/test-video/test1.mp4?url'
 const loading = ref(false)
 </script>
 <template>
@@ -11,11 +11,8 @@ const loading = ref(false)
         <template #slide>
           <carousel-controls />
         </template>
-      </swiper-video> -->
-      <mini-player
-        style="height: 320px; width: 200px"
-        :url="'http://192.168.227.1:8081/res/458e6bd5-a8cc-492f-a924-e264d7b2eb9e.mp4'"
-      />
+</swiper-video> -->
+      <mini-player style="height: 320px; width: 200px" :url="testVideo" />
     </Loading>
   </div>
 </template>

@@ -3,6 +3,7 @@ import useTheme from '@/hooks/useTheme'
 import { settingStore } from '@/stores/setting'
 import { computed, ref, toRef, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import CoopPanel from './coop-panel.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -75,10 +76,7 @@ watchEffect(() => {
 
 <template>
   <div class="aside">
-    <div
-      class="aside-bar"
-      :style="isSearchRoute ? { background: 'unset' } : {}"
-    >
+    <div class="aside-bar" :style="isSearchRoute ? { background: 'unset' } : {}">
       <div class="aside-top">
         <div class="aside-logo">
           <a href="/" class="aside-logo-a"></a>
@@ -89,33 +87,21 @@ watchEffect(() => {
         <div class="douyin-navigation">
           <div class="menu-container" :default-active="activeMenu">
             <template v-for="item in menuItems" :key="item.index">
-              <div
-                class="menu-item"
-                :index="item.index"
-                @click="handleSelect(item.index)"
-                :class="{ active: activeIndex === item.index }"
-              >
+              <div class="menu-item" :index="item.index" @click="handleSelect(item.index)"
+                :class="{ active: activeIndex === item.index }">
                 <div class="item-container">
-                  <div
-                    class="icon dark"
-                    :style="{
-                      'background-position': calculateBackgroundPosition(
-                        item.index
-                      ),
-                      'background-size': '864px auto'
-                    }"
-                    v-show="theme === 'dark'"
-                  ></div>
-                  <div
-                    class="icon light"
-                    :style="{
-                      'background-position': calculateBackgroundPosition(
-                        item.index
-                      ),
-                      'background-size': '864px auto'
-                    }"
-                    v-show="theme === 'light'"
-                  ></div>
+                  <div class="icon dark" :style="{
+                    'background-position': calculateBackgroundPosition(
+                      item.index
+                    ),
+                    'background-size': '864px auto'
+                  }" v-show="theme === 'dark'"></div>
+                  <div class="icon light" :style="{
+                    'background-position': calculateBackgroundPosition(
+                      item.index
+                    ),
+                    'background-size': '864px auto'
+                  }" v-show="theme === 'light'"></div>
 
                   <div class="title-container">
                     <span class="title">{{ item.title }}</span>
@@ -127,22 +113,20 @@ watchEffect(() => {
           </div>
 
           <div class="aside-bottom">
+            <el-popover :show-arrow="false" placement="right-start">
+              <template #reference>
+                <div class="aside-bottom-item">
+                  <div class="aside-bottom-icon setting light" v-if="theme === 'light'"></div>
+                  <div class="aside-bottom-icon setting dark" v-if="theme === 'dark'"></div>
+                  <div class="aside-bottom-title"><span>设置</span></div>
+                </div>
+              </template>
+              <template #default>
+                <coop-panel />
+              </template>
+            </el-popover>
             <div class="aside-bottom-item">
-              <div
-                class="aside-bottom-icon setting light"
-                v-if="theme === 'light'"
-              ></div>
-              <div
-                class="aside-bottom-icon setting dark"
-                v-if="theme === 'dark'"
-              ></div>
-              <div class="aside-bottom-title"><span>设置</span></div>
-            </div>
-            <div class="aside-bottom-item">
-              <div
-                class="aside-bottom-icon light"
-                v-if="theme === 'light'"
-              ></div>
+              <div class="aside-bottom-icon light" v-if="theme === 'light'"></div>
               <div class="aside-bottom-icon dark" v-if="theme === 'dark'"></div>
               <div class="aside-bottom-title"><span>业务合作</span></div>
             </div>
@@ -160,6 +144,7 @@ watchEffect(() => {
   position: relative;
   background: var(--color-bg-b0);
   z-index: 200;
+
   .aside-bar {
     width: $sidebar-width-min;
     background: no-repeat url(@/assets/test.png) var(--color-bg-b0);
@@ -173,6 +158,7 @@ watchEffect(() => {
       width: 100%;
       position: relative;
       user-select: none;
+
       .aside-logo {
         // background: linear-gradient(
         //   180deg,
@@ -217,6 +203,7 @@ watchEffect(() => {
           transition: opacity 0.3s;
           width: 30px;
         }
+
         // .icon {
         //   height: 34px;
         //   opacity: 1;
@@ -231,11 +218,12 @@ watchEffect(() => {
       position: relative;
       overflow: hidden;
     }
+
     .douyin-navigation {
       background-position: 0 100%;
       background-size: cover;
       bottom: 0;
-      height: calc(100vh - 68px);
+      height: calc(100% - 68px);
       outline: none;
       width: $sidebar-width-min;
       z-index: 20;
@@ -254,9 +242,11 @@ watchEffect(() => {
       &::-webkit-scrollbar {
         display: none;
       }
+
       :deep(.el-menu) {
         all: unset;
       }
+
       .menu-container {
         display: flex;
         flex-direction: column;
@@ -266,6 +256,7 @@ watchEffect(() => {
         :deep(.menu-item:hover) {
           background-color: unset;
         }
+
         .menu-item {
           align-items: center;
           cursor: pointer;
@@ -273,11 +264,13 @@ watchEffect(() => {
           flex-direction: column;
           justify-content: flex-start;
           margin: 8px 10px 0;
+
           &.active,
           &:hover {
             // background: rgba(37, 38, 50, 0.08);
             background: var(--color-fill-hover);
             border-radius: 12px;
+
             span {
               color: var(--color-text-t0) !important;
             }
@@ -297,17 +290,21 @@ watchEffect(() => {
             padding: 6px 8px;
             width: 100%;
             position: relative;
+
             .icon {
               height: 24px;
               width: 24px;
               opacity: 0.5;
             }
+
             .icon.light {
               background-image: url(@/assets/nav_light-new.png);
             }
+
             .icon.dark {
               background-image: url(@/assets/nav_dark-new.png);
             }
+
             .title-container {
               display: flex;
               align-self: center;
@@ -332,9 +329,11 @@ watchEffect(() => {
         // 选中的样式
         .menu-item.is-active {
           color: var(--color-text-t0);
+
           .icon {
             opacity: 1;
           }
+
           span {
             opacity: 1;
             color: var(--color-text-t0) !important;
@@ -401,6 +400,7 @@ watchEffect(() => {
         background-position: -1680px center;
       }
     }
+
     &.dark {
       background-image: url(@/assets/nav_dark-new.png);
 
@@ -409,21 +409,26 @@ watchEffect(() => {
       }
     }
   }
-  .aside-bottom-title {
-    align-items: center;
-    display: flex;
-    flex-grow: 1;
 
-    span {
-      font-size: 12px;
-      font-weight: 500;
-      line-height: 20px;
-    }
+
+}
+
+.aside-bottom-title {
+  align-items: center;
+  display: flex;
+  flex-grow: 1;
+
+  span {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
   }
 }
+
 @media (min-width: 1240px) {
   .aside {
     flex-basis: $sidebar-width;
+
     .aside-bar {
       width: $sidebar-width;
       // .douyin-navigation {
@@ -488,10 +493,12 @@ watchEffect(() => {
       }
     }
   }
+
   .aside-logo {
     background: #f2f2f4;
     height: 165%;
     flex-basis: $sidebar-width !important;
+
     .aside-logo-a {
       background-size: 72px 28px !important;
       height: 28px !important;
@@ -503,6 +510,15 @@ watchEffect(() => {
       background: var(--logo-url) no-repeat !important;
     }
   }
+
+  .aside-bottom-title span {
+
+    margin-right: 4px;
+    font-size: 14px;
+    line-height: 22px;
+
+  }
+
   .aside-content {
     height: calc(100vh - var(--header-height) - 88px);
   }

@@ -12,16 +12,15 @@ const isSaveLogin = ref(true)
 
 <style lang="scss" scoped>
 .trust-login-switch-title {
-  color: var(--color-text-t4);
-  font-family: DFP King Gothic GB;
+  width: 76px;
+  height: 22px;
+  letter-spacing: 0.6px;
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
-  height: 22px;
-  letter-spacing: 0.6px;
   line-height: 22px;
-  margin: 0 8px;
-  width: 76px;
+  margin: 0px 8px;
+  color: var(--color-text-t3);
 }
 
 .trust-login-switch-button {

@@ -240,7 +240,7 @@ const handleSearch = () => {
   }
 }
 
-html.dark .search-input {
+html[dark] .search-input {
   &:hover {
     .btn-title,
     .icon-search {

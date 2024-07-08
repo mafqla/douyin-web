@@ -130,7 +130,7 @@ watchEffect(() => {
 </template>
 
 <style lang="scss" scoped>
-html.dark {
+html[dark] {
   .user-tab {
     background: linear-gradient(
       270deg,

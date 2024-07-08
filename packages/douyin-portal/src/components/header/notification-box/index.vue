@@ -247,7 +247,7 @@ import { ref } from 'vue'
 </template>
 
 <style lang="scss" scoped>
-html.dark .notification-container.active:hover {
+html[dark] .notification-container.active:hover {
   background: linear-gradient(
     90deg,
     #252632,

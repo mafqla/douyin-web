@@ -18,6 +18,10 @@ import { settingStore } from '@/stores/setting'
 
 import { v4 as uuidv4 } from 'uuid'
 const props = defineProps({
+  url: {
+    type: [String, Array],
+    required: true
+  },
   options: {
     type: Object,
     required: true
@@ -25,6 +29,22 @@ const props = defineProps({
   isPlay: {
     type: Boolean,
     required: false
+  },
+
+  autoHide: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  mode: {
+    type: String,
+    required: false,
+    default: 'normal'
+  },
+  marginControls: {
+    type: Boolean,
+    required: false,
+    default: true
   }
 })
 
@@ -32,15 +52,33 @@ const player = ref<any>(null)
 const uniqueId = uuidv4()
 
 const isShowSwitchControl = toRef(settingStore(), 'isShowSwitchControl')
+/**
+ * 处理播放器url数组，转为{
+ *  src: 'url', type: 'video/mp4'}
+ */
+
+const url = computed(() => {
+  if (Array.isArray(props.url)) {
+    return (props.url as string[]).map((item: string) => {
+      return {
+        src: item,
+        type: ''
+      }
+    })
+  } else {
+    return props.url
+  }
+})
+console.log(url.value);
 onMounted(() => {
   props.options.fullscreen = {
-    target: document.getElementById('modalall')
+    target: document.getElementById('modal')
   }
   //@ts-ignore
   player.value = new xgplayer({
     ...props.options,
     id: `xgplayer-${uniqueId}`,
-
+    url: url.value,
     width: '100%',
     height: '100%',
     playsinline: true,
@@ -55,13 +93,14 @@ onMounted(() => {
     allowSeekPlayed: true,
     allowPlayAfterEnded: true,
     allowSeekAfterEnded: true,
-    marginControls: true,
+    marginControls: props.marginControls,
     fullscreen: {
       target: ''
     },
     controls: {
-      autoHide: false,
-      initShow: true
+      autoHide: props.autoHide,
+      initShow: true,
+      mode: props.mode,
     },
     dynamicBg: {
       disable: false,
@@ -84,7 +123,7 @@ onMounted(() => {
       loadingIcon: `   <div class="loading-content">
       <div class="loading-content-img"></div>
     </div>`
-    }
+    },
   })
   const playerRef = ref<HTMLDivElement | null>(null)
   playerRef.value?.appendChild(player.value.root)
@@ -114,7 +153,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  player.value.destroy()
+  // player.value.destroy()
 })
 
 const playerId = ref(`xgplayer-${uniqueId}`)
@@ -131,7 +170,50 @@ watch(
     }
   }
 )
-console.log(props.isPlay)
+
+//把播放器的事件导出给父组件
+const emit = defineEmits<{
+  'play': []
+  'pause': []
+  'ended': []
+  'timeupdate': []
+  'volumechange': []
+  'fullscreenchange': []
+  'cssfullscreenchange': []
+  'error': []
+  'destroy': []
+}>()
+
+onMounted(() => {
+  player.value.on(Events.PLAY, () => {
+    emit('play')
+  })
+  player.value.on(Events.PAUSE, () => {
+    emit('pause')
+  })
+  player.value.on(Events.ENDED, () => {
+    emit('ended')
+  })
+  player.value.on(Events.TIME_UPDATE, () => {
+    emit('timeupdate')
+  })
+  player.value.on(Events.VOLUME_CHANGE, () => {
+    emit('volumechange')
+  })
+  player.value.on(Events.FULLSCREEN_CHANGE, () => {
+    emit('fullscreenchange')
+  })
+  player.value.on(Events.CSS_FULLSCREEN_CHANGE, () => {
+    emit('cssfullscreenchange')
+  })
+  player.value.on(Events.ERROR, () => {
+    emit('error')
+  })
+  player.value.on(Events.DESTROY, () => {
+    emit('destroy')
+  })
+})
+
 </script>
 <template>
   <div class="modal" ref="player" :id="playerId">
@@ -167,6 +249,7 @@ console.log(props.isPlay)
   width: 48px;
   overflow: hidden;
 }
+
 @keyframes loading {
   to {
     background-position-y: -2880px;
@@ -189,14 +272,17 @@ xg-start-inner {
   pointer-events: auto;
   display: block;
 }
+
 .xgplayer-is-cssfullscreen {
   position: fixed !important;
 }
+
 .xgplayer {
   .xgplayer-time {
     margin: unset;
     min-height: 40px;
   }
+
   .xg-tips {
     background-color: #41424c;
     border-radius: 4px;
@@ -208,6 +294,7 @@ xg-start-inner {
     font-size: 12px;
     white-space: nowrap;
   }
+
   .xg-options-list {
     width: 57px;
     background-color: #41424c;
@@ -219,6 +306,7 @@ xg-start-inner {
     opacity: 1;
     /* padding: 20px 0 0; */
     top: auto;
+
     li {
       cursor: pointer;
       line-height: 18px;
@@ -228,35 +316,42 @@ xg-start-inner {
       width: 100%;
     }
   }
+
   .xgplayer-controls {
     height: 48px;
     background-image: linear-gradient(transparent 0%, rgba(0, 0, 0, 0.6) 100%);
   }
+
   .xgplayer-start {
     width: 98px;
     height: 98px;
     opacity: 0.7;
     z-index: 10;
+
     .xg-icon-play,
     .xg-icon-pause {
       width: 100%;
     }
   }
+
   .xg-inner-controls {
     left: 0 !important;
     right: 0 !important;
     height: 46px !important;
   }
+
   xg-icon {
     margin-left: 0;
     margin-right: 0;
     height: 32px;
   }
+
   .xg-center-grid {
     z-index: 2;
     top: -1px;
     transform: translateY(-50%);
   }
+
   .xgplayer-progress {
     height: 12px;
 
@@ -266,35 +361,31 @@ xg-start-inner {
         margin: 0 !important;
         transition: none !important;
       }
+
       .xgplayer-progress-inner {
-        background: linear-gradient(
-          transparent,
-          transparent 3px,
-          rgba(255, 255, 255, 0.4) 3px,
-          rgba(255, 255, 255, 0.4) 9px,
-          transparent 9px,
-          transparent
-        ) !important;
+        background: linear-gradient(transparent,
+            transparent 3px,
+            rgba(255, 255, 255, 0.4) 3px,
+            rgba(255, 255, 255, 0.4) 9px,
+            transparent 9px,
+            transparent) !important;
 
         .xgplayer-progress-cache {
-          background: linear-gradient(
-            transparent,
-            transparent 3px,
-            rgba(255, 255, 255, 0.6) 3px,
-            rgba(255, 255, 255, 0.6) 9px,
-            transparent 9px,
-            transparent
-          ) !important;
+          background: linear-gradient(transparent,
+              transparent 3px,
+              rgba(255, 255, 255, 0.6) 3px,
+              rgba(255, 255, 255, 0.6) 9px,
+              transparent 9px,
+              transparent) !important;
         }
+
         .xgplayer-progress-played {
-          background: linear-gradient(
-            transparent,
-            transparent 3px,
-            #fff 3px,
-            #fff 9px,
-            transparent 9px,
-            transparent
-          ) !important;
+          background: linear-gradient(transparent,
+              transparent 3px,
+              #fff 3px,
+              #fff 9px,
+              transparent 9px,
+              transparent) !important;
         }
       }
 
@@ -308,10 +399,12 @@ xg-start-inner {
       }
     }
   }
+
   .xgplayer-progress-outer {
     height: 2px !important;
     border-radius: 0;
   }
+
   .xgplayer-progress-btn {
     box-shadow: none !important;
     background: transparent !important;
@@ -329,11 +422,14 @@ xg-start-inner {
       left: 50%;
     }
   }
+
   .xgplayer-progress-inner {
     background: rgba(255, 255, 255, 0.2) !important;
+
     .xgplayer-progress-cache {
       background: transparent !important;
     }
+
     .xgplayer-progress-played {
       background: rgba(255, 255, 255, 0.4);
     }
@@ -349,6 +445,7 @@ xg-start-inner {
       color: #fff !important;
     }
   }
+
   .xg-right-grid {
     height: 40px;
     align-items: center;
@@ -395,10 +492,12 @@ xg-start-inner {
       left: auto;
       right: 6px;
     }
+
     .play-icon {
       position: relative;
       background: transparent;
     }
+
     .xg-icon-play,
     .xg-icon-pause {
       width: 80px;
@@ -409,6 +508,7 @@ xg-start-inner {
       left: -16px;
     }
   }
+
   .xg-mini-layer,
   .xg-mini-layer .mask {
     width: 100%;

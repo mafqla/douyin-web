@@ -3,27 +3,22 @@ import formatTime from '@/utils/date-format'
 import { handleCommentParser } from '@/utils/commentParser'
 import DyInput from '@/components/common/dy-input/index.vue'
 import { computed, ref, watchEffect } from 'vue'
+import type { ImageItem } from '@/api/tyeps/request_response/commentListRes'
+import { useCount } from '@/hooks'
 
-interface IimageList {
-  origin_url: {
-    url: string
-  }
-  thumb_url: {
-    uri: string
-  }
-  medium_url: {
-    uri: string
-  }
-}
 const props = defineProps({
+  author_id: Number,
   uid: Number,
-  srcd: String,
+  secUid: String,
+  avatar: String,
   username: String,
-  time: String,
+  isFolded: Boolean,
+  replyCommentTotal: Number,
+  time: [String, Number],
   comment: String,
   likenum: Number,
   address: String,
-  imageList: Array<IimageList>
+  imageList: Array<ImageItem>
 })
 //子评论列表
 const replyCommentList = ref([]) as any
@@ -36,7 +31,7 @@ const openAvatar = () => {
 //输入框的值
 const comment = ref('')
 watchEffect(() => {
-  console.log('textValue', comment.value)
+  // console.log('textValue', comment.value)
 })
 const isOpenInput = ref(false)
 const replyText = computed(() => {
@@ -50,7 +45,7 @@ const handleSubmit = (data: string) => {
 }
 
 // 实现展开评论
-const isOpenExpand = ref(false)
+const isOpenExpand = ref(props.isFolded)
 const noMore = ref(false)
 
 const onExpand = () => {
@@ -67,12 +62,7 @@ const onCollapse = () => {
 </script>
 <template>
   <div class="comment-item">
-    <dy-avatar
-      userLink="//www.douyin.com/user/MS4wLjABAAAAqy1OO-UP9J2LJ1xSg_lsryKCicbLFLGzBgTRRT4W14Y"
-      :src="props.srcd"
-      size="small"
-      class="comment-item-avatar"
-    />
+    <dy-avatar :userLink="`/user/${props.secUid}`" :src="props.avatar" size="small" class="comment-item-avatar" />
     <div class="comment-item-content">
       <div class="comment-item-index" :class="{ oninput: isOpenInput }">
         <div class="comment-item-info-wrap">
@@ -80,7 +70,7 @@ const onCollapse = () => {
             <a href="#" class="header-name-link">
               <span class="header-name-text">{{ props.username }}</span>
             </a>
-            <comment-item-tag tag="作者" style="background: rgb(254, 44, 85)" />
+            <comment-item-tag v-if="uid === author_id" tag="作者" style="background: rgb(254, 44, 85)" />
           </div>
           <div class="comment-item-content-header-more">
             <el-popover :show-arrow="false" placement="bottom-end">
@@ -100,25 +90,12 @@ const onCollapse = () => {
             <span v-html="handleCommentParser(props.comment ?? '')"> </span>
             <div class="comment-img-list" v-if="props.imageList">
               <div class="img-box" v-for="item in props.imageList">
-                <div class="img-inner" :key="item.origin_url.url">
-                  <img
-                    :src="item.thumb_url.uri"
-                    alt=""
-                    width="100%"
-                    height="100%"
-                    @click="openAvatar"
-                  />
+                <div class="img-inner" :key="item.crop_url.uri">
+                  <img :src="item.crop_url.url_list[1]" alt="" width="100%" height="100%" @click="openAvatar" />
                 </div>
-                <modal
-                  :open="isOpenAvatar"
-                  :isShowClose="true"
-                  @close="isOpenAvatar = false"
-                >
-                  <img
-                    class="comment-img-modal"
-                    style="max-width: 70%; max-height: 90%; border-radius: 4px"
-                    :src="item.medium_url.uri"
-                  />
+                <modal :open="isOpenAvatar" :isShowClose="true" @close="isOpenAvatar = false">
+                  <img class="comment-img-modal" style="max-width: 70%; max-height: 90%; border-radius: 4px"
+                    :src="item.crop_url.url_list[0]" />
                 </modal>
               </div>
             </div>
@@ -149,10 +126,7 @@ const onCollapse = () => {
               </div>
             </div>
 
-            <div
-              class="comment-item-content-footer-reply"
-              @click="isOpenInput = !isOpenInput"
-            >
+            <div class="comment-item-content-footer-reply" @click="isOpenInput = !isOpenInput">
               <div class="footer-reply-content">
                 <svg-icon icon="small-reply" class="icon" />
                 <span>{{ replyText }}</span>
@@ -173,19 +147,13 @@ const onCollapse = () => {
                 <a href="#" class="header-name-link">
                   <span class="header-name-text">{{ item.username }}</span>
                 </a>
-                <comment-item-tag
-                  tag="作者"
-                  style="background: rgb(254, 44, 85)"
-                />
-                <div
-                  class="comment-item-reply-line"
-                  style="
+                <comment-item-tag v-if="uid === author_id" tag="作者" style="background: rgb(254, 44, 85)" />
+                <div class="comment-item-reply-line" style="
                     border-top-width: 4px;
                     border-bottom-width: 4px;
                     border-left-width: 5px;
                     border-left-color: rgba(255, 255, 255, 0.6);
-                  "
-                ></div>
+                  "></div>
               </div>
               <div class="comment-item-content-header-more">
                 <el-popover :show-arrow="false" placement="bottom-end">
@@ -206,29 +174,14 @@ const onCollapse = () => {
                 <div class="comment-img-list" v-if="item.imageList">
                   <div class="img-box" v-for="it in item.imageList">
                     <div class="img-inner" :key="it.origin_url.url">
-                      <img
-                        :src="it.thumb_url.uri"
-                        alt=""
-                        width="100%"
-                        height="100%"
-                        @click="openAvatar"
-                      />
+                      <img :src="it.thumb_url.uri" alt="" width="100%" height="100%" @click="openAvatar" />
                     </div>
-                    <modal
-                      :open="isOpenAvatar"
-                      :isShowClose="true"
-                      @close="isOpenAvatar = false"
-                      class=""
-                    >
-                      <img
-                        class="comment-img-modal"
-                        style="
+                    <modal :open="isOpenAvatar" :isShowClose="true" @close="isOpenAvatar = false" class="">
+                      <img class="comment-img-modal" style="
                           max-width: 70%;
                           max-height: 90%;
                           border-radius: 4px;
-                        "
-                        :src="it.medium_url.uri"
-                      />
+                        " :src="it.medium_url.uri" />
                     </modal>
                   </div>
                 </div>
@@ -259,10 +212,7 @@ const onCollapse = () => {
                   </div>
                 </div>
 
-                <div
-                  class="comment-item-content-footer-reply"
-                  @click="isOpenInput = !isOpenInput"
-                >
+                <div class="comment-item-content-footer-reply" @click="isOpenInput = !isOpenInput">
                   <div class="footer-reply-content">
                     <svg-icon icon="small-reply" class="icon" />
                     <span>{{ replyText }}</span>
@@ -270,20 +220,13 @@ const onCollapse = () => {
                 </div>
               </div>
               <div class="reply-input" v-if="isOpenInput">
-                <dy-input
-                  @update:value="comment = $event"
-                  @submit="handleSubmit"
-                />
+                <dy-input @update:value="comment = $event" @submit="handleSubmit" />
               </div>
             </div>
           </div>
         </template>
-        <comment-expand
-          :isExpanded="isOpenExpand"
-          :noMore="noMore"
-          @onExpand="onExpand"
-          @onCollapse="onCollapse"
-        />
+        <comment-expand :comment-count="useCount(props.replyCommentTotal ?? 0)" :isExpanded="isOpenExpand"
+          :noMore="noMore" @onExpand="onExpand" @onCollapse="onCollapse" />
       </div>
     </div>
   </div>
@@ -306,8 +249,10 @@ const onCollapse = () => {
     cursor: pointer;
     // margin-right: 12px;
     z-index: 1;
+
     .comment-item-avatar-link {
       position: relative;
+
       .avatar-container {
         height: 32px;
         margin-top: 4px;
@@ -320,6 +265,7 @@ const onCollapse = () => {
         flex-shrink: 0;
         overflow: hidden;
         position: relative;
+
         .img {
           border-radius: 50%;
           height: 100%;
@@ -333,6 +279,7 @@ const onCollapse = () => {
   .comment-item-content {
     flex-grow: 1;
     width: 0;
+
     .comment-item-index {
       padding: 4px 0;
       position: relative;
@@ -340,10 +287,12 @@ const onCollapse = () => {
       &.oninput {
         background: var(--input-linear);
       }
+
       .comment-item-info-wrap {
         align-items: center;
         display: flex;
         margin-bottom: 4px;
+
         .comment-item-content-header-name {
           align-items: center;
           display: flex;
@@ -351,6 +300,7 @@ const onCollapse = () => {
           margin-right: 12px;
           overflow: hidden;
           position: relative;
+
           .header-name-link {
             max-width: 100%;
             text-overflow: ellipsis;
@@ -359,6 +309,7 @@ const onCollapse = () => {
             margin-right: 8px;
             line-height: 20px;
             overflow: hidden;
+
             .header-name-text {
               color: var(--color-text-t3);
               font-size: 13px;
@@ -379,6 +330,7 @@ const onCollapse = () => {
             margin: 0 8px;
           }
         }
+
         .comment-item-content-header-more {
           -webkit-user-select: none;
           -ms-user-select: none;
@@ -422,6 +374,7 @@ const onCollapse = () => {
           inset: 0px auto auto 0px;
           transform: translate3d(-82.6667px, 20.6667px, 0px);
         }
+
         .video-report-text {
           color: var(--color-text-t1);
           white-space: nowrap;
@@ -431,6 +384,7 @@ const onCollapse = () => {
           line-height: 22px;
         }
       }
+
       .comment-item-content-text {
         position: relative;
         text-align: justify;
@@ -452,6 +406,7 @@ const onCollapse = () => {
           position: relative;
           top: -2px;
         }
+
         :deep(.header-name-link) {
           margin-left: 2px;
           margin-right: 2px;
@@ -463,11 +418,14 @@ const onCollapse = () => {
 
         .comment-img-list {
           display: flex;
+
           .img-box {
             width: 90px;
             height: 120px;
+
             .img-inner {
               position: relative;
+
               img {
                 width: 90px;
                 height: 120px;
@@ -479,12 +437,14 @@ const onCollapse = () => {
           }
         }
       }
+
       .comment-item-content-time {
         color: var(--color-text-t3);
         font-size: 12px;
         font-weight: 400;
         line-height: 20px;
         position: relative;
+
         .comment-item-content-time-text {
           margin-right: 8px;
           // &::after {
@@ -499,6 +459,7 @@ const onCollapse = () => {
           // }
         }
       }
+
       .comment-item-content-footer {
         position: relative;
 
@@ -515,6 +476,7 @@ const onCollapse = () => {
           line-height: 20px;
           margin-top: 11px;
         }
+
         .comment-item-content-footer-like {
           display: flex;
           margin-left: 10px;
@@ -525,6 +487,7 @@ const onCollapse = () => {
               margin-top: 1px;
             }
           }
+
           .dislike {
             margin-right: 2px;
           }
@@ -538,6 +501,7 @@ const onCollapse = () => {
             margin-right: 10px;
           }
         }
+
         .comment-item-content-footer-reply,
         .comment-item-content-footer-share {
           position: relative;

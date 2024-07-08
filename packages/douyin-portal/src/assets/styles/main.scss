@@ -6,7 +6,7 @@
   margin: 0;
   padding: 0;
 }
-html.dark {
+html[dark] {
   color-scheme: dark;
 }
 html,
@@ -23,12 +23,9 @@ body {
   transition: color 0.5s, background-color 0.5s;
   line-height: 1.6;
   text-rendering: optimizeLegibility;
-  // background: $color-background;
   background: var(--color-bg-b0);
   color: var(--color-text-t1);
-  // position: fixed;
-  min-width: 915px;
-  // overflow-y: overlay;
+  min-width: 628px;
   user-select: none;
 }
 a {
@@ -89,7 +86,7 @@ ul li {
 }
 
 @media (prefers-color-scheme: dark) {
-  html.dark {
+  html {
     color-scheme: dark;
   }
 }

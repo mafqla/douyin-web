@@ -107,17 +107,12 @@ const routes: RouteRecordRaw[] = [
       }
     ]
   },
-  {
-    path: '/post',
-    name: 'post',
-    component: () => import('@/views/post.vue')
-  }
 
-  // {
-  //   path: '/:pathMatch(.*)*',
-  //   name: 'not-found'
-  //   component: () => import('@/views/not-found/not-found.vue')
-  // }
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: () => import('@/views/404.vue')
+  }
 ]
 const router = createRouter({
   history: createWebHistory(),

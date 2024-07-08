@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {} from 'vue'
+import { } from 'vue'
 
 defineProps({
   videoTitle: String,
@@ -7,30 +7,28 @@ defineProps({
   thumbnailSrc: String,
   videoDuration: String,
   likeCount: String,
-  userName: String
+  userName: String,
+  sec_uid: String
 })
+
+
 </script>
 <template>
   <li class="list-item">
     <div class="list-item-container">
       <div class="thumbnail-container">
-        <a
-          :href="videoLink"
-          class="video-link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <router-link :to="videoLink ?? ''" class="video-link" rel="noopener noreferrer">
           <div class="image-container">
             <img :src="thumbnailSrc" alt="视频缩略图" class="thumbnail-image" />
           </div>
           <div class="video-duration">{{ videoDuration }}</div>
-        </a>
+        </router-link>
       </div>
       <div class="interaction-section">
         <h3>
-          <a class="title-link">
+          <router-link :to="videoLink ?? ''" class="title-link">
             <div class="video-title">{{ videoTitle }}</div>
-          </a>
+          </router-link>
         </h3>
         <div class="video-meta">
           <span class="like-content">
@@ -38,7 +36,9 @@ defineProps({
             <span class="like-count">{{ likeCount }}</span>
           </span>
           <span class="profile-info">
-            <span class="user-name">{{ userName }}</span>
+            <router-link :to="`/user/${sec_uid}`">
+              <span class="user-name">{{ userName }}</span>
+            </router-link>
           </span>
         </div>
       </div>
@@ -51,6 +51,7 @@ defineProps({
   margin-top: 24px;
   display: block;
 }
+
 .list-item-container {
   height: 90px;
   width: 100%;
@@ -126,6 +127,7 @@ defineProps({
       display: -webkit-box;
       overflow: hidden;
     }
+
     .video-title {
       color: var(--color-text-t1);
       font-size: 14px;
@@ -145,6 +147,7 @@ defineProps({
           width: 20px;
           height: 20px;
         }
+
         .like-count {
           color: var(--color-text-t3);
           vertical-align: middle;
@@ -153,6 +156,7 @@ defineProps({
           line-height: 20px;
         }
       }
+
       .profile-info {
         text-align: right;
         text-overflow: ellipsis;
@@ -165,6 +169,12 @@ defineProps({
         white-space: nowrap;
         flex: 1 1 0%;
         overflow: hidden;
+
+        &:hover {
+          .user-name {
+            color: var(--color-text-t1);
+          }
+        }
 
         .user-name {
           color: var(--color-text-t3);

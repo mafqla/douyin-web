@@ -63,7 +63,6 @@ const emit = defineEmits(['close'])
   width: 64px;
   height: 64px;
   user-select: none;
-  app-region: no-drag;
   justify-content: center;
   align-items: center;
   display: flex;

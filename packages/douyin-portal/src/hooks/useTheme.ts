@@ -23,19 +23,29 @@ const useTheme = () => {
     localStorage.setItem('theme', theme.value)
   }
 
+  const switchTheme = (value: string) => {
+    if (['light', 'dark'].includes(value)) {
+      theme.value = value
+      localStorage.setItem('theme', value)
+    }
+  }
+
   watchEffect(() => {
     settingStore().theme = theme.value
     if (theme.value === 'dark') {
-      document.documentElement.classList.add('dark')
+      // document.documentElement.classList.add('dark')
+      document.documentElement.setAttribute('dark', 'true')
     } else {
-      document.documentElement.classList.remove('dark')
+      // document.documentElement.classList.remove('dark')
+      document.documentElement.removeAttribute('dark')
     }
     // console.log('theme changed', theme.value)
   })
 
   return {
     theme,
-    toggleTheme
+    toggleTheme,
+    switchTheme
   }
 }
 

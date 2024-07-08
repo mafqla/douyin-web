@@ -14,7 +14,7 @@ const props = defineProps({
     default: ''
   },
   video_url: {
-    type: String,
+    type: [String, Array],
     default: ''
   },
   video_time: {
@@ -47,27 +47,18 @@ const props = defineProps({
     default: false
   },
 
-  itemHeight: {
-    type: Number,
-    required: true
-  },
-  imageWidth: {
-    type: Number,
-    required: true
-  },
-  imageHeight: {
-    type: Number,
-    required: true
-  }
+  // imageWidth: {
+  //   type: Number,
+  //   required: true
+  // },
+  // imageHeight: {
+  //   type: Number,
+  //   required: true
+  // }
 })
 </script>
 <template>
-  <div
-    class="waterfall-item"
-    :style="{
-      height: `${props.itemHeight}px`
-    }"
-  >
+  <div class="waterfall-item">
     <el-skeleton animated :loading="isLoading" class="discover-item-skeleton">
       <template #template>
         <div class="skeleton-content">
@@ -84,20 +75,10 @@ const props = defineProps({
       <template #default>
         <a :href="`/video/${video_id}`" class="waterfall-videoCardContainer">
           <div class="item-content">
-            <discover-video
-              :img="props.video_img"
-              :videoTime="props.video_time"
-              :like="video_like"
-              :videoUrl="props.video_url"
-              :itemWidth="props.imageWidth"
-              :itemHeight="props.imageHeight"
-            />
-            <title-box
-              :author="props.video_author"
-              :title="props.video_title"
-              :time="props.video_uploadtime"
-              :fellow="props.video_isFellow"
-            />
+            <discover-video :img="props.video_img" :videoTime="props.video_time" :like="video_like"
+              :videoUrl="props.video_url" />
+            <title-box :author="props.video_author" :title="props.video_title" :time="props.video_uploadtime"
+              :fellow="props.video_isFellow" />
           </div>
         </a>
       </template>
@@ -117,9 +98,11 @@ const props = defineProps({
     display: flex;
     position: relative;
     overflow: hidden;
+
     .item-content {
       display: flex;
       flex-direction: column;
+
       &:hover {
         box-shadow: 0 0 24px rgba(0, 0, 0, 0.1);
       }
@@ -150,6 +133,7 @@ const props = defineProps({
     }
   }
 }
+
 .icon {
   width: 105px;
   height: 120px;

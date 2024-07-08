@@ -58,7 +58,6 @@ const props = defineProps({
 
 // 给组件传递的参数playerOptions
 const playerOptions = {
-  url: props.url,
   width: '100%',
   height: '100%',
   playsinline: true,
@@ -130,39 +129,22 @@ const toggleComments = (id: any) => {
 <template>
   <div class="modal-player" id="modalall">
     <div class="videos-container" :style="{ width: currentWidth }">
-      <BasePlayer :options="playerOptions" />
+      <BasePlayer :url="props.url" :options="playerOptions" />
       <div class="close-btn" @click="$emit('closeBtn')">
         <svg-icon class="icon" icon="close-big" />
       </div>
 
-      <video-info
-        :username="props.username"
-        :uploadTime="props.uploadTime"
-        :description="props.description"
-      />
-      <video-action
-        :id="props.id"
-        :userId="props.userId"
-        :avatar="props.img"
-        :dianzan="props.dianzan"
-        :comment="props.comment"
-        :shoucang="props.shoucang"
-        :isLike="props.isLike"
-        :isCollect="props.isCollect"
-        @toggleComments="toggleComments(props.id)"
-      >
+      <video-info :username="props.username" :uploadTime="props.uploadTime" :description="props.description" />
+      <video-action :id="props.id" :userId="props.userId" :avatar="props.img" :dianzan="props.dianzan"
+        :comment="props.comment" :shoucang="props.shoucang" :isLike="props.isLike" :isCollect="props.isCollect"
+        @toggleComments="toggleComments(props.id)">
         <swiper-control-modal />
       </video-action>
     </div>
 
     <video-side-bar-btn @click="openComments" v-show="isShow" />
 
-    <video-sidebar
-      :id="props.id"
-      :username="props.username"
-      @closeComments="closeComments"
-      v-show="!isShow"
-    />
+    <video-sidebar :id="props.id" :username="props.username" @closeComments="closeComments" v-show="!isShow" />
 
     <div class="video-blur">
       <img :src="props.poster" :alt="props.description" />

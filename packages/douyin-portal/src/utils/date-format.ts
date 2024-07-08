@@ -43,3 +43,31 @@ export default function formatTime(time: string | number): string {
 
   return '刚刚'
 }
+
+/**
+ * 将秒数转换为时分秒格式字符串
+ *
+ * @param time 毫秒数
+ * @returns 返回形如 "HH:mm:ss" 的字符串，不足两位的分钟和秒数前面会补零
+ */
+const formatMillisecondsToTime = (time: number) => {
+  // 将毫秒转换为秒
+  const totalSeconds = time / 1000
+  // 计算小时、分钟和秒
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = Math.floor(totalSeconds % 60)
+
+  // 构建时间字符串，如果小时数不为0，则包含小时，否则只包含分钟和秒
+  const timeString =
+    hours > 0
+      ? `${hours.toString().padStart(2, '0')}:${minutes
+          .toString()
+          .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+      : `${minutes.toString().padStart(2, '0')}:${seconds
+          .toString()
+          .padStart(2, '0')}`
+
+  return timeString
+}
+export { formatMillisecondsToTime }
