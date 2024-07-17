@@ -5,12 +5,11 @@ import RelatedVideo from './components/related-video.vue'
 import BasePlayer from '@/components/video-player/base-player.vue'
 import RelatedComment from './components/related-comment.vue'
 import PageFooter from '@/layout/page-footer.vue'
-import testVideo from '/test-video/test1.mp4?url'
-import testImg from '@/assets/test-img/test-img.jpeg'
 import { settingStore } from '@/stores/setting'
 import { useRoute } from 'vue-router'
 import apis from '@/api/apis'
 import type { IawemeDetail } from '@/api/tyeps/request_response/videoDetailRes'
+import { Loading } from '@/components/common'
 const playerOptions = {
   miniScreen: {
     disable: false,
@@ -42,13 +41,14 @@ const awemeId = Number(route.params.id)
  * 4. 相关推荐视频接口
  */
 
-
+const loading = ref(true)
 const videoDetail = ref<IawemeDetail>()
 provide('videoDetail', videoDetail)
 const getVideoDetail = async (awemeId: number) => {
   try {
     const res = await apis.getVideoDetail(awemeId)
     videoDetail.value = res.aweme_detail
+    loading.value = false
   } catch (error) {
     console.log(error)
   }
@@ -60,34 +60,42 @@ const awemeUrl = computed(() => {
   return videoDetail.value?.video.play_addr.url_list ?? []
 })
 
-watchEffect(() => {
-  useTitle(`${videoDetail.value?.desc} - 抖音` ?? '抖音-记录美好生活')
+const metaTitle = computed(() => {
+  return videoDetail.value?.desc ? `${videoDetail.value?.desc} - 抖音` : '抖音 - 记录美好生活'
+})
+useTitle(metaTitle)
+onUnmounted(() => {
+  useTitle('抖音 - 记录美好生活')
 })
 
 
 </script>
 <template>
-  <div class="video" v-if="videoDetail">
-    <div class="video-detail">
-      <div class="left-content">
-        <div class="video-detail-container">
-          <BasePlayer :url="awemeUrl" :options="playerOptions" class="related-video">
-            <template v-slot:switch>
-              <swiper-control-modal class="swiper-control" v-show="isShowSwitchControl"
-                style="justify-content: center; height: auto; bottom: 50%" />
-            </template>
-          </BasePlayer>
+  <Loading :show="loading" :isShowText="true" :center="true" text="视频数据加载中">
+    <div class="video" v-if="videoDetail">
+      <div class="video-detail">
+        <div class="left-content">
+          <div class="video-detail-container">
+            <BasePlayer :url="awemeUrl" :options="playerOptions" class="related-video">
+              <template v-slot:switch>
+                <swiper-control-modal class="swiper-control" v-show="isShowSwitchControl"
+                  style="justify-content: center; height: auto; bottom: 50%" />
+              </template>
+            </BasePlayer>
+          </div>
+          <video-detail-info :description="videoDetail?.desc" :seo-description="videoDetail?.seo_info.ocr_content" />
+          <related-video :author="videoDetail?.author" :aweme-id="videoDetail?.aweme_id"
+            class="left-content-recommend" />
+          <related-comment :aweme_id="videoDetail?.aweme_id" :author_id="videoDetail.author.uid"
+            :related-text="videoDetail?.suggest_words.suggest_words[0].words[0].word" />
         </div>
-        <video-detail-info :description="videoDetail?.desc" :seo-description="videoDetail?.seo_info.ocr_content" />
-        <related-video :author="videoDetail?.author" :aweme-id="videoDetail?.aweme_id" class="left-content-recommend" />
-        <related-comment :aweme_id="videoDetail?.aweme_id" :author_id="videoDetail.author.uid" />
+        <div class="right-content">
+          <related-video :author="videoDetail?.author" :aweme-id="videoDetail?.aweme_id" />
+        </div>
       </div>
-      <div class="right-content">
-        <related-video :author="videoDetail?.author" :aweme-id="videoDetail?.aweme_id" />
-      </div>
+      <page-footer />
     </div>
-    <page-footer />
-  </div>
+  </Loading>
 </template>
 
 <style lang="scss" scoped>

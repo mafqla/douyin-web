@@ -1,33 +1,56 @@
 <script setup lang="ts">
-import SearchSuggestion from '@/components/common/search-suggestion.vue'
-import DyAvatar from '@/components/common/dy-avatar.vue'
-import DyInput from '@/components/common/dy-input/index.vue'
 import apis from '@/api/apis';
-import type { IComments } from '@/api/tyeps/request_response/commentListRes'
+import type { IComments } from '@/api/tyeps/request_response/commentListRes';
+import DyAvatar from '@/components/common/dy-avatar.vue';
+import DyInput from '@/components/common/dy-input/index.vue';
+import Loading from '@/components/common/loading.vue';
+import SearchSuggestion from '@/components/common/search-suggestion.vue';
 
 
 const props = defineProps(
   {
     aweme_id: String,
-    author_id: String
+    author_id: String,
+    relatedText: String
+
   }
 )
 
 const commentList = ref<IComments[]>([])
+const isLoadingMore = ref(true);
+const hasMore = ref(true);
+const cursor = ref(0);
+const count = ref(5);
 
-// 获取评论列表
+onMounted(() => {
+  getCommentList();
+});
+
+useInfiniteScroll(
+  window, () => {
+    getCommentList()
+  },
+  { distance: 100 }
+)
+
+
 const getCommentList = async () => {
+  if (!hasMore.value) return;
+  isLoadingMore.value = true
   try {
-    const res = await apis.getCommentList(Number(props.aweme_id), 0, 10)
-    console.log(res)
-    commentList.value = res.comments
+    const res = await apis.getCommentList(Number(props.aweme_id), cursor.value, count.value)
+    cursor.value = res.cursor
+    count.value = 20
+    commentList.value.push(...res.comments)
+    if (!isLoadingMore.value) {
+      hasMore.value = Boolean(res.has_more)
+    }
+    isLoadingMore.value = false;
   } catch (error) {
     console.log(error)
   }
 }
-onMounted(() => {
-  getCommentList()
-})
+
 </script>
 <template>
   <div class="related-comment">
@@ -50,17 +73,17 @@ onMounted(() => {
         <div class="search-trend-container">
           <div class="trend-header">
             <span class="trend-title">大家都在搜：</span>
-            <search-suggestion relatedText="你想活出什么样的人生" />
+            <search-suggestion :relatedText />
           </div>
         </div>
       </div>
       <div class="comment-list">
         <template v-for="it in commentList" :key="it.cid">
-          <comment-item :author_id="props.author_id" :uid="Number(it.user.uid)"
-            :avatar="it.user.avatar_thumb.url_list[0]" :sec_uid="it.user.sec_uid" :username="it.user.nickname"
-            :likenum="it.digg_count" :time="it.create_time" :comment="it.text" :address="it.ip_label"
-            :imageList="it.image_list" :is-folded="it.is_folded" :reply-comment-total="it.reply_comment_total" />
+          <comment-item v-bind="it" :author_id="props.author_id" />
         </template>
+
+        <Loading :show="isLoadingMore" :isShowText="true" text="评论加载中..." />
+        <list-footer v-if="!hasMore" />
       </div>
     </div>
   </div>

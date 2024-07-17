@@ -99,10 +99,15 @@ export default {
   },
   /**
    * @description 获取评论回复
+   * @param {Number} item_id  视频id
+   * @param {Number} comment_id  评论id
+   * @param {Number} cursor 分页游标
+   * @param {Number} count 每页数量
+   * @returns {Promise<ICommentReplyRes>} 评论回复
    */
   getCommentReply: (
-    item_id: number,
-    comment_id: number,
+    item_id: string,
+    comment_id: string,
     cursor: number,
     count: number
   ): Promise<ICommentReplyRes> => {

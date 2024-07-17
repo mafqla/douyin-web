@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { render, type Ref } from 'vue'
 import type { WaterfallList } from '../type'
 

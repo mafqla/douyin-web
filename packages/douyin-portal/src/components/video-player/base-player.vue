@@ -93,6 +93,7 @@ onMounted(() => {
     allowSeekPlayed: true,
     allowPlayAfterEnded: true,
     allowSeekAfterEnded: true,
+    enableContextmenu: false,
     marginControls: props.marginControls,
     fullscreen: {
       target: ''
@@ -150,6 +151,8 @@ onMounted(() => {
       isShowSwitchControl.value = true
     }
   })
+
+  console.log(player.value);
 })
 
 onBeforeUnmount(() => {

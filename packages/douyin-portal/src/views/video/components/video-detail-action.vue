@@ -1,15 +1,15 @@
-/* eslint-disable */
 <script setup lang="ts">
 import type { IawemeDetail } from '@/api/tyeps/request_response/videoDetailRes';
 import { useCount } from '@/hooks';
-import formatTime from '@/utils/date-format';
+import { formatTimeToYMDHMS } from '@/utils/date-format';
 import { ref, type Ref } from 'vue'
 
 
 const videoDetail = inject<Ref<IawemeDetail>>('videoDetail')
 
 
-const isLiked = ref(Boolean(videoDetail?.value.user_digged))
+const isLiked = computed(() => Boolean(videoDetail?.value.user_digged))
+console.log(videoDetail?.value.user_digged);
 const isCollect = ref(Boolean(videoDetail?.value.collect_stat))
 
 </script>
@@ -17,20 +17,20 @@ const isCollect = ref(Boolean(videoDetail?.value.collect_stat))
   <div class="video-detail-action" v-if="videoDetail">
     <div class="video-detail-action-left">
       <div class="video-detail-action-item">
-        <svg-icon :class="{ liked: isLiked }" icon="dianzan" style="width: 42px; height: 42px" />
+        <svg-icon class="icon" :class="{ liked: isLiked }" icon="dianzan" style="width: 42px; height: 42px" />
         <span class="num">{{ useCount(videoDetail.statistics.digg_count) }}</span>
       </div>
       <div class="video-detail-action-item">
-        <svg-icon icon="comment" style="width: 42px; height: 42px" />
+        <svg-icon class="icon" icon="comment" style="width: 42px; height: 42px" />
         <span class="num">{{ useCount(videoDetail.statistics.collect_count) }}</span>
       </div>
       <div class="video-detail-action-item">
-        <svg-icon icon="collection" :class="{ collect: isCollect }" style="width: 42px; height: 42px" />
+        <svg-icon icon="collection" class="icon" :class="{ collect: isCollect }" style="width: 42px; height: 42px" />
         <span class="num">{{ useCount(videoDetail.statistics.share_count) }}</span>
       </div>
 
       <div class="video-detail-action-item">
-        <svg-icon icon="fenxiang" style="width: 42px; height: 42px" />
+        <svg-icon icon="fenxiang" class="icon" style="width: 42px; height: 42px" />
         <span class="num">{{ useCount(videoDetail.statistics.share_count) }}</span>
       </div>
     </div>
@@ -39,7 +39,7 @@ const isCollect = ref(Boolean(videoDetail?.value.collect_stat))
         <svg-icon icon="report" />
         <span class="report-text">举报</span>
       </div>
-      <span>发布时间：{{ formatTime(videoDetail.create_time) }}</span>
+      <span>发布时间：{{ formatTimeToYMDHMS(videoDetail.create_time) }}</span>
     </div>
   </div>
 </template>
@@ -74,10 +74,9 @@ const isCollect = ref(Boolean(videoDetail?.value.collect_stat))
       height: 20px;
       width: 20px;
       opacity: 1;
-      color: #fff;
 
       &.liked {
-        color: red !important;
+        color: #fe2c55 !important;
       }
 
       &.collect {

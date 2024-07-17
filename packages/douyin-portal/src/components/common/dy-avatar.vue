@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-type AvatarSize = 'small' | 'medium' | 'large'
+type AvatarSize = 'small' | 'common' | 'medium' | 'large'
 
 const props = defineProps({
   userLink: {
@@ -33,10 +33,16 @@ const sizeClass = computed(() => {
 })
 
 const isImageLoadingFailed = ref(false)
+const isImageLoading = ref(true)
 
-const imageErrorHandler = (event: any) => {
-  // console.log('图片加载失败')
+const imageErrorHandler = () => {
   isImageLoadingFailed.value = true
+  isImageLoading.value = false
+}
+
+const imageLoadHandler = () => {
+  isImageLoadingFailed.value = false
+  isImageLoading.value = false
 }
 </script>
 
@@ -44,14 +50,14 @@ const imageErrorHandler = (event: any) => {
   <div class="dy-avatar" :class="{ 'enable-transition': props.enableTransition }">
     <a v-if="props.userLink" :href="props.userLink" class="avatar-link" target="_blank">
       <div class="avatar-wrapper" :class="sizeClass">
-        <img class="avatar-image" :src="props.src" :alt="`用户头像`" @error="imageErrorHandler"
-          @load="isImageLoadingFailed = false" v-if="!isImageLoadingFailed" />
+        <img class="avatar-image" :src="props.src" :alt="`用户头像`" @error="imageErrorHandler" @load="imageLoadHandler"
+          v-show="!isImageLoadingFailed" />
         <div class="default-img" v-if="isImageLoadingFailed"></div>
       </div>
     </a>
     <div v-else class="avatar-wrapper" :class="sizeClass">
-      <img class="avatar-image" :src="props.src" :alt="`用户头像`" @error="imageErrorHandler"
-        @load="isImageLoadingFailed = false" v-if="!isImageLoadingFailed" />
+      <img class="avatar-image" :src="props.src" :alt="`用户头像`" @error="imageErrorHandler" @load="imageLoadHandler"
+        v-show="!isImageLoadingFailed" />
       <div class="default-img" v-if="isImageLoadingFailed"></div>
     </div>
   </div>

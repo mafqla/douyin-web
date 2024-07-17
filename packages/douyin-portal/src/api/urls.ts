@@ -18,6 +18,6 @@ export default {
   //评论
   comment_list: `/comment/list`,
   //评论回复
-  comnet_reply: `/comment/reply`
+  comnet_reply: `/comment/list/reply`
   // ----------------- 测试dy-url -----------------
 }
