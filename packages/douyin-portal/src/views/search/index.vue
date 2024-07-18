@@ -112,6 +112,7 @@ onMounted(() => {
       transition: transform 0.4s;
       z-index: 200;
     }
+
     .search-center-content {
       width: calc(100% - 30px);
     }
@@ -120,6 +121,7 @@ onMounted(() => {
       width: 1250px;
     }
   }
+
   .search-sidebar {
     width: 240px;
     flex-shrink: 0;
@@ -129,8 +131,7 @@ onMounted(() => {
   }
 }
 
-@media screen and (min-width: 1800px) {
-}
+@media screen and (min-width: 1800px) {}
 
 @media screen and (max-width: 1800px) and (min-width: 1081px) {
   .search-content {
@@ -149,6 +150,7 @@ onMounted(() => {
 }
 
 @media screen and (max-width: 1080px) and (min-width: 1021px) {
+
   .search-center-head,
   .search-center-content,
   .search-content {
@@ -181,6 +183,7 @@ onMounted(() => {
 }
 
 @media screen and (max-width: 860px) {
+
   .search-center-head,
   .search-center-content,
   .search-content {

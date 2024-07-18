@@ -5,7 +5,7 @@ import DyAvatar from '@/components/common/dy-avatar.vue';
 import DyInput from '@/components/common/dy-input/index.vue';
 import Loading from '@/components/common/loading.vue';
 import SearchSuggestion from '@/components/common/search-suggestion.vue';
-
+import { useVirtualList } from '@/hooks';
 
 const props = defineProps(
   {
@@ -21,19 +21,6 @@ const isLoadingMore = ref(true);
 const hasMore = ref(true);
 const cursor = ref(0);
 const count = ref(5);
-
-onMounted(() => {
-  getCommentList();
-});
-
-useInfiniteScroll(
-  window, () => {
-    getCommentList()
-  },
-  { distance: 100 }
-)
-
-
 const getCommentList = async () => {
   if (!hasMore.value) return;
   isLoadingMore.value = true
@@ -50,6 +37,18 @@ const getCommentList = async () => {
     console.log(error)
   }
 }
+const containerRef = ref(null);
+onMounted(() => {
+  getCommentList();
+});
+
+useInfiniteScroll(
+  window, () => {
+    getCommentList()
+  },
+  { distance: 100 }
+)
+
 
 </script>
 <template>
@@ -77,7 +76,7 @@ const getCommentList = async () => {
           </div>
         </div>
       </div>
-      <div class="comment-list">
+      <div class="comment-list" ref="containerRef">
         <template v-for="it in commentList" :key="it.cid">
           <comment-item v-bind="it" :author_id="props.author_id" />
         </template>

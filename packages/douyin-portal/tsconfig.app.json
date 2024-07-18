@@ -1,5 +1,4 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.web.json",
   "include": [
     "./src/*.ext",
     "env.d.ts",
@@ -8,10 +7,26 @@
     "./src/*.d.ts",
     "./src/**/*.ts",
     "./src/**/*.d.ts",
-    "./src/**/*.vue",
+    "./src/**/*.vue"
   ],
   "exclude": ["src/**/__tests__/*", "node_modules", "dist"],
   "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "useDefineForClassFields": true,
+    // Required in Vue projects
+    "jsx": "preserve",
+    "noImplicitThis": true,
+    "strict": true,
+    // Required in Vite
+    "isolatedModules": true,
+    "target": "ESNext",
+    // Recommended
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    // See <https://github.com/vuejs/vue-cli/pull/5688>
+    "skipLibCheck": true,
     "composite": true,
     "baseUrl": "./",
     "paths": {

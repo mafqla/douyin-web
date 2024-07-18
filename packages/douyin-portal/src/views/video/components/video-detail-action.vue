@@ -9,7 +9,7 @@ const videoDetail = inject<Ref<IawemeDetail>>('videoDetail')
 
 
 const isLiked = computed(() => Boolean(videoDetail?.value.user_digged))
-console.log(videoDetail?.value.user_digged);
+// console.log(videoDetail?.value.user_digged);
 const isCollect = ref(Boolean(videoDetail?.value.collect_stat))
 
 </script>

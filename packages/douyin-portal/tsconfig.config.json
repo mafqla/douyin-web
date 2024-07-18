@@ -1,5 +1,5 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.node.json",
+  "extends": "./tsconfig.app.json",
   "include": [
     "vite.config.*",
     "vitest.config.*",
@@ -7,6 +7,7 @@
     "playwright.config.*"
   ],
   "compilerOptions": {
+    "lib": [],
     "composite": true,
     "target": "esnext",
     "module": "esnext",
