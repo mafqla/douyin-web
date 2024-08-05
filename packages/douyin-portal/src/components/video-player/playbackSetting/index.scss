@@ -1,0 +1,86 @@
+.xgplayer-playback-setting {
+  min-width: 60px;
+  text-align: left;
+  z-index: 20;
+  position: relative;
+
+  .xgplayer-box-douyin {
+    padding: 16px 24px
+  }
+}
+
+.xgplayer-playback-setting {
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+  display: flex;
+
+  &.slide-show {
+    .xgplayer-slider {
+      color: #fff;
+      opacity: 1;
+      background-color: #252632;
+      padding: 10px 16px;
+      font-size: 14px;
+      top: auto;
+      bottom: 32px !important;
+      border-radius: 12px !important;
+
+      &.xgplayer-box-douyin {
+        height: auto;
+        width: 72px;
+        display: block;
+        right: 50%;
+        transform: translate(50%);
+        padding: 12px 12px 4px;
+
+        .xgplayer-setting-content {
+          color: #fff;
+          font-size: 12px;
+          font-weight: 500;
+          line-height: 14px;
+
+          .xgplayer-playratio-wrap .xgplayer-playratio-item {
+            width: 48px;
+            text-align: center;
+            opacity: .7;
+            cursor: pointer;
+            margin-bottom: 8px;
+            line-height: 28px;
+
+            &:hover,
+            &.selected {
+              opacity: 1;
+              color: #fff;
+              background: var(--color-fill-hover);
+              border-radius: 6px;
+              font-weight: 500;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+.xgplayer-setting-playbackRatio {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 32px;
+}
+
+
+
+.xgplayer-box-douyin {
+  width: 28px;
+  height: auto;
+  white-space: nowrap;
+  // background: rgba(0, 0, 0, 0.54);
+  border-radius: 4px;
+  display: none;
+  position: absolute;
+  right: -65px;
+  outline: none;
+}

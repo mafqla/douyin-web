@@ -61,11 +61,11 @@ const awemeUrl = computed(() => {
 })
 
 const metaTitle = computed(() => {
-  return videoDetail.value?.desc ? `${videoDetail.value?.desc} - 抖音` : '抖音 - 记录美好生活'
+  return videoDetail.value?.desc ? `${videoDetail.value?.desc} - 抖音` : window.location.href
 })
 useTitle(metaTitle)
 onUnmounted(() => {
-  useTitle('抖音 - 记录美好生活')
+  useTitle('抖音-记录美好生活')
 })
 
 

@@ -13,8 +13,10 @@ import volumeMute from '@/assets/videos-player-icon/volume-mute.svg'
 import volumeSmall from '@/assets/videos-player-icon/volume-small.svg'
 import cssFullScreen from '@/assets/videos-player-icon/cssFullscreen.svg'
 import exitCssFullScreen from '@/assets/videos-player-icon/exit-cssFullscreen.svg'
+import PlaybackPlugin from './playbackSetting/playbackPlugin'
 
 import { settingStore } from '@/stores/setting'
+
 
 import { v4 as uuidv4 } from 'uuid'
 const props = defineProps({
@@ -69,7 +71,6 @@ const url = computed(() => {
     return props.url
   }
 })
-console.log(url.value);
 onMounted(() => {
   props.options.fullscreen = {
     target: document.getElementById('modal')
@@ -88,6 +89,10 @@ onMounted(() => {
     enter: {
       innerHtml: `
       <div class="xg-douyin-loading"></div>`
+    },
+    volume: {
+      default: 0.5,
+      showValueLabel: true,
     },
     closeInactive: true,
     allowSeekPlayed: true,
@@ -125,6 +130,8 @@ onMounted(() => {
       <div class="loading-content-img"></div>
     </div>`
     },
+    plugins: [PlaybackPlugin],
+    ignores: ['playbackrate']
   })
   const playerRef = ref<HTMLDivElement | null>(null)
   playerRef.value?.appendChild(player.value.root)
@@ -152,7 +159,7 @@ onMounted(() => {
     }
   })
 
-  console.log(player.value);
+  // console.log(player.value);
 })
 
 onBeforeUnmount(() => {
@@ -196,6 +203,7 @@ onMounted(() => {
   })
   player.value.on(Events.ENDED, () => {
     emit('ended')
+    console.log('ended');
   })
   player.value.on(Events.TIME_UPDATE, () => {
     emit('timeupdate')
@@ -214,6 +222,26 @@ onMounted(() => {
   })
   player.value.on(Events.DESTROY, () => {
     emit('destroy')
+  })
+  player.value.on(Events.USER_ACTION, (data: any) => {
+    // data结构如下
+    /**
+     * data = {
+     *   action: String,        // 用户行为
+     *   pluginName: String,    // 从哪个插件触发
+     *   props: [{              // 发生变化的属性列表
+     *     props: String,       // 发生变化的属性
+     *     from: any,           // 变化前的值
+     *     to: any              // 变化后的值
+     *   }],
+     *   event: Event,          // 事件
+     *   currentTime: Number,   // 当前播放时间
+     *   duration: Number,      // 当前播放器时长
+     *   ended:  Boolean,        // 是否播放结束
+     *   paused:  Boolean,       // 是否暂停
+     * }
+     */
+    // console.log(data)
   })
 })
 
@@ -302,8 +330,8 @@ xg-start-inner {
     width: 57px;
     background-color: #41424c;
     border-radius: 4px;
-    bottom: 40px;
-    /* bottom: 53px; */
+    // bottom: 40px;
+    // bottom: 53px;
     color: #fff;
     font-size: 14px;
     opacity: 1;
@@ -454,6 +482,55 @@ xg-start-inner {
     align-items: center;
     margin-right: 16px;
     display: flex;
+    z-index: 2;
+  }
+
+  .xgplayer-volume {
+
+    .xgplayer-value-label {
+      padding-top: 2px;
+      position: static;
+
+      opacity: 1;
+      letter-spacing: .6px;
+      color: rgba(255, 255, 255, .7);
+      background-color: #252632;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+      font-size: 12px;
+      line-height: 20px;
+    }
+
+    .xgplayer-bar {
+      height: 137px;
+      position: relative;
+      top: 8px;
+      left: 10px;
+
+      .xgplayer-drag {
+        max-height: 137px;
+      }
+    }
+
+    .xgplayer-slider {
+      width: 56px;
+      height: 196px;
+      left: -10px;
+    }
+
+  }
+
+
+
+  .xgplayer-slider {
+    color: #fff;
+    opacity: 1;
+    background-color: #252632;
+    padding: 10px 16px;
+    font-size: 14px;
+    top: auto;
+    bottom: 32px;
+    border-radius: 12px !important;
   }
 
   &.xgplayer-mini {
@@ -520,5 +597,7 @@ xg-start-inner {
     top: 0px;
     left: 0px;
   }
+
+
 }
 </style>

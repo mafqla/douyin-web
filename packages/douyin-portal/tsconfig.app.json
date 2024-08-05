@@ -8,7 +8,7 @@
     "./src/**/*.ts",
     "./src/**/*.d.ts",
     "./src/**/*.vue"
-  ],
+, "src/components/video-player/playbackSetting/playbackPlugin.ts"  ],
   "exclude": ["src/**/__tests__/*", "node_modules", "dist"],
   "compilerOptions": {
     "module": "ESNext",
