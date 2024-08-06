@@ -48,39 +48,77 @@ const onTextareaInput = (e: any) => {
     .replace(/<\/?[^>]+>/g, '')
   textareaRef.value = updatedText
   updateValue(updatedText)
+  if (textareaRef.value) {
+    saveSelection()
+  }
 }
 
+const savedRange = ref<Range | null>(null)
+const saveSelection = () => {
+  const selection = window.getSelection()
+  if (selection && selection.rangeCount > 0) {
+    savedRange.value = selection.getRangeAt(0)
+  }
+}
+
+const restoreSelection = () => {
+  const selection = window.getSelection()
+  if (selection && savedRange.value) {
+    selection.removeAllRanges()
+    selection.addRange(savedRange.value)
+  }
+}
+const insertAtCursor = (element: HTMLElement, editor: HTMLElement): void => {
+  const selection = window.getSelection()
+  if (selection && selection.rangeCount > 0) {
+    const range = selection.getRangeAt(0)
+    range.deleteContents() // 删除光标位置的内容（可选）
+    range.insertNode(element)
+
+    // 保存新的光标位置
+    savedRange.value = document.createRange()
+    savedRange.value.setStartAfter(element)
+    savedRange.value.collapse(true)
+
+    selection.removeAllRanges()
+    selection.addRange(savedRange.value)
+  }
+}
+
+const handleMouseUp = (event: MouseEvent) => {
+  if (richtextRef.value) {
+    if (richtextRef.value.contains(event.target as Node)) {
+      saveSelection()
+    } else {
+      richtextRef.value.blur()
+    }
+  }
+}
+
+watchEffect(() => {
+  if (richtextRef.value) {
+    richtextRef.value.addEventListener('mouseup', handleMouseUp)
+    richtextRef.value.addEventListener('keydown', saveSelection)
+  }
+})
+onUnmounted(() => {
+  if (richtextRef.value) {
+    richtextRef.value.removeEventListener('mouseup', handleMouseUp)
+    richtextRef.value.removeEventListener('keydown', saveSelection)
+  }
+})
 const isShowAt = ref(false)
+
 //点击at按钮，打开at弹窗
 const onAtClick = () => {
   isShowAt.value = !isShowAt.value
-  if (isShowAt.value) {
-    insertAtSymbol()
-  }
-}
-// 插入@符号的函数
-const insertAtSymbol = () => {
   const editableDiv = richtextRef.value
-  if (editableDiv) {
-    editableDiv.focus()
-    const atSpan = document.createElement('span')
-    atSpan.textContent = '@'
-    // 获取当前文本选区
-    const selection = window.getSelection()
-    const docFragment = document.createDocumentFragment()
-    docFragment.appendChild(atSpan)
-    if (selection) {
-      const range = selection.getRangeAt(0)
-      range.deleteContents() // 删除选区中原有的内容
-      range.insertNode(docFragment) // 插入新的文档片段
-
-      // 移动光标到插入内容之后
-      range.setStartAfter(atSpan)
-      range.collapse(true) // 崩溃选区到起始位置
-      selection.removeAllRanges() // 移除旧的选区
-      selection.addRange(range)
-      // 更新 textarea 的值
-      textareaRef.value = textareaRef.value
+  if (isShowAt.value) {
+    if (editableDiv) {
+      editableDiv.focus()
+      const atSpan = document.createElement('span')
+      atSpan.textContent = '@'
+      insertAtCursor(atSpan, editableDiv)
     }
   }
 }
@@ -95,7 +133,6 @@ const handleUserSelected = (selectedUser: { username: string }) => {
     // 获取当前文本选区
     const selection = window.getSelection()
     const atSpan = document.createElement('span')
-    const docFragment = document.createDocumentFragment()
     if (selection) {
       const range = selection.getRangeAt(0)
       range.deleteContents() // 删除选区中原有的内容
@@ -103,23 +140,13 @@ const handleUserSelected = (selectedUser: { username: string }) => {
       const textBefore =
         startContainer?.textContent?.slice(0, range.startOffset) || ''
       //获取当前文本选区，判断是否单独存在@符号，如果存在，插入的到时候不用添加@符号
-      const endsWithAtSymbol = textBefore.endsWith('@')
+      const endsWithAtSymbol = textBefore.replace(/\s/g, '').endsWith('@')
       if (endsWithAtSymbol) {
         atSpan.textContent = `${selectedUser.username}`
-        // 创建一个新的文档片段来存储将要插入的节点
-        docFragment.appendChild(atSpan)
       } else {
         atSpan.textContent = `@${selectedUser.username}`
-        // 创建一个新的文档片段来存储将要插入的节点
-        docFragment.appendChild(atSpan)
       }
-      range.insertNode(docFragment) // 插入新的文档片段
-
-      // 移动光标到插入内容之后
-      range.setStartAfter(atSpan)
-      range.collapse(true) // 崩溃选区到起始位置
-      selection.removeAllRanges() // 移除旧的选区
-      selection.addRange(range)
+      insertAtCursor(atSpan, editableDiv)
       // 更新 textarea 的值
       textareaRef.value = textareaRef.value + `@${selectedUser.username}` + ' '
     }
@@ -131,41 +158,32 @@ const handleUserSelected = (selectedUser: { username: string }) => {
 const isShowEmoji = ref(false)
 const onEmojiClick = () => {
   isShowEmoji.value = !isShowEmoji.value
+  const editableDiv = richtextRef.value
+  if (isShowEmoji.value) {
+    if (editableDiv) {
+      editableDiv.focus()
+    }
+  } else {
+    if (editableDiv) {
+      editableDiv.focus()
+    }
+  }
 }
+
 const handleSelectEmoji = (emoji: any) => {
   const { display_name, emoji_url } = emoji
   const emojiName = display_name
   const emojiImg = emoji_url.url_list[0]
-
   const editableDiv = richtextRef.value
-
   if (editableDiv) {
     editableDiv.focus()
     const imgElement = document.createElement('img')
     imgElement.src = emojiImg
     imgElement.alt = emojiName
     imgElement.style.width = '24px' // 可以设置表情符号的宽度，根据需要调整
-
-    // 创建一个新的文档片段来存储将要插入的节点
-    const docFragment = document.createDocumentFragment()
-    docFragment.appendChild(imgElement)
-
-    // 获取当前文本选区
-    const selection = window.getSelection()
-    if (selection) {
-      const range = selection.getRangeAt(0)
-      range.deleteContents() // 删除选区中原有的内容
-      range.insertNode(docFragment) // 插入新的文档片段
-
-      // 移动光标到插入内容之后
-      range.setStartAfter(imgElement)
-      range.collapse(true) // 崩溃选区到起始位置
-      selection.removeAllRanges() // 移除旧的选区
-      selection.addRange(range)
-
-      // 更新 textarea 的值
-      textareaRef.value = textareaRef.value + emojiName
-    }
+    insertAtCursor(imgElement, editableDiv)
+    // 更新 textarea 的值
+    textareaRef.value = textareaRef.value + emojiName
   }
 
   // console.log(emojiName) // 打印表情符号的名称
@@ -174,6 +192,7 @@ const handleSelectEmoji = (emoji: any) => {
 
 watchEffect(() => {
   // console.log('textarea', textareaRef.value)
+  // console.log('range', savedRange.value)
   if (textareaRef.value.length > 300) {
     overLimit.value = textareaRef.value.length - 300
   } else {
@@ -211,8 +230,9 @@ watchEffect(() => {
                 white-space: pre-wrap;
                 overflow-wrap: break-word;
               "
-              @input="onTextareaInput"
               ref="richtextRef"
+              @input="onTextareaInput"
+              @focus="restoreSelection"
             ></div>
           </div>
         </div>
@@ -284,23 +304,28 @@ watchEffect(() => {
     z-index: 1;
     position: absolute;
   }
+
   .public-DraftStyleDefault-ltr {
     direction: ltr;
     text-align: left;
   }
+
   .public-DraftStyleDefault-block {
     white-space: pre-wrap;
     position: relative;
   }
+
   .public-DraftEditor-content[contenteditable='true'] {
     -webkit-user-modify: read-write-plaintext-only;
   }
+
   .DraftEditor-editorContainer {
     z-index: 1;
     background-color: rgba(255, 255, 255, 0);
     border-left: 0.1px solid transparent;
     position: relative;
   }
+
   .DraftEditor-editorContainer,
   .DraftEditor-root,
   .public-DraftEditor-content {
@@ -308,6 +333,7 @@ watchEffect(() => {
     // text-align: left;
     text-align: initial;
   }
+
   .richtext-container {
     height: 100%;
     margin: 11px 0;
@@ -318,6 +344,7 @@ watchEffect(() => {
       padding-right: 2px;
       overflow-y: scroll;
     }
+
     .DraftEditor-editorContainer {
       z-index: 10;
       scrollbar-width: none;
@@ -335,6 +362,7 @@ watchEffect(() => {
       color: var(--color-text-t1);
     }
   }
+
   .comment-input-right {
     flex: 0 152px;
     margin-right: 4px;
@@ -361,27 +389,33 @@ watchEffect(() => {
         cursor: pointer;
         opacity: 44%;
       }
+
       .submit {
         cursor: pointer;
+
         .submit-icon {
           width: 36px;
           height: 36px;
+
           svg path[fill-rule='evenodd'] {
             fill: var(--color-primary);
             fill-opacity: 1;
           }
         }
       }
+
       .icon {
         width: 36px;
         height: 36px;
         color: var(--color-text-t3);
         fill-opacity: 1;
       }
+
       span:hover,
       span.emoji-icon,
       span.at-icon {
         opacity: 1;
+
         .icon {
           color: var(--color-text-t0);
         }
