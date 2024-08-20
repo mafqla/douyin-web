@@ -1,30 +1,23 @@
 <script setup lang="ts">
-import { toRef, } from 'vue'
-import VideoDetailInfo from './components/video-detail-info.vue'
-import RelatedVideo from './components/related-video.vue'
-import BasePlayer from '@/components/video-player/base-player.vue'
-import RelatedComment from './components/related-comment.vue'
-import PageFooter from '@/layout/page-footer.vue'
-import { settingStore } from '@/stores/setting'
-import { useRoute } from 'vue-router'
 import apis from '@/api/apis'
 import type { IawemeDetail } from '@/api/tyeps/request_response/videoDetailRes'
 import { Loading } from '@/components/common'
+import BasePlayer from '@/components/video-player/base-player.vue'
+import PageFooter from '@/layout/page-footer.vue'
+import { playerSettingStore } from '@/stores/player-setting'
+import { settingStore } from '@/stores/setting'
+import { toRef } from 'vue'
+import { useRoute } from 'vue-router'
+import RelatedComment from './components/related-comment.vue'
+import RelatedVideo from './components/related-video.vue'
+import VideoDetailInfo from './components/video-detail-info.vue'
+
 const playerOptions = {
-  miniScreen: {
-    disable: false,
-    height: 197,
-    top: 728,
-    left: 1329,
-    isScrollSwitch: true,
-    disableDrag: true,
-    isShowIcon: true
-  },
   volume: 0.5,
   autoplayMuted: true,
   keyShortcut: 'on',
   cssFullscreen: true,
-  playbackRate: [0.5, 1.0, 1.5, 1.75, 2]
+  ignores: ['playbackrate']
 } as any
 
 const isShowSwitchControl = toRef(settingStore(), 'isShowSwitchControl')
@@ -61,36 +54,62 @@ const awemeUrl = computed(() => {
 })
 
 const metaTitle = computed(() => {
-  return videoDetail.value?.desc ? `${videoDetail.value?.desc} - 抖音` : window.location.href
+  return videoDetail.value?.desc
+    ? `${videoDetail.value?.desc} - 抖音`
+    : window.location.href
 })
 useTitle(metaTitle)
 onUnmounted(() => {
   useTitle('抖音-记录美好生活')
 })
-
-
 </script>
 <template>
-  <Loading :show="loading" :isShowText="true" :center="true" text="视频数据加载中">
+  <Loading
+    :show="loading"
+    :isShowText="true"
+    :center="true"
+    text="视频数据加载中"
+  >
     <div class="video" v-if="videoDetail">
       <div class="video-detail">
         <div class="left-content">
           <div class="video-detail-container">
-            <BasePlayer :url="awemeUrl" :options="playerOptions" class="related-video">
+            <BasePlayer
+              :url="awemeUrl"
+              :options="playerOptions"
+              class="related-video"
+            >
               <template v-slot:switch>
-                <swiper-control-modal class="swiper-control" v-show="isShowSwitchControl"
-                  style="justify-content: center; height: auto; bottom: 50%" />
+                <swiper-control-modal
+                  class="swiper-control"
+                  v-show="isShowSwitchControl"
+                  style="justify-content: center; height: auto; bottom: 50%"
+                />
               </template>
             </BasePlayer>
           </div>
-          <video-detail-info :description="videoDetail?.desc" :seo-description="videoDetail?.seo_info.ocr_content" />
-          <related-video :author="videoDetail?.author" :aweme-id="videoDetail?.aweme_id"
-            class="left-content-recommend" />
-          <related-comment :aweme_id="videoDetail?.aweme_id" :author_id="videoDetail.author.uid"
-            :related-text="videoDetail?.suggest_words.suggest_words[0].words[0].word" />
+          <video-detail-info
+            :description="videoDetail?.desc"
+            :seo-description="videoDetail?.seo_info.ocr_content"
+          />
+          <related-video
+            :author="videoDetail?.author"
+            :aweme-id="videoDetail?.aweme_id"
+            class="left-content-recommend"
+          />
+          <related-comment
+            :aweme_id="videoDetail?.aweme_id"
+            :author_id="videoDetail.author.uid"
+            :related-text="
+              videoDetail?.suggest_words.suggest_words[0].words[0].word
+            "
+          />
         </div>
         <div class="right-content">
-          <related-video :author="videoDetail?.author" :aweme-id="videoDetail?.aweme_id" />
+          <related-video
+            :author="videoDetail?.author"
+            :aweme-id="videoDetail?.aweme_id"
+          />
         </div>
       </div>
       <page-footer />

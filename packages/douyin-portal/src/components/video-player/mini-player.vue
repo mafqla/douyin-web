@@ -5,12 +5,18 @@ const props = defineProps({
   url: {
     type: [String, Array],
     required: true
-  },
+  }
 })
 
 const playerOptions = {
   autoplayMuted: videosCtrolStore().isMuted,
-  ignores: ['fullscreen', 'cssfullscreen', 'playbackrate']
+  ignores: [
+    'fullscreen',
+    'cssfullscreen',
+    'playbackrate',
+    'PlaybackPlugin',
+    'miniWin'
+  ]
 }
 
 // 音量改变
@@ -22,8 +28,15 @@ const volumeChange = () => {
 
 <template>
   <div class="mini-play">
-    <BasePlayer :url="props.url" :options="playerOptions" class="mini-video" @volumechange="volumeChange"
-      :mode="'bottom'" :marginControls="false" />
+    <BasePlayer
+      :url="props.url"
+      :options="playerOptions"
+      class="mini-video"
+      @volumechange="volumeChange"
+      :mode="'bottom'"
+      :marginControls="false"
+    />
+    <!-- <video-process /> -->
   </div>
 </template>
 
@@ -34,9 +47,12 @@ const volumeChange = () => {
   height: 100%;
   // bottom: 48px;
   // bottom: 60px;
+
+  .xgplayer {
+    overflow: unset;
+  }
 }
 </style>
-
 
 <style lang="scss">
 .mini-video {
@@ -62,11 +78,15 @@ const volumeChange = () => {
     height: 32px !important;
   }
 
-  .xgplayer-progress-bottom .xgplayer-progress-btn:before {
-    width: 20px;
-    height: 20px;
+  .xgplayer-progress-bottom {
+    .xgplayer-progress-btn:before {
+      width: 20px;
+      height: 20px;
+    }
+    .xgplayer-progress-outer {
+      top: 10px;
+    }
   }
-
   .xgplayer-time {
     font-size: 12px;
   }

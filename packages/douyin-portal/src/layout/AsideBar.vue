@@ -76,7 +76,11 @@ watchEffect(() => {
 
 <template>
   <div class="aside">
-    <div class="aside-bar" :style="isSearchRoute ? { background: 'unset' } : {}">
+    <!--todo 打开用户作品列表-->
+    <div
+      class="aside-bar"
+      :style="isSearchRoute ? { background: 'unset' } : {}"
+    >
       <div class="aside-top">
         <div class="aside-logo">
           <a href="/" class="aside-logo-a"></a>
@@ -87,21 +91,33 @@ watchEffect(() => {
         <div class="douyin-navigation">
           <div class="menu-container" :default-active="activeMenu">
             <template v-for="item in menuItems" :key="item.index">
-              <div class="menu-item" :index="item.index" @click="handleSelect(item.index)"
-                :class="{ active: activeIndex === item.index }">
+              <div
+                class="menu-item"
+                :index="item.index"
+                @click="handleSelect(item.index)"
+                :class="{ active: activeIndex === item.index }"
+              >
                 <div class="item-container">
-                  <div class="icon dark" :style="{
-                    'background-position': calculateBackgroundPosition(
-                      item.index
-                    ),
-                    'background-size': '864px auto'
-                  }" v-show="theme === 'dark'"></div>
-                  <div class="icon light" :style="{
-                    'background-position': calculateBackgroundPosition(
-                      item.index
-                    ),
-                    'background-size': '864px auto'
-                  }" v-show="theme === 'light'"></div>
+                  <div
+                    class="icon dark"
+                    :style="{
+                      'background-position': calculateBackgroundPosition(
+                        item.index
+                      ),
+                      'background-size': '864px auto'
+                    }"
+                    v-show="theme === 'dark'"
+                  ></div>
+                  <div
+                    class="icon light"
+                    :style="{
+                      'background-position': calculateBackgroundPosition(
+                        item.index
+                      ),
+                      'background-size': '864px auto'
+                    }"
+                    v-show="theme === 'light'"
+                  ></div>
 
                   <div class="title-container">
                     <span class="title">{{ item.title }}</span>
@@ -116,8 +132,14 @@ watchEffect(() => {
             <el-popover :show-arrow="false" placement="right-start">
               <template #reference>
                 <div class="aside-bottom-item">
-                  <div class="aside-bottom-icon setting light" v-if="theme === 'light'"></div>
-                  <div class="aside-bottom-icon setting dark" v-if="theme === 'dark'"></div>
+                  <div
+                    class="aside-bottom-icon setting light"
+                    v-if="theme === 'light'"
+                  ></div>
+                  <div
+                    class="aside-bottom-icon setting dark"
+                    v-if="theme === 'dark'"
+                  ></div>
                   <div class="aside-bottom-title"><span>设置</span></div>
                 </div>
               </template>
@@ -126,7 +148,10 @@ watchEffect(() => {
               </template>
             </el-popover>
             <div class="aside-bottom-item">
-              <div class="aside-bottom-icon light" v-if="theme === 'light'"></div>
+              <div
+                class="aside-bottom-icon light"
+                v-if="theme === 'light'"
+              ></div>
               <div class="aside-bottom-icon dark" v-if="theme === 'dark'"></div>
               <div class="aside-bottom-title"><span>业务合作</span></div>
             </div>
@@ -151,6 +176,10 @@ watchEffect(() => {
     height: 100vh;
     position: fixed;
     z-index: 100;
+
+    &.open-user-post {
+      left: -100vw;
+    }
 
     .aside-top {
       // height: 60px;
@@ -409,8 +438,6 @@ watchEffect(() => {
       }
     }
   }
-
-
 }
 
 .aside-bottom-title {
@@ -512,11 +539,9 @@ watchEffect(() => {
   }
 
   .aside-bottom-title span {
-
     margin-right: 4px;
     font-size: 14px;
     line-height: 22px;
-
   }
 
   .aside-content {

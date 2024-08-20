@@ -6,9 +6,11 @@
   margin: 0;
   padding: 0;
 }
+
 html[dark] {
   color-scheme: dark;
 }
+
 html,
 body {
   width: 100%;
@@ -28,6 +30,7 @@ body {
   min-width: 628px;
   // user-select: none;
 }
+
 a {
   color: inherit;
   text-decoration: none;
@@ -45,7 +48,8 @@ ul li {
   // display: inline-block;
   list-style: none;
 }
-.app {
+
+#app {
   width: 100%;
   height: 100%;
   font-weight: normal;

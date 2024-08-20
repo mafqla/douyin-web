@@ -68,7 +68,7 @@ const restoreSelection = () => {
     selection.addRange(savedRange.value)
   }
 }
-const insertAtCursor = (element: HTMLElement, editor: HTMLElement): void => {
+const insertAtCursor = (element: HTMLElement): void => {
   const selection = window.getSelection()
   if (selection && selection.rangeCount > 0) {
     const range = selection.getRangeAt(0)
@@ -118,7 +118,7 @@ const onAtClick = () => {
       editableDiv.focus()
       const atSpan = document.createElement('span')
       atSpan.textContent = '@'
-      insertAtCursor(atSpan, editableDiv)
+      insertAtCursor(atSpan)
     }
   }
 }
@@ -146,7 +146,7 @@ const handleUserSelected = (selectedUser: { username: string }) => {
       } else {
         atSpan.textContent = `@${selectedUser.username}`
       }
-      insertAtCursor(atSpan, editableDiv)
+      insertAtCursor(atSpan)
       // 更新 textarea 的值
       textareaRef.value = textareaRef.value + `@${selectedUser.username}` + ' '
     }
@@ -181,7 +181,7 @@ const handleSelectEmoji = (emoji: any) => {
     imgElement.src = emojiImg
     imgElement.alt = emojiName
     imgElement.style.width = '24px' // 可以设置表情符号的宽度，根据需要调整
-    insertAtCursor(imgElement, editableDiv)
+    insertAtCursor(imgElement)
     // 更新 textarea 的值
     textareaRef.value = textareaRef.value + emojiName
   }

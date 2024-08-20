@@ -26,13 +26,11 @@ export async function useLayout<T extends Object>(
   wrapperID: HTMLDivElement,
   list: Ref<T[]>,
   wrapperWidth: number,
-  slots: SlotsType,
-  noLayoutedList: WaterfallList<T>
+  slots: SlotsType
 ): Promise<Layout<T>> {
   const { numItems, widthGap, itemWidth } = calculateItemWidth(wrapperWidth)
   const getHeightMap = async (list: WaterfallList<T>) => {
     const item2HeightMap = new Map<T, number>()
-
     await batchGetHeightQueue<T>(list, async (item, cb) => {
       const height = await innerGetHeight(slots, item, itemWidth, wrapperID)
       item2HeightMap.set(item, height)
@@ -42,7 +40,8 @@ export async function useLayout<T extends Object>(
   }
 
   // if (!noLayoutedList.length) return
-  const heightMap = await getHeightMap(noLayoutedList)
+  const heightMap = await getHeightMap(list)
+  // console.log('heightMap', heightMap)
   const { transforms, totalHeight } = calculateTransformStyle(
     itemWidth,
     heightMap,

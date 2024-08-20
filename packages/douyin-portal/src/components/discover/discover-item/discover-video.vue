@@ -128,7 +128,7 @@ const onError = () => {
     left: 0px;
     position: absolute;
     top: 0px;
-    overflow: hidden;
+    // overflow: hidden;
 
     width: 100%;
     height: 100%;
