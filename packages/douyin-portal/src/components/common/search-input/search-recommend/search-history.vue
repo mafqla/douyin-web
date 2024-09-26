@@ -100,9 +100,9 @@ const clearHistory = () => {
 .search-history {
   align-items: center;
   display: flex;
-  height: 40px;
+  height:34px;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 10px;
   width: 100%;
 
   .clear-history-btn {
@@ -112,7 +112,6 @@ const clearHistory = () => {
 
     .clear-history-btn-text {
       color: var(--color-text-t3);
-      font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
       font-size: 13px;
       font-weight: 400;
       margin-left: 2px;
@@ -124,8 +123,7 @@ const clearHistory = () => {
   }
 
   .search-history-title {
-    color: var(--color-text-t0);
-    font-size: 14px;
+    color: var(--color-text-t3);
     font-size: 13px;
     font-weight: 600;
     line-height: 22px;
@@ -153,10 +151,8 @@ html.dark .search-history-box:hover {
   background: #5d5f67;
 }
 .search-history-box {
-  // background-color: #e4e4e6;
   background-color: var(--color-bg-b3);
   border-radius: 4px;
-  // color: #161823;
   color: var(--color-text-t1);
   cursor: pointer;
   display: flex;
@@ -171,7 +167,6 @@ html.dark .search-history-box:hover {
 
   &:hover {
     background-color: #e3e5ec;
-    // color: #000;
     color: var(--color-text-t0);
 
     .search-history-clear-icon {
@@ -205,7 +200,6 @@ html.dark .close-icon {
   }
 }
 .search-history-box-text {
-  font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
   font-size: 12px;
   font-weight: 400;
   line-height: 20px;
@@ -222,9 +216,7 @@ html.dark .close-icon {
 
 .search-history-expand-icon {
   align-items: center;
-  // background-color: #e4e4e6;
   background-color: var(--color-bg-b3);
-  // background-color: rgba(228, 228, 230, 1);
   border-radius: 4px;
   cursor: pointer;
   display: flex;

@@ -1,27 +1,48 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import apis from '@/api/apis'
+import type { Word } from '@/api/tyeps/request_response/searchResponse'
 //猜你你想搜
-const guessList = ref([
-  { id: 1, text: '中方回应“禁用iPhone”', isRecommend: true },
-  { id: 2, text: '上海一女子与房东起争执', isRecommend: true },
-  { id: 3, text: '韩称将实施福岛水产禁令' },
-  { id: 4, text: '解放军战机与山东舰联训' },
-  { id: 5, text: 'Ella曝自己半边身体麻痹' },
-  { id: 6, text: '缅北返回人员谈被骗过程' },
-  { id: 7, text: '疑似被困缅甸博士发声' },
-  { id: 8, text: '拜登再称不愿与中国脱钩' }
-])
+const guessList = ref<Word[]>([])
+const getGuessList = async (query?: string, from_group_id?: string) => {
+  const res = await apis.searchSuggest(query, from_group_id)
+  if (res && Array.isArray(res.data)) {
+    guessList.value.length = 0
+    res.data.forEach((item) => {
+      if (Array.isArray(item.words)) {
+        guessList.value = item.words.splice(0, 8)
+      }
+    })
+  }
+}
+onMounted(() => {
+  getGuessList('')
+})
+const goToSearch = (keyword: string) => {
+  const searchUrl = `${window.location.origin}/search/${keyword}`
+  window.open(searchUrl, '_blank')
+}
+//实现换一换
+const refreshing = ref(false)
+const refreshGuess = () => {
+  refreshing.value = true
+  getGuessList('', '7353191583438622003')
+  setTimeout(() => {
+    refreshing.value = false
+  }, 200)
+}
 </script>
 <template>
   <div class="search-guess-top">
     <span class="guess-title">猜你想搜</span>
-    <div class="refresh-button">
+    <div class="refresh-button" @click="refreshGuess">
       <svg
         width="14"
         height="14"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        class=""
+        class="rotate-animation"
+        :class="refreshing ? 'refreshing' : ''"
         viewBox="0 0 14 14"
       >
         <path
@@ -34,7 +55,11 @@ const guessList = ref([
     </div>
   </div>
   <div class="search-guess-container">
-    <div class="search-guess-box" v-for="(item, index) in guessList">
+    <div
+      class="search-guess-box"
+      v-for="(item, index) in guessList"
+      :key="item.id"
+    >
       <div
         class="search-guess-box-title main-box"
         :class="
@@ -44,9 +69,10 @@ const guessList = ref([
         <span
           class="search-guess-text"
           :class="{
-            recommend: item.isRecommend
+            recommend: index <= 1
           }"
-          >{{ item.text }}
+          @click="goToSearch(item.word)"
+          >{{ item.word }}
         </span>
       </div>
     </div>
@@ -57,15 +83,13 @@ const guessList = ref([
 .search-guess-top {
   align-items: center;
   display: flex;
-  height: 40px;
+  height: 34px;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 10px;
   width: 100%;
 
   .guess-title {
-    // color: #000;
-    color: var(--color-text-t0);
-    font-size: 14px;
+    color: var(--color-text-t3);
     font-size: 13px;
     font-weight: 600;
     line-height: 22px;
@@ -85,10 +109,15 @@ const guessList = ref([
     svg path {
       fill: var(--color-text-t3);
     }
+    .rotate-animation {
+      transition: transform 0.3s ease-in-out;
+    }
+    .refreshing {
+      transform: rotate(180deg);
+    }
 
     .refresh-text {
       color: var(--color-text-t3);
-      font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
       font-size: 13px;
       font-weight: 400;
       margin-left: 2px;
@@ -100,7 +129,7 @@ const guessList = ref([
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 6px;
-  padding: 0 20px 0 16px;
+  padding: 0 10px 0 10px;
   .search-guess-box {
     flex-basis: 50%;
     overflow: hidden;

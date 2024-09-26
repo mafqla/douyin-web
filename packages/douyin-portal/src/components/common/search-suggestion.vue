@@ -1,15 +1,24 @@
 <script setup lang="ts">
 import {} from 'vue'
 
-defineProps({
+const props = defineProps({
   relatedText: String
 })
+
+const router = useRouter()
+
+const onSearch = () => {
+  router.push({
+    path: `/search/${props.relatedText}`,
+    query: { type: 'general' }
+  })
+}
 </script>
 <template>
   <span class="search-suggestion-container">
     <span class="suggestion-text-content">
-      <a class="suggestion-link" href="#">
-        <span class="suggestion-text">{{ relatedText }}</span>
+      <a class="suggestion-link" @click="onSearch">
+        <span class="suggestion-text">{{ props.relatedText }}</span>
         <svg
           width="9"
           height="9"

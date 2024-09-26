@@ -1,17 +1,16 @@
 import axios, { type AxiosRequestHeaders } from 'axios'
-
 const request = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
   timeout: import.meta.env.VITE_TIMEOUT,
-  withCredentials: true,
+  withCredentials: true
 })
 
 // 请求拦截器
 request.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
+    // const token = localStorage.getItem('token')
     config.headers = {
-      authorization: token || ''
+      // authorization: token || ''
     } as unknown as AxiosRequestHeaders
 
     //等于post请求，且请求参数为对象
@@ -30,7 +29,7 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   (response) => {
     if (response.status === 200) {
-      if (response.data.code !== 200) {
+      if (response.data.status_code !== 0 || 200) {
         // Message.error(response.data.msg)
       }
       return response.data
@@ -38,10 +37,9 @@ request.interceptors.response.use(
   },
 
   async (err) => {
-    if (err.response.status === 401) {
-      // 登录异常或超时，刷新token
-      // return refreshToken(err)
-    }
+    console.log(err)
+    // if (err.response.status === 401) {
+    // }
     return Promise.reject(err)
   }
 )

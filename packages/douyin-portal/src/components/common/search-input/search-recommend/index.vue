@@ -6,7 +6,7 @@ import { ref } from 'vue'
     <div class="search-recommend-content">
       <div
         class="search-recommend-container search-recommend-box"
-        style="height: 538px"
+        style="height: unset"
       >
         <search-history />
         <search-guess />
@@ -20,28 +20,26 @@ import { ref } from 'vue'
 .search-recommend-content {
   left: -2px;
   position: absolute;
-  top: 36px;
+  top: 40px;
   width: calc(100% + 2px);
   z-index: 50;
 
   .search-recommend-box {
-    overflow-x: hidden;
-    overflow-y: scroll;
-    padding-right: 6px;
-    width: calc(100% - 6px);
+    width: 100%;
+    background-color: var(--color-bg-b1);
+    box-sizing: content-box;
+    border: 1px solid var(--color-secondary-default);
+    border-radius: 12px;
+    margin-top: 5px;
+    padding-top: 10px;
+    padding-right: 2px;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.1);
   }
 
   .search-recommend-container {
-    background-color: var(--color-bg-b1);
-    border: 1px solid var(--color-secondary-default);
-
-    border-radius: 12px;
-    // border-radius: 4px;
-    box-shadow: 0 0 24px rgba(0, 0, 0, 0.1);
-    box-sizing: content-box;
-    margin-top: 5px;
-    padding: 10px 0;
-    width: 100%;
+    padding-left: 10px;
+    padding-right: 2px;
+    overflow-y: scroll;
   }
 }
 </style>

@@ -5,7 +5,10 @@ import type {
   ICommentListRes,
   ICommentReplyRes
 } from './tyeps/request_response/commentListRes'
+import type { FooterLinksRes } from './tyeps/request_response/footerLinksRes'
 import type { IhomeFeedRes } from './tyeps/request_response/homeFeedRes'
+import type { HotSearchRes } from './tyeps/request_response/hotSearchRes'
+import type { IrecommendFeedRes } from './tyeps/request_response/recommendFeed'
 import type { IRelatedVideoRes } from './tyeps/request_response/relatedVideoRes'
 import type {
   SearchResponse,
@@ -28,6 +31,16 @@ export default {
     })
   },
   /**
+   * @description 获取推荐页视频
+   */
+  getRecommendFeed: (count: number): Promise<IrecommendFeedRes> => {
+    return request.get(urls.recomend_feed, {
+      params: {
+        count
+      }
+    })
+  },
+  /**
    * @description 搜索
    */
   search: (params: searchParams): Promise<SearchResponse> => {
@@ -39,15 +52,14 @@ export default {
    * @description 搜索关键词推荐
    */
 
-  searchSuggest: (query: string): Promise<searchSuggestResponse> => {
+  searchSuggest: (
+    query?: string,
+    from_group_id?: string
+  ): Promise<searchSuggestResponse> => {
     return request.get(urls.suggest_words, {
       params: {
-        query: query,
-        business_id: 30125,
-        aid: 6383,
-        app_name: 'douyin_web',
-        pd: 'aweme_general',
-        pc_client_type: 1
+        query,
+        from_group_id
       }
     })
   },
@@ -55,7 +67,7 @@ export default {
   /**
    * @description 获取视频详细信息
    */
-  getVideoDetail: (aweme_id: number): Promise<IVideoDetailRes> => {
+  getVideoDetail: (aweme_id: string): Promise<IVideoDetailRes> => {
     return request.get(urls.video_detail, {
       params: {
         aweme_id
@@ -65,10 +77,18 @@ export default {
   /**
    * @description 获取视频相关推荐
    */
-  getVideoRelated: (aweme_id: number): Promise<IRelatedVideoRes> => {
-    return request.get(urls.related_video, {
+  getVideoRelated: (
+    aweme_id: string,
+    count: string,
+    filterGids: string,
+    refresh_index: string
+  ): Promise<IRelatedVideoRes> => {
+    return request.get(urls.video_related, {
       params: {
-        aweme_id
+        aweme_id,
+        count,
+        filterGids,
+        refresh_index
       }
     })
   },
@@ -85,7 +105,7 @@ export default {
    * @description 获取评论列表
    */
   getCommentList: (
-    aweme_id: number,
+    aweme_id: string,
     cursor: number,
     count: number
   ): Promise<ICommentListRes> => {
@@ -119,5 +139,26 @@ export default {
         count
       }
     })
+  },
+  /**
+   * @description 底部栏热门链接
+   */
+
+  getFooterLinks: (): Promise<FooterLinksRes> => {
+    return request.get(urls.footer_link)
+  },
+
+  /**
+   *@description 获取热搜
+   */
+  getHotSearch: (): Promise<HotSearchRes> => {
+    return request.get(urls.hot_search)
+  },
+
+  /**
+   * @description 获取用户信息
+   */
+  getUserInfo: (): Promise<IVideoDetailRes> => {
+    return request.get(urls.user_info)
   }
 }
