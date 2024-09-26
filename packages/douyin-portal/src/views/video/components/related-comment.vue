@@ -1,55 +1,54 @@
 <script setup lang="ts">
-import apis from '@/api/apis';
-import type { IComments } from '@/api/tyeps/request_response/commentListRes';
-import DyAvatar from '@/components/common/dy-avatar.vue';
-import DyInput from '@/components/common/dy-input/index.vue';
-import Loading from '@/components/common/loading.vue';
-import SearchSuggestion from '@/components/common/search-suggestion.vue';
-import { useVirtualList } from '@/hooks';
+import apis from '@/api/apis'
+import type { IComments } from '@/api/tyeps/request_response/commentListRes'
+import DyAvatar from '@/components/common/dy-avatar.vue'
+import DyInput from '@/components/common/dy-input/index.vue'
+import Loading from '@/components/common/loading.vue'
+import SearchSuggestion from '@/components/common/search-suggestion.vue'
 
-const props = defineProps(
-  {
-    aweme_id: String,
-    author_id: String,
-    relatedText: String
-
-  }
-)
+const props = defineProps({
+  aweme_id: String,
+  author_id: String,
+  relatedText: String
+})
 
 const commentList = ref<IComments[]>([])
-const isLoadingMore = ref(true);
-const hasMore = ref(true);
-const cursor = ref(0);
-const count = ref(5);
+const isLoadingMore = ref(true)
+const hasMore = ref(true)
+const cursor = ref(0)
+const count = ref(5)
 const getCommentList = async () => {
-  if (!hasMore.value) return;
+  if (!hasMore.value) return
   isLoadingMore.value = true
   try {
-    const res = await apis.getCommentList(Number(props.aweme_id), cursor.value, count.value)
+    const res = await apis.getCommentList(
+      props.aweme_id ?? '',
+      cursor.value,
+      count.value
+    )
     cursor.value = res.cursor
     count.value = 20
     commentList.value.push(...res.comments)
     if (!isLoadingMore.value) {
       hasMore.value = Boolean(res.has_more)
     }
-    isLoadingMore.value = false;
+    isLoadingMore.value = false
   } catch (error) {
     console.log(error)
   }
 }
-const containerRef = ref(null);
+const containerRef = ref(null)
 onMounted(() => {
-  getCommentList();
-});
+  getCommentList()
+})
 
 useInfiniteScroll(
-  window, () => {
+  window,
+  () => {
     getCommentList()
   },
   { distance: 100 }
 )
-
-
 </script>
 <template>
   <div class="related-comment">
@@ -63,13 +62,15 @@ useInfiniteScroll(
         </div>
 
         <div class="search-input-content">
-          <dy-avatar userLink="//www.douyin.com/user/MS4wLjABAAAAqy1OO-UP9J2LJ1xSg_lsryKCicbLFLGzBgTRRT4W14Y"
+          <dy-avatar
+            userLink="//www.douyin.com/user/MS4wLjABAAAAqy1OO-UP9J2LJ1xSg_lsryKCicbLFLGzBgTRRT4W14Y"
             src="//p3-pc-sign.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813c001_fddf54d2b1544d0aa4f0987fefc73f65.jpeg?x-expires=1712570400&x-signature=sHygsuEx4uBSOb8ErbKxTlqV8b8%3D&from=2480802190"
-            size="small" />
+            size="small"
+          />
           <dy-input />
         </div>
 
-        <div class="search-trend-container">
+        <div class="search-trend-container" v-if="relatedText != ''">
           <div class="trend-header">
             <span class="trend-title">大家都在搜：</span>
             <search-suggestion :relatedText />
@@ -81,7 +82,11 @@ useInfiniteScroll(
           <comment-item v-bind="it" :author_id="props.author_id" />
         </template>
 
-        <Loading :show="isLoadingMore" :isShowText="true" text="评论加载中..." />
+        <Loading
+          :show="isLoadingMore"
+          :isShowText="true"
+          text="评论加载中..."
+        />
         <list-footer v-if="!hasMore" />
       </div>
     </div>

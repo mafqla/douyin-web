@@ -15,7 +15,10 @@ const playerOptions = {
     'cssfullscreen',
     'playbackrate',
     'PlaybackPlugin',
-    'miniWin'
+    'miniWin',
+    'watchLater',
+    'automaticContinuous',
+    'immersiveSwitch'
   ]
 }
 

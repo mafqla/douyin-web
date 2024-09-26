@@ -8,7 +8,7 @@ const commentCount = ref(0)
 const textarea = ref('')
 const loading = ref(false)
 const props = defineProps({
-  id: Number
+  id: String
 })
 // const store = commentStore()
 

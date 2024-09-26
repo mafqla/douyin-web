@@ -1,37 +1,60 @@
 <script setup lang="ts">
-import type { IawemeDetail } from '@/api/tyeps/request_response/videoDetailRes';
-import { useCount } from '@/hooks';
-import { formatTimeToYMDHMS } from '@/utils/date-format';
+import type { IawemeDetail } from '@/api/tyeps/request_response/videoDetailRes'
+import { useCount } from '@/hooks'
+import { formatTimeToYMDHMS } from '@/utils/date-format'
 import { ref, type Ref } from 'vue'
 
-
 const videoDetail = inject<Ref<IawemeDetail>>('videoDetail')
-
 
 const isLiked = computed(() => Boolean(videoDetail?.value.user_digged))
 // console.log(videoDetail?.value.user_digged);
 const isCollect = ref(Boolean(videoDetail?.value.collect_stat))
-
 </script>
 <template>
   <div class="video-detail-action" v-if="videoDetail">
     <div class="video-detail-action-left">
       <div class="video-detail-action-item">
-        <svg-icon class="icon" :class="{ liked: isLiked }" icon="dianzan" style="width: 42px; height: 42px" />
-        <span class="num">{{ useCount(videoDetail.statistics.digg_count) }}</span>
+        <svg-icon
+          class="icon"
+          :class="{ liked: isLiked }"
+          icon="dianzan"
+          style="width: 42px; height: 42px"
+        />
+        <span class="num">{{
+          useCount(videoDetail.statistics.digg_count)
+        }}</span>
       </div>
       <div class="video-detail-action-item">
-        <svg-icon class="icon" icon="comment" style="width: 42px; height: 42px" />
-        <span class="num">{{ useCount(videoDetail.statistics.collect_count) }}</span>
+        <svg-icon
+          class="icon"
+          icon="comment"
+          style="width: 42px; height: 42px"
+        />
+        <span class="num">{{
+          useCount(videoDetail.statistics.collect_count)
+        }}</span>
       </div>
       <div class="video-detail-action-item">
-        <svg-icon icon="collection" class="icon" :class="{ collect: isCollect }" style="width: 42px; height: 42px" />
-        <span class="num">{{ useCount(videoDetail.statistics.share_count) }}</span>
+        <svg-icon
+          icon="collection"
+          class="icon"
+          :class="{ collect: isCollect }"
+          style="width: 42px; height: 42px"
+        />
+        <span class="num">{{
+          useCount(videoDetail.statistics.share_count)
+        }}</span>
       </div>
 
       <div class="video-detail-action-item">
-        <svg-icon icon="fenxiang" class="icon" style="width: 42px; height: 42px" />
-        <span class="num">{{ useCount(videoDetail.statistics.share_count) }}</span>
+        <svg-icon
+          icon="fenxiang"
+          class="icon"
+          style="width: 42px; height: 42px"
+        />
+        <span class="num">{{
+          useCount(videoDetail.statistics.share_count)
+        }}</span>
       </div>
     </div>
     <div class="video-detail-action-right">
@@ -57,7 +80,7 @@ const isCollect = ref(Boolean(videoDetail?.value.collect_stat))
   margin-left: -5px;
   display: flex;
 
-  &>div {
+  & > div {
     margin-right: 24px;
 
     * {

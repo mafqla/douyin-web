@@ -9,15 +9,17 @@ import play from '@/assets/videos-player-icon/play.svg'
 import volumeMute from '@/assets/videos-player-icon/volume-mute.svg'
 import volumeSmall from '@/assets/videos-player-icon/volume-small.svg'
 import volume from '@/assets/videos-player-icon/volume.svg'
+import { playerSettingStore } from '@/stores/player-setting'
 import { settingStore } from '@/stores/setting'
 import { v4 as uuidv4 } from 'uuid'
 import { onBeforeUnmount, onMounted, ref, toRef, watch } from 'vue'
 import xgplayer, { Events } from 'xgplayer'
 import 'xgplayer/dist/index.min.css'
+import automaticContinuous from './plugin/automatic-continuous/automatic-continuous'
+import immersiveSwitch from './plugin/immersive-switch/immersive-switch'
 import miniWin from './plugin/miniWin/miniWin'
 import PlaybackPlugin from './plugin/playbackSetting/playbackPlugin'
-import { playerSettingStore } from '@/stores/player-setting'
-import MiniScreen from 'xgplayer/es/plugins/miniScreen'
+import watchLater from './plugin/watch-later/watch-later'
 
 const props = defineProps({
   url: {
@@ -81,7 +83,7 @@ const playerOptions = ref({
   height: '100%',
   playsinline: true,
   autoplay: true,
-  loop: true,
+  // loop: true,
   lang: 'zh-cn',
   enter: {
     innerHtml: `
@@ -97,9 +99,6 @@ const playerOptions = ref({
   allowSeekAfterEnded: true,
   enableContextmenu: false,
   marginControls: props.marginControls,
-  fullscreen: {
-    target: ''
-  },
   controls: {
     autoHide: props.autoHide,
     initShow: true,
@@ -117,6 +116,8 @@ const playerOptions = ref({
     top: 728,
     left: 1329
   },
+  immersiveState: false,
+  automatic: false,
   icons: {
     startPlay: startPlay,
     // startPause: startPause,
@@ -135,15 +136,35 @@ const playerOptions = ref({
       <div class="loading-content-img"></div>
     </div>`
   },
-  plugins: [PlaybackPlugin, miniWin]
+  // cssfullscreen: document.querySelector('.slide-list') as HTMLElement,
+  fullscreenTarget: document.querySelector('.slide-list') as HTMLElement,
+  plugins: [
+    PlaybackPlugin,
+    miniWin,
+    watchLater,
+    automaticContinuous,
+    immersiveSwitch
+  ]
 })
 onMounted(() => {
-  props.options.fullscreen = {
-    target: document.getElementById('modal')
-  }
   //@ts-ignore
   if (playerOptions.value && player.value) {
     player.value = new xgplayer(playerOptions.value)
+    player.value.on(Events.CSS_FULLSCREEN_CHANGE, (isCssFullscreen: any) => {
+      const carousel = document.getElementsByClassName('carousel') as any
+      const main = document.getElementById('slidelist')
+      if (isCssFullscreen && carousel) {
+        carousel[0].style.height = '100%'
+        carousel[0].style.top = '0'
+        carousel[0].style.padding = '0'
+        main?.classList.add('isCssFullscreen')
+      } else {
+        carousel[0].style.height = 'calc(100% - 24px)'
+        carousel[0].style.top = 'calc(0% + 12px)'
+        carousel[0].style.padding = '0 60px 0 30px '
+        main?.classList.remove('isCssFullscreen')
+      }
+    })
     player.value.on(Events.FULLSCREEN_CHANGE, (isFullscreen: any) => {
       const carousel = document.getElementsByClassName('carousel') as any
       if (isFullscreen) {
@@ -174,7 +195,6 @@ onMounted(() => {
     })
     player.value.on(Events.ENDED, () => {
       emit('ended')
-      console.log('ended')
     })
     player.value.on(Events.TIME_UPDATE, () => {
       emit('timeupdate')
@@ -213,6 +233,17 @@ onMounted(() => {
        * }
        */
       // console.log(data)
+      // emit('useraction', data)
+    })
+
+    player.value.on('atuoPlayChange', (automatic: boolean) => {
+      console.log('atuoPlayChange', automatic)
+    })
+    player.value.on('immersiveStateChange', (isImmersive: boolean) => {
+      console.log('immersiveStateChange', isImmersive)
+    })
+    player.value.on('watch-later', (data: any) => {
+      console.log('watch-later', data)
     })
   }
   console.log(player.value)
@@ -221,20 +252,18 @@ onMounted(() => {
 onBeforeUnmount(() => {
   // player.value.destroy()
 })
-
 watch(
   () => props.isPlay,
   (newVal, oldVal) => {
     if (newVal !== oldVal) {
       if (newVal) {
-        player.value.play()
-      } else {
-        player.value.pause()
+        playerOptions.value.autoplay = props.isPlay
+        //@ts-ignore
+        player.value = new xgplayer(playerOptions.value)
       }
     }
   }
 )
-
 //把播放器的事件导出给父组件
 const emit = defineEmits<{
   play: []
@@ -249,13 +278,14 @@ const emit = defineEmits<{
 }>()
 </script>
 <template>
-  <div class="modal" ref="player" :id="playerId">
+  <div class="base-player" ref="player" :id="playerId">
     <slot name="switch" />
+    <slot />
   </div>
 </template>
 
 <style lang="scss" scoped>
-.modal {
+.base-player {
   // position: relative;
   background: transparent;
 }
@@ -355,6 +385,9 @@ xg-start-inner {
     background-image: linear-gradient(transparent 0%, rgba(0, 0, 0, 0.6) 100%);
   }
 
+  .xgplayer-replay {
+    display: none !important;
+  }
   .xgplayer-start {
     width: 98px;
     height: 98px;
@@ -540,7 +573,6 @@ xg-start-inner {
     bottom: 32px;
     border-radius: 12px !important;
   }
-
   &.xgplayer-mini {
     box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 24px;
     z-index: 501 !important;
@@ -611,6 +643,11 @@ xg-start-inner {
     position: absolute;
     top: 0px;
     left: 0px;
+  }
+
+  &.xgplayer-is-fullscreen {
+    position: absolute !important;
+    z-index: auto !important;
   }
 }
 </style>

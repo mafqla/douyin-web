@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { videosCtrolStore } from '@/stores/videos-control'
-import type { IVideoList } from '@/service/videos/videosType'
 import { watchEffect, type PropType, ref, onMounted, computed } from 'vue'
 import { useElementSize, useThrottleFn } from '@vueuse/core'
 import { useKeyboardNavigation } from '@/hooks'
+import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 
 defineProps({
   videoList: {
-    type: Array as PropType<IVideoList[]>,
+    type: Array as PropType<IAwemeInfo[]>,
     default: []
   }
 })
@@ -80,7 +80,7 @@ useKeyboardNavigation()
       <div
         class="carousel-item"
         v-for="(item, index) in videoList"
-        :key="item.id"
+        :key="item.aweme_id"
         :style="{
           height: `${height}px`,
           'margin-bottom': '12px'
@@ -89,20 +89,20 @@ useKeyboardNavigation()
       >
         <template v-if="isShowItem(index)">
           <swiper-player
-            :id="item.id"
-            :userId="item.userId"
-            :username="item.userName"
-            :uploadTime="item.uploadTime"
-            :description="item.description"
-            :url="item.videosAddress"
-            :poster="item.videosCover"
-            :img="item.userAvatar"
-            :dianzan="item.likeCount"
-            :comment="item.commentCount"
-            :shoucang="item.collectCount"
-            :isLike="item.isLike"
-            :isCollect="item.isCollect"
-            :isAttention="item.isAttention"
+            :id="item.aweme_id"
+            :userId="item.author_user_id"
+            :username="item.author.nickname"
+            :uploadTime="item.create_time"
+            :description="item.desc"
+            :url="item.video.play_addr.url_list"
+            :poster="item.video.cover.url_list[0] ?? ''"
+            :img="item.author.avatar_thumb.url_list[0] ?? ''"
+            :dianzan="item.statistics.digg_count"
+            :comment="item.statistics.comment_count"
+            :shoucang="item.statistics.collect_count"
+            :isLike="item.user_digged"
+            :isCollect="item.collect_stat"
+            :isAttention="item.author.follow_status"
             :isPlay="isActiveIndex(index)"
           />
         </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watchEffect } from 'vue'
+import formatTime from '@/utils/date-format'
 
 const props = defineProps<{
   username: string
@@ -14,7 +14,7 @@ const props = defineProps<{
         <span>@{{ props.username }}</span>
       </div>
       <div class="video-info-time">
-        <span> · {{ props.uploadTime }}</span>
+        <span> · {{ formatTime(props.uploadTime) }}</span>
       </div>
     </div>
 
@@ -25,6 +25,7 @@ const props = defineProps<{
         --maxHeight: 48px;
         margin: 16px 0;
       "
+      class="video-desc-swiper"
       :description="props.description"
     />
   </div>

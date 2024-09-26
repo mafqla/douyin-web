@@ -12,7 +12,7 @@ const handleClick = (tab: string) => {
 }
 
 const props = defineProps({
-  id: Number,
+  id: String,
   username: String
 })
 </script>
