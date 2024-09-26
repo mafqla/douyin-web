@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import CarouselControls from '@/components/swper/swiper-control.vue'
 import testVideo from '/test-video/test1.mp4?url'
 const loading = ref(false)
+const testurl = 'https://sf3-cdn-tos.douyinstatic.com/obj/ies-music/7418416350111599410.mp3'
 </script>
 <template>
   <div class="follow">
@@ -12,7 +13,7 @@ const loading = ref(false)
           <carousel-controls />
         </template>
 </swiper-video> -->
-      <mini-player style="height: 320px; width: 200px" :url="testVideo" />
+      <mini-player style="height: 320px; width: 200px" :url="testurl" />
     </Loading>
   </div>
 </template>

@@ -160,7 +160,7 @@ const formattedDescription = computed(() => {
     padding: 0 5px;
     span {
       font-weight: 500;
-      color: var(--color-text-t1);
+      // color: var(--color-text-t1);
       font-size: 14px;
       line-height: 22px;
     }
@@ -171,6 +171,9 @@ const formattedDescription = computed(() => {
   }
 }
 
+.video-desc-swiper{
+  
+}
 .video-info-desc {
   &.search {
     .tag {

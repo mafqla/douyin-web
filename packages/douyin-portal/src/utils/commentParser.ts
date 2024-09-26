@@ -41,7 +41,7 @@ export const handleCommentParser = (
     (match, emojiCode) => {
       const emojiUrl = getEmojiUrl(match)
       if (emojiUrl) {
-        return `<img src="${emojiUrl}" alt="${match}" style="margin: 0px 4px; vertical-align: text-bottom;"/>`
+        return `<img class="emoji-img" src="${emojiUrl}" alt="${match}" style="margin: 0px 4px; vertical-align: text-bottom;"/>`
       }
       return match
     }

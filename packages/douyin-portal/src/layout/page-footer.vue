@@ -1,147 +1,222 @@
 <script setup lang="ts">
-import { } from 'vue'
+import {} from 'vue'
+import apis from '@/api/apis'
+import type { LinkItem } from '@/api/tyeps/request_response/footerLinksRes'
+
+const links = ref<LinkItem[]>([])
+
+const getLinks = async () => {
+  const res = await apis.getFooterLinks()
+  links.value = res.link_data.flatMap((item) => {
+    if (item.link_list) {
+      return item.link_list
+    }
+    return []
+  })
+  // console.log(links.value)
+}
+onMounted(() => {
+  getLinks()
+})
+// console.log(links.value)
 </script>
 <template>
   <div class="page-footer">
     <div class="footer-link">
       <div class="footer-link-title">
-        <a href="https://www.oceanengine.com/resource/douyin" class="footer-link-title-a" target="_blank"
-          rel="noopener noreferrer nofollow">广告投放</a>
+        <a
+          href="https://www.oceanengine.com/resource/douyin"
+          class="footer-link-title-a"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          >广告投放</a
+        >
       </div>
       <div class="footer-link-title">
-        <a href="https://www.douyin.com/agreements/?id=6773906068725565448" class="footer-link-title-a" target="_blank"
-          rel="noopener noreferrer nofollow">用户服务协议</a>
+        <a
+          href="https://www.douyin.com/agreements/?id=6773906068725565448"
+          class="footer-link-title-a"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          >用户服务协议</a
+        >
       </div>
       <div class="footer-link-title">
-        <a href="https://www.douyin.com/agreements/?id=6773901168964798477" class="footer-link-title-a" target="_blank"
-          rel="noopener noreferrer nofollow">隐私政策</a>
+        <a
+          href="https://www.douyin.com/agreements/?id=6773901168964798477"
+          class="footer-link-title-a"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          >隐私政策</a
+        >
       </div>
       <div class="footer-link-title">
-        <a href="https://www.douyin.com/recovery_account/" class="footer-link-title-a" target="_blank"
-          rel="noopener noreferrer nofollow">账号找回</a>
+        <a
+          href="https://www.douyin.com/recovery_account/"
+          class="footer-link-title-a"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          >账号找回</a
+        >
       </div>
       <div class="footer-link-title">
-        <a href="https://www.douyin.com/aboutus/" class="footer-link-title-a" target="_blank"
-          rel="noopener noreferrer nofollow">联系我们</a>
+        <a
+          href="https://www.douyin.com/aboutus/"
+          class="footer-link-title-a"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          >联系我们</a
+        >
       </div>
       <div class="footer-link-title">
-        <a href="https://www.douyin.com/aboutus/" class="footer-link-title-a" target="_blank"
-          rel="noopener noreferrer nofollow">加入我们</a>
+        <a
+          href="https://www.douyin.com/aboutus/"
+          class="footer-link-title-a"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          >加入我们</a
+        >
       </div>
       <div class="footer-link-title">
-        <a href="https://www.douyin.com/business_license/" class="footer-link-title-a" target="_blank"
-          rel="noopener noreferrer nofollow">营业执照</a>
+        <a
+          href="https://www.douyin.com/business_license/"
+          class="footer-link-title-a"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          >营业执照</a
+        >
       </div>
       <div class="footer-link-title">
-        <a href="https://www.douyin.com/friend_links" class="footer-link-title-a" target="_blank"
-          rel="noopener noreferrer ">友情链接</a>
+        <a
+          href="https://www.douyin.com/friend_links"
+          class="footer-link-title-a"
+          target="_blank"
+          rel="noopener noreferrer "
+          >友情链接</a
+        >
       </div>
       <div class="footer-link-title">
-        <a href="https://www.douyin.com/htmlmap/hotauthor_0_1" class="footer-link-title-a" target="_blank"
-          rel="noopener noreferrer ">站点地图</a>
+        <a
+          href="https://www.douyin.com/htmlmap/hotauthor_0_1"
+          class="footer-link-title-a"
+          target="_blank"
+          rel="noopener noreferrer "
+          >站点地图</a
+        >
       </div>
       <div class="footer-link-title">
-        <a href="https://www.douyin.com/downloadpage" class="footer-link-title-a" target="_blank"
-          rel="noopener noreferrer ">下载抖音</a>
+        <a
+          href="https://www.douyin.com/downloadpage"
+          class="footer-link-title-a"
+          target="_blank"
+          rel="noopener noreferrer "
+          >下载抖音</a
+        >
       </div>
       <div class="footer-link-title">
-        <a href="https://mix.jinritemai.com/falcon/mix_page/index.html" class="footer-link-title-a" target="_blank"
-          rel="noopener noreferrer nofollow">抖音电商</a>
+        <a
+          href="https://mix.jinritemai.com/falcon/mix_page/index.html"
+          class="footer-link-title-a"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          >抖音电商</a
+        >
       </div>
     </div>
 
     <div class="JXaUfgsM">
       <div class="cHlCoDpR">
-        <a href="https://www.piyao.org.cn/yybgt/index.htm" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer nofollow">网络谣言曝光台 ｜
+        <a
+          href="https://www.piyao.org.cn/yybgt/index.htm"
+          class="link-list__link"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          >网络谣言曝光台 ｜
         </a>
       </div>
       <div class="cHlCoDpR">
-        <a href="https://www.12377.cn/" class="B3AsdZT9" target="_blank" rel="noopener noreferrer nofollow">网上有害信息举报</a>
+        <a
+          href="https://www.12377.cn/"
+          class="link-list__link"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          >网上有害信息举报</a
+        >
       </div>
       <div class="cHlCoDpR">
-        <span>｜ 违法和不良信息举报：400-140-2108 ｜ 青少年守护专线：400-9922-556
+        <span
+          >｜ 违法和不良信息举报：400-140-2108 ｜ 青少年守护专线：400-9922-556
           ｜ 算法推荐专项举报：sfjubao@bytedance.com ｜
-          网络内容从业人员违法违规行为举报：feedback@douyin.com</span>
+          网络内容从业人员违法违规行为举报：feedback@douyin.com</span
+        >
       </div>
     </div>
     <div class="JXaUfgsM">
       <div class="cHlCoDpR">
-        <a href="https://beian.miit.gov.cn/" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer nofollow">京ICP备16016397号-3</a>
+        <a
+          href="https://beian.miit.gov.cn/"
+          class="link-list__link"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          >京ICP备16016397号-3</a
+        >
       </div>
       <div class="cHlCoDpR">
-        <a href="https://p3-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/jiemuzhizuojingying.jpeg" class="B3AsdZT9"
-          target="_blank" rel="noopener noreferrer nofollow">
-          ｜ 广播电视节目制作经营许可证</a>
+        <a
+          href="https://p3-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/jiemuzhizuojingying.jpeg"
+          class="link-list__link"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+        >
+          ｜ 广播电视节目制作经营许可证</a
+        >
       </div>
       <div class="cHlCoDpR">
-        <a href="https://p3-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/zengzhixuke.jpeg" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer nofollow">
-          ｜ 京B2-20170846</a>
+        <a
+          href="https://p3-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/zengzhixuke.jpeg"
+          class="link-list__link"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+        >
+          ｜ 京B2-20170846</a
+        >
       </div>
       <div class="cHlCoDpR">
-        <a href="https://p3-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/wangluowenhuajingying.jpeg" class="B3AsdZT9"
-          target="_blank" rel="noopener noreferrer nofollow">
+        <a
+          href="https://p3-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/wangluowenhuajingying.jpeg"
+          class="link-list__link"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+        >
           ｜ 网络文化许可证-京网文-（2022）0938-030号 ｜
         </a>
       </div>
       <div class="cHlCoDpR">
-        <img class="OqamRr48" src="//p3-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/emblem.png" alt="icon" /><a
-          href="http://www.beian.gov.cn/portal/registerSystemInfo" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer nofollow">京公网安备 11000002002046号</a>
+        <img
+          class="OqamRr48"
+          src="//p3-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/emblem.png"
+          alt="icon"
+        /><a
+          href="http://www.beian.gov.cn/portal/registerSystemInfo"
+          class="link-list__link"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          >京公网安备 11000002002046号</a
+        >
       </div>
     </div>
-    <div class="WltbFpmM">
-      <span class="SBRU08_v"></span><span class="FipJiH3x">热门：</span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/video/6903492709537926411" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">太白玩摄影——蒋大为和他的学生#音乐现场</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/search/%E6%83%A0%E9%BE%99%E9%85%8D%E9%9F%B3%E5%B0%A4%E5%B7%9D" class="B3AsdZT9"
-          target="_blank" rel="noopener noreferrer">惠龙配音尤川</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/user/MS4wLjABAAAAZPPN8qTsx-xn14Wxjmscz3UGjDT8xI4FMnSHsK-92g4" class="B3AsdZT9"
-          target="_blank" rel="noopener noreferrer">汽车创意朋友圈</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/user/MS4wLjABAAAAKPDH6jTY7MnOIJXOyuHFMD6sxGlKAGso8OIteubAM_P_lJO1Z8F49xnqZvEXHvoi"
-          class="B3AsdZT9" target="_blank" rel="noopener noreferrer">即墨小优服装工厂</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/video/7022950181712760103" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">思维训练数学 幼儿园</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/video/7148326369355681057" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">急冻后的母乳怎么加热</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/video/7000335170330955021" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">企业购买商业大平层</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/video/7165279865095195935" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">思思麻麻好物</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/video/7139026513529195790" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">怎样判断狗有没有狂犬病</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/video/7078842153937521934" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">怎样提升1000米成绩</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/video/7026639689738243335" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">怎么送奶</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/video/7097166644035816745" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">伊宁市商贷转住房基金</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/user/MS4wLjABAAAAmRtEXk0nDJxVWP2RUFUwGzbvLvRxyfvZtilSvSlM-VQ" class="B3AsdZT9"
-          target="_blank" rel="noopener noreferrer">我不是兔兔🐰~</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/zhuanti/7203727629923485736" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">运营是干嘛的</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/zhuanti/7178554379459381285" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">根尖洲的下一站</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/zhuanti/7204215140504373252" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">2023年茶短句</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/video/7214055866486541626" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">哭得一塌糊涂洗刷不了炫富疑云</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/video/7136527368121797919" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">高校图书馆设发呆区能吃东西能看景</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/video/7210994826714565944" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">高校通报男生闯女寝</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/video/6863227808773147912" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">时代少年团晒收工照</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/video/6991735217383836960" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">易烊千玺又穿黑西装</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/video/7075280041533263141" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">最春天的照片</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/video/7212883219090328891" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">白宫发言人与记者争执</a></span><span class="RWEDYsSQ"><a
-          href="https://www.douyin.com/video/7214390036916178176" class="B3AsdZT9" target="_blank"
-          rel="noopener noreferrer">女子模仿网红穿搭遭对方粉丝网暴</a></span>
+    <div class="link-list">
+      <span class="SBRU08_v"></span>
+      <span class="link-list__label">热门：</span>
+      <span class="link-list__item" v-for="link in links" :key="link.anchor">
+        <a
+          :href="link.url"
+          class="link-list__link"
+          target="_blank"
+          rel="noopener noreferrer"
+          >{{ link.anchor }}
+        </a>
+      </span>
     </div>
   </div>
 </template>
@@ -206,13 +281,13 @@ import { } from 'vue'
       }
 
       span,
-      .B3AsdZT9 {
+      .link-list__link {
         opacity: 0.4;
       }
     }
   }
 
-  .WltbFpmM {
+  .link-list {
     margin-top: 20px;
     width: calc(100% - 80px);
 
@@ -224,7 +299,7 @@ import { } from 'vue'
       width: 100%;
     }
 
-    .RWEDYsSQ {
+    .link-list__item {
       max-width: 190px;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -235,8 +310,8 @@ import { } from 'vue'
     }
   }
 
-  .WltbFpmM .FipJiH3x,
-  .WltbFpmM .RWEDYsSQ {
+  .link-list .link-list__label,
+  .link-list .link-list__item {
     display: inline-block;
     font-size: 12px;
     font-weight: 400;

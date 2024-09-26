@@ -131,7 +131,8 @@ onMounted(() => {
   }
 }
 
-@media screen and (min-width: 1800px) {}
+@media screen and (min-width: 1800px) {
+}
 
 @media screen and (max-width: 1800px) and (min-width: 1081px) {
   .search-content {
@@ -150,7 +151,6 @@ onMounted(() => {
 }
 
 @media screen and (max-width: 1080px) and (min-width: 1021px) {
-
   .search-center-head,
   .search-center-content,
   .search-content {
@@ -183,7 +183,6 @@ onMounted(() => {
 }
 
 @media screen and (max-width: 860px) {
-
   .search-center-head,
   .search-center-content,
   .search-content {

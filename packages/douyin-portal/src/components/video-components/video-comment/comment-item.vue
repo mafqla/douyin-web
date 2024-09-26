@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import apis from '@/api/apis'
-import type { IComments, } from '@/api/tyeps/request_response/commentListRes'
+import type { IComments } from '@/api/tyeps/request_response/commentListRes'
 import DyInput from '@/components/common/dy-input/index.vue'
 import { useCount } from '@/hooks'
 import { handleCommentParser } from '@/utils/commentParser'
@@ -8,7 +8,6 @@ import formatTime from '@/utils/date-format'
 import { computed, ref, watchEffect } from 'vue'
 
 const props = defineProps<IComments & { author_id: string }>()
-
 
 const isOpenAvatar = ref(false)
 const openAvatar = () => {
@@ -31,7 +30,6 @@ const handleSubmit = (data: string) => {
   console.log('handleSubmit', data)
 }
 
-
 const cursor = ref(0)
 const count = ref(3)
 const comment_id = ref('')
@@ -44,7 +42,12 @@ const replyCommentList = ref<IComments[]>([])
 const getReplyCommentList = async () => {
   try {
     console.log('getReplyCommentList', comment_id.value)
-    const res = await apis.getCommentReply(props.aweme_id, comment_id.value, cursor.value, count.value)
+    const res = await apis.getCommentReply(
+      props.aweme_id,
+      comment_id.value,
+      cursor.value,
+      count.value
+    )
     cursor.value = res.cursor
     count.value = 10
     noMore.value = Boolean(res.has_more)
@@ -55,7 +58,7 @@ const getReplyCommentList = async () => {
 }
 
 const onExpand = (commentId: string) => {
-  console.log(commentId);
+  console.log(commentId)
   comment_id.value = commentId
   console.log('onExpand')
   isOpenExpand.value = true
@@ -74,29 +77,49 @@ const onCollapse = () => {
 </script>
 <template>
   <div class="comment-item">
-    <dy-avatar :userLink="`/user/${props.user.sec_uid}`" :src="props.user.avatar_thumb.url_list[0]" size="small"
-      class="comment-item-avatar" />
+    <dy-avatar
+      :userLink="`/user/${props.user.sec_uid}`"
+      :src="props.user.avatar_thumb.url_list[0]"
+      size="small"
+      class="comment-item-avatar"
+    />
     <div class="comment-item-content">
       <div class="comment-item-index" :class="{ oninput: isOpenInput }">
         <div class="comment-item-info-wrap">
           <div class="comment-item-content-header-name">
-            <a :href="`/user/${props.user.sec_uid}`" class="header-name-link" target="_blank">
+            <a
+              :href="`/user/${props.user.sec_uid}`"
+              class="header-name-link"
+              target="_blank"
+            >
               <span class="header-name-text">{{ props.user.nickname }}</span>
             </a>
-            <comment-item-tag v-if="props.user.uid === props.author_id" tag="作者" style="background: rgb(254, 44, 85)" />
+            <comment-item-tag
+              v-if="props.user.uid === props.author_id"
+              tag="作者"
+              style="background: rgb(254, 44, 85)"
+            />
             <template v-if="props.reply_to_userid">
-              <div class="comment-item-reply-line" style="
-                    border-top-width: 4px;
-                    border-bottom-width: 4px;
-                    border-left-width: 5px;
-                    border-left-color: rgba(255, 255, 255, 0.6);
-                  "></div>
-              <a :href="`/user/${props.reply_to_user_sec_id}`" class="header-name-link" target="_blank"
-                :uid="props.reply_to_userid">
-                <span class="header-name-text">{{ props.reply_to_username }}</span>
+              <div
+                class="comment-item-reply-line"
+                style="
+                  border-top-width: 4px;
+                  border-bottom-width: 4px;
+                  border-left-width: 5px;
+                  border-left-color: rgba(255, 255, 255, 0.6);
+                "
+              ></div>
+              <a
+                :href="`/user/${props.reply_to_user_sec_id}`"
+                class="header-name-link"
+                target="_blank"
+                :uid="props.reply_to_userid"
+              >
+                <span class="header-name-text">{{
+                  props.reply_to_username
+                }}</span>
               </a>
             </template>
-
           </div>
           <div class="comment-item-content-header-more">
             <div class="header-more-text">...</div>
@@ -107,17 +130,35 @@ const onCollapse = () => {
         </div>
         <div class="comment-item-content-text">
           <span class="comment-item-content-text-text">
-            <span v-html="handleCommentParser(props.text ?? '', props.text_extra )"> </span>
+            <span
+              v-html="handleCommentParser(props.text ?? '', props.text_extra)"
+            >
+            </span>
             <div class="comment-img-list" v-if="props.image_list">
               <div class="img-box" v-for="item in props.image_list">
-                <div class="img-inner" :key="item.crop_url.uri">
-                  <img :src="item.crop_url.url_list[1]" alt="comment_img" width="100%" height="100%"
-                    @click="openAvatar" />
+                <div class="img-inner" :key="item.medium_url.uri">
+                  <img
+                    :src="item.medium_url.url_list[1]"
+                    alt="comment_img"
+                    @click="openAvatar"
+                  />
                 </div>
-                <modal :open="isOpenAvatar" :isShowClose="true" @close="isOpenAvatar = false">
-                  <img class="comment-img-modal"
-                    style="transform: scale(1); max-width: 70%; max-height: 90%; border-radius: 4px"
-                    :src="item.origin_url.url_list[1]" alt="comment_img-modal" />
+                <modal
+                  :open="isOpenAvatar"
+                  :isShowClose="true"
+                  @close="isOpenAvatar = false"
+                >
+                  <img
+                    class="comment-img-modal"
+                    style="
+                      transform: scale(1);
+                      max-width: 70%;
+                      max-height: 90%;
+                      border-radius: 4px;
+                    "
+                    :src="item.origin_url.url_list[1]"
+                    alt="comment_img-modal"
+                  />
                 </modal>
               </div>
             </div>
@@ -148,7 +189,10 @@ const onCollapse = () => {
               </div>
             </div>
 
-            <div class="comment-item-content-footer-reply" @click="isOpenInput = !isOpenInput">
+            <div
+              class="comment-item-content-footer-reply"
+              @click="isOpenInput = !isOpenInput"
+            >
               <div class="footer-reply-content">
                 <svg-icon icon="small-reply" class="icon" />
                 <span>{{ replyText }}</span>
@@ -162,10 +206,21 @@ const onCollapse = () => {
       </div>
 
       <div class="comment-item-reply" v-if="isOpenExpand">
-        <comment-item v-for="it in replyCommentList" :key="it.cid" v-bind="it" :author_id="props.author_id" />
+        <comment-item
+          v-for="it in replyCommentList"
+          :key="it.cid"
+          v-bind="it"
+          :author_id="props.author_id"
+        />
       </div>
-      <comment-expand v-if="props.reply_comment_total" :comment-count="useCount(props.reply_comment_total ?? 0)"
-        :isExpanded="isOpenExpand" :noMore @onExpand="() => onExpand(props.cid)" @onCollapse="onCollapse" />
+      <comment-expand
+        v-if="props.reply_comment_total"
+        :comment-count="useCount(props.reply_comment_total ?? 0)"
+        :isExpanded="isOpenExpand"
+        :noMore
+        @onExpand="() => onExpand(props.cid)"
+        @onCollapse="onCollapse"
+      />
     </div>
   </div>
 </template>
@@ -282,8 +337,6 @@ const onCollapse = () => {
             color: var(--color-text-t4);
             border-radius: 8px;
             font-size: 16px;
-
-
           }
 
           &:hover {
@@ -344,7 +397,7 @@ const onCollapse = () => {
           line-height: 22px;
         }
 
-        :deep(img) {
+        :deep(.emoji-img) {
           width: 16px;
           height: 16px;
           vertical-align: text-bottom;
@@ -366,14 +419,18 @@ const onCollapse = () => {
           display: flex;
 
           .img-box {
-            width: 90px;
+            min-width: 90px;
+            max-width: 213px;
+            object-fit: cover;
             height: 120px;
 
             .img-inner {
               position: relative;
 
               img {
-                width: 90px;
+                min-width: 90px;
+                max-width: 213px;
+                object-fit: cover;
                 height: 120px;
                 cursor: zoom-in;
                 justify-content: flex-start;
@@ -384,7 +441,7 @@ const onCollapse = () => {
             .comment-img-modal {
               max-width: 70%;
               max-height: 90%;
-              border-radius: 4px
+              border-radius: 4px;
             }
           }
         }

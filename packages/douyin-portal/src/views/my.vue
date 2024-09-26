@@ -196,47 +196,15 @@ html[dark] {
   width: 100%;
   flex-direction: column;
   overflow-y: scroll;
-  // overflow-x: hidden;
   user-select: none;
   min-height: 100%;
 
   .user-detail {
-    // padding-top: 60px;
     display: flex;
     flex: 1 1;
     min-height: 100%;
     width: 100%;
-
-    // &::before {
-    //   background-image: v-bind(background);
-    //   background-position: 50%;
-    //   background-repeat: no-repeat;
-    //   background-size: 1920px 172px;
-    //   content: '';
-    //   height: 172px;
-    //   left: 0;
-    //   position: absolute;
-    //   right: 0;
-    //   top: 0;
-    //   // z-index: -1;
-    //   transition: opacity 0.3s ease-in-out;
-    // }
     .user-header-background {
-      // background-image: v-bind(background);
-      // background-position: 0 0;
-      // background-size: 100% 140%;
-      // height: 300px;
-      // pointer-events: none;
-      // width: 100vw;
-
-      // // background-position: 50%;
-      // // background-repeat: no-repeat;
-      // // background-size: 1920px 172px;
-      // // height: 172px;
-      // left: 0;
-      // position: absolute;
-      // right: 0;
-      // top: 0;
       height: 233px;
       // margin-top: -68px;
       overflow: hidden;

@@ -24,7 +24,7 @@ const isShowSwitchControl = toRef(settingStore(), 'isShowSwitchControl')
 
 //获取当前请求参数
 const route = useRoute()
-const awemeId = Number(route.params.id)
+const awemeId = route.params.id as string
 /**
  * todo
  * 调用接口获取视频信息
@@ -37,7 +37,7 @@ const awemeId = Number(route.params.id)
 const loading = ref(true)
 const videoDetail = ref<IawemeDetail>()
 provide('videoDetail', videoDetail)
-const getVideoDetail = async (awemeId: number) => {
+const getVideoDetail = async (awemeId: string) => {
   try {
     const res = await apis.getVideoDetail(awemeId)
     videoDetail.value = res.aweme_detail
@@ -62,6 +62,14 @@ useTitle(metaTitle)
 onUnmounted(() => {
   useTitle('抖音-记录美好生活')
 })
+
+const awemeIdList = ref<string[]>([])
+const router = useRouter()
+const onEnded = () => {
+  // console.log('p', awemeIdList.value)
+  // router.push(awemeIdList.value[0])
+  // 如果自动设置为自动连播，则自动重播
+}
 </script>
 <template>
   <Loading
@@ -78,6 +86,7 @@ onUnmounted(() => {
               :url="awemeUrl"
               :options="playerOptions"
               class="related-video"
+              @ended="onEnded"
             >
               <template v-slot:switch>
                 <swiper-control-modal
@@ -96,12 +105,13 @@ onUnmounted(() => {
             :author="videoDetail?.author"
             :aweme-id="videoDetail?.aweme_id"
             class="left-content-recommend"
+            v-model="awemeIdList"
           />
           <related-comment
             :aweme_id="videoDetail?.aweme_id"
             :author_id="videoDetail.author.uid"
             :related-text="
-              videoDetail?.suggest_words.suggest_words[0].words[0].word
+              videoDetail?.suggest_words?.suggest_words[0]?.words[0]?.word ?? ''
             "
           />
         </div>
