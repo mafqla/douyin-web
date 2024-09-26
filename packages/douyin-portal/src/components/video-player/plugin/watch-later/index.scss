@@ -1,0 +1,62 @@
+.xgplayer-watch-later {
+  height: 32px;
+
+  .xgplayer-watch-later-item {
+    position: relative;
+  }
+
+  &:hover {
+    .xgTips {
+      visibility: visible;
+
+    }
+  }
+
+  .xgTips {
+    visibility: hidden;
+    white-space: nowrap;
+    text-align: center;
+    color: #fff;
+    cursor: default;
+    background-color: #252632;
+    border-radius: 12px;
+    padding: 10px;
+    font-size: 12px;
+    line-height: 20px;
+    transition-property: visibility;
+    position: absolute;
+    top: auto;
+    bottom: 37px;
+    left: 50%;
+    transform: translate(-50%);
+    transition-delay: 50ms !important;
+    z-index: 13;
+    width: 100px;
+  }
+
+  .xgplayer-icon svg path {
+    fill: rgba(255, 255, 255, .9);
+    fill-opacity: 1
+  }
+
+  .xgplayer-icon:hover svg path {
+    fill: #fff;
+    fill-opacity: 1
+  }
+}
+
+.shortcutKey {
+  width: 18px;
+  height: 18px;
+  vertical-align: baseline;
+  color: #33343f;
+  background: #fff;
+  border-radius: 6px;
+  justify-content: center;
+  align-items: center;
+  margin-left: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 21px;
+  display: inline-flex;
+}
