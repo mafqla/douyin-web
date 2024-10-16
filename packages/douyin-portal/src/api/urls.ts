@@ -16,7 +16,19 @@ export default {
   //其他用户信息
   user_other_info: `/aweme/v1/web/user/profile/other/`,
   //用户作品列表
-  user_post: `/aweme/v1/web/aweme/post`,
+  user_post: `/aweme/v1/web/aweme/post/`,
+  //用户创建的合集
+  user_mix: `/aweme/v1/web/mix/list/`,
+  // 用户创建的合集详细信息
+  user_mix_detail: `/aweme/v1/web/mix/aweme/`,
+  //用户的点赞列表
+  user_like: `/aweme/v1/web/aweme/favorite/`,
+  //用户的收藏列表
+  user_collect: `/aweme/v1/web/aweme/listcollection/`,
+  //用户的关注列表
+  user_follow: `/aweme/v1/web/follow/list/`,
+  //用户的粉丝列表
+  user_fans: `/aweme/v1/web/fans/list/`,
 
   //评论
   comment_list: `/aweme/v1/web/comment/list/`,

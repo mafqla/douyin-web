@@ -1,107 +1,115 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
+import apis from '@/api/apis'
+import type { IComments } from '@/api/tyeps/request_response/commentListRes'
+import dyInput from '@/components/common/dy-input/index.vue'
+import { vInfiniteScroll } from '@vueuse/components'
+import { ref } from 'vue'
 import CommentItem from './comment-item.vue'
-import { commentStore } from '@/stores/comment'
-import { addVideoComment } from '@/service/videos/videos'
 
 const commentCount = ref(0)
 const textarea = ref('')
 const loading = ref(false)
 const props = defineProps({
-  id: String
+  id: String,
+  author_id: Number,
+  relatedText: String
 })
 // const store = commentStore()
 
 const list = ref([]) as any
-// watchEffect(async () => {
-//   list.value = await store.getVideoCommentList(props.id as any)
-//   commentCount.value = list.value.length
-// })
-
 async function submitComment() {
   //清空输入框
   textarea.value = ''
   if (!textarea.value) return
 
   loading.value = true
-  await addVideoComment(props.id as any, textarea.value)
   textarea.value = ''
-  // list.value = await store.getVideoCommentList(props.id as any)
   commentCount.value = list.value.length
   console.log(list.value)
 }
+const commentList = ref<IComments[]>([])
+const isLoadingMore = ref(true)
+const hasMore = ref(true)
+const cursor = ref(0)
+const count = ref(5)
+const total = ref(0)
+const hotsoon_text = ref('')
+
+const getCommentList = async () => {
+  if (!hasMore.value) return
+  isLoadingMore.value = true
+  try {
+    const res = await apis.getCommentList(
+      props.id ?? '',
+      cursor.value,
+      count.value
+    )
+    cursor.value = res.cursor
+    count.value = 20
+    hotsoon_text.value = res.hotsoon_text
+    commentList.value.push(...res.comments)
+    total.value = res.total
+
+    if (!res.has_more) {
+      hasMore.value = false
+      isLoadingMore.value = false
+    }
+  } catch (error) {
+    // console.log(error)
+    hasMore.value = false
+    isLoadingMore.value = false
+  } finally {
+    isLoadingMore.value = false
+  }
+}
 </script>
 <template>
-  <div class="video-comment">
+  <div class="video-comment" ref="target">
     <div class="video-comment-header">
+      <div class="comment-header-with-search" v-if="relatedText != ''">
+        <div class="trend-header">
+          <span class="trend-title">大家都在搜：</span>
+          <search-suggestion :relatedText />
+        </div>
+      </div>
       <div class="video-comment-header-title">
-        <span>全部评论({{ 2 }})</span>
+        <span>全部评论({{ total }})</span>
       </div>
     </div>
 
-    <div class="video-comment-list">
-      <!-- <el-scrollbar height="712px"> -->
-      <template v-for="it in list as any" :key="it.id">
-        <comment-item
-          :srcd="it.user.userAvatar"
-          :username="it.user.username"
-          :likenum="it.commentLike"
-          :time="it.commentTime"
-          :comment="it.commentInfo"
-        />
+    <div
+      class="video-comment-list"
+      ref="containerRef"
+      v-infinite-scroll="[getCommentList, { distance: 10 }]"
+    >
+      <template v-for="it in commentList" :key="it.cid">
+        <comment-item v-bind="it" :author_id="props.author_id ?? ''" />
       </template>
 
-      <list-footer />
-      <!-- </el-scrollbar> -->
+      <Loading :show="isLoadingMore" :isShowText="true" text="评论加载中..." />
+      <list-footer v-if="!hasMore" :text="hotsoon_text" />
     </div>
     <div class="video-comment-footer">
-      <div class="comment-input-linear-bg"></div>
-      <div class="video-comment-footer-input">
-        <div class="video-comment-footer-input-text">
-          <input
-            type="text"
-            v-model="textarea"
-            placeholder="留下你的精彩评论吧"
-            @keyup.enter="submitComment"
-          />
-        </div>
-        <div class="commentInput-right-ct">
-          <div class="commentInput-right-ct-content">
-            <span class="">
-              <svg-icon icon="at" class="icon" />
-            </span>
-            <span class="">
-              <svg-icon icon="emoji" class="icon" />
-            </span>
-            <span
-              class="submit"
-              :class="{ 'is-loading': loading }"
-              @click="submitComment"
-            >
-              <svg-icon icon="submit" class="submit-icon" />
-            </span>
-          </div>
-        </div>
-      </div>
+      <dy-input />
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .video-comment {
+  height: 100%;
+  user-select: text;
   display: flex;
   flex-direction: column;
-  height: calc(100% - 46px);
 
   .video-comment-header {
     padding: 0 16px;
-
+    margin: 12px 0 0px;
     .video-comment-header-title {
       align-items: center;
       display: flex;
       flex-grow: 0;
       flex-shrink: 0;
-      font-family: PingFang SC, DFPKingGothicGB-Medium, sans-serif;
       font-size: 16px;
       font-weight: 500;
       height: 54px;
@@ -120,31 +128,67 @@ async function submitComment() {
       }
     }
 
-    .video-comment-header-title,
-    span {
+    .video-comment-header-title {
       height: unset;
       margin: 12px 0 8px;
       padding: 0;
-      // color: #161823;
       color: rgba(255, 255, 255, 0.9);
+    }
+
+    .comment-header-with-search {
+      color: var(--color-text-t1);
+      // height: 54px;
+      z-index: 1;
+      flex-grow: 0;
+      flex-shrink: 0;
+      justify-content: space-between;
+      align-items: center;
+      // padding: 0 16px;
+      // font-size: 16px;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 24px;
+      display: flex;
+      position: relative;
+      top: 0;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+      height: unset;
+      // padding: 0 0 8px;
+      .trend-header {
+        color: var(--color-text-t2);
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        flex: 1;
+        margin-right: 20px;
+        // font-size: 14px;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 22px;
+        display: flex;
+        overflow: hidden;
+        -webkit-app-region: no-drag !important;
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+
+        .trend-title {
+          font-size: 12px;
+        }
+      }
     }
   }
 
   .video-comment-list {
-    padding: 0 7px 0 16px;
-    // scrollbar-color: hsla(0, 0%, 100%, 0.16) transparent;
-    // scrollbar-width: thin;
-
-    // -ms-overflow-style: none;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    scrollbar-width: none;
     flex-direction: column;
     flex-grow: 1;
-    outline: none;
-    // overflow: scroll;
-    // overflow-x: hidden;
-    // overflow: -moz-scrollbars-none;
-    // padding: 0 16px;
     position: relative;
-    scrollbar-width: none;
+    outline: none;
+    text-shadow: rgba(0, 0, 0, 0.2) 0px 1px 1px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+    padding: 0px 7px 0px 16px;
   }
 
   .video-comment-footer {

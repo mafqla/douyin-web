@@ -137,13 +137,6 @@ const openAvatar = () => {
   width: 100%;
 
   .user-info {
-    // flex: 1 1;
-    // align-items: flex-start;
-    // display: flex;
-    // flex-direction: column;
-    // justify-content: center;
-    // margin-left: 40px;
-    // min-width: 560px;
 
     align-content: center;
     align-items: center;
@@ -167,7 +160,6 @@ const openAvatar = () => {
           color: var(--color-text-t1);
           display: block;
           flex: none;
-          font-family: PingFang SC, DFPKingGothicGB-Medium, sans-serif;
           font-size: 20px;
           font-weight: 500;
           line-height: 28px;
@@ -240,7 +232,6 @@ const openAvatar = () => {
       width: 100%;
 
       span {
-        // color: rgba(22, 24, 35, 0.6);
         color: var(--color-text-t1);
         font-size: 12px;
         line-height: 20px;
@@ -261,7 +252,6 @@ const openAvatar = () => {
 
         .user-text {
           color: var(--color-text-t3);
-          font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
           font-weight: 400;
         }
 
@@ -316,16 +306,11 @@ const openAvatar = () => {
     }
 
     .content-btn {
-      // background: #e4e4e6 !important;
       background: var(--color-bg-b3) !important;
-      // background: rgba(242, 242, 243, 1);
       border: none;
-      // color: #161823 !important;
       color: var(--color-text-t1) !important;
-      // color: rgba(22, 24, 35, 1);
       font-size: 13px;
       font-weight: 400;
-      // margin: 0 0 0 8px;
       margin: 0 8px 0 0;
 
       align-items: center;
@@ -333,14 +318,10 @@ const openAvatar = () => {
       cursor: pointer;
       display: inline-flex;
       justify-content: center;
-      // margin: 0 8px;
       outline: none;
       padding: 0 16px;
       position: relative;
       border-radius: 4px;
-      font-family: PingFang SC, DFPKingGothicGB-Medium, sans-serif;
-      // font-size: 14px;
-      // font-weight: 500;
       height: 36px;
       line-height: 22px;
       min-width: 88px;
@@ -370,14 +351,12 @@ const openAvatar = () => {
           .icon {
             width: 50px;
             height: 45px;
-            // color: #161823;
             color: var(--color-text-t0);
           }
         }
         .icon {
           width: 36px;
           height: 36px;
-          // color: #161823;
           color: var(--color-text-t0);
         }
       }
@@ -385,16 +364,7 @@ const openAvatar = () => {
   }
 }
 
-// @media (max-width: 1024px) {
-//   .user-detail-header {
-//     padding-bottom: 68px;
-//   }
-// }
-// @media (max-width: 940px) {
-//   .user-detail-header {
-//     padding-bottom: 68px;
-//   }
-// }
+
 
 @media (max-width: 1180px) {
   .user-detail-header {

@@ -37,12 +37,12 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/user/:id',
         name: 'user',
-        component: () => import('@/views/user.vue')
+        component: () => import('@/views/user/index.vue')
       },
       {
         path: '/user/self',
         name: 'self',
-        component: () => import('@/views/my.vue')
+        component: () => import('@/views/my/index.vue')
       },
       {
         path: '/friend',

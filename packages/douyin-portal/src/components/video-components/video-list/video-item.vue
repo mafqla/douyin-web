@@ -2,43 +2,18 @@
 import { computed, onMounted, ref } from 'vue'
 import miniPlayer from '@/components/video-player/mini-player.vue'
 import { useRouter } from 'vue-router'
+import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 
-const props = defineProps({
-  imgSrc: {
-    type: String,
-    required: true
-  },
-  videoUrl: {
-    type: String,
-    required: true
-  },
-  title: {
-    type: String,
-    required: true
-  },
-  dianzan: {
-    type: Number,
-    default: 0
-  }
-})
+const props = defineProps<{
+  aweme: IAwemeInfo
+}>()
 
-const isLoading = ref(true)
-onMounted(() => {
-  //判断图片是否加载完成
-  const img = new Image()
-  img.src = props.imgSrc
-  img.onload = () => {
-    setTimeout(() => {
-      isLoading.value = false
-    }, 1000)
-  }
-})
 // 点赞数转换
 const dianzan = computed(() => {
-  if (props.dianzan > 10000) {
-    return (props.dianzan / 10000).toFixed(1) + '万'
+  if (props.aweme.statistics.digg_count > 10000) {
+    return (props.aweme.statistics.digg_count / 10000).toFixed(1) + '万'
   } else {
-    return props.dianzan
+    return props.aweme.statistics.digg_count
   }
 })
 const isVideoVisible = ref(false)
@@ -47,7 +22,6 @@ let timer: any = null
 const showVideo = () => {
   timer = setTimeout(() => {
     isVideoVisible.value = true
-    volume.value = 0.6
   }, 1000)
 }
 const hideVideo = () => {
@@ -74,33 +48,53 @@ const toggleModal = (event: any) => {
 </script>
 <template>
   <div class="video-item">
-    <a :href="videoUrl" class="video-item-link" @click="toggleModal($event)">
+    <a
+      :href="'/video/' + aweme.aweme_id"
+      class="video-item-link"
+      @click="toggleModal($event)"
+    >
       <div
         class="video-item-content"
         @mouseenter="showVideo"
         @mouseleave="hideVideo"
       >
         <div class="video-item-img">
-          <el-skeleton animated :loading="isLoading" class="item-skeleton">
-            <template #template>
-              <div class="skeleton-content">
-                <div class="skeleton-logo">
-                  <svg-icon class="icon" icon="loading-logo" />
-                </div>
-              </div>
-            </template>
-            <template #default>
-              <img v-lazy="imgSrc" :alt="title" class="" />
-              <miniPlayer
-                v-if="isVideoVisible"
-                class="video-player"
-                :url="videoUrl"
-                @click="$emit('openModal')"
-              />
-            </template>
-          </el-skeleton>
+          <img
+            v-lazy="aweme.video.cover.url_list[0]"
+            :alt="aweme.desc"
+            class=""
+          />
+          <miniPlayer
+            v-if="isVideoVisible"
+            class="video-player"
+            :url="aweme.video.play_addr.url_list"
+            @click="$emit('openModal')"
+          />
 
           <!-- <div class="overlay" v-if="!isVideoVisible"></div> -->
+        </div>
+        <div class="video-item-tag">
+          <div class="tag-content">
+            <div class="video-item-tag-icon" v-if="aweme.media_type === 2">
+              <svg
+                width="12"
+                height="12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                class=""
+                viewBox="0 0 12 12"
+              >
+                <path
+                  d="M1.455 0C.65 0 0 .651 0 1.455V8c0 .803.651 1.455 1.455 1.455H8c.803 0 1.455-.652 1.455-1.455V1.455C9.455.65 8.803 0 8 0H1.455z"
+                  fill="#fff"
+                ></path>
+                <path
+                  d="M4 12a1.455 1.455 0 0 1-1.455-1.454h5.819a2.182 2.182 0 0 0 2.181-2.182V2.545C11.35 2.545 12 3.197 12 4v5.09A2.909 2.909 0 0 1 9.09 12H4z"
+                  fill="#fff"
+                ></path>
+              </svg>
+            </div>
+          </div>
         </div>
         <div class="video-item-block"></div>
         <span class="author-card-user-video-like" v-if="!isVideoVisible">
@@ -121,7 +115,7 @@ const toggleModal = (event: any) => {
           <span>{{ dianzan }}</span>
         </span>
       </div>
-      <p class="video-title">{{ title }}</p>
+      <p class="video-title">{{ aweme.desc }}</p>
     </a>
   </div>
 </template>
@@ -160,31 +154,6 @@ const toggleModal = (event: any) => {
         align-items: center;
         justify-content: center;
 
-        .item-skeleton {
-          // background: #fff;
-          background: var(--color-bg-b1);
-          border-radius: 6px;
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-          justify-content: center;
-
-          .skeleton-content {
-            padding: 16px;
-
-            .skeleton-logo {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              padding-bottom: 16px;
-              .icon {
-                width: 105px;
-                height: 120px;
-                // color: var(--color-bg-b2);
-              }
-            }
-          }
-        }
         img {
           height: 100%;
           -o-object-fit: cover;
@@ -225,7 +194,29 @@ const toggleModal = (event: any) => {
           }
         }
       }
+      .video-item-tag {
+        top: 8px;
+        right: 8px;
+        position: absolute;
+        display: flex;
+        flex-wrap: wrap;
 
+        .tag-content {
+          line-height: 16px;
+          margin-left: 0;
+
+          .video-item-tag-icon {
+            width: 20px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 6px;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+          }
+        }
+      }
       .video-item-block {
         background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.75));
         bottom: 0;
@@ -240,7 +231,6 @@ const toggleModal = (event: any) => {
         color: #fff;
         display: flex;
         flex-direction: row;
-        font-family: PingFang SC, DFPKingGothicGB-Medium, sans-serif;
         font-size: 14px;
         font-weight: 500;
         justify-content: center;
@@ -255,15 +245,14 @@ const toggleModal = (event: any) => {
       }
     }
     .video-title {
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 1;
+      line-clamp: 1;
       -webkit-box-orient: vertical;
-      // color: #161823;
-      // color: rgba(22, 24, 35, 1);
       color: var(--color-text-t1);
       display: -webkit-box;
       font-size: 14px;
       font-weight: 500;
-      height: 44px;
+      height: 22px;
       line-height: 22px;
       margin-top: 8px;
       overflow: hidden;

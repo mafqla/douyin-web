@@ -1,59 +1,32 @@
-import {
-  AuthLogin,
-  AuthUserInfo,
-  PostAuthLogin,
-  PostAuthSendCode
-} from '@/service/auth/auth'
-import { ElMessage } from 'element-plus'
 import { defineStore } from 'pinia'
 import { videoStore } from './videos'
-import type { IUserInfoResult } from '@/service/auth/AuthType'
+import apis from '@/api/apis'
+import type { IUserDetailRes } from '@/api/tyeps/request_response/userDetailRes'
 
 export const userStore = defineStore('user', {
   state: () => ({
     token: localStorage.getItem('token') || '',
     routerKey: 'updated',
-    userInfo: {} as IUserInfoResult
+    userInfo: {} as IUserDetailRes,
+    isLogin: false,
+    isLoading: true
   }),
 
   actions: {
     // 设置用户信息, 调用登录接口
-    async login(userInfo: any) {
-      try {
-        const data = await AuthLogin(userInfo)
-        const { token } = data.data
-
-        // 存储到 localStorage
-        localStorage.setItem('token', token)
-        this.token = token
-
-        //
-        ElMessage({
-          message: data.msg,
-          type: 'success'
-        })
-        //获取用户信息
-        this.getUserInfo()
-        // window.location.reload()
-        this.routerKey = 'update'
-      } catch (e: any) {
-        ElMessage({
-          message: e || '登录失败',
-          type: 'error'
-        })
-      }
-    },
 
     // 获取用户信息
     async getUserInfo() {
-      const data = await AuthUserInfo()
-      this.userInfo = data.data
+      const user_info = await apis.getUserInfo()
+      // console.log(user_info)
+      this.userInfo = user_info
+      this.isLoading = false
     },
 
     //判断是否登录
-    isLogin() {
-      return this.token !== ''
-    },
+    // isLogin() {
+    //   return this.isLogin
+    // },
     logout() {
       // 清空用户信息为空对象
       this.userInfo = {} as any
@@ -66,12 +39,12 @@ export const userStore = defineStore('user', {
     },
 
     async postCode(email: string) {
-      const data = await PostAuthSendCode(email)
-      console.log(data)
+      // const data = await PostAuthSendCode(email)
+      // console.log(data)
     },
     async codeLogin(email: string, code: string) {
-      const data = await PostAuthLogin(email, code)
-      console.log(data)
+      // const data = await PostAuthLogin(email, code)
+      // console.log(data)
     }
   },
   persist: {

@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import {} from 'vue'
+
+defineProps({
+  text: {
+    type: String,
+    default: '暂时没有更多了',
+    required: false
+  }
+})
 </script>
 
 <template>
   <div class="list-footer" style="width: 100%">
-    <div class="list-footer-title">暂时没有更多了</div>
+    <div class="list-footer-title">{{ text }}</div>
   </div>
 </template>
 

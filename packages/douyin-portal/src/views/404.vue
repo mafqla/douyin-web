@@ -26,7 +26,7 @@ useTitle(window.location.href)
         <div class="icon-placeholder">
           <div class="error-icon"></div>
         </div>
-        <div class="error-message">你要观看的视频不存在</div>
+        <div class="error-message">页面不存在</div>
         <div class="additional-info"></div>
         <div class="action-buttons"></div>
       </div>

@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import startPlay from '@/assets/videos-player-icon/all-play.svg'
-import cssFullScreen from '@/assets/videos-player-icon/cssFullscreen.svg'
-import exitCssFullScreen from '@/assets/videos-player-icon/exit-cssFullscreen.svg'
-import fullscreenExit from '@/assets/videos-player-icon/exit-fullscreen.svg'
-import fullscreen from '@/assets/videos-player-icon/get-fullscreen.svg'
-import pause from '@/assets/videos-player-icon/pause.svg'
-import play from '@/assets/videos-player-icon/play.svg'
-import volumeMute from '@/assets/videos-player-icon/volume-mute.svg'
-import volumeSmall from '@/assets/videos-player-icon/volume-small.svg'
-import volume from '@/assets/videos-player-icon/volume.svg'
+import startPlayIcon from '@/assets/videos-player-icon/all-play.svg'
+import cssFullScreenIcon from '@/assets/videos-player-icon/cssFullscreen.svg'
+import exitCssFullScreenIcon from '@/assets/videos-player-icon/exit-cssFullscreen.svg'
+import fullscreenExitIcon from '@/assets/videos-player-icon/exit-fullscreen.svg'
+import fullscreenIcon from '@/assets/videos-player-icon/get-fullscreen.svg'
+import pauseIcon from '@/assets/videos-player-icon/pause.svg'
+import playIcon from '@/assets/videos-player-icon/play.svg'
+import volumeMuteIcon from '@/assets/videos-player-icon/volume-mute.svg'
+import volumeSmallIcon from '@/assets/videos-player-icon/volume-small.svg'
+import volumeIcon from '@/assets/videos-player-icon/volume.svg'
 import { playerSettingStore } from '@/stores/player-setting'
 import { settingStore } from '@/stores/setting'
 import { v4 as uuidv4 } from 'uuid'
 import { onBeforeUnmount, onMounted, ref, toRef, watch } from 'vue'
-import xgplayer, { Events } from 'xgplayer'
+import Player, { Events, type IPlayerOptions } from 'xgplayer'
 import 'xgplayer/dist/index.min.css'
 import automaticContinuous from './plugin/automatic-continuous/automatic-continuous'
 import immersiveSwitch from './plugin/immersive-switch/immersive-switch'
@@ -21,38 +21,32 @@ import miniWin from './plugin/miniWin/miniWin'
 import PlaybackPlugin from './plugin/playbackSetting/playbackPlugin'
 import watchLater from './plugin/watch-later/watch-later'
 
-const props = defineProps({
-  url: {
-    type: [String, Array],
-    required: true
-  },
-  options: {
-    type: Object,
-    required: true
-  },
-  isPlay: {
-    type: Boolean,
-    required: false
-  },
-
-  autoHide: {
-    type: Boolean,
-    required: false,
-    default: false
-  },
-  mode: {
-    type: String,
-    required: false,
-    default: 'normal'
-  },
-  marginControls: {
-    type: Boolean,
-    required: false,
-    default: true
+interface PlayerProps {
+  url: string | string[]
+  thumbnail?: {
+    img_urls?: string[] // 雪碧图url列表
+    pic_num?: number // 预览图总帧数
+    row?: number // 每张雪碧图包含的预览图行数
+    col?: number // 每张雪碧图包含的预览图列数
+    height?: number // 预览图每一帧的高度（单位：px）
+    width?: number // 预览图每一帧的宽度（单位：px）
   }
+  options?: IPlayerOptions
+  isPlay?: boolean
+  autoHide?: boolean
+  mode?: string
+  marginControls?: boolean
+  loop?: boolean
+}
+const props = withDefaults(defineProps<PlayerProps>(), {
+  url: '',
+  isPlay: false,
+  autoHide: false,
+  mode: 'normal',
+  marginControls: true,
+  loop: false
 })
-
-const player = ref<any>(null)
+// const player = ref<any>(null)
 const uniqueId = uuidv4()
 const playerId = ref(`xgplayer-${uniqueId}`)
 const isShowSwitchControl = toRef(settingStore(), 'isShowSwitchControl')
@@ -74,16 +68,23 @@ const url = computed(() => {
   }
 })
 
+const isPlay = computed(() => {
+  return props.isPlay
+})
+const loop = computed(() => {
+  return props.loop
+})
 const setting = toRef(playerSettingStore(), 'isMini')
-const playerOptions = ref({
+const playerOptions = ref<IPlayerOptions>({
   ...props.options,
   id: `xgplayer-${uniqueId}`,
   url: url.value,
   width: '100%',
   height: '100%',
   playsinline: true,
-  autoplay: true,
-  // loop: true,
+  autoplay: isPlay.value,
+  loop: loop.value,
+
   lang: 'zh-cn',
   enter: {
     innerHtml: `
@@ -93,6 +94,7 @@ const playerOptions = ref({
     default: 0.5,
     showValueLabel: true
   },
+  autoplayMuted: true,
   closeInactive: true,
   allowSeekPlayed: true,
   allowPlayAfterEnded: true,
@@ -118,25 +120,33 @@ const playerOptions = ref({
   },
   immersiveState: false,
   automatic: false,
+  thumbnail: {
+    urls: props.thumbnail?.img_urls ?? [], // 雪碧图url列表
+    pic_num: props.thumbnail?.pic_num ?? 120, // 预览图总帧数
+    row: props.thumbnail?.row ?? 5, // 每张雪碧图包含的预览图行数
+    col: props.thumbnail?.col ?? 5, // 每张雪碧图包含的预览图列数
+    height: props.thumbnail?.height, // 预览图每一帧的高度（单位：px）
+    width: props.thumbnail?.width // 预览图每一帧的宽度（单位：px）
+  },
   icons: {
-    startPlay: startPlay,
+    startPlay: startPlayIcon,
     // startPause: startPause,
-    startPause: startPlay,
-    play: play,
-    pause: pause,
-    fullscreen: fullscreen,
-    exitFullscreen: fullscreenExit,
-    volumeLarge: volume,
-    volumeMuted: volumeMute,
-    volumeSmall: volumeSmall,
-    fullscreenExit: fullscreenExit,
-    cssFullscreen: cssFullScreen,
-    exitCssFullscreen: exitCssFullScreen,
+    startPause: startPlayIcon,
+    play: playIcon,
+    pause: pauseIcon,
+    fullscreen: fullscreenIcon,
+    exitFullscreen: fullscreenExitIcon,
+    volumeLarge: volumeIcon,
+    volumeMuted: volumeMuteIcon,
+    volumeSmall: volumeSmallIcon,
+    fullscreenExit: fullscreenExitIcon,
+    cssFullscreen: cssFullScreenIcon,
+    exitCssFullscreen: exitCssFullScreenIcon,
     loadingIcon: `<div class="loading-content">
       <div class="loading-content-img"></div>
     </div>`
   },
-  // cssfullscreen: document.querySelector('.slide-list') as HTMLElement,
+  cssfullscreen: document.querySelector('.slide-list') as HTMLElement,
   fullscreenTarget: document.querySelector('.slide-list') as HTMLElement,
   plugins: [
     PlaybackPlugin,
@@ -146,124 +156,122 @@ const playerOptions = ref({
     immersiveSwitch
   ]
 })
+
+let player: Player
+const initPlayer = () => {
+  player = new Player(playerOptions.value)
+}
+
+const play = () => {
+  player.play()
+}
+
+const pause = () => {
+  player.pause()
+}
+defineExpose({
+  play,
+  pause
+})
+
 onMounted(() => {
+  initPlayer()
   //@ts-ignore
-  if (playerOptions.value && player.value) {
-    player.value = new xgplayer(playerOptions.value)
-    player.value.on(Events.CSS_FULLSCREEN_CHANGE, (isCssFullscreen: any) => {
-      const carousel = document.getElementsByClassName('carousel') as any
-      const main = document.getElementById('slidelist')
-      if (isCssFullscreen && carousel) {
-        carousel[0].style.height = '100%'
-        carousel[0].style.top = '0'
-        carousel[0].style.padding = '0'
-        main?.classList.add('isCssFullscreen')
-      } else {
-        carousel[0].style.height = 'calc(100% - 24px)'
-        carousel[0].style.top = 'calc(0% + 12px)'
-        carousel[0].style.padding = '0 60px 0 30px '
-        main?.classList.remove('isCssFullscreen')
-      }
-    })
-    player.value.on(Events.FULLSCREEN_CHANGE, (isFullscreen: any) => {
-      const carousel = document.getElementsByClassName('carousel') as any
-      if (isFullscreen) {
-        carousel[0].style.height = '100%'
-        carousel[0].style.top = '0'
-        carousel[0].style.padding = '0'
-      } else {
-        carousel[0].style.height = 'calc(100% - 24px)'
-        carousel[0].style.top = 'calc(0% + 12px)'
-        carousel[0].style.padding = '0 60px 0 30px '
-      }
-    })
+  player.on(Events.CSS_FULLSCREEN_CHANGE, (isCssFullscreen: any) => {
+    const carousel = document.getElementsByClassName('carousel') as any
+    const main = document.getElementById('slidelist')
+    if (isCssFullscreen && carousel) {
+      carousel[0].style.height = '100%'
+      carousel[0].style.top = '0'
+      carousel[0].style.padding = '0'
+      main?.classList.add('isCssFullscreen')
+    } else {
+      carousel[0].style.height = 'calc(100% - 24px)'
+      carousel[0].style.top = 'calc(0% + 12px)'
+      carousel[0].style.padding = '0 60px 0 30px '
+      main?.classList.remove('isCssFullscreen')
+    }
+  })
+  player.on(Events.FULLSCREEN_CHANGE, (isFullscreen: any) => {
+    const carousel = document.getElementsByClassName('carousel') as any
+    console.log(isFullscreen)
+    if (isFullscreen) {
+      carousel[0].style.height = '100%'
+      carousel[0].style.top = '0'
+      carousel[0].style.padding = '0'
+    } else {
+      carousel[0].style.height = 'calc(100% - 24px)'
+      carousel[0].style.top = 'calc(0% + 12px)'
+      carousel[0].style.padding = '0 60px 0 30px '
+    }
+  })
 
-    player.value.on(Events.MINI_STATE_CHANGE, (isMini: any) => {
-      if (isMini) {
-        console.log('enter miniScreen')
-        isShowSwitchControl.value = false
-      } else {
-        console.log('exit miniScreen')
-        isShowSwitchControl.value = true
-      }
-    })
-    player.value.on(Events.PLAY, () => {
-      emit('play')
-    })
-    player.value.on(Events.PAUSE, () => {
-      emit('pause')
-    })
-    player.value.on(Events.ENDED, () => {
-      emit('ended')
-    })
-    player.value.on(Events.TIME_UPDATE, () => {
-      emit('timeupdate')
-    })
-    player.value.on(Events.VOLUME_CHANGE, () => {
-      emit('volumechange')
-    })
-    player.value.on(Events.FULLSCREEN_CHANGE, () => {
-      emit('fullscreenchange')
-    })
-    player.value.on(Events.CSS_FULLSCREEN_CHANGE, () => {
-      emit('cssfullscreenchange')
-    })
-    player.value.on(Events.ERROR, () => {
-      emit('error')
-    })
-    player.value.on(Events.DESTROY, () => {
-      emit('destroy')
-    })
-    player.value.on(Events.USER_ACTION, (data: any) => {
-      // data结构如下
-      /**
-       * data = {
-       *   action: String,        // 用户行为
-       *   pluginName: String,    // 从哪个插件触发
-       *   props: [{              // 发生变化的属性列表
-       *     props: String,       // 发生变化的属性
-       *     from: any,           // 变化前的值
-       *     to: any              // 变化后的值
-       *   }],
-       *   event: Event,          // 事件
-       *   currentTime: Number,   // 当前播放时间
-       *   duration: Number,      // 当前播放器时长
-       *   ended:  Boolean,        // 是否播放结束
-       *   paused:  Boolean,       // 是否暂停
-       * }
-       */
-      // console.log(data)
-      // emit('useraction', data)
-    })
+  player.on(Events.MINI_STATE_CHANGE, (isMini: any) => {
+    if (isMini) {
+      console.log('enter miniScreen')
+      isShowSwitchControl.value = false
+    } else {
+      console.log('exit miniScreen')
+      isShowSwitchControl.value = true
+    }
+  })
+  player.on(Events.PLAY, () => {
+    emit('play')
+  })
+  player.on(Events.PAUSE, () => {
+    emit('pause')
+  })
+  player.on(Events.ENDED, () => {
+    emit('ended')
+  })
+  player.on(Events.TIME_UPDATE, () => {
+    emit('timeupdate')
+  })
+  player.on(Events.VOLUME_CHANGE, () => {
+    emit('volumechange')
+    console.log('volumechange')
+    const muted = player.muted
+    console.log(muted)
+  })
+  player.usePluginHooks('progresspreview', 'previewClick', (plugin, time) => {
+    // 点击的预览图所在的时间点 plugin是插件实例对象
+    console.log('...args', time)
+    return true
+  })
 
-    player.value.on('atuoPlayChange', (automatic: boolean) => {
-      console.log('atuoPlayChange', automatic)
-    })
-    player.value.on('immersiveStateChange', (isImmersive: boolean) => {
-      console.log('immersiveStateChange', isImmersive)
-    })
-    player.value.on('watch-later', (data: any) => {
-      console.log('watch-later', data)
-    })
-  }
-  console.log(player.value)
+  player.on(Events.FULLSCREEN_CHANGE, () => {
+    emit('fullscreenchange')
+    console.log('fullscreenchange')
+  })
+  player.on(Events.CSS_FULLSCREEN_CHANGE, () => {
+    emit('cssfullscreenchange')
+  })
+
+  player.on('atuoPlayChange', (automatic: boolean) => {
+    console.log('atuoPlayChange', automatic)
+  })
+  player.on('immersiveStateChange', (isImmersive: boolean) => {
+    console.log('immersiveStateChange', isImmersive)
+  })
+  player.on('watch-later', (data: any) => {
+    console.log('watch-later', data)
+  })
+
+  // console.log(player.value)
+  watchEffect(() => {
+    if (props.isPlay) {
+      playerOptions.value.autoplay = props.isPlay
+      //@ts-ignore
+      console.log(playerOptions.value)
+      // player = new Player(playerOptions.value)
+    }
+  })
 })
 
 onBeforeUnmount(() => {
   // player.value.destroy()
 })
-watch(
-  () => props.isPlay,
-  (newVal, oldVal) => {
-    if (newVal !== oldVal) {
-      if (newVal) {
-        playerOptions.value.autoplay = props.isPlay
-        //@ts-ignore
-        player.value = new xgplayer(playerOptions.value)
-      }
-    }
-  }
-)
+
 //把播放器的事件导出给父组件
 const emit = defineEmits<{
   play: []

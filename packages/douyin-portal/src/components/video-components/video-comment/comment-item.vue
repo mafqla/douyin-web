@@ -7,7 +7,7 @@ import { handleCommentParser } from '@/utils/commentParser'
 import formatTime from '@/utils/date-format'
 import { computed, ref, watchEffect } from 'vue'
 
-const props = defineProps<IComments & { author_id: string }>()
+const props = defineProps<IComments & { author_id: string | number }>()
 
 const isOpenAvatar = ref(false)
 const openAvatar = () => {
@@ -41,7 +41,7 @@ const replyCommentList = ref<IComments[]>([])
 //获取回复评论列表
 const getReplyCommentList = async () => {
   try {
-    console.log('getReplyCommentList', comment_id.value)
+    // console.log('getReplyCommentList', comment_id.value)
     const res = await apis.getCommentReply(
       props.aweme_id,
       comment_id.value,
@@ -60,7 +60,14 @@ const getReplyCommentList = async () => {
 const onExpand = (commentId: string) => {
   console.log(commentId)
   comment_id.value = commentId
-  console.log('onExpand')
+  // console.log('onExpand')
+  isOpenExpand.value = true
+  getReplyCommentList()
+}
+
+const onExpandMore = (commentId: string) => {
+  // console.log('onExpandMore', commentId)
+  comment_id.value = commentId
   isOpenExpand.value = true
   getReplyCommentList()
 }
@@ -72,8 +79,6 @@ const onCollapse = () => {
   replyCommentList.value = []
   console.log('onCollapse')
 }
-
-
 </script>
 <template>
   <div class="comment-item">
@@ -95,8 +100,8 @@ const onCollapse = () => {
               <span class="header-name-text">{{ props.user.nickname }}</span>
             </a>
             <comment-item-tag
-              v-if="props.user.uid === props.author_id"
-              tag="作者"
+              v-if="props.label_text"
+              :tag="props.label_text"
               style="background: rgb(254, 44, 85)"
             />
             <template v-if="props.reply_to_userid">
@@ -162,6 +167,12 @@ const onCollapse = () => {
                 </modal>
               </div>
             </div>
+            <div
+              class="comment-author-digged"
+              v-if="props.is_author_digged"
+            >
+            <span>作者赞过</span>
+          </div>
           </span>
         </div>
         <div class="comment-item-content-time">
@@ -219,6 +230,7 @@ const onCollapse = () => {
         :isExpanded="isOpenExpand"
         :noMore
         @onExpand="() => onExpand(props.cid)"
+        @onExpandMore="() => onExpandMore(props.cid)"
         @onCollapse="onCollapse"
       />
     </div>
@@ -444,6 +456,22 @@ const onCollapse = () => {
               border-radius: 4px;
             }
           }
+        }
+
+        .comment-author-digged {
+          justify-content: center;
+          align-items: center;
+          padding: 0 4px;
+          font-size: 10px;
+          font-weight: 500;
+          line-height: 16px;
+          display: inline-flex;
+          margin-right: 0;
+          vertical-align: middle;
+          background: rgba(226, 227, 236, 0.7);
+          color: rgba(22, 24, 35, 0.6);
+          height: 16px;
+          border-radius: 4px;
         }
       }
 

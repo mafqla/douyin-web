@@ -1,16 +1,23 @@
 <script setup lang="ts">
-import { } from 'vue'
+import {} from 'vue'
 import VideoDetailAction from './video-detail-action.vue'
+import type { ISegment } from '@/api/tyeps/common/aweme'
 
-defineProps({
-  description: String,
-  seoDescription: String
-})
+interface IProps {
+  description: string
+  seoDescription: string
+  textExtra: ISegment[]
+}
+defineProps<IProps>()
 </script>
 <template>
   <div class="video-detail-info">
-    <ellipsis-expand :description style="--lineClamp: 2; --lineHeight: 26px; --maxHeight: 52px"
-      class="video-info-desc" />
+    <ellipsis-expand
+      :description
+      :text-extra="textExtra"
+      style="--lineClamp: 2; --lineHeight: 26px; --maxHeight: 52px"
+      class="video-info-desc"
+    />
     <p class="video-title-p">
       {{ seoDescription }}
     </p>

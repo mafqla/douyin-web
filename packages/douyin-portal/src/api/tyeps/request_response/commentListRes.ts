@@ -61,6 +61,7 @@ export interface ICommentListRes {
   comment_config: object
   general_comment_config: object
   show_management_entry_point: number
+  hotsoon_text: string
   folded_comment_count: number
 }
 

@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import type { ISegment } from '@/api/tyeps/common/aweme'
 import formatTime from '@/utils/date-format'
 
 const props = defineProps<{
   username: string
   uploadTime: string | number
   description: string
+  textExtra: ISegment[]
 }>()
 </script>
 <template>
@@ -19,14 +21,10 @@ const props = defineProps<{
     </div>
 
     <ellipsis-expand
-      style="
-        --lineClamp: 2;
-        --lineHeight: 22px;
-        --maxHeight: 48px;
-        margin: 16px 0;
-      "
+      style="--lineClamp: 2; --lineHeight: 22px; --maxHeight: 44px"
       class="video-desc-swiper"
       :description="props.description"
+      :text-extra="props.textExtra"
     />
   </div>
 </template>
@@ -34,10 +32,8 @@ const props = defineProps<{
 <style lang="scss" scoped>
 .video-info {
   position: absolute;
-  // bottom: 45px;
   bottom: 48px;
   left: 0;
-  // height: 100px;
   padding: 16px 95px 16px 16px;
   width: 100%;
   color: var(--color-const-text-white);
@@ -52,7 +48,7 @@ const props = defineProps<{
   .video-info-top {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 2px;
 
     .video-info-author {
       font-size: 18px;
@@ -67,6 +63,14 @@ const props = defineProps<{
       padding: 0 10px;
       font-size: 14px;
       white-space: nowrap;
+    }
+  }
+}
+
+@media (min-width: 1440px) and (max-width: 1920px) {
+  .video-info {
+    .video-info-top {
+      margin-bottom: calc(-4px + 0.416667vw) !important;
     }
   }
 }

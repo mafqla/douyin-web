@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PropType } from 'vue'
+import type { PropType, StyleValue } from 'vue'
 
 defineProps({
   text: {
@@ -21,11 +21,22 @@ defineProps({
     type: Boolean as PropType<boolean>,
     required: false,
     default: false // 默认显示
+  },
+  style: {
+    type: Object as PropType<StyleValue>,
+    required: false,
+    default: {}
   }
+  
 })
 </script>
 <template>
-  <div class="loading" :class="{ iscenter: center }" v-if="show">
+  <div
+    class="loading"
+    :class="{ iscenter: center }"
+    v-if="show"
+    :style="style"
+  >
     <div class="loading-content">
       <div class="loading-content-img"></div>
       <div class="loading-content-text" v-if="isShowText">{{ text }}</div>

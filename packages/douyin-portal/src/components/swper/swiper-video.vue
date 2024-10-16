@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { videosCtrolStore } from '@/stores/videos-control'
 import { watchEffect, type PropType, ref, onMounted, computed } from 'vue'
+import swiperPlayer from '../video-player/swiper-player.vue'
 import { useElementSize, useThrottleFn } from '@vueuse/core'
 import { useKeyboardNavigation } from '@/hooks'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
@@ -21,6 +22,7 @@ const isShowItem = computed(() => {
       index >= currentIndex - 1 && index <= currentIndex + 1
   }
 })
+
 const isActiveIndex = (index: number) =>
   index === videosCtrolStore().activeVideoIndex
 
@@ -39,6 +41,9 @@ watchEffect(() => {
   videosCtrolStore().initTranslateY = height.value + 12
 })
 
+const swiperPlayerRef = ref()
+
+
 const debouncedNext = useThrottleFn(() => {
   if (!videosCtrolStore().stopScroll) {
     videosCtrolStore().handleNext()
@@ -48,9 +53,10 @@ const debouncedPrev = useThrottleFn(() => {
   videosCtrolStore().handlePrev()
 }, 3000)
 
-onMounted(() => {
-  window.addEventListener('wheel', handleWheel)
-})
+// onMounted(() => {
+//   window.addEventListener('wheel', handleWheel)
+// })
+
 const handleWheel = (event: WheelEvent) => {
   const delta = event.deltaY
   // console.log(delta)
@@ -81,28 +87,16 @@ useKeyboardNavigation()
         class="carousel-item"
         v-for="(item, index) in videoList"
         :key="item.aweme_id"
+        :id="item.aweme_id"
         :style="{
           height: `${height}px`,
           'margin-bottom': '12px'
         }"
-        @mouseWheel="handleWheel"
       >
         <template v-if="isShowItem(index)">
           <swiper-player
-            :id="item.aweme_id"
-            :userId="item.author_user_id"
-            :username="item.author.nickname"
-            :uploadTime="item.create_time"
-            :description="item.desc"
-            :url="item.video.play_addr.url_list"
-            :poster="item.video.cover.url_list[0] ?? ''"
-            :img="item.author.avatar_thumb.url_list[0] ?? ''"
-            :dianzan="item.statistics.digg_count"
-            :comment="item.statistics.comment_count"
-            :shoucang="item.statistics.collect_count"
-            :isLike="item.user_digged"
-            :isCollect="item.collect_stat"
-            :isAttention="item.author.follow_status"
+            ref="swiperPlayerRef"
+            :aweme-info="item"
             :isPlay="isActiveIndex(index)"
           />
         </template>
@@ -118,7 +112,6 @@ useKeyboardNavigation()
   top: calc(0% + 0px);
   width: 100%;
   height: calc(100% - 12px);
-
   overflow: visible;
   padding-left: 0px;
   padding-right: 68px;

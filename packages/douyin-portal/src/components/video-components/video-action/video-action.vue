@@ -5,23 +5,23 @@ import { attention } from '@/service/attention'
 import { useCount } from '@/hooks/useCount'
 
 const props = defineProps({
-  id: String,
-  userId: Number,
+  aweme_id: String,
+  user_id: String,
   avatar: String,
-  dianzan: Number,
-  comment: Number,
-  shoucang: Number,
-  isLike: Number,
-  isCollect: Number,
-  isAttention: Number,
+  digg_count: Number,
+  comment_count: Number,
+  collect_count: Number,
+  user_digged: Number,
+  collect_stat: Number,
+  follow_status: Number,
   isShowAvatar: {
     type: Boolean,
     default: true
   }
 })
 
-const dianzan = ref(props.dianzan) as any
-const liked = ref(props.isLike) as any
+const digg_count = ref(props.digg_count)
+const liked = ref(props.user_digged)
 // const addDianzan = async () => {
 //   try {
 //     await applaud(props.id as number)
@@ -38,8 +38,8 @@ const liked = ref(props.isLike) as any
 // watchEffect(() => {
 //   console.log(liked.value, dianzan.value)
 // })
-const shoucang = ref(props.shoucang) as any
-const isCollect = ref(props.isCollect) as any
+const collect_count = ref(props.collect_count) as any
+const isCollect = ref(props.collect_stat) as any
 
 // console.log(isCollect.value)
 // const addShoucang = async () => {
@@ -47,9 +47,9 @@ const isCollect = ref(props.isCollect) as any
 //     await collection({ video_id: props.id as number })
 //     isCollect.value = !isCollect.value
 //     if (isCollect.value) {
-//       shoucang.value++
+//       collect_count.value++
 //     } else {
-//       shoucang.value--
+//       collect_count.value--
 //     }
 //   } catch (e) { }
 // }
@@ -58,19 +58,19 @@ const isCollect = ref(props.isCollect) as any
 const width = ref(312)
 const maXWidth = ref('280px')
 //是否关注
-const isAttent = ref(props.isAttention)
+const isAttent = ref(props.follow_status)
 
 // console.log(isAttention.value)
 //关注
 const handleAttention = async () => {
   //调用接口
   try {
-    await attention(props.userId as number)
-    if (isAttent.value === 1 || isAttent.value === 3) {
-      isAttent.value = 2
-    } else {
-      isAttent.value = 1
-    }
+    // await attention(props.user_id)
+    // if (isAttent.value === 1 || isAttent.value === 3) {
+    //   isAttent.value = 2
+    // } else {
+    //   isAttent.value = 1
+    // }
   } catch (e) {
     console.log(e)
   }
@@ -174,7 +174,7 @@ onUnmounted(() => {
           </div>
         </div>
         <svg-icon class="icon" :class="{ liked: liked }" icon="dianzan" />
-        <span class="num">{{ useCount(dianzan) }}</span>
+        <span class="num">{{ useCount(digg_count ?? 0) }}</span>
       </div>
       <div
         class="video-action-item"
@@ -201,7 +201,7 @@ onUnmounted(() => {
           </div>
         </div>
         <svg-icon class="icon" icon="comment" />
-        <span class="num">{{ useCount(props.comment ?? 0) }}</span>
+        <span class="num">{{ useCount(props.comment_count ?? 0) }}</span>
       </div>
       <div
         class="video-action-item"
@@ -213,7 +213,7 @@ onUnmounted(() => {
           icon="collection"
           :class="{ collect: isCollect }"
         />
-        <span class="num">{{ useCount(shoucang) }}</span>
+        <span class="num">{{ useCount(collect_count) }}</span>
 
         <div class="collection-box" v-if="showCollectionBox">
           <div class="collection-box-content">

@@ -1,5 +1,7 @@
 import request from './request'
+import type { IMixInfo } from './tyeps/common/mix'
 import type { searchParams } from './tyeps/request_params/searchParams'
+import type { IuserLikeParams } from './tyeps/request_params/userLikeParams'
 import type { IuserPostParams } from './tyeps/request_params/userPostParams'
 import type {
   ICommentListRes,
@@ -14,6 +16,8 @@ import type {
   SearchResponse,
   searchSuggestResponse
 } from './tyeps/request_response/searchResponse'
+import type { IUserDetailRes } from './tyeps/request_response/userDetailRes'
+import type { IUserLikeRes } from './tyeps/request_response/userLikeRes'
 import type { IUserPostRes } from './tyeps/request_response/userPostRes'
 import type { IVideoDetailRes } from './tyeps/request_response/videoDetailRes'
 
@@ -33,10 +37,14 @@ export default {
   /**
    * @description 获取推荐页视频
    */
-  getRecommendFeed: (count: number): Promise<IrecommendFeedRes> => {
+  getRecommendFeed: (
+    count: number,
+    refresh_index: number
+  ): Promise<IrecommendFeedRes> => {
     return request.get(urls.recomend_feed, {
       params: {
-        count
+        count,
+        refresh_index
       }
     })
   },
@@ -90,14 +98,6 @@ export default {
         filterGids,
         refresh_index
       }
-    })
-  },
-  /**
-   * @description 获取用户视频
-   */
-  getUserPost: (params: IuserPostParams): Promise<IUserPostRes> => {
-    return request.get(urls.user_post, {
-      params
     })
   },
 
@@ -158,7 +158,59 @@ export default {
   /**
    * @description 获取用户信息
    */
-  getUserInfo: (): Promise<IVideoDetailRes> => {
+  getUserInfo: (): Promise<IUserDetailRes> => {
     return request.get(urls.user_info)
+  },
+  /**
+   * @description 获取其他用户信息
+   * @param {String} sec_user_id 用户id
+   * @return {Promise<IUserDetailRes>} 用户信息
+   */
+  getUserOtherInfo: (sec_user_id: string): Promise<IUserDetailRes> => {
+    return request.get(urls.user_other_info, {
+      params: {
+        sec_user_id
+      }
+    })
+  },
+
+  /**
+   * @description 获取用户视频列表
+   * @returns {Promise<IUserPostRes>} 用户视频列表
+   */
+  getUserPost: (params: IuserPostParams): Promise<IUserPostRes> => {
+    return request.get(urls.user_post, {
+      params
+    })
+  },
+  /**
+   * @description 获取用户点赞的视频列表
+   * @return {Promise<IUserLikeRes>} 用户点赞的视频列表
+   */
+  getUserLike: (params: IuserLikeParams): Promise<IUserLikeRes> => {
+    return request.get(urls.user_like, {
+      params
+    })
+  },
+
+  /**
+   * @description 获取用户合集列表
+   * @param {String} sec_user_id 用户id
+   * @param {Number} count 数量
+   * @param {String} cursor 分页游标
+   * @return {Promise<IUserPostRes>} 用户合集列表
+   */
+  getUserMix: (
+    sec_user_id: string,
+    count: number,
+    cursor: string
+  ): Promise<IMixInfo> => {
+    return request.get(urls.user_mix, {
+      params: {
+        sec_user_id,
+        count,
+        cursor
+      }
+    })
   }
 }

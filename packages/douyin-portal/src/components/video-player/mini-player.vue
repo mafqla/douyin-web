@@ -24,7 +24,7 @@ const playerOptions = {
 
 // 音量改变
 const volumeChange = () => {
-  console.log('音量改变')
+  // console.log('音量改变')
   videosCtrolStore().isMuted = false
 }
 </script>
@@ -34,6 +34,8 @@ const volumeChange = () => {
     <BasePlayer
       :url="props.url"
       :options="playerOptions"
+      :isPlay="true"
+      :loop="true"
       class="mini-video"
       @volumechange="volumeChange"
       :mode="'bottom'"
@@ -59,6 +61,7 @@ const volumeChange = () => {
 
 <style lang="scss">
 .mini-video {
+  background: transparent;
   .xgplayer-controls {
     background: transparent;
   }

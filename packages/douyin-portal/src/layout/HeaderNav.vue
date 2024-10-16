@@ -19,7 +19,7 @@ const store = userStore()
 
 watchEffect(() => {
   // console.log(store.isLogin())
-  isLogin.value = store.isLogin()
+  isLogin.value = store.isLogin
   //关闭登录弹窗
   if (isLogin.value) {
     dialogTableVisible.value = false

@@ -2,14 +2,14 @@
 import {} from 'vue'
 </script>
 <template>
-  <div class="dy-btn"></div>
+  <div class="dy-btn"><slot /></div>
 </template>
 
 <style lang="scss" scoped>
 .dy-btn {
-  background: var(--color-bg-b3) !important;
+  background: var(--color-bg-b3);
   border: none;
-  color: var(--color-text-t1) !important;
+  color: var(--color-text-t1);
   font-size: 13px;
   font-weight: 400;
   margin: 0 0 0 8px;
@@ -21,7 +21,7 @@ import {} from 'vue'
   outline: none;
   padding: 0 16px;
   position: relative;
-  border-radius: 4px;
+  border-radius: 12px;
   height: 36px;
   line-height: 22px;
   min-width: 88px;

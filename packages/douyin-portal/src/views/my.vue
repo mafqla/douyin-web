@@ -62,7 +62,9 @@ const fetchVideoData = async (page: number, size: number) => {
 //设置浏览器标题
 
 const metaTitle = computed(() => {
-  return store.userInfo.username ? `${store.userInfo.username}的抖音 - 抖音` : `抖音-记录美好生活`
+  return store.userInfo.user.nickname
+    ? `${store.userInfo.user.nickname}的抖音 - 抖音`
+    : `抖音-记录美好生活`
 })
 document.title = metaTitle.value
 onBeforeUnmount(() => {
@@ -144,9 +146,12 @@ useInfiniteScroll(window, load, {
       <div class="user-detail-content max">
         <div class="user-header-background">
           <div class="header-img-content">
-            <div class="header-img" :style="{
-              backgroundImage: `url(${backgroundurl})`
-            }"></div>
+            <div
+              class="header-img"
+              :style="{
+                backgroundImage: `url(${backgroundurl})`
+              }"
+            ></div>
           </div>
           <div class="header-down-bg"></div>
           <div class="header-down-bg-1"></div>
@@ -169,16 +174,20 @@ html[dark] {
   }
 
   .header-down-bg-1 {
-    background-image: linear-gradient(180deg,
-        rgba(29, 29, 36, 0),
-        #161823) !important;
+    background-image: linear-gradient(
+      180deg,
+      rgba(29, 29, 36, 0),
+      #161823
+    ) !important;
     top: auto !important;
   }
 
   .header-down-bg-2 {
-    background-image: linear-gradient(0deg,
-        rgba(25, 26, 36, 0) 27.08%,
-        #161823 104.06%) !important;
+    background-image: linear-gradient(
+      0deg,
+      rgba(25, 26, 36, 0) 27.08%,
+      #161823 104.06%
+    ) !important;
   }
 
   .header-down-bg-3 {
@@ -258,9 +267,11 @@ html[dark] {
       }
 
       .header-down-3 {
-        background-image: linear-gradient(90deg,
-            hsla(0, 0%, 100%, 0),
-            hsla(0, 0%, 100%, 0.3));
+        background-image: linear-gradient(
+          90deg,
+          hsla(0, 0%, 100%, 0),
+          hsla(0, 0%, 100%, 0.3)
+        );
         height: 240px;
         right: 0;
         width: 281px;

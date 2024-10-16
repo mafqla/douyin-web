@@ -28,25 +28,29 @@ watchEffect(() => {
 </script>
 <template>
   <div class="comment-expand">
-    <button class="comment-expand-btn" @click="$emit('onExpand')">
+    <button class="comment-expand-btn">
       <div class="comment-line" v-if="!isExpandedRef || noMoreRef"></div>
       <div class="comment-content">
         <template v-if="isExpandedRef && noMoreRef">
-          <span class="comment-content-text">
+          <span class="comment-content-text" @click="$emit('onExpandMore')">
             展开更多
           </span>
           <svg-icon icon="comment-expand" class="icon" />
         </template>
-        <template v-if="!isExpandedRef"> <span class="comment-content-text">
+        <template v-if="!isExpandedRef">
+          <span class="comment-content-text" @click="$emit('onExpand')">
             {{ `展开${props.commentCount}条回复` }}
           </span>
           <svg-icon icon="comment-expand" class="icon" />
         </template>
-
-
       </div>
     </button>
-    <button type="button" class="comment-content-collapse" v-if="isExpandedRef" @click="$emit('onCollapse')">
+    <button
+      type="button"
+      class="comment-content-collapse"
+      v-if="isExpandedRef"
+      @click="$emit('onCollapse')"
+    >
       <span>收起</span>
       <svg-icon icon="comment-collapse" class="icon" />
     </button>

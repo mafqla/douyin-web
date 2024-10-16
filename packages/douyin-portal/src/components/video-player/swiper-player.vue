@@ -1,104 +1,58 @@
 <script setup lang="ts">
-import { onMounted, ref, toRefs, watch } from 'vue'
+import { onMounted, ref, toRefs, watch, provide } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
+import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 
 import {
   VideoInfo,
   VideoSidebar,
-  VideoSideBarBtn
+  VideoSideBarBtn,
+  VideoAction
 } from '@/components/video-components'
-import { commentStore } from '@/stores/comment'
 import { videosCtrolStore } from '@/stores/videos-control'
 import BasePlayer from './base-player.vue'
 
-type UrlType = string | string[]
-const props = defineProps({
-  id: {
-    type: String,
-    required: true
-  },
-  userId: {
-    type: Number,
-    required: true
-  },
-  username: {
-    type: String,
-    required: true
-  },
-  uploadTime: {
-    type: [String, Number],
-    required: true
-  },
-  description: {
-    type: String,
-    required: true
-  },
-  url: {
-    type: [String, Array],
-    required: true
-  },
-  poster: {
-    type: String,
-    required: true
-  },
-  isPlay: {
-    type: Boolean,
-    required: true
-  },
-  img: {
-    type: String,
-    required: true
-  },
-  dianzan: {
-    type: Number,
-    required: true
-  },
-  comment: {
-    type: Number,
-    required: true
-  },
-  shoucang: {
-    type: Number,
-    required: false
-  },
-  globalVolume: {
-    type: Number,
-    required: false,
-    default: 0
-  },
-  isLike: {
-    type: Number,
-    required: false
-  },
-  isCollect: {
-    type: Number,
-    required: false
-  },
-  isAttention: {
-    type: Number,
-    required: false
-  },
-  isShowInfo: {
-    type: Boolean,
-    required: false,
-    default: true
-  },
-  isShowAvatar: {
-    type: Boolean,
-    required: false,
-    default: true
-  }
+interface SwiperPlayerProps {
+  awemeInfo: IAwemeInfo
+  isPlay: boolean
+  globalVolume?: number
+  isShowInfo?: boolean
+  isShowAvatar?: boolean
+}
+const props = withDefaults(defineProps<SwiperPlayerProps>(), {
+  globalVolume: 0,
+  isShowInfo: true,
+  isShowAvatar: true
 })
-
-const uniqueId = uuidv4()
 
 const { isPlay } = toRefs(props)
 const playerOptions = {
-  autoplayMuted: videosCtrolStore().isMuted,
   ignores: ['miniWin', 'playbackrate']
 }
+// const playRef = ref()
 
-const playerId = ref(`xgplayer-${uniqueId}`)
+// const play = () => {
+//   if (playRef.value && playRef.value.play) {
+//     playRef.value.play()
+//   }
+// }
+
+// const pause = () => {
+//   if (playRef.value && playRef.value.pause) {
+//     playRef.value.pause()
+//   }
+// }
+
+// // 使用 onMounted 钩子确保组件已经挂载
+// onMounted(() => {
+//   watchEffect(() => {
+//     if (isPlay.value) {
+//       play()
+//     } else {
+//       pause()
+//     }
+//   })
+// })
 
 const control = videosCtrolStore()
 let currentWidth = ref('100%')
@@ -143,8 +97,6 @@ const toggleComments = (id: any) => {
     //否则执行关闭评论操作
     closeComments()
   }
-  const store = commentStore()
-  store.getVideoCommentList(id) as any
 }
 
 //打开相关内容
@@ -161,44 +113,63 @@ const openRelated = () => {
       id="videos-controll"
     >
       <div class="slide-video">
-        <BasePlayer :url="props.url" :options="playerOptions" :is-play="isPlay">
+        <BasePlayer
+          ref="playerRef"
+          :url="props.awemeInfo.video.play_addr.url_list"
+          :options="playerOptions"
+          :is-play="isPlay"
+          :thumbnail="{
+            img_urls: props.awemeInfo.video?.big_thumbs[0]?.img_urls,
+            pic_num: props.awemeInfo.video?.big_thumbs[0]?.img_num,
+            row: props.awemeInfo.video?.big_thumbs[0]?.img_x_len,
+            col: props.awemeInfo.video?.big_thumbs[0]?.img_y_len,
+            height: props.awemeInfo.video?.big_thumbs[0]?.img_y_size,
+            width: props.awemeInfo.video?.big_thumbs[0]?.img_x_size
+          }"
+        >
           <video-info
             v-if="props.isShowInfo"
-            :username="props.username"
-            :uploadTime="props.uploadTime"
-            :description="props.description"
+            :username="props.awemeInfo.author.nickname"
+            :uploadTime="props.awemeInfo.create_time"
+            :description="props.awemeInfo.desc"
+            :text-extra="props.awemeInfo.text_extra"
           />
           <video-action
-            :id="props.id"
-            :userId="props.userId"
-            :avatar="props.img"
-            :dianzan="props.dianzan"
-            :comment="props.comment"
-            :shoucang="props.shoucang"
-            :isLike="props.isLike"
-            :isCollect="props.isCollect"
-            :isAttention="props.isAttention"
+            :aweme_id="props.awemeInfo.aweme_id"
+            :user_id="props.awemeInfo.author.sec_uid"
+            :avatar="props.awemeInfo.author.avatar_thumb.url_list[0] ?? ''"
+            :digg_count="props.awemeInfo.statistics.digg_count"
+            :comment_count="props.awemeInfo.statistics.comment_count"
+            :collect_count="props.awemeInfo.statistics.collect_count"
+            :user_digged="props.awemeInfo.user_digged"
+            :collect_stat="props.awemeInfo.collect_stat"
+            :follow_status="props.awemeInfo.author.follow_status"
             :isShowAvatar="props.isShowAvatar"
-            @toggleComments="toggleComments(props.id)"
+            @toggleComments="toggleComments(props.awemeInfo.aweme_id)"
           >
           </video-action>
         </BasePlayer>
       </div>
-      <video-search-btn @click="openRelated" v-show="!control.isShowRelated" />
-      <video-side-bar-btn
-        @click="openComments"
-        v-show="control.isShowComment"
-      />
+      <video-search-btn @click="openRelated" v-if="!control.isShowRelated" />
+      <video-side-bar-btn @click="openComments" v-if="control.isShowComment" />
     </div>
     <slot></slot>
     <video-sidebar
-      :id="props.id"
-      :username="props.username"
+      :user_sec_id="props.awemeInfo.author.sec_uid"
+      :aweme_id="props.awemeInfo.aweme_id"
+      :username="props.awemeInfo.author.nickname"
+      :author_id="props.awemeInfo.author_user_id"
+      :relatedText="
+        props.awemeInfo.suggest_words?.suggest_words[0]?.words[0]?.word ?? ''
+      "
       @closeComments="closeComments"
-      v-show="!control.isShowComment"
+      v-if="!control.isShowComment"
     />
     <div class="video-blur">
-      <img :src="props.poster" :alt="props.description" />
+      <img
+        :src="props.awemeInfo.video.cover.url_list[0] ?? ''"
+        :alt="props.awemeInfo.desc"
+      />
     </div>
   </div>
 </template>

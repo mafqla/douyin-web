@@ -278,7 +278,7 @@ watchEffect(() => {
   height: 100%;
   min-height: 44px;
   background-color: var(--color-bg-b3);
-  border: 1px solid var(--color-bg-b3);
+  // border: 1px solid var(--color-bg-b3);
   background: var(--container-bg);
   border-radius: 12px;
   justify-content: center;

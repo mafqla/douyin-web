@@ -7,8 +7,8 @@ export const videosCtrolStore = defineStore('control', () => {
   //是否打开相关内容
   const isShowRelated = ref(true)
   const isMuted = ref(true)
-  const page = ref(1)
-  const size = ref(10)
+  const refresh_index = ref(1)
+  const count = ref(10)
   const translateY = ref(0)
   const initTranslateY = ref(876)
   //记录当前活动的视频索引
@@ -40,7 +40,7 @@ export const videosCtrolStore = defineStore('control', () => {
 
     //判断是否到达最后一个视频
     if (activeVideoIndex.value === videosNum.value - 1) {
-      page.value = page.value + 1
+      refresh_index.value = refresh_index.value + 1
     }
   }
 
@@ -50,8 +50,8 @@ export const videosCtrolStore = defineStore('control', () => {
 
   //重置状态
   const reset = () => {
-    page.value = 1
-    size.value = 10
+    refresh_index.value = 1
+    count.value = 10
     translateY.value = 0
     activeVideoIndex.value = 0
     activeVideoPlayState.value = true
@@ -63,8 +63,8 @@ export const videosCtrolStore = defineStore('control', () => {
     isShowComment,
     isShowRelated,
     isMuted,
-    page,
-    size,
+    refresh_index,
+    count,
     videosNum,
     translateY,
     initTranslateY,

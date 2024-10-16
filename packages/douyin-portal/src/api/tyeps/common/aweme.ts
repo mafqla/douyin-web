@@ -5,9 +5,9 @@ import type { IVideo } from './video'
 import type { IVideoControl } from './video-control'
 
 export interface IAwemeInfo {
-  aweme_id: number // 视频ID
+  aweme_id: string // 视频ID
   desc: string // 视频描述
-  create_time: number // 视频创建时间
+  create_time: number | string // 视频创建时间
   author: IAuthor // 作者信息
   music: IMusic // 音乐信息
   cha_list: null // 挑战赛列表，具体含义未知
@@ -15,7 +15,7 @@ export interface IAwemeInfo {
   user_digged: number
   statistics: IVideoStatistics // 视频数据
   status: IVideoStatus // 视频状态
-  text_extra: ITextExtra[]
+  text_extra: ITextExtra[] & ISegment[]
   // 是否置顶，这里为0可能表示未置顶
   is_top: 0 | 1 // 使用联合类型，表示它可以是0或1
   share_info: IShareInfo // 分享信息
@@ -93,6 +93,10 @@ export interface IAwemeInfo {
   jump_tab_info_list: null // 跳转标签信息列表，具体含义未知
   reply_smart_emojis: null // 回复智能表情，具体含义未知
   create_scale_type: null // 创建比例类型，具体含义未知
+  media_type: number // 媒体类型
+  seo_info: {
+    ocr_content: string
+  }
 }
 
 interface IVideoStatistics {
@@ -128,13 +132,26 @@ export interface ITextExtra {
   // 结束位置
   end: number
   // 类型，这里为1可能表示这是一个话题标签
-  type: 1
+  type: number
   // 话题标签名称
   hashtag_name: string
   // 话题标签的唯一标识符
   hashtag_id: string
   // 是否与商业相关
   is_commerce: boolean
+}
+
+export interface ISegment {
+  caption_start: number
+  caption_end: number
+  start: number
+  end: number
+  hashtag_id: string
+  hashtag_name: string
+  is_commerce: boolean
+  type: number
+  sec_uid: string
+  user_id: string
 }
 
 // 定义一个表示分享信息的接口
@@ -238,3 +255,5 @@ interface Baike {
   head_image_base64: string // 图片的Base64编码，通常为空字符串
   is_media_wiki: boolean // 是否为媒体Wiki，true表示是
 }
+
+interface ICellRoom {}

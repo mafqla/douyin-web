@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import type { ISegment } from '@/api/tyeps/common/aweme'
 
-const props = defineProps({
-  description: {
-    type: String,
-    required: true
-  }
-})
+interface IProps {
+  description: string
+  textExtra: ISegment[]
+}
+const props = defineProps<IProps>()
 
 const spanText = ref<HTMLElement | null>(null)
 const expanded = ref(false)
@@ -14,7 +14,6 @@ const shouldShowButton = ref(false)
 const addShow = ref(false)
 const spanHeight = ref()
 const clientHeight = ref()
-
 // 监听容器尺寸变化
 onMounted(() => {
   const resizeObserver = new ResizeObserver((entries) => {
@@ -42,19 +41,49 @@ const toggleExpand = () => {
 }
 
 const formattedDescription = computed(() => {
-  // 使用正则表达式匹配所有以 # 开头的单词
-  const tags = props.description.split(/(#\S+)/)
-  const formattedParts = tags.map((tag, index) => {
-    if (index === 1) {
-      return `<span class="tag"><span>${tag}</span></span>`
-    } else if (tag.startsWith('#')) {
-      return `<span><span> </span></span>
-      <span class="tag"><span>${tag}</span></span>`
-    } else {
-      return `<span><span>${tag}</span></span>`
-    }
-  })
-  return formattedParts.join('')
+  // // 使用正则表达式匹配所有以 # 开头的单词
+  // const tags = props.description.split(/(#\S+)/)
+  // const formattedParts = tags.map((tag, index) => {
+  //   if (index === 1) {
+  //     return `<span class="tag"><span>${tag}</span></span>`
+  //   } else if (tag.startsWith('#')) {
+  //     return `<span><span> </span></span>
+  //     <span class="tag"><span>${tag}</span></span>`
+  //   } else {
+  //     return `<span><span>${tag}</span></span>`
+  //   }
+  // })
+  // return formattedParts.join('')
+
+  let parsedContent = props.description
+  let textExtra = props.textExtra
+  // 1. 根据传入的textExtra，替换content中的文本额外信息
+  if (textExtra && textExtra.length > 0) {
+    // 按 start 位置降序排列，避免替换时影响后续替换
+    textExtra.sort((a, b) => b.start - a.start)
+
+    textExtra.forEach((item) => {
+      // 处理用户名
+      if (item.type === 0) {
+        const username = props.description.slice(item.start, item.end).trim()
+        const replacement = `<a href="/user/${item.sec_uid}" class="header-name-link" target="_blank"><span>${username}</span></a>`
+        parsedContent =
+          parsedContent.slice(0, item.start) +
+          replacement +
+          parsedContent.slice(item.end)
+      }
+      // 处理标签
+      else if (item.type === 1) {
+        const tag = props.description.slice(item.start, item.end).trim()
+        const replacement = `<a href="/tag/${item.hashtag_id}" class="hashtag-link" target="_blank"><span class="tag"><span>${tag}</span></span></a>`
+        parsedContent =
+          parsedContent.slice(0, item.start) +
+          replacement +
+          parsedContent.slice(item.end)
+      }
+    })
+  }
+  return parsedContent
 })
 </script>
 <template>
@@ -130,14 +159,15 @@ const formattedDescription = computed(() => {
   clear: both;
 
   .btn {
-    color: var(--color-text-t3);
-
+    // color: var(--color-text-t3);
+    color: rgba(255, 255, 255, 0.9);
     font-weight: 400;
     height: 20px;
     line-height: 20px;
     width: 40px;
     min-width: 40px;
-    background: var(--color-secondary-default);
+    // background: var(--color-secondary-default);
+    background: rgba(255, 255, 255, 0.15);
     border-width: initial;
     border-style: none;
     border-color: initial;
@@ -171,8 +201,7 @@ const formattedDescription = computed(() => {
   }
 }
 
-.video-desc-swiper{
-  
+.video-desc-swiper {
 }
 .video-info-desc {
   &.search {

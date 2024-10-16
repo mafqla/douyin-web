@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import apis from '@/api/apis'
-import type { IawemeDetail } from '@/api/tyeps/request_response/videoDetailRes'
 import { Loading } from '@/components/common'
 import BasePlayer from '@/components/video-player/base-player.vue'
 import PageFooter from '@/layout/page-footer.vue'
@@ -11,6 +10,7 @@ import { useRoute } from 'vue-router'
 import RelatedComment from './components/related-comment.vue'
 import RelatedVideo from './components/related-video.vue'
 import VideoDetailInfo from './components/video-detail-info.vue'
+import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 
 const playerOptions = {
   volume: 0.5,
@@ -35,7 +35,7 @@ const awemeId = route.params.id as string
  */
 
 const loading = ref(true)
-const videoDetail = ref<IawemeDetail>()
+const videoDetail = ref<IAwemeInfo>()
 provide('videoDetail', videoDetail)
 const getVideoDetail = async (awemeId: string) => {
   try {
@@ -97,10 +97,9 @@ const onEnded = () => {
               </template>
             </BasePlayer>
           </div>
-          <video-detail-info
-            :description="videoDetail?.desc"
-            :seo-description="videoDetail?.seo_info.ocr_content"
-          />
+          <video-detail-info :description="videoDetail?.desc"
+          :text-extra="videoDetail?.text_extra"
+          :seo-description="videoDetail?.seo_info.ocr_content" />
           <related-video
             :author="videoDetail?.author"
             :aweme-id="videoDetail?.aweme_id"

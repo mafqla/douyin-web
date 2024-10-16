@@ -2,7 +2,6 @@
 import { ref, watchEffect } from 'vue'
 import { userStore } from '@/stores/user'
 
-
 //是否登录
 let isLogin: any = ref(false)
 const src = ref('')
@@ -10,8 +9,8 @@ const store = userStore()
 
 watchEffect(() => {
   // console.log(store.isLogin())
-  isLogin.value = store.isLogin()
-  src.value = store.userInfo.avatar
+  isLogin.value = store.isLogin
+  src.value = store.userInfo.user.avatar_300x300.url_list[0]
 })
 </script>
 <template>
@@ -21,10 +20,21 @@ watchEffect(() => {
         <dy-avatar :src="src" size="small" />
       </template>
       <template #default>
-        <user-popup :isLogin="true" :src="src" :nickname="store.userInfo.username" :likeCount="store.userInfo.likeCount"
-          :followingsCount="store.userInfo.attentionCount" :followersCount="store.userInfo.fansCount"
-          :postsCount="store.userInfo.uploadVideosCount" :collectCount="store.userInfo.collectVideosCount"
-          :watchLaterCount="0" @logout="store.logout()" />
+        <user-popup
+          :isLogin="true"
+          :src="src"
+          :nickname="store.userInfo.user.nickname"
+          :likeCount="store.userInfo.user.favoriting_count"
+          :followingsCount="store.userInfo.user.follower_count"
+          :followersCount="store.userInfo.user.following_count"
+          :postsCount="store.userInfo.user.aweme_count"
+          :collectCount="
+            store.userInfo.user_collect_count.collect_count_list[0]
+              .collect_count
+          "
+          :watchLaterCount="0"
+          @logout="store.logout()"
+        />
       </template>
     </el-popover>
   </div>

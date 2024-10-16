@@ -15,13 +15,27 @@ export interface IVideo {
   play_addr_265: PlayAddrTwoFiftyFive // H.265编码的视频播放地址信息
   video_model: string // 视频模型，具体含义未知
   tags: any[] // 标签信息，具体含义未知
-  big_thumbs: any // 大拇指信息，具体含义未知
+  big_thumbs: IBigThumbs[] // 视频每帧缩略图
   meta: string // 视频元数据，包含亮度、对比度等信息
   gaussian_cover: GaussianCover // 高斯模糊封面信息
   bit_rate_audio: any // 音频比特率信息，具体含义未知
   user_digged: number // 用户点赞数
 }
 
+interface IBigThumbs {
+  duration: number
+  fext: string
+  img_num: number
+  img_url: string
+  img_urls: string[]
+  img_x_len: number
+  img_x_size: number
+  img_y_len: number
+  img_y_size: number
+  interval: number
+  uri: string
+  uris: string[]
+}
 interface PlayAddr {
   uri: string // 播放地址的URI
   url_list: string[] // 播放地址的URL列表

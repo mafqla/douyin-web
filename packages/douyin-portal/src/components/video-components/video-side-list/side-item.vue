@@ -1,37 +1,49 @@
 <script setup lang="ts">
+import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
+import { useCount } from '@/hooks'
 import {} from 'vue'
+interface SideItemProps {
+  item: IAwemeInfo
+  aweme_id: string
+}
+
+const props = defineProps<SideItemProps>()
 </script>
 <template>
-  <div class="side-item">
+  <div class="side-item" :aweme_id="props.item.aweme_id">
     <div class="side-item-content">
       <a href="#" class="side-link">
         <div class="side-link-content">
           <div class="side-link-content-img">
             <img
-              src="//p9-pc-sign.douyinpic.com/tos-cn-p-0015/d4140a04fd8046828d2bb5af85f63b9e_1625890681~tplv-dy-cropcenter:323:430.jpeg?biz_tag=pcweb_cover&amp;from=3213915784&amp;s=PackSourceEnum_PUBLISH&amp;sc=cover&amp;se=true&amp;sh=323_430&amp;x-expires=1995782400&amp;x-signature=rIVjAsQP3dib42R7EXR6vJh4PaU%3D"
-              alt="Ying：#vlog日常 放假回家啦！在外地读大学，每次回家都是高光时刻。"
+              :src="props.item.video.cover.url_list[0]"
+              :alt="props.item.desc"
               class=""
             />
           </div>
 
           <div class="user-video-stats-tag">
             <div class="user-video-tag">
-              <!-- <span class="tag-title" style="background: rgb(250, 206, 21)"
-                >置顶</span
-              > -->
+              <span
+                class="tag-title"
+                style="background: rgb(250, 206, 21)"
+                v-if="props.item.is_top"
+              >
+                置顶
+              </span>
             </div>
           </div>
           <span class="author-card-user-video-like">
             <svg-icon icon="small-like" class="icon" />
-            <span>6.4万</span>
+            <span>{{ useCount(props.item.statistics.digg_count) }}</span>
           </span>
           <p class="side-video-title">
-            #vlog日常 放假回家啦！在外地读大学，每次回家都是高光时刻。
+            {{ props.item.desc }}
           </p>
         </div>
       </a>
 
-      <div class="side-playing" v-show="false">
+      <div class="side-playing" v-show="props.aweme_id === props.item.aweme_id">
         <div class="side-playing-content">
           <div class="one"></div>
           <div class="two"></div>

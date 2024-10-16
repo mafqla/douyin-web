@@ -41,20 +41,29 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="main" :class="{ user: isUserRoute, video: isVideoRoute, search: isSearchRoute }">
+  <div
+    class="main"
+    :class="{ user: isUserRoute, video: isVideoRoute, search: isSearchRoute }"
+  >
     <div class="bg" :class="{ search: isSearchRoute }"></div>
     <aside-bar />
 
-    <div class="right-container min" :class="{
-      searchLayout: isSearchRoute,
-      videoLayout: isVideoRoute
-    }">
-      <div class="douyin-header" :class="{
-        scrolled: isScrolled,
-        user: isUserRoute,
-        search: isSearchRoute,
-        video: isVideoRoute
-      }">
+    <div
+      class="right-container min"
+      :class="{
+        searchLayout: isSearchRoute,
+        videoLayout: isVideoRoute
+      }"
+    >
+      <div
+        class="douyin-header"
+        :class="{
+          scrolled: isScrolled,
+          user: isUserRoute,
+          search: isSearchRoute,
+          video: isVideoRoute
+        }"
+      >
         <div class="douyin-header-content" :class="{ none: backgroundColor }">
           <header-nav :class="{ scrolled: isScrolled }" />
         </div>
@@ -84,12 +93,12 @@ watchEffect(() => {
   &.search {
     height: auto;
 
-    // .bg {
-    //   // display: none;
-    // }
-    // :deep(.aside .aside-bar) {
-    //   background: transparent !important;
-    // }
+    .bg {
+      display: none;
+    }
+    :deep(.aside .aside-bar) {
+      background: transparent !important;
+    }
     // .affix {
     //   background: unset !important;
     // }
@@ -169,19 +178,19 @@ watchEffect(() => {
     position: fixed;
     top: 0;
   }
-
+  &.user {
+    position: fixed;
+  }
   &.scrolled {
     background: no-repeat url(@/assets/test.png) var(--color-bg-b0);
     background-position-x: -72px;
   }
 
-  &.search.scrolled {
+  &.search.scrolled,
+  &.user.scrolled,
+  &.video.scrolled {
     background: var(--color-bg-b0);
   }
-}
-
-.douyin-header.user {
-  position: fixed;
 }
 
 // .affix {

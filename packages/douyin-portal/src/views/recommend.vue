@@ -3,7 +3,6 @@ import { onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
 import SwiperControl from '@/components/swper/swiper-control.vue'
 import SwiperVideo from '@/components/swper/swiper-video.vue'
 import { videosCtrolStore } from '@/stores/videos-control'
-import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import apis from '@/api/apis'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
@@ -12,15 +11,20 @@ const loading = ref(true)
 const list = ref<IAwemeInfo[]>([])
 const control = videosCtrolStore()
 const message = ref('')
-const getData = async (count: number) => {
+const getData = async (count: number, refresh_index: number) => {
   try {
-    const { aweme_list } = await apis.getRecommendFeed(count)
-    console.log(aweme_list)
+    const { aweme_list, has_more } = await apis.getRecommendFeed(
+      count,
+      refresh_index
+    )
+    // console.log(aweme_list)
 
     loading.value = false
 
     list.value.push(...aweme_list)
     control.videosNum = list.value.length
+    if (!has_more) {
+    }
   } catch (err) {}
 }
 
@@ -28,7 +32,6 @@ onMounted(() => {
   //设置body为possition:fixed
   document.body.style.position = 'fixed'
   control.reset()
-  getData(10)
 })
 //组件销毁时，去除body的possition:fixed
 onBeforeUnmount(() => {
@@ -36,7 +39,9 @@ onBeforeUnmount(() => {
 })
 //获取路由地址
 const router = useRouter()
-watchEffect(() => {})
+watchEffect(() => {
+  getData(control.count, control.refresh_index)
+})
 </script>
 <template>
   <div class="recommend">
