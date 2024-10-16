@@ -4,9 +4,9 @@ export interface IUserPostRes {
   //状态码
   status_code: number
   // 最小游标
-  min_cursor: number
+  min_cursor: string
   // 最大游标
-  max_cursor: number
+  max_cursor: string
   // 是否还有更多
   has_more: boolean
   // 视频列表

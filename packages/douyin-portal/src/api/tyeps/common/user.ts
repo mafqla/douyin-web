@@ -5,17 +5,26 @@ export interface IUser {
   short_id: string
   // 用户昵称
   nickname: string
+  //用户性别
+  gender: number
   // 用户签名
   signature: string
-  // 大头像信息
-  avatar_larger: {
+  // 168x168尺寸头像信息
+  avatar_168x168: {
     uri: string
     url_list: string[]
     width: number
     height: number
   }
-  // 缩略头像信息
-  avatar_thumb: {
+  // 300x300尺寸头像信息
+  avatar_300x300: {
+    uri: string
+    url_list: string[]
+    width: number
+    height: number
+  }
+  // 大头像信息
+  avatar_larger: {
     uri: string
     url_list: string[]
     width: number
@@ -28,12 +37,33 @@ export interface IUser {
     width: number
     height: number
   }
+  // 缩略头像信息
+  avatar_thumb: {
+    uri: string
+    url_list: string[]
+    width: number
+    height: number
+  }
+  user_age: number
+  // 作品数量
+  aweme_count: number
+  aweme_count_correction_threshold: string
+  birthday: string
+  birthday_hide_level: number
+  can_set_item_cover: boolean
+  can_show_group_card: number
+  city: string
+  district: string
+  school_name: string
+  // 密友类型
+  close_friend_type: number
+  country: string
+  ip_location: string
   // 是否已验证
   is_verified: boolean
   // 关注状态
   follow_status: number
-  // 作品数量
-  aweme_count: number
+
   // 关注的数量
   following_count: number
   // 粉丝数量
@@ -104,6 +134,9 @@ export interface IUser {
   shield_comment_notice: number
   // 个人主页底部提示信息
   profile_mob_params: any
+  //显示喜欢列表
+  show_favorite_list: boolean
+  show_subscription: boolean
   // 头像链接列表
   avatar_schema_list: any
   // 问候信息
@@ -242,20 +275,7 @@ export interface IUser {
   ad_cover_url: string
   // 评论过滤状态
   comment_filter_status: number
-  // 168x168尺寸头像信息
-  avatar_168x168: {
-    uri: string
-    url_list: string[]
-    width: number
-    height: number
-  }
-  // 300x300尺寸头像信息
-  avatar_300x300: {
-    uri: string
-    url_list: string[]
-    width: number
-    height: number
-  }
+
   // 相关用户列表
   relative_users: any
   // 插入列表
@@ -343,8 +363,10 @@ export interface IUser {
   is_blocking_v2: boolean
   // 是否被屏蔽V2
   is_blocked_v2: boolean
-  // 密友类型
-  close_friend_type: number
+  // 关注粉丝列表提示
+  general_permission: {
+    following_follower_list_toast: number
+  }
   // 签名额外信息
   signature_extra: any
   // 最大粉丝数量
