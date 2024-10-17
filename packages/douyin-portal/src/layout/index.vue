@@ -93,12 +93,12 @@ watchEffect(() => {
   &.search {
     height: auto;
 
-    .bg {
-      display: none;
-    }
-    :deep(.aside .aside-bar) {
-      background: transparent !important;
-    }
+    // .bg {
+    //   display: none;
+    // }
+    // :deep(.aside .aside-bar) {
+    //   background: transparent !important;
+    // }
     // .affix {
     //   background: unset !important;
     // }
@@ -112,6 +112,9 @@ watchEffect(() => {
 
     &.search {
       background: unset;
+      :deep(.aside .aside-bar) {
+        background: transparent !important;
+      }
     }
   }
 }
@@ -187,7 +190,6 @@ watchEffect(() => {
   }
 
   &.search.scrolled,
-  &.user.scrolled,
   &.video.scrolled {
     background: var(--color-bg-b0);
   }

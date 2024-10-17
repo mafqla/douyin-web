@@ -40,7 +40,6 @@ const toggleModal = (event: any) => {
   // 添加路由参数
   router.push({
     query: {
-      modal_id: 142,
       ...router.currentRoute.value.query
     }
   })
@@ -59,20 +58,15 @@ const toggleModal = (event: any) => {
         @mouseleave="hideVideo"
       >
         <div class="video-item-img">
-          <img
-            v-lazy="aweme.video.cover.url_list[0]"
-            :alt="aweme.desc"
-            class=""
-          />
-          <miniPlayer
-            v-if="isVideoVisible"
-            class="video-player"
-            :url="aweme.video.play_addr.url_list"
-            @click="$emit('openModal')"
-          />
-
-          <!-- <div class="overlay" v-if="!isVideoVisible"></div> -->
+          <img v-lazy="aweme.video.cover.url_list[0]" :alt="aweme.desc" />
         </div>
+        <div class="overlay" v-if="!isVideoVisible"></div>
+        <miniPlayer
+          v-if="isVideoVisible"
+          class="video-player"
+          :url="aweme.video.play_addr.url_list"
+          @click="$emit('openModal')"
+        />
         <div class="video-item-tag">
           <div class="tag-content">
             <div class="video-item-tag-icon" v-if="aweme.media_type === 2">
@@ -128,23 +122,28 @@ const toggleModal = (event: any) => {
   width: calc(16.66% - 13.34px);
   display: inline-block;
   .video-item-link {
-    cursor: pointer;
-    display: inline-block;
     width: 100%;
-    color: inherit;
-    text-decoration: none;
+    cursor: pointer;
+    border-radius: 12px;
+    transition-property: transform, shadow, background-color;
+    transition-duration: 0.35s;
+    display: block;
+    position: relative;
+    overflow: hidden;
     .video-item-content {
-      // border-radius: 4px;
-      border-radius: 12px;
-      overflow: hidden;
-      position: relative;
-      transition-duration: 0.35s;
-
-      box-shadow: 0 0 0.5px 0 #f2f2f4;
-      box-shadow: 0 0 0.5px 0 rgba(242, 242, 243, 1);
+      box-shadow: 0 0 0.5px 0 var(--color-secondary-default);
+      border-radius: 4px;
       padding-bottom: 133%;
-      transition-delay: 0.5s;
       transition-property: border-radius;
+      transition-duration: 0.35s;
+      transition-delay: 0.5s;
+      position: relative;
+      overflow: hidden;
+
+      &:hover {
+        border-radius: 12px 12px 0 0;
+        overflow: visible;
+      }
 
       .video-item-img {
         width: 100%;
@@ -153,30 +152,36 @@ const toggleModal = (event: any) => {
         display: flex;
         align-items: center;
         justify-content: center;
-
+        overflow: hidden;
+        &:hover {
+          img {
+            transform: scale(1.05);
+            transition: all 0.3s ease-out;
+          }
+        }
         img {
           height: 100%;
           -o-object-fit: cover;
           object-fit: cover;
           width: 100%;
-          color: #161722;
+          // color: #161722;
           max-height: 100%;
           max-width: 100%;
           position: relative;
           transform: scale(1);
           transition: all 0.3s ease-in;
         }
-
-        .video-player {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          cursor: pointer;
-        }
       }
-
+      .video-player {
+        position: absolute;
+        top: 0px;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+      }
       .overlay {
         position: absolute;
         top: 0;
@@ -186,14 +191,6 @@ const toggleModal = (event: any) => {
         background-color: transparent;
       }
 
-      .video-item-img {
-        &:hover {
-          img {
-            transform: scale(1.05);
-            transition: all 0.3s ease-out;
-          }
-        }
-      }
       .video-item-tag {
         top: 8px;
         right: 8px;

@@ -68,9 +68,6 @@ const paddingStyle = computed(() => {
   background-image: var(--global-bg-img), var(--global-bg-img-thin);
   background-size: 0 0;
 
-  --global-bg-img: url(https://lf3-static.bytednsdoc.com/obj/eden-cn/medeh7bmupenuhd/dkw8.jpg);
-  --global-bg-img-thin: url(https://lf3-static.bytednsdoc.com/obj/eden-cn/medeh7bmupenuhd/dkt8.jpg);
-
   &.scroll {
     z-index: 3;
     background-color: var(--color-bg-b0);

@@ -18,11 +18,17 @@ watchEffect(() => {
 })
 
 const emit = defineEmits(['close'])
+const handleClose = (event: MouseEvent) => {
+  if ((event.target as HTMLElement).classList.contains('modal')) {
+    emit('close')
+  }
+}
 </script>
 <template>
   <Teleport to="body">
-    <div class="modal" v-if="open" @click="$emit('close')">
-      <slot />
+    <div class="modal" v-if="open" @click="handleClose">
+      <div><slot /></div>
+
       <div class="close-btn" v-if="isShowClose" @click="$emit('close')">
         <svg
           width="48"

@@ -5,6 +5,7 @@ import UserHeader from './user-header/index.vue'
 import UserTab from './user-tab/index.vue'
 import UserTabbar2 from './user-tabbar-2/index.vue'
 import UserPage from './user-page/index.vue'
+import userModal from './user-header/user-modal.vue'
 
 export {
   UserLike,
@@ -13,5 +14,6 @@ export {
   UserHeader,
   UserTabbar2,
   UserTab,
-  UserPage
+  UserPage,
+  userModal
 }

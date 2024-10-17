@@ -103,6 +103,21 @@ const toggleComments = (id: any) => {
 const openRelated = () => {
   control.isShowRelated = true
 }
+
+const thumbnail = computed(() => {
+  if (props.awemeInfo.video.big_thumbs) {
+    return {
+      img_urls: props.awemeInfo.video?.big_thumbs[0]?.img_urls,
+      pic_num: props.awemeInfo.video?.big_thumbs[0]?.img_num,
+      row: props.awemeInfo.video?.big_thumbs[0]?.img_x_len,
+      col: props.awemeInfo.video?.big_thumbs[0]?.img_y_len,
+      height: props.awemeInfo.video?.big_thumbs[0]?.img_y_size,
+      width: props.awemeInfo.video?.big_thumbs[0]?.img_x_size
+    }
+  } else {
+    return {}
+  }
+})
 </script>
 
 <template>
@@ -118,21 +133,14 @@ const openRelated = () => {
           :url="props.awemeInfo.video.play_addr.url_list"
           :options="playerOptions"
           :is-play="isPlay"
-          :thumbnail="{
-            img_urls: props.awemeInfo.video?.big_thumbs[0]?.img_urls,
-            pic_num: props.awemeInfo.video?.big_thumbs[0]?.img_num,
-            row: props.awemeInfo.video?.big_thumbs[0]?.img_x_len,
-            col: props.awemeInfo.video?.big_thumbs[0]?.img_y_len,
-            height: props.awemeInfo.video?.big_thumbs[0]?.img_y_size,
-            width: props.awemeInfo.video?.big_thumbs[0]?.img_x_size
-          }"
+          :thumbnail="thumbnail"
         >
           <video-info
             v-if="props.isShowInfo"
             :username="props.awemeInfo.author.nickname"
             :uploadTime="props.awemeInfo.create_time"
             :description="props.awemeInfo.desc"
-            :text-extra="props.awemeInfo.text_extra"
+            :text-extra="props.awemeInfo?.text_extra ?? []"
           />
           <video-action
             :aweme_id="props.awemeInfo.aweme_id"
@@ -158,7 +166,7 @@ const openRelated = () => {
       :user_sec_id="props.awemeInfo.author.sec_uid"
       :aweme_id="props.awemeInfo.aweme_id"
       :username="props.awemeInfo.author.nickname"
-      :author_id="props.awemeInfo.author_user_id"
+      :author_id="props.awemeInfo.author_user_id ?? ''"
       :relatedText="
         props.awemeInfo.suggest_words?.suggest_words[0]?.words[0]?.word ?? ''
       "

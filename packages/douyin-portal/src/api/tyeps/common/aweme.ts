@@ -19,7 +19,10 @@ export interface IAwemeInfo {
   // 是否置顶，这里为0可能表示未置顶
   is_top: 0 | 1 // 使用联合类型，表示它可以是0或1
   share_info: IShareInfo // 分享信息
-
+  // 直播
+  cell_room: {
+    rawdata: string
+  }
   // 视频标签，用于分类或标记视频内容，当前为null表示没有标签或数据未提供
   video_labels: null
   // 视频类型，当前为0，具体含义需根据平台文档解释，可能表示视频的某种特定类型

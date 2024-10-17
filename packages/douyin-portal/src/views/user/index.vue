@@ -56,11 +56,18 @@ onBeforeUnmount(() => {
   document.title = '抖音-记录美好生活'
 })
 
-const tabs = ['posts', 'favorites']
 
-const activeTab = ref('posts')
+const router = useRouter()
+const tabs = ['posts', 'like', 'favorite_collection', 'record', 'watch_later']
+const activeTab = ref((route.query.showTab as string) || 'posts')
 const handleTabChange = (tab: string) => {
   activeTab.value = tab
+  //添加路由
+  router.replace({
+    query: {
+      showTab: tab
+    }
+  })
 }
 </script>
 <template>
@@ -120,7 +127,7 @@ const handleTabChange = (tab: string) => {
                   </div>
                 </h2>
               </template>
-              <template v-slot:favorites>
+              <template v-slot:like>
                 <span class="tabs-text">喜欢</span>
                 <div class="user-lock">
                   <svg-icon icon="lock" class="icon" />

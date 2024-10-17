@@ -50,29 +50,49 @@ watchEffect(() => {
 </script>
 <template>
   <ul class="scroll-list">
-    <li class="scroll-item" v-for="({ aweme_info, sub_card_list }, index) in searchResult" :key="aweme_info?.aweme_id ??
-      sub_card_list?.[0]?.card_info.attached_info.aweme_list[0].aweme_id
-      ">
+    <li
+      class="scroll-item"
+      v-for="({ aweme_info, sub_card_list }, index) in searchResult"
+      :key="
+        aweme_info?.aweme_id ??
+        sub_card_list?.[0]?.card_info.attached_info.aweme_list[0].aweme_id
+      "
+    >
       <div class="search-result-card">
         <template v-if="aweme_info">
           <div class="search-result-head">
-            <a :href="`/user/${aweme_info?.author?.sec_uid ||
-              sub_card_list?.[0]?.card_info.attached_info.aweme_list[0]
-                ?.author.sec_uid
-              }`" target="_blank" rel="noreferrer">
-              <dy-avatar :src="aweme_info?.author?.avatar_thumb?.url_list?.[0] ||
+            <a
+              :href="`/user/${
+                aweme_info?.author?.sec_uid ||
                 sub_card_list?.[0]?.card_info.attached_info.aweme_list[0]
-                  ?.author.avatar_thumb.url_list[0] ||
-                ''
-                " size="small" />
+                  ?.author.sec_uid
+              }`"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <dy-avatar
+                :src="
+                  aweme_info?.author?.avatar_thumb?.url_list?.[0] ||
+                  sub_card_list?.[0]?.card_info.attached_info.aweme_list[0]
+                    ?.author.avatar_thumb.url_list[0] ||
+                  ''
+                "
+                size="small"
+              />
             </a>
 
             <div class="search-result-head-info">
               <div class="search-result-head-content">
-                <a class="user-link" :href="`/user/${aweme_info?.author?.sec_uid ||
-                  sub_card_list?.[0]?.card_info.attached_info.aweme_list[0]
-                    ?.author.sec_uid
-                  }`" target="_blank" rel="noreferrer">
+                <a
+                  class="user-link"
+                  :href="`/user/${
+                    aweme_info?.author?.sec_uid ||
+                    sub_card_list?.[0]?.card_info.attached_info.aweme_list[0]
+                      ?.author.sec_uid
+                  }`"
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   <p class="search-result-head-info-name">
                     {{
                       aweme_info?.author?.nickname ||
@@ -87,9 +107,9 @@ watchEffect(() => {
                   {{
                     formatTime(
                       aweme_info?.create_time ||
-                      sub_card_list?.[0]?.card_info.attached_info
-                        .aweme_list[0].create_time ||
-                      ''
+                        sub_card_list?.[0]?.card_info.attached_info
+                          .aweme_list[0].create_time ||
+                        ''
                     )
                   }}
                 </p>
@@ -97,70 +117,63 @@ watchEffect(() => {
             </div>
           </div>
 
-          <ellipsis-expand class="video-info-desc search" style="
+          <ellipsis-expand
+            class="video-info-desc search"
+            style="
               --lineClamp: 2;
               --lineHeight: 26px;
               --maxHeight: 48px;
               margin: 16px 0;
-            " :description="aweme_info?.desc ||
+            "
+            :description="
+              aweme_info?.desc ||
               sub_card_list?.[0]?.card_info.attached_info.aweme_list[0].desc ||
               ''
-              " />
+            "
+            :text-extra="
+              aweme_info?.text_extra ||
+              sub_card_list?.[0]?.card_info.attached_info.aweme_list[0]
+                .text_extra ||
+              []
+            "
+          />
         </template>
         <template v-if="sub_card_list">
-          <search-hotspot :sentence="sub_card_list?.[0]?.card_info.hotspot_info.sentence" :sentence_id="sub_card_list?.[0]?.card_info.hotspot_info.sentence_id
-            " :hot_value="sub_card_list?.[0]?.card_info.hotspot_info.hot_value" :update_time="sub_card_list?.[0]?.card_info.hotspot_info.update_time
-              " />
+          <search-hotspot
+            :sentence="sub_card_list?.[0]?.card_info.hotspot_info.sentence"
+            :sentence_id="
+              sub_card_list?.[0]?.card_info.hotspot_info.sentence_id
+            "
+            :hot_value="sub_card_list?.[0]?.card_info.hotspot_info.hot_value"
+            :update_time="
+              sub_card_list?.[0]?.card_info.hotspot_info.update_time
+            "
+          />
         </template>
         <div class="scroll-item-content" ref="videoRefs">
           <div class="scroll-item-player">
             <template v-if="aweme_info">
-              <swiper-player :id="Number(aweme_info.aweme_id)" :userId="Number(aweme_info.author.uid)"
-                :username="aweme_info.author.nickname" :uploadTime="aweme_info.create_time"
-                :description="aweme_info?.desc" :poster="aweme_info?.video?.cover.url_list[0] ?? ''"
-                :url="aweme_info?.video?.play_addr?.url_list ?? ''" :img="aweme_info?.video?.cover.url_list[0] ?? ''"
-                :dianzan="aweme_info.statistics.digg_count" :comment="aweme_info.statistics.comment_count"
-                :shoucang="aweme_info.statistics.share_count" :isLike="Boolean(aweme_info.user_digged)"
-                :isCollect="Boolean(aweme_info.collect_stat)" :isShowAvatar="false" :isPlay="isActiveIndex(index)"
-                :isShowInfo="false" />
+              <swiper-player
+                :aweme-info="aweme_info"
+                :isShowAvatar="false"
+                :isPlay="isActiveIndex(index)"
+                :isShowInfo="false"
+              />
             </template>
             <template v-if="sub_card_list">
-              <swiper-player :id="Number(
-                sub_card_list[0].card_info.attached_info.aweme_list[0]
-                  .aweme_id
-              )
-                " :userId="Number(
+              <swiper-player
+                :aweme-info="
                   sub_card_list[0].card_info.attached_info.aweme_list[0]
-                    .author.uid
-                )
-                  " :username="sub_card_list[0].card_info.attached_info.aweme_list[0].author
-                    .nickname
-                  " :uploadTime="sub_card_list[0].card_info.attached_info.aweme_list[0]
-                    .create_time
-                  " :description="sub_card_list[0].card_info.attached_info.aweme_list[0]?.desc
-                  " :poster="sub_card_list[0].card_info.attached_info.aweme_list[0]?.video
-                    ?.cover.url_list[0] ?? ''
-                  " :url="sub_card_list[0].card_info.attached_info.aweme_list[0]?.video
-                    ?.play_addr?.url_list ?? ''
-                  " :img="sub_card_list?.[0]?.card_info.attached_info.aweme_list[0]
-                    ?.author.avatar_thumb.url_list[0] ?? ''
-                  " :dianzan="sub_card_list[0].card_info.attached_info.aweme_list[0]
-                    .statistics.digg_count
-                  " :comment="sub_card_list[0].card_info.attached_info.aweme_list[0]
-                    .statistics.comment_count
-                  " :shoucang="sub_card_list[0].card_info.attached_info.aweme_list[0]
-                    .statistics.share_count
-                  " :isLike="Boolean(
-                  sub_card_list[0].card_info.attached_info.aweme_list[0]
-                    .user_digged
-                )
-                  " :isCollect="Boolean(
-                  sub_card_list[0].card_info.attached_info.aweme_list[0]
-                    .collect_stat
-                )
-                  " :isShowAvatar="true" :isPlay="isActiveIndex(index)" :isShowInfo="true">
-                <searchSideCard :aweme_list="sub_card_list?.[0]?.card_info.attached_info.aweme_list
-                  " />
+                "
+                :isShowAvatar="true"
+                :isPlay="isActiveIndex(index)"
+                :isShowInfo="true"
+              >
+                <searchSideCard
+                  :aweme_list="
+                    sub_card_list?.[0]?.card_info.attached_info.aweme_list
+                  "
+                />
               </swiper-player>
             </template>
           </div>
@@ -168,8 +181,13 @@ watchEffect(() => {
 
         <template v-if="sub_card_list">
           <template v-for="item in sub_card_list?.[1]?.card_info.baikes">
-            <search-baike v-if="sub_card_list?.[1]?.type === 999" :wiki_doc_id="item.wiki_doc_id" :title="item.title"
-              :head_image_thin="item.head_image_thin" :abstract="item.abstract" />
+            <search-baike
+              v-if="sub_card_list?.[1]?.type === 999"
+              :wiki_doc_id="item.wiki_doc_id"
+              :title="item.title"
+              :head_image_thin="item.head_image_thin"
+              :abstract="item.abstract"
+            />
           </template>
         </template>
       </div>

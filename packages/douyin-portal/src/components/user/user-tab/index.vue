@@ -46,9 +46,9 @@ const paddingStyle = computed(() => {
       offsetParentWidth -
       (parentElement.value.offsetLeft + parentElement.value.offsetWidth)
 
-    console.log(
-      `padding: 0px ${elementRightSpace}px 0px${elementOffsetLeft}px;`
-    )
+    // console.log(
+    //   `padding: 0px ${elementRightSpace}px 0px ${elementOffsetLeft}px;`
+    // )
     // 返回样式字符串
     return `padding: 0px ${elementRightSpace}px 0px ${elementOffsetLeft}px;`
   }
@@ -86,9 +86,15 @@ const handleTabChange = (tab: string) => {
 </template>
 
 <style lang="scss" scoped>
+@media (max-width: 1240px) {
+  .user-tabbar {
+    &.scroll {
+      background-image: var(--global-bg-img-thin),
+        linear-gradient(var(--color-bg-b0), var(--color-bg-b0)) !important;
+    }
+  }
+}
 .user-tabbar {
-  --global-bg-img: url(https://lf3-static.bytednsdoc.com/obj/eden-cn/medeh7bmupenuhd/dkw8.jpg);
-  --global-bg-img-thin: url(https://lf3-static.bytednsdoc.com/obj/eden-cn/medeh7bmupenuhd/dkt8.jpg);
   background-image: var(--global-bg-img), var(--global-bg-img-thin);
   background-size: 0 0;
   background-color: var(--color-bg-b0);

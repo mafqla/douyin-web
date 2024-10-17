@@ -49,26 +49,6 @@ defineProps<{
     opacity: 1 !important;
   }
 
-  .header-down-bg-1 {
-    background-image: linear-gradient(
-      180deg,
-      rgba(29, 29, 36, 0),
-      #161823
-    ) !important;
-    top: auto !important;
-  }
-
-  .header-down-bg-2 {
-    background-image: linear-gradient(
-      0deg,
-      rgba(25, 26, 36, 0) 27.08%,
-      #161823 104.06%
-    ) !important;
-  }
-
-  .header-down-bg-3 {
-    background-image: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.5));
-  }
   .user-newui {
     --btn-bg: rgba(255, 255, 255, 0.35);
     --btn-color: #fff;
@@ -84,7 +64,37 @@ defineProps<{
       #161722 17.15%
     );
   }
+  .header-down-bg {
+    background-image: linear-gradient(
+      89deg,
+      rgba(26, 28, 39, 0) 230px,
+      hsl(205deg 40% 15%) calc(100% - 672px),
+      rgba(32, 32, 53, 0.35) 74.08%,
+      rgba(33, 33, 57, 0.2) 99.53%
+    ) !important;
+  }
+  .header-down-bg-1 {
+    background-image: linear-gradient(
+      rgba(29, 29, 36, 0) 0%,
+      #161823 100%
+    ) !important;
+    top: auto !important;
+  }
+  .header-down-bg-2 {
+    background-image: linear-gradient(
+      #161823 -4.05999%,
+      rgba(25, 26, 36, 0) 72.92%
+    ) !important;
+  }
+  .header-down-bg-3 {
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.5) 100%
+    ) !important;
+  }
 }
+
 :root .user-newui {
   --btn-bg: rgba(22, 24, 35, 0.05);
   --btn-color: rgba(22, 24, 35, 0.75);
@@ -100,7 +110,7 @@ defineProps<{
 .user-detail-content {
   width: 100%;
   // max-width: 1208px;
-  min-width: 682px;
+  min-width: 1024px;
   min-height: calc(100vh - 60px);
   position: relative;
   padding-top: var(--header-height);
@@ -117,6 +127,11 @@ defineProps<{
     position: relative;
     width: 100%;
 
+    @media (max-width: 1024px) {
+      .header-img-content {
+        width: calc(100% - 280px);
+      }
+    }
     .header-img-content {
       height: 281px;
       position: absolute;
@@ -129,12 +144,71 @@ defineProps<{
         background-size: cover;
         height: 377px;
         margin-top: -48px;
-        opacity: 0.15;
+        opacity: 1;
         width: 672px;
       }
     }
 
     .header-down-bg {
+      width: 100%;
+      height: 100%;
+      background-image: linear-gradient(
+        89deg,
+        rgba(var(--neutral-50), 0) calc(50% - 474px),
+        rgb(var(--neutral-50)) calc(100% - 672px),
+        rgba(var(--neutral-50), 0) 73.58%,
+        rgba(204, 204, 235, 0.2) 99.53%
+      );
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+    .header-down-bg-1 {
+      height: 126px;
+      width: calc(50% + 494px);
+      background-image: linear-gradient(
+        180deg,
+        rgba(var(--neutral-50), 0) 0%,
+        rgb(var(--neutral-50)) 100%
+      );
+      position: absolute;
+      top: 110px;
+      bottom: -48px;
+      right: 0;
+    }
+
+    .header-down-bg-2 {
+      height: 244px;
+      width: calc(50% + 494px);
+      background-image: linear-gradient(
+        0deg,
+        rgba(var(--neutral-50), 0) 0%,
+        rgb(var(--neutral-50)) 100%
+      );
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+    @media (max-width: 1024px) {
+      .header-down-bg {
+        background-image: linear-gradient(
+          89deg,
+          rgba(var(--neutral-50), 0) 230px,
+          rgb(var(--neutral-50)) 280px,
+          rgba(var(--neutral-50), 0.2) 73.58%,
+          rgba(204, 204, 235, 0.2) 99.53%
+        );
+      }
+    }
+    @media (max-width: 1475px) {
+      .header-down-bg-1,
+      .header-down-bg-2 {
+        width: calc(100% - 230px);
+      }
+    }
+    :root[dark] .header-down-bg {
       background-image: linear-gradient(
         89deg,
         rgba(26, 28, 39, 0) 230px,
@@ -142,42 +216,19 @@ defineProps<{
         rgba(32, 32, 53, 0.35) 74.08%,
         rgba(33, 33, 57, 0.2) 99.53%
       );
-      height: 100%;
-      position: absolute;
-      right: 0;
-      top: 0;
-      width: 100%;
     }
 
-    .header-down-bg-1 {
-      background-image: linear-gradient(180deg, hsla(0, 0%, 100%, 0), #fff);
-      bottom: -48px;
-      height: 126px;
-      top: 110px;
-    }
-
-    .header-down-bg-2 {
-      background-image: linear-gradient(0deg, hsla(0, 0%, 100%, 0), #fff);
-      height: 233px;
-      top: 0;
-    }
-
-    .header-down-bg-1,
-    .header-down-bg-2 {
-      position: absolute;
-      right: 0;
-      width: calc(50% + 494px);
-    }
-
-    .header-down-3 {
+    .header-down-bg-3 {
+      width: 281px;
+      height: 240px;
       background-image: linear-gradient(
         90deg,
-        hsla(0, 0%, 100%, 0),
-        hsla(0, 0%, 100%, 0.3)
+        rgba(var(--neutral-50), 0) 0%,
+        rgba(var(--neutral-50), 0.3) 100%
       );
-      height: 233px;
+      position: absolute;
+      top: 0;
       right: 0;
-      width: 281px;
     }
   }
 }
@@ -203,37 +254,4 @@ html[dark] .user-container {
     max-width: none;
   }
 }
-
-// @media (max-width: 1475px) {
-//   .user-detail {
-//     .user-detail-content.max {
-//       max-width: none;
-//       width: calc(100% - 120px);
-//     }
-//   }
-// }
-
-// @media (max-width: 1328px) {
-//   .user-detail {
-//     .user-detail-content {
-//       max-width: none;
-//       width: calc(100% - 120px);
-//     }
-//   }
-
-//   .header-down-bg-1,
-//   .header-down-bg-2 {
-//     width: calc(100% - 230px) !important;
-//   }
-// }
-
-// @media (min-width: 1920px) {
-//   .user-detail {
-//     .user-detail-content {
-//       &::before {
-//         background-size: 100% 100%;
-//       }
-//     }
-//   }
-// }
 </style>

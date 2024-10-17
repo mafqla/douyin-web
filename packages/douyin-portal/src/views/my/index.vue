@@ -5,7 +5,8 @@ import {
   UserPost,
   UserHeader,
   UserPage,
-  UserTab
+  UserTab,
+  userModal
 } from '@/components/user'
 
 // 滚动监听
@@ -152,6 +153,24 @@ const handleTabChange = (tab: string) => {
               <span class="user-tabs-count">
                 {{ store.userInfo.user.favoriting_count }}
               </span>
+            </template>
+            <template v-slot:favorite_collection>
+              <span class="tabs-text">收藏</span>
+              <div class="user-lock">
+                <svg-icon icon="lock" class="icon" />
+              </div>
+            </template>
+            <template v-slot:record>
+              <span class="tabs-text">观看记录</span>
+              <div class="user-lock">
+                <svg-icon icon="lock" class="icon" />
+              </div>
+            </template>
+            <template v-slot:watch_later>
+              <span class="tabs-text">稍后再看</span>
+              <div class="user-lock">
+                <svg-icon icon="lock" class="icon" />
+              </div>
             </template>
             <template v-slot:tabs-item-left> </template>
             <template v-slot:taba-content>

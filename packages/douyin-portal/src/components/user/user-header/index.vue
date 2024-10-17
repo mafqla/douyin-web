@@ -99,7 +99,10 @@ const openConnectionsPopup = (name: string) => {
           </div>
         </div>
         <modal :open="isOpenConnect" @close="isOpenConnect = false">
-          <user-connections-popup :connect="connect" />
+          <user-connections-popup
+            :connect="connect"
+            @close="isOpenConnect = false"
+          />
         </modal>
         <div class="user-item">
           <div class="user-info-text">获赞</div>

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { AuthEditUserInfo } from '@/service/auth/auth'
-import { userStore } from '@/stores/user'
 import { reactive, ref, watchEffect } from 'vue'
 
 const props = defineProps({
@@ -51,13 +49,6 @@ const saveProfile = async () => {
   params.signature = props.userInfo.signature
   console.log(params)
   //调用接口
-  try {
-    await AuthEditUserInfo(params)
-    await userStore().getUserInfo()
-  } catch (e) {
-    console.log(e)
-  }
-
   //关闭
   emit('close')
 }
@@ -91,44 +82,71 @@ const uploadAvatar = () => {
 <template>
   <Teleport to="body">
     <div class="user-modal" v-if="open">
-      <input type="file" accept=".png,.webp,.jpeg,.pjpeg,.bmp,.jpg" style="display: none" ref="avatarInput" />
+      <input
+        type="file"
+        accept=".png,.webp,.jpeg,.pjpeg,.bmp,.jpg"
+        style="display: none"
+        ref="avatarInput"
+      />
       <div class="content">
         <div class="head">
           <span class="title">编辑资料</span>
           <span class="close" @click="cancelEdit">
-            <svg width="36" height="36" fill="none" xmlns="http://www.w3.org/2000/svg" class="" viewBox="0 0 36 36">
+            <svg
+              width="36"
+              height="36"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              class=""
+              viewBox="0 0 36 36"
+            >
               <path
                 d="M24.601 24.6a1.362 1.362 0 01-1.927 0L18.5 20.427l-4.174 4.175a1.362 1.362 0 01-1.927-1.927l4.174-4.174-4.174-4.175a1.362 1.362 0 011.927-1.926l4.174 4.174 4.174-4.174a1.362 1.362 0 111.927 1.927L20.427 18.5l4.174 4.174a1.362 1.362 0 010 1.927z"
-                fill="#fff" fill-opacity="0.8"></path>
+                fill="#fff"
+                fill-opacity="0.8"
+              ></path>
             </svg>
           </span>
         </div>
-        <div class="avatar" @click="uploadAvatar">
+        <div class="avatar">
           <div class="upload">
-            <img :src="userInfo.avatar" alt="avatar" />
-            <span class="upload-icon"></span>
+            <img :src="userInfo.avatar" :alt="userInfo.nickname" />
+            <span class="upload-icon" @click.stop="uploadAvatar"></span>
           </div>
           <div class="upload-text">点击修改头像</div>
         </div>
         <div class="username">
           <div class="title">名字</div>
           <div class="input-box">
-            <input type="text" placeholder="记得填写呢称" maxlength="20" v-model="userInfo.username" />
+            <input
+              type="text"
+              placeholder="记得填写呢称"
+              maxlength="20"
+              v-model="userInfo.username"
+            />
             <span class="size">{{ usernameLength }}/20</span>
           </div>
         </div>
         <div class="signature">
           <div class="title">简介</div>
           <div class="input-box">
-            <el-input v-model="userInfo.signature" placeholder="介绍一下自己" resize="none" type="textarea" />
+            <el-input
+              v-model="userInfo.signature"
+              placeholder="介绍一下自己"
+              resize="none"
+              type="textarea"
+            />
           </div>
         </div>
         <div class="btn-content">
           <button class="cancel common" @click="cancelEdit">取消</button>
-          <button class="save common" :disabled="!isEdited" @click="saveProfile">
+          <button
+            class="save common"
+            :disabled="!isEdited"
+            @click="saveProfile"
+          >
             保存
           </button>
-
         </div>
       </div>
     </div>
@@ -208,7 +226,7 @@ const uploadAvatar = () => {
         background-repeat: no-repeat;
         background-size: 32px 32px;
         cursor: pointer;
-        display: block;
+        // display: block;
         height: 100%;
         left: 0;
         position: absolute;

@@ -5,6 +5,7 @@ import swiperPlayer from '../video-player/swiper-player.vue'
 import { useElementSize, useThrottleFn } from '@vueuse/core'
 import { useKeyboardNavigation } from '@/hooks'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
+import { json } from 'stream/consumers'
 
 defineProps({
   videoList: {
@@ -42,7 +43,6 @@ watchEffect(() => {
 })
 
 const swiperPlayerRef = ref()
-
 
 const debouncedNext = useThrottleFn(() => {
   if (!videosCtrolStore().stopScroll) {
@@ -93,12 +93,15 @@ useKeyboardNavigation()
           'margin-bottom': '12px'
         }"
       >
-        <template v-if="isShowItem(index)">
+        <template v-if="isShowItem(index) && item?.media_type === 4">
           <swiper-player
             ref="swiperPlayerRef"
             :aweme-info="item"
             :isPlay="isActiveIndex(index)"
           />
+        </template>
+        <template v-if="isShowItem(index) && item?.aweme_type === 101">
+          {{item.cell_room.rawdata}}
         </template>
       </div>
     </div>

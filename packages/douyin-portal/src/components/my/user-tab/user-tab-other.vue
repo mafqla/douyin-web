@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watchEffect, type Ref, reactive, onMounted } from 'vue'
-import { UserCollect, UserHistory, UserLike, UserPost } from '.'
 import { ElTabPane, ElTabs, type TabsPaneContext } from 'element-plus'
 import { useRoute, useRouter } from 'vue-router'
 import { userStore } from '@/stores/user'
