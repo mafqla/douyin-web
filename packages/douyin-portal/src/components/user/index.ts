@@ -6,6 +6,8 @@ import UserTab from './user-tab/index.vue'
 import UserTabbar2 from './user-tabbar-2/index.vue'
 import UserPage from './user-page/index.vue'
 import userModal from './user-header/user-modal.vue'
+import UserRecord from './user-record/index.vue'
+import UserCollection from './user-collection/index.vue'
 
 export {
   UserLike,
@@ -15,5 +17,7 @@ export {
   UserTabbar2,
   UserTab,
   UserPage,
-  userModal
+  userModal,
+  UserRecord,
+  UserCollection
 }

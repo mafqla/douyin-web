@@ -1,5 +1,9 @@
 import request from './request'
 import type { IMixInfo } from './tyeps/common/mix'
+import type {
+  IFollowerParams,
+  IFollowingParams
+} from './tyeps/request_params/followParams'
 import type { searchParams } from './tyeps/request_params/searchParams'
 import type { IuserLikeParams } from './tyeps/request_params/userLikeParams'
 import type { IuserPostParams } from './tyeps/request_params/userPostParams'
@@ -10,16 +14,20 @@ import type {
 import type { FooterLinksRes } from './tyeps/request_response/footerLinksRes'
 import type { IhomeFeedRes } from './tyeps/request_response/homeFeedRes'
 import type { HotSearchRes } from './tyeps/request_response/hotSearchRes'
+import type { ILiveRecordRes } from './tyeps/request_response/liveRecordRes'
 import type { IrecommendFeedRes } from './tyeps/request_response/recommendFeed'
 import type { IRelatedVideoRes } from './tyeps/request_response/relatedVideoRes'
 import type {
   SearchResponse,
   searchSuggestResponse
 } from './tyeps/request_response/searchResponse'
+import type { IUserCollectVideo } from './tyeps/request_response/userCollectVideoRes'
 import type { IUserDetailRes } from './tyeps/request_response/userDetailRes'
 import type { IUserLikeRes } from './tyeps/request_response/userLikeRes'
 import type { IUserPostRes } from './tyeps/request_response/userPostRes'
 import type { IVideoDetailRes } from './tyeps/request_response/videoDetailRes'
+import type { IVideoRecordRes } from './tyeps/request_response/videoRecordRes'
+import type { IVsRecordRes } from './tyeps/request_response/vsRecord'
 
 import urls from './urls'
 
@@ -175,6 +183,24 @@ export default {
   },
 
   /**
+   * @description 获取用户关注列表
+   * @return {Promise<IUserPostRes>} 用户关注列表
+   */
+  getFollowingList: (params: IFollowingParams): Promise<IUserPostRes> => {
+    return request.get(urls.user_follow, {
+      params
+    })
+  },
+  /**
+   * @description 获取用户粉丝列表
+   * @return {Promise<IUserPostRes>} 用户粉丝列表
+   */
+  getFollowerList: (params: IFollowerParams): Promise<IUserPostRes> => {
+    return request.get(urls.user_follow, {
+      params
+    })
+  },
+  /**
    * @description 获取用户视频列表
    * @returns {Promise<IUserPostRes>} 用户视频列表
    */
@@ -192,13 +218,29 @@ export default {
       params
     })
   },
-
+  /**
+   * @description 获取用户收藏的视频列表
+   * @param {Number} count 数量
+   * @param {String} cursor 分页游标
+   * @return {Promise<IUserCollectVideo>} 用户收藏的视频列表
+   */
+  getUserCollectVideo: (
+    count: number,
+    cursor: string
+  ): Promise<IUserCollectVideo> => {
+    return request.get(urls.user_collect_video, {
+      params: {
+        count,
+        cursor
+      }
+    })
+  },
   /**
    * @description 获取用户合集列表
    * @param {String} sec_user_id 用户id
    * @param {Number} count 数量
    * @param {String} cursor 分页游标
-   * @return {Promise<IUserPostRes>} 用户合集列表
+   * @return {Promise<IMixInfo>} 用户合集列表
    */
   getUserMix: (
     sec_user_id: string,
@@ -210,6 +252,49 @@ export default {
         sec_user_id,
         count,
         cursor
+      }
+    })
+  },
+  /**
+   * @description 获取用户观看视频的记录
+   * @param {Number} count 数量 20
+   * @param {Number} max_cursor 分页游标
+   * @return {Promise<IVideoRecordRes>} 用户观看视频的记录
+   */
+  getUserRecordVideo: (
+    count: number,
+    max_cursor: number
+  ): Promise<IVideoRecordRes> => {
+    return request.get(urls.user_record_video, {
+      params: {
+        count,
+        max_cursor
+      }
+    })
+  },
+  /**
+   * @description 获取用户观看影视综的记录
+   * @param {Number} count 数量 20
+   * @param {Number} cursor 分页游标
+   * @return {Promise<IVsRecordRes>} 用户观看影视的记录
+   */
+  getUserRecordVs: (count: number, cursor: number): Promise<IVsRecordRes> => {
+    return request.get(urls.user_record_vs, {
+      params: {
+        count,
+        cursor
+      }
+    })
+  },
+  /**
+   * @description 获取用户观看直播的记录
+   * @param {String} max_time 时间戳
+   * @return {Promise<ILiveRecordRes>} 用户观看直播的记录
+   */
+  getUserRecordLive: (max_time: number): Promise<ILiveRecordRes> => {
+    return request.get(urls.user_record_live, {
+      params: {
+        max_time
       }
     })
   }

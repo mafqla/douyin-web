@@ -69,7 +69,10 @@ const toggleModal = (event: any) => {
         />
         <div class="video-item-tag">
           <div class="tag-content">
-            <div class="video-item-tag-icon" v-if="aweme.media_type === 2">
+            <div
+              class="video-item-tag-icon"
+              v-if="aweme.media_type === 2 && !isVideoVisible"
+            >
               <svg
                 width="12"
                 height="12"
@@ -91,6 +94,26 @@ const toggleModal = (event: any) => {
           </div>
         </div>
         <div class="video-item-block"></div>
+        <div
+          class="video-item-stats-tag is-top"
+          v-if="aweme.is_top && !isVideoVisible"
+        >
+          <div class="user-video-tag">
+            <div class="top-tag">
+              <div class="top-tag-text">置顶</div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="video-item-stats-tag is-top"
+          v-if="aweme.hot_list && !isVideoVisible"
+        >
+          <div class="user-video-tag">
+            <div class="top-tag is-hot">
+              <div class="top-tag-text">{{ aweme.hot_list.header }}</div>
+            </div>
+          </div>
+        </div>
         <span class="author-card-user-video-like" v-if="!isVideoVisible">
           <svg
             width="18"
@@ -124,7 +147,7 @@ const toggleModal = (event: any) => {
   .video-item-link {
     width: 100%;
     cursor: pointer;
-    border-radius: 12px;
+    border-radius: 12px 12px 0 0;
     transition-property: transform, shadow, background-color;
     transition-duration: 0.35s;
     display: block;
@@ -191,6 +214,56 @@ const toggleModal = (event: any) => {
         background-color: transparent;
       }
 
+      .video-item-stats-tag {
+        position: absolute;
+        display: flex;
+        flex-wrap: wrap;
+
+        &.is-top {
+          top: 8px;
+          left: 8px;
+        }
+
+        .user-video-tag {
+          margin-right: 6px;
+          line-height: 16px;
+
+          .top-tag {
+            background: rgb(250, 206, 21);
+            color: rgb(22, 24, 35);
+            height: 20px;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 20px;
+            display: inline-flex;
+            border-radius: 4px;
+            padding: 0px 4px;
+            box-sizing: border-box;
+            user-select: none;
+            vertical-align: bottom;
+            position: relative;
+            white-space: nowrap;
+            overflow: hidden;
+            &.is-hot {
+              background: linear-gradient(
+                268.09deg,
+                rgb(240, 27, 91) 6.38%,
+                rgb(255, 90, 68) 59.9%,
+                rgb(255, 145, 19) 91.68%
+              );
+              color: #fff;
+            }
+            .top-tag-text {
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              overflow: hidden;
+              flex: 1 1 0%;
+            }
+          }
+        }
+      }
       .video-item-tag {
         top: 8px;
         right: 8px;

@@ -1,13 +1,4 @@
-import type { IAuthor } from '../common/author'
-import type { IAwemeInfo, IShareInfo, ITextExtra } from '../common/aweme'
-import type { IMusic } from '../common/music'
-import type { ISuggestWords } from '../common/suggest_words'
-import type { IVideo } from '../common/video'
-import type {
-  IAwemeControl,
-  IVideoControl,
-  IVideoTag
-} from '../common/video-control'
+import type { IAwemeInfo } from '../common/aweme'
 
 export interface IVideoDetailRes {
   /**

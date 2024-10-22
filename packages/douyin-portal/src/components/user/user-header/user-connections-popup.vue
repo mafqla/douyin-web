@@ -2,7 +2,11 @@
 import { ref, watchEffect } from 'vue'
 
 const props = defineProps({
-  connect: String
+  connect: String,
+  user_id: Number,
+  user_sec_id: String,
+  followers_count: Number,
+  fans_count: Number
 })
 const connect = ref(props.connect)
 const emit = defineEmits(['close'])
@@ -23,7 +27,7 @@ const handleTab = (type: string) => {
   connect.value = type
 }
 watchEffect(() => {
-  console.log(sort.value)
+  // console.log(sort.value)
   if (connect.value === 'attent') {
     margin.value = 24
   } else {
@@ -37,12 +41,14 @@ const handleAttention = async (id: number) => {
   // await attention(id)
   isAttention.value = !isAttention.value
 }
-
 // 是否显示
 const isPopup = ref(false)
 const handlePopup = () => {
   isPopup.value = !isPopup.value
 }
+
+
+// 
 </script>
 <template>
   <div class="user-connections-popup">

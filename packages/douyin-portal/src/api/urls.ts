@@ -23,13 +23,16 @@ export default {
   user_mix_detail: `/aweme/v1/web/mix/aweme/`,
   //用户的点赞列表
   user_like: `/aweme/v1/web/aweme/favorite/`,
-  //用户的收藏列表
-  user_collect: `/aweme/v1/web/aweme/listcollection/`,
+  //用户的收藏视频列表
+  user_collect_video: `/aweme/v1/web/aweme/listcollection/`,
   //用户的关注列表
-  user_follow: `/aweme/v1/web/follow/list/`,
+  user_follow: `/aweme/v1/web/user/following/list/`,
   //用户的粉丝列表
-  user_fans: `/aweme/v1/web/fans/list/`,
-
+  user_fans: `/aweme/v1/web/user/follower/list/`,
+  //用户观看记录
+  user_record_video: `/aweme/v1/web/history/read/`,
+  user_record_vs: `/aweme/v1/web/lvideo/query/history/`,
+  user_record_live: `/aweme/v1/web/webcast/feed/`,
   //评论
   comment_list: `/aweme/v1/web/comment/list/`,
   //评论回复

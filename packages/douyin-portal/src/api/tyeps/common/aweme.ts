@@ -76,7 +76,7 @@ export interface IAwemeInfo {
   impression_data: ImpressionData // 印象数据
   social_tag_list: null // 社交标签列表，具体含义未知
   suggest_words: ISuggestWords // 搜索推荐词
-
+  hot_list: IHotSpotItem // 热搜列表
   original_images: null // 原始图片信息，具体含义未知
   img_bitrate: null // 图片比特率，具体含义未知
   video_tag: null // 视频标签，具体含义未知
@@ -184,6 +184,24 @@ interface ImpressionData {
   similar_id_list_b: number[]
   // 视频组标识符列表C，可能用于其他推荐逻辑，当前为null表示没有数据或数据未提供
   group_id_list_c: null
+}
+
+interface IHotSpotItem {
+  schema: string
+  type: number
+  header: string
+  footer: string
+  title: string
+  hot_score: number
+  pattern_type: number
+  rank: number
+  view_count: number
+  group_id: string
+  sentence: string
+  extra: string
+  image_url: string
+  sentence_id: number
+  i18n_title: string
 }
 
 export interface SubCardList {

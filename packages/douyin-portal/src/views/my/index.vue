@@ -6,7 +6,9 @@ import {
   UserHeader,
   UserPage,
   UserTab,
-  userModal
+  userModal,
+  UserRecord,
+  UserCollection
 } from '@/components/user'
 
 // 滚动监听
@@ -150,9 +152,12 @@ const handleTabChange = (tab: string) => {
             </template>
             <template v-slot:like>
               <span class="tabs-text">喜欢</span>
-              <span class="user-tabs-count">
-                {{ store.userInfo.user.favoriting_count }}
-              </span>
+              <div class="user-tabs-count">
+                {{ store.userInfo.user?.favoriting_count }}
+              </div>
+              <div class="user-lock" v-if="false">
+                <svg-icon icon="lock" class="icon" />
+              </div>
             </template>
             <template v-slot:favorite_collection>
               <span class="tabs-text">收藏</span>
@@ -183,6 +188,9 @@ const handleTabChange = (tab: string) => {
                 v-if="activeTab === 'like'"
                 :show-like-list="true"
               />
+              <user-collection v-if="activeTab === 'favorite_collection'" />
+
+              <user-record v-if="activeTab === 'record'" />
             </template>
           </user-tab>
         </template>

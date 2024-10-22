@@ -56,7 +56,6 @@ onBeforeUnmount(() => {
   document.title = '抖音-记录美好生活'
 })
 
-
 const router = useRouter()
 const tabs = ['posts', 'like', 'favorite_collection', 'record', 'watch_later']
 const activeTab = ref((route.query.showTab as string) || 'posts')
@@ -129,7 +128,16 @@ const handleTabChange = (tab: string) => {
               </template>
               <template v-slot:like>
                 <span class="tabs-text">喜欢</span>
-                <div class="user-lock">
+                <div
+                  class="user-tabs-count"
+                  v-if="userInfo.user?.show_favorite_list"
+                >
+                  {{ userInfo.user?.favoriting_count }}
+                </div>
+                <div
+                  class="user-lock"
+                  v-if="!userInfo.user?.show_favorite_list"
+                >
                   <svg-icon icon="lock" class="icon" />
                 </div>
               </template>
@@ -147,8 +155,8 @@ const handleTabChange = (tab: string) => {
                 <user-post :user_id="userId" v-if="activeTab === 'posts'" />
                 <user-like
                   :user_id="userId"
-                  v-if="activeTab === 'favorites'"
-                  :show-like-list="false"
+                  v-if="activeTab === 'like'"
+                  :show-like-list="userInfo.user.show_favorite_list"
                 />
               </template>
             </user-tab>

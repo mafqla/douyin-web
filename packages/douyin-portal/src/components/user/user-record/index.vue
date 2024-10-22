@@ -1,20 +1,24 @@
 <script setup lang="ts">
-import CollectionVideo from './collection-video/index.vue'
-
 import {} from 'vue'
+import RecordVideo from './record-video.vue'
+import RecordVs from './record-vs/index.vue'
+import RecordLive from './record-live/index.vue'
+
+// const props = defineProps<{
+//   //用户id
+//   user_id: string
+// }>()
 
 const route = useRoute()
 const router = useRouter()
-const tabs = ['favorite_folder', 'video', 'music', 'compilation', 'playlet']
-const activeTab = ref((route.query.showSubTab as string) || 'favorite_folder')
+const tabs = ['video', 'vs', 'live']
+const activeTab = ref((route.query.showSubTab as string) || 'video')
 
 const getTabTitle = (tab: string) => {
   const titles: { [key: string]: string } = {
-    favorite_folder: '收藏夹',
     video: '视频',
-    music: '音乐',
-    compilation: '合集',
-    playlet: '短剧'
+    vs: '影视综',
+    live: '直播'
   }
   return titles[tab]
 }
@@ -30,7 +34,7 @@ const handleTabChange = (tab: string) => {
 }
 </script>
 <template>
-  <div class="user-collection">
+  <div class="user-record">
     <user-tabbar-2>
       <div class="tabbar-2-content">
         <div
@@ -52,13 +56,22 @@ const handleTabChange = (tab: string) => {
       </div>
     </user-tabbar-2>
 
-    <div class="user-collection-content">
-      <collection-video v-if="activeTab === 'video'" />
+    <div class="user-record-content">
+      <record-video v-if="activeTab === 'video'" />
+      <record-vs v-if="activeTab === 'vs'" />
+      <record-live v-if="activeTab === 'live'" />
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.no-show {
+  margin: 120px 0;
+}
+.user-record {
+  position: relative;
+}
+
 .tabbar-2-content {
   position: relative;
   white-space: nowrap;
