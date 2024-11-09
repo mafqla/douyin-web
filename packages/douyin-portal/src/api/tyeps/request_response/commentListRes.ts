@@ -26,6 +26,7 @@ export interface IComments {
   is_hot?: boolean // 是否是热门评论
   text_music_info?: any // 与文本相关的音乐信息，如果为空则为null
   image_list?: ImageItem[] // 图片列表，具体结构根据实际数据确定
+  sticker: Sticker // 动图列表
   is_note_comment?: number // 是否是笔记评论
   ip_label: string // IP标签，表示评论者的位置信息
   can_share?: boolean // 是否可以分享
@@ -103,4 +104,17 @@ export interface TextExtraItem {
   hashtag_name?: string // 话题名称，如果有的话（此属性可能是可选的，取决于type）
   hashtag_id?: string // 话题ID，如果有的话（此属性可能是可选的，取决于type）
   sec_uid: string // 安全用户ID，可能用于内容安全或权限管理
+}
+
+
+export interface Sticker {
+  animate_url: ImageURLs
+  author_sec_uid: string
+  height: number
+  id: number
+  id_str: string
+  origin_package_id: number
+  static_url: ImageURLs
+  sticker_type: number
+  width: number
 }

@@ -143,7 +143,11 @@ const onCollapse = () => {
               <div class="img-box" v-for="item in props.image_list">
                 <div class="img-inner" :key="item.medium_url.uri">
                   <img
-                    :src="item.medium_url.url_list[1]"
+                    :src="
+                      item.medium_url.url_list[1] ??
+                      item.medium_url.url_list[0] ??
+                      item.origin_url.url_list[2]
+                    "
                     alt="comment_img"
                     @click="openAvatar"
                   />
@@ -161,18 +165,47 @@ const onCollapse = () => {
                       max-height: 90%;
                       border-radius: 4px;
                     "
-                    :src="item.origin_url.url_list[1]"
+                    :src="
+                      item.origin_url.url_list[1] ??
+                      item.origin_url.url_list[0] ??
+                      item.medium_url.url_list[2]
+                    "
                     alt="comment_img-modal"
                   />
                 </modal>
               </div>
             </div>
-            <div
-              class="comment-author-digged"
-              v-if="props.is_author_digged"
-            >
-            <span>作者赞过</span>
-          </div>
+            <div class="comment-sticker comment-img-list" v-if="props.sticker">
+              <div class="img-box">
+                <div class="img-inner">
+                  <img
+                    :src="props.sticker.animate_url.url_list[0]"
+                    alt="comment_sticker"
+                    @click="openAvatar"
+                  />
+                </div>
+                <modal
+                  :open="isOpenAvatar"
+                  :isShowClose="true"
+                  @close="isOpenAvatar = false"
+                >
+                  <img
+                    class="comment-img-modal"
+                    style="
+                      transform: scale(1);
+                      max-width: 70%;
+                      max-height: 90%;
+                      border-radius: 4px;
+                    "
+                    :src="props.sticker.animate_url.url_list[0]"
+                    alt="comment_sticker-modal"
+                  />
+                </modal>
+              </div>
+            </div>
+            <div class="comment-author-digged" v-if="props.is_author_digged">
+              <span>作者赞过</span>
+            </div>
           </span>
         </div>
         <div class="comment-item-content-time">
