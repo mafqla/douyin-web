@@ -6,7 +6,7 @@ import { ElSkeleton } from 'element-plus'
 
 const props = defineProps({
   video_id: {
-    type: Number,
+    type: String,
     default: ''
   },
   video_img: {
@@ -45,7 +45,7 @@ const props = defineProps({
   isLoading: {
     type: Boolean,
     default: false
-  },
+  }
 
   // imageWidth: {
   //   type: Number,
@@ -75,10 +75,18 @@ const props = defineProps({
       <template #default>
         <a :href="`/video/${video_id}`" class="waterfall-videoCardContainer">
           <div class="item-content">
-            <discover-video :img="props.video_img" :videoTime="props.video_time" :like="video_like"
-              :videoUrl="props.video_url" />
-            <title-box :author="props.video_author" :title="props.video_title" :time="props.video_uploadtime"
-              :fellow="props.video_isFellow" />
+            <discover-video
+              :img="props.video_img"
+              :videoTime="props.video_time"
+              :like="video_like"
+              :videoUrl="props.video_url"
+            />
+            <title-box
+              :author="props.video_author"
+              :title="props.video_title"
+              :time="props.video_uploadtime"
+              :fellow="props.video_isFellow"
+            />
           </div>
         </a>
       </template>
@@ -89,9 +97,9 @@ const props = defineProps({
 <style lang="scss" scoped>
 .waterfall-item {
   .waterfall-videoCardContainer {
-    border: 0.5px solid var(--color-line-l3);
-    box-shadow: 0 0 0.5px 0 var(--color-secondary-default);
-    border-radius: 12px;
+    // border: 0.5px solid var(--color-line-l3);
+    // box-shadow: 0 0 0.5px 0 var(--color-secondary-default);
+    // border-radius: 12px;
     flex-direction: column;
     transition-property: transform, box-shadow;
     transition-duration: 0.35s;

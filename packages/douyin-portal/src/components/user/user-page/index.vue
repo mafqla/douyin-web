@@ -110,7 +110,7 @@ defineProps<{
 .user-detail-content {
   width: 100%;
   // max-width: 1208px;
-  min-width: 1024px;
+  min-width: 1000px;
   min-height: calc(100vh - 60px);
   position: relative;
   padding-top: var(--header-height);

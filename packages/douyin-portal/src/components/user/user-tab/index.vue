@@ -97,7 +97,7 @@ const handleTabChange = (tab: string) => {
 .user-tabbar {
   background-image: var(--global-bg-img), var(--global-bg-img-thin);
   background-size: 0 0;
-  background-color: var(--color-bg-b0);
+
   width: 100%;
   border-bottom: none;
   align-items: center;
@@ -108,6 +108,7 @@ const handleTabChange = (tab: string) => {
   &.scroll {
     background-image: var(--global-bg-img),
       linear-gradient(var(--color-bg-b0), var(--color-bg-b0));
+    background-color: var(--color-bg-b0);
     background-size: auto, calc(100% - 500px) 100%;
     background-position: 0 calc(0px - var(--header-height)), right 0;
     background-repeat: no-repeat;

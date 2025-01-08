@@ -1,7 +1,10 @@
 <script setup lang="ts">
-
-
-const { src, nickname, likeCount, followersCount, followingsCount,
+const {
+  src,
+  nickname,
+  likeCount,
+  followersCount,
+  followingsCount,
   postsCount
 } = defineProps({
   isLogin: {
@@ -14,22 +17,21 @@ const { src, nickname, likeCount, followersCount, followingsCount,
     default: ''
   },
   nickname: {
-    type: String,
+    type: String
   },
   likeCount: {
-    type: Number,
+    type: Number
   },
   // 关注
   followingsCount: {
-    type: Number,
+    type: Number
   },
   // 粉丝
   followersCount: {
     type: Number
   },
   postsCount: {
-    type: Number,
-
+    type: Number
   },
   //收藏数量
   collectCount: {
@@ -39,8 +41,6 @@ const { src, nickname, likeCount, followersCount, followingsCount,
   watchLaterCount: {
     type: Number
   }
-
-
 })
 </script>
 <template>
@@ -50,11 +50,18 @@ const { src, nickname, likeCount, followersCount, followingsCount,
         <div class="popover-content">
           <div class="popover-content-header">
             <svg-icon class="icon-user" icon="user-avatar" v-if="!isLogin" />
-            <router-link to="/user/self?showTab=post" class="content-center-link" v-if="isLogin">
+            <router-link
+              to="/user/self?showTab=post"
+              class="content-center-link"
+              v-if="isLogin"
+            >
               <dy-avatar :src="src" size="common" />
             </router-link>
             <div class="popover-userinfo" v-if="isLogin">
-              <router-link to="/user/self?showTab=post" class="content-center-link">
+              <router-link
+                to="/user/self?showTab=post"
+                class="content-center-link"
+              >
                 {{ nickname }}
               </router-link>
               <div class="social-metrics">
@@ -71,9 +78,7 @@ const { src, nickname, likeCount, followersCount, followingsCount,
             </div>
 
             <div class="user-authentication" v-if="!isLogin">
-              <div class="login-status">
-                未登录
-              </div>
+              <div class="login-status">未登录</div>
               <div class="login-benefits">
                 <span>登录后即可观看喜欢、收藏作品</span>
               </div>
@@ -88,7 +93,10 @@ const { src, nickname, likeCount, followersCount, followingsCount,
               </p>
               <svg-icon class="chevron-right" icon="chevron-right" />
             </router-link>
-            <router-link to="/user/self?showTab=favorite_collection" class="action-link ">
+            <router-link
+              to="/user/self?showTab=favorite_collection"
+              class="action-link"
+            >
               <svg-icon class="icon" icon="my-collect" />
               <p class="action-link-text">我的收藏</p>
               <p class="action-link-num">
@@ -99,12 +107,13 @@ const { src, nickname, likeCount, followersCount, followingsCount,
             <router-link to="/user/self?showTab=record" class="action-link">
               <svg-icon class="icon" icon="history" />
               <p class="action-link-text">观看历史</p>
-              <p class="action-link-num" v-if="isLogin">
-                30天内
-              </p>
+              <p class="action-link-num" v-if="isLogin">30天内</p>
               <svg-icon class="chevron-right" icon="chevron-right" />
             </router-link>
-            <router-link to="/user/self?showTab=watch_later" class="action-link ">
+            <router-link
+              to="/user/self?showTab=watch_later"
+              class="action-link"
+            >
               <svg-icon class="icon" icon="watch-later" />
               <p class="action-link-text">稍后再看</p>
               <p class="action-link-num">
@@ -112,7 +121,7 @@ const { src, nickname, likeCount, followersCount, followingsCount,
               </p>
               <svg-icon class="chevron-right" icon="chevron-right" />
             </router-link>
-            <router-link to="/user/self?showTab=post" class="action-link ">
+            <router-link to="/user/self?showTab=posts" class="action-link">
               <svg-icon class="icon" icon="zuopin" />
               <p class="action-link-text">我的作品</p>
               <p class="action-link-num">
@@ -150,12 +159,9 @@ const { src, nickname, likeCount, followersCount, followingsCount,
               <p class="logout-text" @click="$emit('logout')">退出登录</p>
             </div>
             <div class="trust-login">
-              <div class="login-tips">
-              </div>
+              <div class="login-tips"></div>
               <SwitchButton />
             </div>
-
-
           </div>
         </div>
       </div>
@@ -178,7 +184,8 @@ const { src, nickname, likeCount, followersCount, followingsCount,
     background: var(--color-bg-b1-white);
     border-radius: 4px;
     box-shadow: none;
-    animation: 0.4s cubic-bezier(0.34, 0.69, 0.1, 1) 0s 1 normal forwards running identifier;
+    animation: 0.4s cubic-bezier(0.34, 0.69, 0.1, 1) 0s 1 normal forwards
+      running identifier;
   }
 
   @keyframes identifier {
@@ -190,7 +197,6 @@ const { src, nickname, likeCount, followersCount, followingsCount,
       transform: translateY(0px);
     }
   }
-
 
   .user-menu-panel {
     background-color: var(--color-bg-b1-white);
@@ -295,7 +301,7 @@ const { src, nickname, likeCount, followersCount, followingsCount,
       cursor: pointer;
       margin: 12px 16px;
 
-      &> :not(:last-child) {
+      & > :not(:last-child) {
         margin-bottom: 8px;
       }
 
@@ -349,13 +355,10 @@ const { src, nickname, likeCount, followersCount, followingsCount,
       position: relative;
     }
 
-
     .order-actions {
       position: relative;
       margin: 4px 0px;
       padding: 0px 16px;
-
-
 
       .order-link {
         color: var(--color-text-t3);
@@ -380,7 +383,6 @@ const { src, nickname, likeCount, followersCount, followingsCount,
         .order-icon {
           width: 24px;
           height: 24px;
-
         }
 
         .order-text {
@@ -422,7 +424,6 @@ const { src, nickname, likeCount, followersCount, followingsCount,
 
         .logout-text {
           margin-left: 5px;
-
         }
       }
 
@@ -432,7 +433,6 @@ const { src, nickname, likeCount, followersCount, followingsCount,
         position: relative;
         justify-content: flex-end;
         flex: 1 1 0%;
-
       }
     }
   }

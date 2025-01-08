@@ -64,7 +64,7 @@ const video_uploadtime = computed(() => {
   flex: 1 1;
   // padding: 12px 20px 22px;
   padding: 12px;
-  background: var(--color-bg-b1);
+  // background: var(--color-bg-b1);
   .item-title-content {
     position: relative;
 

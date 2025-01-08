@@ -12,20 +12,24 @@ const animeRef = ref<HTMLDivElement | null>(null)
 
 const list = ref([]) as Ref<ICards[]>
 const isOver = ref(false)
+const count = ref(20)
+const refresh_index = ref(1)
 /**
  * 获取数据
  */
-const getData = async (): Promise<ICards[]> => {
+const getData = async () => {
   try {
-    const res = await apis.homeFeed(10)
+    const res = await apis.homeFeed(count.value, refresh_index.value)
+
     res.cards.forEach((item: any) => {
       //json格式化每个item 的子项
       return parseJsonStrings(item)
     })
-    list.value = res.cards
+    // console.log(res.cards)
+    list.value.push(...res.cards)
+    refresh_index.value++
     isOver.value = !Boolean(res.has_more)
     loading.value = false
-    return res.cards
   } catch (error) {
     // console.error(error)
     return []
@@ -41,10 +45,14 @@ onMounted(() => {
 const getNext: () => Promise<void> = async (): Promise<void> => {
   if (nextLoding.value) return
   nextLoding.value = true
-  const res = await getData()
-  list.value.push(...res)
+  await getData()
+
   nextLoding.value = false
 }
+
+// watchEffect(() => {
+//   console.log(list.value)
+// })
 </script>
 <template>
   <Loading :show="loading" :isShowText="true" :center="true">
@@ -61,7 +69,7 @@ const getNext: () => Promise<void> = async (): Promise<void> => {
         <template v-slot:default="slotProp">
           <!-- <hot-item /> -->
           <waterfall-item
-            :video_id="Number(slotProp.item.aweme.aweme_id)"
+            :video_id="slotProp.item.aweme.aweme_id"
             :video_img="slotProp.item.aweme.video?.cover.url_list[0]"
             :video_uploadtime="slotProp.item.aweme.create_time"
             :video_time="slotProp.item.aweme.video?.duration"

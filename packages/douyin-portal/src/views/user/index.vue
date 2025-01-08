@@ -58,16 +58,22 @@ onBeforeUnmount(() => {
 
 const router = useRouter()
 const tabs = ['posts', 'like', 'favorite_collection', 'record', 'watch_later']
-const activeTab = ref((route.query.showTab as string) || 'posts')
+const activeTab = ref()
 const handleTabChange = (tab: string) => {
   activeTab.value = tab
   //添加路由
-  router.replace({
+  router.push({
     query: {
       showTab: tab
     }
   })
+  // 滚动到顶部
+  window.scrollTo(0, 0)
 }
+
+watchEffect(() => {
+  activeTab.value = route.query.showTab || 'posts'
+})
 </script>
 <template>
   <loading

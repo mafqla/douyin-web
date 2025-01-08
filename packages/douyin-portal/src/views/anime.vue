@@ -11,7 +11,7 @@ const column = ref(5)
  */
 const getData = async () => {
   try {
-    const res = await apis.homeFeed(10)
+    const res = await apis.homeFeed(10, 1)
     res.cards.forEach((item: any) => {
       item.aweme = JSON.parse(item.aweme)
     })

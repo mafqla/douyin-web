@@ -26,7 +26,7 @@ export interface IComments {
   is_hot?: boolean // 是否是热门评论
   text_music_info?: any // 与文本相关的音乐信息，如果为空则为null
   image_list?: ImageItem[] // 图片列表，具体结构根据实际数据确定
-  sticker: Sticker // 动图列表
+  sticker?: Sticker // 动图列表
   is_note_comment?: number // 是否是笔记评论
   ip_label: string // IP标签，表示评论者的位置信息
   can_share?: boolean // 是否可以分享

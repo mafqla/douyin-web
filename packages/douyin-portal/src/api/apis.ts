@@ -35,10 +35,11 @@ export default {
   /**
    * @description 获取首页视频流
    */
-  homeFeed: (count: number): Promise<IhomeFeedRes> => {
+  homeFeed: (count: number, refresh_index: number): Promise<IhomeFeedRes> => {
     return request.get(urls.home_feed, {
       params: {
-        count
+        count,
+        refresh_index
       }
     })
   },

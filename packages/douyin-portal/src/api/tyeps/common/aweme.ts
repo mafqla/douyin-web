@@ -21,7 +21,7 @@ export interface IAwemeInfo {
   share_info: IShareInfo // 分享信息
   // 直播
   cell_room: {
-    rawdata: string
+    rawdata: ILiveStreamInfo
   }
   // 视频标签，用于分类或标记视频内容，当前为null表示没有标签或数据未提供
   video_labels: null
@@ -277,4 +277,176 @@ interface Baike {
   is_media_wiki: boolean // 是否为媒体Wiki，true表示是
 }
 
-interface ICellRoom {}
+export interface ILiveStreamInfo {
+  // 直播流的唯一标识符（数字类型）
+  id: number
+  // 直播流的唯一标识符（字符串类型）
+  id_str: string
+  // 直播状态，具体数值对应具体状态
+  status: number
+  // 直播拥有者的用户ID
+  owner_user_id: number
+  // 直播标题
+  title: string
+  // 观看直播的用户数量
+  user_count: number
+  // 封面信息，包括封面图片的URL列表、URI和平均颜色
+  cover: {
+    url_list: string[]
+    uri: string
+    avg_color: string
+  }
+  // 流媒体地址信息，包括默认分辨率、额外信息（如高度和宽度）以及不同清晰度的FLV和HLS拉流地址
+  stream_url: {
+    id_str: string
+    default_resolution: string
+    extra: {
+      height: number
+      width: number
+    }
+    flv_pull_url: {
+      HD1: string
+      SD1: string
+      SD2: string
+    }
+    hls_pull_url: string
+    hls_pull_url_params: string
+    flv_pull_url_params: {
+      HD1: string
+      SD1: string
+      SD2: string
+    }
+    live_core_sdk_data: {
+      pull_data: {
+        stream_data: string
+      }
+    }
+  }
+  // HLS拉流地址映射，包括不同清晰度的地址
+  hls_pull_url_map: {
+    FULL_HD1: string
+    HD1: string
+    SD1: string
+    SD2: string
+  }
+  // 统计信息，包括观看总数的描述、字符串表示和当前观看用户数的字符串表示
+  stats: {
+    total_user_desp: string
+    total_user_str: string
+    user_count_str: string
+  }
+  // 直播拥有者的信息，包括用户ID、昵称、头像信息以及关注信息
+  owner: {
+    id: number
+    nickname: string
+    avatar_thumb: {
+      url_list: string[]
+      uri: string
+    }
+    follow_info: {
+      follower_count_str: string
+      following_count_str: string
+    }
+  }
+  // 直播间模式
+  live_room_mode: number
+  // 动态标签信息，包括显示类型、拼接标签的文本、文本颜色和背景图片信息
+  dynamic_label: {
+    display_type: number
+    splice_label: {
+      text: string
+      text_color: string
+      background_image: {
+        url_list: string[]
+        uri: string
+        avg_color: string
+      }
+    }
+  }
+  // 付费直播数据，包括付费AB测试类型
+  paid_live_data: {
+    pay_ab_type: number
+  }
+  // 电商数据，包括购物车显示状态
+  ecom_data: {
+    room_cart_v2: {
+      show_cart: number
+    }
+  }
+  // 房间视图统计信息，包括是否隐藏、显示版本和显示类型
+  room_view_stats: {
+    is_hidden: boolean
+    display_version: number
+    display_type: number
+  }
+  // 互动信息，包括分集ID、季节ID、模式信息和主摄像头匹配信息
+  interact: {
+    vs_component_extra: {
+      episode_id: number
+      episode_id_str: string
+      season_id: number
+      season_id_str: string
+      mod: {
+        episode_stage: number
+        episode_type: number
+        episode_sub_type: number
+        episode_record_type: number
+      }
+      main_camera_match_info: {
+        league_info: {}
+      }
+    }
+  }
+  // 额外的流媒体地址信息，包括候选分辨率、默认分辨率、额外信息以及不同清晰度的FLV和HLS拉流地址
+  additional_stream_url: {
+    candidate_resolution: string[]
+    default_resolution: string
+    extra: {
+      height: number
+      width: number
+    }
+    flv_pull_url: {
+      HD1: string
+      SD1: string
+      SD2: string
+    }
+    flv_pull_url_params: {
+      HD1: string
+      SD1: string
+      SD2: string
+    }
+    hls_pull_url: string
+    hls_pull_url_map: {
+      FULL_HD1: string
+      HD1: string
+      SD1: string
+      SD2: string
+    }
+    hls_pull_url_params: string
+  }
+  // 推送数据，包括推送流级别
+  push_data: {
+    push_stream_level: number
+  }
+  // 播放信息，包括水平和垂直主播放流
+  play: {
+    horizontal: string
+    vertical: string
+  }
+  // 分辨率名称映射，包括不同清晰度的名称
+  resolution_name: {
+    FULL_HD1: string
+    HD1: string
+    ORIGION: string
+    SD1: string
+    SD2: string
+  }
+  // RTMP拉流地址
+  rtmp_pull_url: string
+  // RTMP拉流地址参数
+  rtmp_pull_url_params: string
+  // 流控制类型
+  stream_control_type: number
+  // 流方向
+  stream_orientation: number
+}

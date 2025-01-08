@@ -333,7 +333,14 @@ const toggleModal = (event: any) => {
   }
 }
 
-@media (max-width: 1024px) {
+// @media (max-width: 1024px) {
+//   .video-item {
+//     width: calc(33.33% - 10.8px);
+//     margin-right: 10px;
+//   }
+// }
+
+@media (max-width: 1088px) {
   .video-item {
     width: calc(33.33% - 10.8px);
     margin-right: 10px;
