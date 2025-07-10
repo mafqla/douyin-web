@@ -9,13 +9,14 @@ import type { WaterfallList } from '../type'
  * @param {SlotsType} slots slots句柄
  * @return {Layout} { wrapperHeight, layout }
  */
+type LayoutItem = {
+  translateX: string
+  translateY: string
+  width: number
+  height: number
+}
 type Layout<T> = {
-  transforms: Array<{
-    translateX: string
-    translateY: string
-    width: number
-    height: number
-  }>
+  transforms: LayoutItem[]
   totalHeight: number
 }
 
@@ -175,7 +176,7 @@ export function calculateItemWidth(currentWidth: number) {
     { range: [1680, 1920], items: 7, gap: 16 },
     { range: [1580, 1680], items: 6, gap: 16 },
     { range: [1440, 1580], items: 4, gap: 16 },
-    { range: [1020, 1440], items: 4, gap: 16 },
+    { range: [1020, 1440], items: 3, gap: 16 },
     { range: [768, 1020], items: 2, gap: 16 },
     { range: [0, 768], items: 2, gap: 16 }
   ]

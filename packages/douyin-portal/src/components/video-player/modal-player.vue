@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import BasePlayer from './base-player.vue'
-import SwiperControl from '@/components/swper/swiper-control.vue'
+import SwiperControl from '@/components/swiper/swiper-control.vue'
 import { ref } from 'vue'
 
 import {

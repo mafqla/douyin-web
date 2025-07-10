@@ -18,6 +18,8 @@ export interface WaterfallProps<T> {
   isMounted?: boolean
   virtualTime?: number
   virtualLength?: number
+  bufferSize?: number
+  minRenderItems?: number
 }
 
 // 内部需要生成的一些属性

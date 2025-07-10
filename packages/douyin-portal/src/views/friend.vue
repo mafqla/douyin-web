@@ -25,7 +25,7 @@ const getData = async () => {
       //json格式化每个item 的子项
       return parseJsonStrings(item)
     })
-    // console.log(res.cards)
+    console.log(res.cards)
     list.value.push(...res.cards)
     refresh_index.value++
     isOver.value = !Boolean(res.has_more)
@@ -77,7 +77,7 @@ const getNext: () => Promise<void> = async (): Promise<void> => {
             :video_author="slotProp.item.aweme.author?.nickname"
             :video_title="slotProp.item.aweme.desc"
             :video_isFellow="slotProp.item.aweme.author?.follow_status"
-            :video_url="slotProp.item.aweme.video?.play_addr.url_list"
+            :video_url="slotProp.item.aweme.video?.play_addr?.url_list ?? ''"
             :isLoading="loading"
           />
         </template>

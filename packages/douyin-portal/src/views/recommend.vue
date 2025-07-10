@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
-import SwiperControl from '@/components/swper/swiper-control.vue'
-import SwiperVideo from '@/components/swper/swiper-video.vue'
+import SwiperControl from '@/components/swiper/swiper-control.vue'
+import SwiperVideo from '@/components/swiper/swiper-video.vue'
 import { videosCtrolStore } from '@/stores/videos-control'
 import { useRouter } from 'vue-router'
 import apis from '@/api/apis'

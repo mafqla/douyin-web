@@ -5,7 +5,6 @@ import swiperPlayer from '../video-player/swiper-player.vue'
 import { useElementSize, useThrottleFn } from '@vueuse/core'
 import { useKeyboardNavigation } from '@/hooks'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
-import { json } from 'stream/consumers'
 
 defineProps({
   videoList: {
