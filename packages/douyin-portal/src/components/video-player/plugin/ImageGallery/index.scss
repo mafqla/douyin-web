@@ -1,0 +1,115 @@
+.image-gallery-plugin {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 42px); // 留出控制栏空间
+  overflow: hidden;
+  // background-color: #000;
+  z-index: 1;
+}
+
+.image-gallery-slides {
+  display: flex;
+  height: 100%;
+  transition: transform 0.3s ease;
+  will-change: transform;
+}
+
+.image-gallery-slide {
+  flex: 0 0 100%;
+  height: 100%;
+  position: relative;
+  user-select: none;
+}
+
+.image-gallery-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.image-gallery-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.image-gallery-container img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+// 箭头图标样式
+.image-gallery-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  // 禁用状态
+  &.disabled {
+    cursor: not-allowed;
+
+    &:hover {
+      opacity: 1;
+      cursor: not-allowed;
+    }
+  }
+
+  // 左箭头
+  &.image-gallery-arrow-left {
+    left: 20px;
+  }
+
+  // 右箭头
+  &.image-gallery-arrow-right {
+    right: 20px;
+  }
+
+  // 箭头图标样式
+  .arrow-left-icon,
+  .arrow-right-icon {
+    width: 56px;
+    height: 56px;
+
+    g>path {
+      fill: rgba(0, 0, 0, 0.18);
+    }
+
+    g>g>path {
+      fill: rgba(255, 255, 255, 0.25);
+    }
+
+    &:hover {
+      g>path {
+        fill: rgba(0, 0, 0, 0.25);
+      }
+
+      g>g>path {
+        fill: #fff;
+      }
+    }
+  }
+}
