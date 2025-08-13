@@ -20,6 +20,7 @@ import immersiveSwitch from './plugin/immersive-switch/immersive-switch'
 import miniWin from './plugin/miniWin/miniWin'
 import PlaybackPlugin from './plugin/playbackSetting/playbackPlugin'
 import watchLater from './plugin/watch-later/watch-later'
+import ImageGalleryPlugin from './plugin/ImageGallery/ImageGallery'
 
 interface PlayerProps {
   url: string | string[]
@@ -153,7 +154,8 @@ const playerOptions = ref<IPlayerOptions>({
     miniWin,
     watchLater,
     automaticContinuous,
-    immersiveSwitch
+    immersiveSwitch,
+    ImageGalleryPlugin
   ]
 })
 

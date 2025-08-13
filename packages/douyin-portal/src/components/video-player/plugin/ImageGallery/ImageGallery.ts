@@ -77,6 +77,10 @@ export class ImageGalleryPlugin extends Plugin {
       loop: true, // 默认开启循环播放
       showArrows: true // 默认显示箭头图标
     }
+    
+    // 初始化触摸起始位置
+    this.touchStartX = 0
+    this.touchStartY = 0
   }
 
   afterCreate() {
@@ -374,6 +378,9 @@ export class ImageGalleryPlugin extends Plugin {
     // 鼠标拖动事件
     this.bind('mousedown', this.onMouseDown)
 
+    // 点击图片事件 - 切换播放/暂停
+    this.bind('click', this.onClick)
+
     // 键盘导航 - 使用捕获阶段并在 document 上监听
     document.addEventListener('keydown', this.onKeydown, true);
 
@@ -384,6 +391,8 @@ export class ImageGalleryPlugin extends Plugin {
       
       if (leftArrow) {
         leftArrow.addEventListener('click', (e) => {
+          // 阻止事件冒泡到父容器
+          e.stopPropagation();
           // 检查是否禁用
           if (leftArrow.classList.contains('disabled')) {
             return;
@@ -394,6 +403,8 @@ export class ImageGalleryPlugin extends Plugin {
       
       if (rightArrow) {
         rightArrow.addEventListener('click', (e) => {
+          // 阻止事件冒泡到父容器
+          e.stopPropagation();
           // 检查是否禁用
           if (rightArrow.classList.contains('disabled')) {
             return;
@@ -598,6 +609,28 @@ export class ImageGalleryPlugin extends Plugin {
     } else {
       // 拖动距离不够，回到当前位置
       this.updateSlidePosition()
+    }
+  }
+
+  private onClick = (e: MouseEvent) => {
+    // 防止在拖动时触发点击事件
+    if (Math.abs(e.clientX - this.touchStartX) > 5 || Math.abs(e.clientY - this.touchStartY) > 5) {
+      return;
+    }
+    
+    // 检查点击目标是否是箭头按钮，如果是则不处理
+    const target = e.target as HTMLElement;
+    if (target.closest('.image-gallery-arrow')) {
+      return;
+    }
+
+    // 切换播放器的播放/暂停状态
+    if (this.player) {
+      if (this.player.paused) {
+        this.player.play();
+      } else {
+        this.player.pause();
+      }
     }
   }
 
