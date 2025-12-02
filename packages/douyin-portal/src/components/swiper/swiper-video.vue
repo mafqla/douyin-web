@@ -1,57 +1,56 @@
 <script setup lang="ts">
 import { videosCtrolStore } from '@/stores/videos-control'
-import { watchEffect, type PropType, ref, onMounted, computed } from 'vue'
+import { watchEffect, type PropType, ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
 import swiperPlayer from '../video-player/swiper-player.vue'
 import { useElementSize, useThrottleFn } from '@vueuse/core'
 import { useKeyboardNavigation } from '@/hooks'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 
-defineProps({
+const props = defineProps({
   videoList: {
     type: Array as PropType<IAwemeInfo[]>,
     default: []
   }
 })
 
-const isShowItem = computed(() => {
-  const currentIndex = videosCtrolStore().activeVideoIndex
-  if (currentIndex === 0) {
-    return (index: number) => index >= 0 && index <= 2
-  } else {
-    return (index: number) =>
-      index >= currentIndex - 1 && index <= currentIndex + 1
-  }
-})
+const store = videosCtrolStore()
 
-const isActiveIndex = (index: number) =>
-  index === videosCtrolStore().activeVideoIndex
+const cachedRange = ref({ start: 0, end: 2 })
 
-// 监听活动视频索引的变化，当变化时更新过渡时间   transition: 'transform 0.5s ease'
+watch(
+  () => store.activeVideoIndex,
+  (currentIndex) => {
+    cachedRange.value = {
+      start: Math.max(0, currentIndex - 1),
+      end: currentIndex + 1
+    }
+  },
+  { immediate: true }
+)
+
+const shouldRender = (index: number) => {
+  return index >= cachedRange.value.start && index <= cachedRange.value.end
+}
+
+const isActiveIndex = (index: number) => index === store.activeVideoIndex
+
 const transitionDuration = ref(0)
-
 const videoHeight = ref()
 const { height } = useElementSize(videoHeight)
 
-watchEffect(() => {
-  if (isActiveIndex(videosCtrolStore().activeVideoIndex)) {
-    transitionDuration.value = 250 // 将过渡时间设置为250ms
-  } else {
-    transitionDuration.value = 0 // 将过渡时间重新设置为0ms
-  }
-  videosCtrolStore().initTranslateY = height.value + 12
-})
+const dragOffset = ref(0)
 
-const swiperPlayerRef = ref()
+watchEffect(() => {
+  store.initTranslateY = height.value + 12
+})
 
 const isDragging = ref(false)
 const startY = ref(0)
-const dragOffset = ref(0)
-const baseTranslateY = ref(0)
 
 const handleMouseDown = (event: MouseEvent) => {
   isDragging.value = true
   startY.value = event.clientY
-  baseTranslateY.value = videosCtrolStore().translateY
+  dragOffset.value = 0
   transitionDuration.value = 0
 }
 
@@ -59,7 +58,6 @@ const handleMouseMove = (event: MouseEvent) => {
   if (!isDragging.value) return
   event.preventDefault()
   dragOffset.value = event.clientY - startY.value
-  videosCtrolStore().translateY = baseTranslateY.value + dragOffset.value
 }
 
 const handleMouseUp = () => {
@@ -68,22 +66,20 @@ const handleMouseUp = () => {
   transitionDuration.value = 250
   const threshold = height.value / 4
   if (dragOffset.value < -threshold) {
-    videosCtrolStore().handleNext()
+    store.handleNext()
   } else if (dragOffset.value > threshold) {
-    videosCtrolStore().handlePrev()
-  } else {
-    videosCtrolStore().translateY = baseTranslateY.value
+    store.handlePrev()
   }
   dragOffset.value = 0
 }
 
 const debouncedNext = useThrottleFn(() => {
-  if (!videosCtrolStore().stopScroll) {
-    videosCtrolStore().handleNext()
+  if (!store.stopScroll) {
+    store.handleNext()
   }
 }, 3000)
 const debouncedPrev = useThrottleFn(() => {
-  videosCtrolStore().handlePrev()
+  store.handlePrev()
 }, 3000)
 
 const handleWheel = (event: WheelEvent) => {
@@ -96,10 +92,22 @@ const handleWheel = (event: WheelEvent) => {
   }
 }
 
+watch(() => store.activeVideoIndex, () => {
+  transitionDuration.value = 250
+  setTimeout(() => {
+    transitionDuration.value = 0
+  }, 300)
+})
+
 onMounted(() => {
   videoHeight.value?.addEventListener('wheel', handleWheel, { passive: false })
   document.addEventListener('mousemove', handleMouseMove)
   document.addEventListener('mouseup', handleMouseUp)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('mousemove', handleMouseMove)
+  document.removeEventListener('mouseup', handleMouseUp)
 })
 
 useKeyboardNavigation()
@@ -109,8 +117,7 @@ useKeyboardNavigation()
     <div
       class="carousel-inner"
       :style="{
-        transform:
-          'translate3d(0px,' + videosCtrolStore().translateY + 'px, 0px)',
+        transform: `translate3d(0px, ${store.translateY + dragOffset}px, 0px)`,
         'transition-duration': `${transitionDuration}ms`
       }"
     >
@@ -124,14 +131,15 @@ useKeyboardNavigation()
           'margin-bottom': '12px'
         }"
       >
-        <template v-if="isShowItem(index) && item?.media_type === 4">
+        <KeepAlive>
           <swiper-player
-            ref="swiperPlayerRef"
+            v-if="shouldRender(index) && item?.media_type === 4"
+            :key="item.aweme_id"
             :aweme-info="item"
             :isPlay="isActiveIndex(index)"
           />
-        </template>
-        <template v-if="isShowItem(index) && item?.aweme_type === 101">
+        </KeepAlive>
+        <template v-if="shouldRender(index) && item?.aweme_type === 101">
           {{item.cell_room.rawdata}}
         </template>
       </div>

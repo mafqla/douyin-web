@@ -159,17 +159,18 @@ const playerOptions = ref<IPlayerOptions>({
   ]
 })
 
-let player: Player
+let xgPlayer: Player | null = null
+let isDestroyed = false
 const initPlayer = () => {
-  player = new Player(playerOptions.value)
+  xgPlayer = new Player(playerOptions.value)
 }
 
 const play = () => {
-  player.play()
+  xgPlayer?.play()
 }
 
 const pause = () => {
-  player.pause()
+  xgPlayer?.pause()
 }
 defineExpose({
   play,
@@ -178,8 +179,9 @@ defineExpose({
 
 onMounted(() => {
   initPlayer()
+  if (!xgPlayer) return
   //@ts-ignore
-  player.on(Events.CSS_FULLSCREEN_CHANGE, (isCssFullscreen: any) => {
+  xgPlayer.on(Events.CSS_FULLSCREEN_CHANGE, (isCssFullscreen: any) => {
     const carousel = document.getElementsByClassName('carousel') as any
     const main = document.getElementById('slidelist')
     if (isCssFullscreen && carousel) {
@@ -194,7 +196,7 @@ onMounted(() => {
       main?.classList.remove('isCssFullscreen')
     }
   })
-  player.on(Events.FULLSCREEN_CHANGE, (isFullscreen: any) => {
+  xgPlayer.on(Events.FULLSCREEN_CHANGE, (isFullscreen: any) => {
     const carousel = document.getElementsByClassName('carousel') as any
     console.log(isFullscreen)
     if (isFullscreen) {
@@ -208,7 +210,7 @@ onMounted(() => {
     }
   })
 
-  player.on(Events.MINI_STATE_CHANGE, (isMini: any) => {
+  xgPlayer.on(Events.MINI_STATE_CHANGE, (isMini: any) => {
     if (isMini) {
       console.log('enter miniScreen')
       isShowSwitchControl.value = false
@@ -217,61 +219,66 @@ onMounted(() => {
       isShowSwitchControl.value = true
     }
   })
-  player.on(Events.PLAY, () => {
+  xgPlayer.on(Events.PLAY, () => {
     emit('play')
   })
-  player.on(Events.PAUSE, () => {
+  xgPlayer.on(Events.PAUSE, () => {
     emit('pause')
   })
-  player.on(Events.ENDED, () => {
+  xgPlayer.on(Events.ENDED, () => {
     emit('ended')
   })
-  player.on(Events.TIME_UPDATE, () => {
+  xgPlayer.on(Events.TIME_UPDATE, () => {
     emit('timeupdate')
   })
-  player.on(Events.VOLUME_CHANGE, () => {
+  xgPlayer.on(Events.VOLUME_CHANGE, () => {
     emit('volumechange')
     console.log('volumechange')
-    const muted = player.muted
+    const muted = xgPlayer?.muted
     console.log(muted)
   })
-  player.usePluginHooks('progresspreview', 'previewClick', (plugin, time) => {
-    // 点击的预览图所在的时间点 plugin是插件实例对象
+  xgPlayer.usePluginHooks('progresspreview', 'previewClick', (plugin, time) => {
     console.log('...args', time)
     return true
   })
 
-  player.on(Events.FULLSCREEN_CHANGE, () => {
+  xgPlayer.on(Events.FULLSCREEN_CHANGE, () => {
     emit('fullscreenchange')
     console.log('fullscreenchange')
   })
-  player.on(Events.CSS_FULLSCREEN_CHANGE, () => {
+  xgPlayer.on(Events.CSS_FULLSCREEN_CHANGE, () => {
     emit('cssfullscreenchange')
   })
 
-  player.on('atuoPlayChange', (automatic: boolean) => {
+  xgPlayer.on('atuoPlayChange', (automatic: boolean) => {
     console.log('atuoPlayChange', automatic)
   })
-  player.on('immersiveStateChange', (isImmersive: boolean) => {
+  xgPlayer.on('immersiveStateChange', (isImmersive: boolean) => {
     console.log('immersiveStateChange', isImmersive)
   })
-  player.on('watch-later', (data: any) => {
+  xgPlayer.on('watch-later', (data: any) => {
     console.log('watch-later', data)
-  })
-
-  // console.log(player.value)
-  watchEffect(() => {
-    if (props.isPlay) {
-      playerOptions.value.autoplay = props.isPlay
-      //@ts-ignore
-      console.log(playerOptions.value)
-      // player = new Player(playerOptions.value)
-    }
   })
 })
 
+watch(
+  () => props.isPlay,
+  (newVal) => {
+    if (isDestroyed || !xgPlayer) return
+    if (newVal) {
+      xgPlayer.play()
+    } else {
+      xgPlayer.pause()
+    }
+  }
+)
+
 onBeforeUnmount(() => {
-  // player.value.destroy()
+  isDestroyed = true
+  if (xgPlayer) {
+    xgPlayer.destroy()
+    xgPlayer = null
+  }
 })
 
 //把播放器的事件导出给父组件
