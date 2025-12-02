@@ -97,6 +97,7 @@ declare module '@vue/runtime-core' {
     SwitchButton: typeof import('./src/components/user/user-header/switch-button.vue')['default']
     TabsItem: typeof import('./src/components/user/user-tab/tabs-item.vue')['default']
     TitleBox: typeof import('./src/components/discover/discover-item/title-box.vue')['default']
+    UniversalPlayer: typeof import('./src/components/video-player/universal-player.vue')['default']
     UserCollect: typeof import('./src/components/my/user-tab/user-collect/user-collect.vue')['default']
     UserCollection: typeof import('./src/components/user/user-collection/index.vue')['default']
     UserConnectionsPopup: typeof import('./src/components/user/user-header/user-connections-popup.vue')['default']
@@ -123,6 +124,7 @@ declare module '@vue/runtime-core' {
     VideoSidebar: typeof import('./src/components/video-components/video-sidebar/video-sidebar.vue')['default']
     VideoSidebarBtn: typeof import('./src/components/video-components/video-sidebar-btn/video-sidebar-btn.vue')['default']
     VideoSideList: typeof import('./src/components/video-components/video-side-list/video-side-list.vue')['default']
+    VirtualSwiperVideo: typeof import('./src/components/swiper/virtual-swiper-video.vue')['default']
     VirtualWaterfall: typeof import('./src/components/common/virtual-waterfall/index.vue')['default']
     WaterfallItem: typeof import('./src/components/discover/discover-item/waterfall-item.vue')['default']
   }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
-import SwiperControl from '@/components/swper/swiper-control.vue'
+import SwiperControl from '@/components/swiper/swiper-control.vue'
 import { useRouter } from 'vue-router'
 import apis from '@/api/apis'
 import { parseJsonStrings } from '@/utils/parseJsonStrings'

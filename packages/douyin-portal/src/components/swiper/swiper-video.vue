@@ -43,6 +43,40 @@ watchEffect(() => {
 
 const swiperPlayerRef = ref()
 
+const isDragging = ref(false)
+const startY = ref(0)
+const dragOffset = ref(0)
+const baseTranslateY = ref(0)
+
+const handleMouseDown = (event: MouseEvent) => {
+  isDragging.value = true
+  startY.value = event.clientY
+  baseTranslateY.value = videosCtrolStore().translateY
+  transitionDuration.value = 0
+}
+
+const handleMouseMove = (event: MouseEvent) => {
+  if (!isDragging.value) return
+  event.preventDefault()
+  dragOffset.value = event.clientY - startY.value
+  videosCtrolStore().translateY = baseTranslateY.value + dragOffset.value
+}
+
+const handleMouseUp = () => {
+  if (!isDragging.value) return
+  isDragging.value = false
+  transitionDuration.value = 250
+  const threshold = height.value / 4
+  if (dragOffset.value < -threshold) {
+    videosCtrolStore().handleNext()
+  } else if (dragOffset.value > threshold) {
+    videosCtrolStore().handlePrev()
+  } else {
+    videosCtrolStore().translateY = baseTranslateY.value
+  }
+  dragOffset.value = 0
+}
+
 const debouncedNext = useThrottleFn(() => {
   if (!videosCtrolStore().stopScroll) {
     videosCtrolStore().handleNext()
@@ -52,28 +86,26 @@ const debouncedPrev = useThrottleFn(() => {
   videosCtrolStore().handlePrev()
 }, 3000)
 
-// onMounted(() => {
-//   window.addEventListener('wheel', handleWheel)
-// })
-
 const handleWheel = (event: WheelEvent) => {
+  event.preventDefault()
   const delta = event.deltaY
-  // console.log(delta)
-  setTimeout(() => {}, 200)
   if (delta > 0) {
-    // 向下滚动
-    debouncedNext() // 触发向下切换的防抖函数
+    debouncedNext()
   } else if (delta < 0) {
-    // 向上滚动
-
-    debouncedPrev() // 触发向上切换的防抖函数
+    debouncedPrev()
   }
 }
+
+onMounted(() => {
+  videoHeight.value?.addEventListener('wheel', handleWheel, { passive: false })
+  document.addEventListener('mousemove', handleMouseMove)
+  document.addEventListener('mouseup', handleMouseUp)
+})
 
 useKeyboardNavigation()
 </script>
 <template>
-  <div class="carousel" ref="videoHeight">
+  <div class="carousel" ref="videoHeight" @mousedown="handleMouseDown">
     <div
       class="carousel-inner"
       :style="{
@@ -114,7 +146,8 @@ useKeyboardNavigation()
   top: calc(0% + 0px);
   width: 100%;
   height: calc(100% - 12px);
-  overflow: visible;
+  overflow: hidden;
+  overscroll-behavior: contain;
   padding-left: 0px;
   padding-right: 68px;
   .carousel-inner {

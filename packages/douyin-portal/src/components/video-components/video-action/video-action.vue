@@ -469,20 +469,15 @@ onUnmounted(() => {
 .video-action {
   position: absolute;
   bottom: 60px;
-  // right: 38px;
   right: 0;
   height: auto;
-  padding-right: 38px;
-  z-index: 100;
+  padding-right: 12px;
+  z-index: 11;
   color: #fff;
   display: flex;
   flex-direction: column;
-  // justify-content: center;
-  flex-shrink: 0;
-
   align-items: center;
   justify-content: flex-end;
-  // padding-right: 15px;
 
   .video-action-content {
     align-items: center;
@@ -554,6 +549,7 @@ onUnmounted(() => {
 
     cursor: pointer;
     position: relative;
+    padding-top: 6px;
 
     .num {
       margin-left: 5px;

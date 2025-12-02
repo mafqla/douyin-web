@@ -71,7 +71,7 @@ const toggleModal = (event: any) => {
           <div class="tag-content">
             <div
               class="video-item-tag-icon"
-              v-if="aweme.media_type === 2 && !isVideoVisible"
+              v-if="aweme.aweme_type === 68 && !isVideoVisible"
             >
               <svg
                 width="12"
