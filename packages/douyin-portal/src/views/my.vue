@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, toRef, watchEffect } from 'vue'
-import { UserHeaderMy, LoginCode, UserTab } from '@/components/my'
+import { LoginCode } from '@/components/my'
 import PageFooter from '@/layout/page-footer.vue'
 import { userStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
@@ -87,7 +87,6 @@ const load = () => {
   }
   video.bottomLoading = true
   page.value += 1
-  // fetchVideoData()
   video.bottomLoading = false
   fetchVideoData(page.value, size.value)
 }
