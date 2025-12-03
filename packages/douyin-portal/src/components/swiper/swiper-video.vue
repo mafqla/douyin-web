@@ -83,6 +83,11 @@ const debouncedPrev = useThrottleFn(() => {
 }, 3000)
 
 const handleWheel = (event: WheelEvent) => {
+  const target = event.target as HTMLElement
+  const scrollableParent = target.closest('[data-scrollable]')
+  if (scrollableParent) {
+    return
+  }
   event.preventDefault()
   const delta = event.deltaY
   if (delta > 0) {

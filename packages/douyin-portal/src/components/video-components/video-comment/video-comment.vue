@@ -80,6 +80,7 @@ const getCommentList = async () => {
     <div
       class="video-comment-list"
       ref="containerRef"
+      data-scrollable
       v-infinite-scroll="[getCommentList, { distance: 10 }]"
     >
       <template v-for="it in commentList" :key="it.cid">
