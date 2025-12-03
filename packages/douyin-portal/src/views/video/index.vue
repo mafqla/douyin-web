@@ -2,6 +2,7 @@
 import apis from '@/api/apis'
 import { Loading } from '@/components/common'
 import BasePlayer from '@/components/video-player/base-player.vue'
+import ImageGalleryPlayer from '@/components/video-player/ImageGalleryPlyer.vue'
 import PageFooter from '@/layout/page-footer.vue'
 import { playerSettingStore } from '@/stores/player-setting'
 import { settingStore } from '@/stores/setting'
@@ -50,7 +51,24 @@ onMounted(() => {
   getVideoDetail(awemeId)
 })
 const awemeUrl = computed(() => {
+  if (videoDetail.value?.is_live_photo === 1 && videoDetail.value?.images?.[0]?.video) {
+    return videoDetail.value.images[0].video.play_addr.url_list
+  }
   return videoDetail.value?.video.play_addr.url_list ?? []
+})
+
+const isImageGallery = computed(
+  () =>
+    videoDetail.value?.aweme_type === 68 && videoDetail.value?.is_live_photo !== 1
+)
+
+const imgGallery = computed(() => {
+  if (!isImageGallery.value) return []
+  return videoDetail.value?.images || []
+})
+
+const musicUrl = computed(() => {
+  return videoDetail.value?.music.play_url.url_list ?? []
 })
 
 const metaTitle = computed(() => {
@@ -82,7 +100,14 @@ const onEnded = () => {
       <div class="video-detail">
         <div class="left-content">
           <div class="video-detail-container">
+            <ImageGalleryPlayer
+              v-if="isImageGallery"
+              :music_url="musicUrl"
+              :imgGallery="imgGallery"
+              class="related-video"
+            />
             <BasePlayer
+              v-else
               :url="awemeUrl"
               :options="playerOptions"
               class="related-video"
@@ -97,9 +122,11 @@ const onEnded = () => {
               </template>
             </BasePlayer>
           </div>
-          <video-detail-info :description="videoDetail?.desc"
-          :text-extra="videoDetail?.text_extra"
-          :seo-description="videoDetail?.seo_info.ocr_content" />
+          <video-detail-info
+            :description="videoDetail?.desc"
+            :text-extra="videoDetail?.text_extra"
+            :seo-description="videoDetail?.seo_info.ocr_content"
+          />
           <related-video
             :author="videoDetail?.author"
             :aweme-id="videoDetail?.aweme_id"

@@ -2,23 +2,17 @@
 import { computed } from 'vue'
 import BasePlayer from './base-player.vue'
 
-interface ImageItem {
-  uri: string
-  width: number
-  height: number
-  url_list: string[]
-  download_url_list: string[]
-}
+import type { IAwemeImage } from '@/api/tyeps/common/aweme'
 
 const props = defineProps<{
-  url: string | string[]
-  imgGallery: ImageItem[]
+  music_url: string | string[]
+  imgGallery: IAwemeImage[]
 }>()
 
 const playerOptions = computed(() => {
   const imgGallery = props.imgGallery || []
   const length = imgGallery.length || 1
-  
+
   return {
     ignores: [
       'playbackrate',
@@ -44,12 +38,14 @@ const playerOptions = computed(() => {
 </script>
 <template>
   <BasePlayer
-    :url="props.url"
+    :url="props.music_url"
     :options="playerOptions"
     :isPlay="true"
     :loop="true"
     class="mini-video"
-  />
+  >
+    <slot />
+  </BasePlayer>
 </template>
 
 <style lang="scss" scoped></style>

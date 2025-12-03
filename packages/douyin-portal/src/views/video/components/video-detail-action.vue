@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { IawemeDetail } from '@/api/tyeps/request_response/videoDetailRes'
+import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 import { useCount } from '@/hooks'
 import { formatTimeToYMDHMS } from '@/utils/date-format'
 import { ref, type Ref } from 'vue'
 
-const videoDetail = inject<Ref<IawemeDetail>>('videoDetail')
+const videoDetail = inject<Ref<IAwemeInfo>>('videoDetail')
 
 const isLiked = computed(() => Boolean(videoDetail?.value.user_digged))
 // console.log(videoDetail?.value.user_digged);

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, toRefs, watch, provide } from 'vue'
+import { computed, ref, toRefs, watch } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 
@@ -11,6 +11,7 @@ import {
 } from '@/components/video-components'
 import { videosCtrolStore } from '@/stores/videos-control'
 import BasePlayer from './base-player.vue'
+import ImageGalleryPlayer from './ImageGalleryPlyer.vue'
 
 interface SwiperPlayerProps {
   awemeInfo: IAwemeInfo
@@ -29,30 +30,23 @@ const { isPlay } = toRefs(props)
 const playerOptions = {
   ignores: ['miniWin', 'playbackrate']
 }
-// const playRef = ref()
+const awemeUrl = computed(() => {
+  if (
+    props.awemeInfo?.is_live_photo === 1 &&
+    props.awemeInfo?.images?.[0]?.video
+  ) {
+    return props.awemeInfo?.images[0].video.play_addr.url_list
+  }
+  return props.awemeInfo?.video.play_addr.url_list ?? []
+})
+const isImageGallery = computed(
+  () => props.awemeInfo.aweme_type === 68 && props.awemeInfo.is_live_photo !== 1
+)
 
-// const play = () => {
-//   if (playRef.value && playRef.value.play) {
-//     playRef.value.play()
-//   }
-// }
-
-// const pause = () => {
-//   if (playRef.value && playRef.value.pause) {
-//     playRef.value.pause()
-//   }
-// }
-
-// // 使用 onMounted 钩子确保组件已经挂载
-// onMounted(() => {
-//   watchEffect(() => {
-//     if (isPlay.value) {
-//       play()
-//     } else {
-//       pause()
-//     }
-//   })
-// })
+const imgGallery = computed(() => {
+  if (!isImageGallery.value) return []
+  return props.awemeInfo.images || []
+})
 
 const control = videosCtrolStore()
 let currentWidth = ref('100%')
@@ -129,8 +123,9 @@ const thumbnail = computed(() => {
     >
       <div class="slide-video">
         <BasePlayer
+          v-if="!isImageGallery"
           ref="playerRef"
-          :url="props.awemeInfo.video.play_addr.url_list"
+          :url="awemeUrl"
           :options="playerOptions"
           :is-play="isPlay"
           :thumbnail="thumbnail"
@@ -149,6 +144,7 @@ const thumbnail = computed(() => {
             :digg_count="props.awemeInfo.statistics.digg_count"
             :comment_count="props.awemeInfo.statistics.comment_count"
             :collect_count="props.awemeInfo.statistics.collect_count"
+            :share_count="props.awemeInfo.statistics.share_count"
             :user_digged="props.awemeInfo.user_digged"
             :collect_stat="props.awemeInfo.collect_stat"
             :follow_status="props.awemeInfo.author.follow_status"
@@ -157,6 +153,34 @@ const thumbnail = computed(() => {
           >
           </video-action>
         </BasePlayer>
+        <ImageGalleryPlayer
+          v-if="isImageGallery"
+          :music_url="props.awemeInfo.music.play_url.url_list"
+          :imgGallery="imgGallery"
+        >
+          <video-info
+            v-if="props.isShowInfo"
+            :username="props.awemeInfo.author.nickname"
+            :uploadTime="props.awemeInfo.create_time"
+            :description="props.awemeInfo.desc"
+            :text-extra="props.awemeInfo?.text_extra ?? []"
+          />
+          <video-action
+            :aweme_id="props.awemeInfo.aweme_id"
+            :user_id="props.awemeInfo.author.sec_uid"
+            :avatar="props.awemeInfo.author.avatar_thumb.url_list[0] ?? ''"
+            :digg_count="props.awemeInfo.statistics.digg_count"
+            :comment_count="props.awemeInfo.statistics.comment_count"
+            :collect_count="props.awemeInfo.statistics.collect_count"
+            :share_count="props.awemeInfo.statistics.share_count"
+            :user_digged="props.awemeInfo.user_digged"
+            :collect_stat="props.awemeInfo.collect_stat"
+            :follow_status="props.awemeInfo.author.follow_status"
+            :isShowAvatar="props.isShowAvatar"
+            @toggleComments="toggleComments(props.awemeInfo.aweme_id)"
+          >
+          </video-action>
+        </ImageGalleryPlayer>
       </div>
       <video-search-btn @click="openRelated" v-if="!control.isShowRelated" />
       <video-side-bar-btn @click="openComments" v-if="control.isShowComment" />
@@ -192,6 +216,7 @@ const thumbnail = computed(() => {
   position: relative;
   transition: all 0.15s linear;
   width: 100%;
+  min-width: 760px;
   display: flex;
 
   .videos-container {

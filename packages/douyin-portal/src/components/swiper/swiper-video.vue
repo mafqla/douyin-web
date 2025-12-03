@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { videosCtrolStore } from '@/stores/videos-control'
-import { watchEffect, type PropType, ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
+import {
+  watchEffect,
+  type PropType,
+  ref,
+  onMounted,
+  computed,
+  watch,
+  onBeforeUnmount
+} from 'vue'
 import swiperPlayer from '../video-player/swiper-player.vue'
 import { useElementSize, useThrottleFn } from '@vueuse/core'
 import { useKeyboardNavigation } from '@/hooks'
@@ -97,12 +105,15 @@ const handleWheel = (event: WheelEvent) => {
   }
 }
 
-watch(() => store.activeVideoIndex, () => {
-  transitionDuration.value = 250
-  setTimeout(() => {
-    transitionDuration.value = 0
-  }, 300)
-})
+watch(
+  () => store.activeVideoIndex,
+  () => {
+    transitionDuration.value = 250
+    setTimeout(() => {
+      transitionDuration.value = 0
+    }, 300)
+  }
+)
 
 onMounted(() => {
   videoHeight.value?.addEventListener('wheel', handleWheel, { passive: false })
@@ -138,14 +149,17 @@ useKeyboardNavigation()
       >
         <KeepAlive>
           <swiper-player
-            v-if="shouldRender(index) && item?.media_type === 4"
+            v-if="
+              (shouldRender(index) && item?.media_type === 4) ||
+              item?.media_type === 4
+            "
             :key="item.aweme_id"
             :aweme-info="item"
             :isPlay="isActiveIndex(index)"
           />
         </KeepAlive>
         <template v-if="shouldRender(index) && item?.aweme_type === 101">
-          {{item.cell_room.rawdata}}
+          {{ item.cell_room.rawdata }}
         </template>
       </div>
     </div>

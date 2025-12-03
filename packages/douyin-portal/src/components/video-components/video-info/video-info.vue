@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
 import type { ISegment } from '@/api/tyeps/common/aweme'
 import formatTime from '@/utils/date-format'
 
@@ -8,9 +9,42 @@ const props = defineProps<{
   description: string
   textExtra: ISegment[]
 }>()
+
+const videoInfoRef = ref<HTMLElement | null>(null)
+const maxWidth = ref('485px')
+const minWidth = ref('285px')
+
+const calcMaxWidth = () => {
+  if (videoInfoRef.value) {
+    const container = videoInfoRef.value.closest(
+      '.videos-container'
+    ) as HTMLElement
+    if (container) {
+      const containerWidth = container.offsetWidth
+      maxWidth.value = `${containerWidth * 0.45}px`
+    }
+  }
+}
+
+let resizeObserver: ResizeObserver | null = null
+
+onMounted(() => {
+  calcMaxWidth()
+  const container = videoInfoRef.value?.closest(
+    '.videos-container'
+  ) as HTMLElement
+  if (container) {
+    resizeObserver = new ResizeObserver(calcMaxWidth)
+    resizeObserver.observe(container)
+  }
+})
+
+onUnmounted(() => {
+  resizeObserver?.disconnect()
+})
 </script>
 <template>
-  <div class="video-info">
+  <div class="video-info" ref="videoInfoRef" :style="{ maxWidth, minWidth }">
     <div class="video-info-top">
       <div class="video-info-author">
         <span>@{{ props.username }}</span>
@@ -57,6 +91,12 @@ const props = defineProps<{
       &:hover {
         text-decoration: underline;
         background-color: transparent;
+      }
+    }
+    @media (max-width: 1440px) {
+      .video-info-author span {
+        font-size: 18px;
+        line-height: 26px;
       }
     }
     .video-info-time {

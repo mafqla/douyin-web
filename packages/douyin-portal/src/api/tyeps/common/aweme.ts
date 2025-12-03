@@ -4,6 +4,20 @@ import type { ISuggestWords } from './suggest_words'
 import type { IVideo } from './video'
 import type { IVideoControl } from './video-control'
 
+export interface IAwemeImage {
+  uri: string
+  url_list: string[]
+  download_url_list: string[]
+  width: number
+  height: number
+  image_type: number
+  live_photo_type: number
+  interaction_stickers: null
+  mask_url_list: null
+  watermark_free_download_url_list: null
+  video: IVideo  // 用于动图
+}
+
 export interface IAwemeInfo {
   aweme_id: string // 视频ID
   desc: string // 视频描述
@@ -70,9 +84,9 @@ export interface IAwemeInfo {
   hybrid_label: null // 混合标签，具体含义未知
   geofencing_regions: null // 地理围栏区域信息，具体含义未知
   cover_labels: null // 封面标签，具体含义未知
-  images: null // 图片信息，具体含义未知
+  images: IAwemeImage[] | null
   relation_labels: null // 关系标签，具体含义未知
-
+  is_live_photo: number // 是否动图
   impression_data: ImpressionData // 印象数据
   social_tag_list: null // 社交标签列表，具体含义未知
   suggest_words: ISuggestWords // 搜索推荐词

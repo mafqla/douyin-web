@@ -11,6 +11,7 @@ const props = defineProps({
   digg_count: Number,
   comment_count: Number,
   collect_count: Number,
+  share_count: Number,
   user_digged: Number,
   collect_stat: Number,
   follow_status: Number,
@@ -270,7 +271,7 @@ onUnmounted(() => {
       </div>
       <div class="video-action-item">
         <svg-icon class="icon" icon="fenxiang" />
-        <span class="num">9</span>
+        <span class="num">{{ useCount(props.share_count ?? 0) }}</span>
       </div>
 
       <div
