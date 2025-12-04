@@ -112,4 +112,27 @@ watchEffect(() => {
     }
   }
 }
+
+@media screen and (min-width: 1440px) and (max-width: 2560px) {
+  .comment-expand .comment-expand-btn,
+  .comment-expand .comment-content-collapse {
+    font-size: calc(0.535714vw + 4.28571px) !important;
+
+    .icon{
+      width: calc(0.535714vw + 4.28571px) !important;
+      height: calc(0.535714vw + 4.28571px) !important;
+    }
+  }
+}
+@media screen and (min-width: 2560px) {
+  .comment-expand .comment-expand-btn,
+  .comment-expand .comment-content-collapse * {
+    font-size: 18px !important;
+
+    .icon{
+      width: 18px !important;
+      height: 18px !important;
+    }
+  }
+}
 </style>

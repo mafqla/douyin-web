@@ -157,6 +157,7 @@ const thumbnail = computed(() => {
           v-if="isImageGallery"
           :music_url="props.awemeInfo.music.play_url.url_list"
           :imgGallery="imgGallery"
+          :isPlay="isPlay"
         >
           <video-info
             v-if="props.isShowInfo"

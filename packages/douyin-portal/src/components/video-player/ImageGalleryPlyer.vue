@@ -7,6 +7,7 @@ import type { IAwemeImage } from '@/api/tyeps/common/aweme'
 const props = defineProps<{
   music_url: string | string[]
   imgGallery: IAwemeImage[]
+  isPlay?: boolean
 }>()
 
 const playerOptions = computed(() => {
@@ -40,7 +41,7 @@ const playerOptions = computed(() => {
   <BasePlayer
     :url="props.music_url"
     :options="playerOptions"
-    :isPlay="true"
+    :isPlay="props.isPlay"
     :loop="true"
     class="mini-video"
   >

@@ -2,6 +2,7 @@
 import apis from '@/api/apis'
 import type { IComments } from '@/api/tyeps/request_response/commentListRes'
 import DyInput from '@/components/common/dy-input/index.vue'
+import commentExpand from './comment-expand.vue'
 import { useCount } from '@/hooks'
 import { handleCommentParser } from '@/utils/commentParser'
 import formatTime from '@/utils/date-format'
@@ -349,7 +350,7 @@ const onCollapse = () => {
             overflow: hidden;
 
             .header-name-text {
-              color: var(--color-text-t3);
+              color: var(--color-text-t1);
               font-size: 13px;
               font-weight: 400;
               line-height: 20px;
@@ -606,6 +607,60 @@ const onCollapse = () => {
         }
       }
     }
+  }
+}
+
+@media screen and (min-width: 1440px) and (max-width: 2560px) {
+  .header-name-text {
+    font-size: calc(0.535714vw + 4.28571px) !important;
+  }
+  .comment-item-content-text-text {
+    font-size: calc(0.803571vw + 1.42857px) !important;
+    line-height: calc(0.892857vw + 9.14286px) !important;
+  }
+  .comment-item-content-time {
+    padding-top: calc(0.714286vw - 10.2857px) !important;
+    font-size: calc(0.535714vw + 4.28571px) !important;
+  }
+  .comment-footer-content {
+    span {
+      font-size: calc(0.535714vw + 4.28571px) !important;
+    }
+    .icon {
+      width: calc(0.357143vw + 14.8571px) !important;
+      height: calc(0.357143vw + 14.8571px) !important;
+    }
+  }
+
+  .comment-expand .comment-expand-btn,
+  .comment-expand .comment-content-collapse {
+    font-size: calc(0.535714vw + 4.28571px) !important;
+  }
+}
+@media screen and (min-width: 2560px) {
+  .header-name-text {
+    font-size: 18px !important;
+  }
+  .comment-item-content-text-text {
+    font-size: 22px !important;
+    line-height: 32px !important;
+  }
+  .comment-item-content-time {
+    padding-top: 8px !important;
+    font-size: 18px !important;
+  }
+  .comment-footer-content {
+    span {
+      font-size: 18px !important;
+    }
+    .icon {
+      width: 24px !important;
+      height: 24px !important;
+    }
+  }
+  .comment-expand .comment-expand-btn,
+  .comment-expand .comment-content-collapse * {
+    font-size: 18px !important;
   }
 }
 </style>

@@ -95,7 +95,7 @@ const playerOptions = ref<IPlayerOptions>({
     default: 0.5,
     showValueLabel: true
   },
-  autoplayMuted: true,
+  // autoplayMuted: true,
   closeInactive: true,
   allowSeekPlayed: true,
   allowPlayAfterEnded: true,

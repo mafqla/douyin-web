@@ -54,12 +54,14 @@ watchEffect(() => {
 
 const isDragging = ref(false)
 const startY = ref(0)
+const isSwitching = ref(false)
 
 const handleMouseDown = (event: MouseEvent) => {
   isDragging.value = true
   startY.value = event.clientY
   dragOffset.value = 0
   transitionDuration.value = 0
+  event.preventDefault()
 }
 
 const handleMouseMove = (event: MouseEvent) => {
@@ -73,22 +75,36 @@ const handleMouseUp = () => {
   isDragging.value = false
   transitionDuration.value = 250
   const threshold = height.value / 4
+  if (isSwitching.value) {
+    dragOffset.value = 0
+    return
+  }
   if (dragOffset.value < -threshold) {
+    isSwitching.value = true
     store.handleNext()
+    setTimeout(() => {
+      isSwitching.value = false
+    }, 300)
   } else if (dragOffset.value > threshold) {
+    isSwitching.value = true
     store.handlePrev()
+    setTimeout(() => {
+      isSwitching.value = false
+    }, 300)
   }
   dragOffset.value = 0
 }
 
 const debouncedNext = useThrottleFn(() => {
-  if (!store.stopScroll) {
+  if (!store.stopScroll && !isSwitching.value) {
     store.handleNext()
   }
-}, 3000)
+}, 300)
 const debouncedPrev = useThrottleFn(() => {
-  store.handlePrev()
-}, 3000)
+  if (!isSwitching.value) {
+    store.handlePrev()
+  }
+}, 300)
 
 const handleWheel = (event: WheelEvent) => {
   const target = event.target as HTMLElement
@@ -147,17 +163,15 @@ useKeyboardNavigation()
           'margin-bottom': '12px'
         }"
       >
-        <KeepAlive>
-          <swiper-player
-            v-if="
-              (shouldRender(index) && item?.media_type === 4) ||
-              item?.media_type === 4
-            "
-            :key="item.aweme_id"
-            :aweme-info="item"
-            :isPlay="isActiveIndex(index)"
-          />
-        </KeepAlive>
+        <swiper-player
+          v-if="
+            (shouldRender(index) && item?.media_type === 4) ||
+            (shouldRender(index) && item?.aweme_type === 68)
+          "
+          :key="item.aweme_id"
+          :aweme-info="item"
+          :isPlay="isActiveIndex(index)"
+        />
         <template v-if="shouldRender(index) && item?.aweme_type === 101">
           {{ item.cell_room.rawdata }}
         </template>

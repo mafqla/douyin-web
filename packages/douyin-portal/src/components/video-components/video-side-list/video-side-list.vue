@@ -126,6 +126,7 @@ onUnmounted(() => {
       <div class="user-post-list">
         <div
           class="scroll-content"
+          data-scrollable
           v-infinite-scroll="[getUserPostList, { distance: 10 }]"
         >
           <side-item
@@ -151,7 +152,6 @@ onUnmounted(() => {
   .side-list-header {
     -webkit-app-region: no-drag;
     display: flex;
-    height: 60px;
     justify-content: space-between;
     border-bottom: 1px solid hsla(0, 0%, 100%, 0.06);
     height: 70px;
@@ -172,7 +172,7 @@ onUnmounted(() => {
           align-items: center;
           color: rgba(255, 255, 255, 0.9);
           display: flex;
-          height: 24px;
+          height: 22px;
           font-size: 14px;
           font-weight: 500;
           max-width: unset;
@@ -265,6 +265,43 @@ onUnmounted(() => {
         margin-right: 4px;
         padding: 0 4px 0 16px;
       }
+    }
+  }
+}
+
+@media screen and (min-width: 1440px) and (max-width: 2560px) {
+  .side-list-header {
+    height: unset !important;
+    margin: 0 !important;
+    padding: calc(0.714286vw + 5.71429px) 0 !important;
+
+    .info-author {
+      font-size: calc(0.625vw + 5px) !important;
+      .icon {
+        width: calc(0.625vw + 5px) !important;
+        height: calc(0.625vw + 5px) !important;
+      }
+    }
+    .info-number {
+      font-size: calc(0.357143vw + 6.85714px) !important;
+    }
+  }
+}
+@media screen and (min-width: 2560px) {
+  .side-list-header {
+    height: unset !important;
+    margin: 0 !important;
+    padding: 24px 0 !important;
+
+    .info-author {
+      font-size: 21px !important;
+      .icon {
+        width: 21px !important;
+        height: 21px !important;
+      }
+    }
+    .info-number {
+      font-size: 16px !important;
     }
   }
 }

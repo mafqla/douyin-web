@@ -20,7 +20,6 @@ onMounted(() => {
     for (const entry of entries) {
       spanHeight.value = entry.target.scrollHeight
       clientHeight.value = entry.target.clientHeight
-      // console.log(spanHeight.value, clientHeight.value)
 
       shouldShowButton.value = spanHeight.value > clientHeight.value
       addShow.value = spanHeight.value > clientHeight.value
@@ -200,6 +199,32 @@ const formattedDescription = computed(() => {
     }
   }
 }
+@media screen and (min-width: 1920px) {
+  // :root {
+  //   --lineClamp: 3 !important;
+  //   --lineHeight: 26px !important;
+  //   --maxHeight: 78px !important;
+  // }
+  .text {
+    font-size: 18px !important;
+    line-height: 24px;
+    .tag span {
+      font-size: 18px !important;
+      line-height: 24px;
+    }
+  }
+}
+// @media screen and (min-width: 1440px) and (max-width: 2560px) {
+//   .text {
+//     font-size: 0.972222vw !important;
+//     line-height: 1.52778vw;
+
+//     .tag span {
+//       font-size: 0.972222vw !important;
+//       line-height: 1.52778vw;
+//     }
+//   }
+// }
 
 .video-desc-swiper {
 }

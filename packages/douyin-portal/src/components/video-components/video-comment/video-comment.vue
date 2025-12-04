@@ -303,4 +303,15 @@ const getCommentList = async () => {
     }
   }
 }
+
+@media screen and (min-width: 1440px) and (max-width: 2560px) {
+  .video-comment-header * {
+    font-size: calc(0.892857vw - 0.857143px) !important;
+  }
+}
+@media screen and (min-width: 2560px) {
+  .video-comment-header * {
+    font-size: 22px !important;
+  }
+}
 </style>

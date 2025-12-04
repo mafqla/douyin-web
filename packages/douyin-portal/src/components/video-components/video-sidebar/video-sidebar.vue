@@ -222,11 +222,28 @@ const props = defineProps({
   .video-sidebar {
     width: 28.5714285714%;
   }
+  .video-sidebar .related-video-card .video-tabs-bar .video-tabs-title {
+    font-size: calc(0.892857vw + 1.14286px);
+    line-height: calc(2.32143vw + 12.5714px);
+  }
+
+  .video-tabs-top {
+    height: calc(2.32143vw + 12.5714px) !important;
+  }
 }
 
 @media screen and (min-width: 2560px) {
   .video-sidebar {
     width: 656px;
+  }
+  .video-sidebar .related-video-card .video-tabs-bar .video-tabs-title {
+    margin-right: calc(13.2203% - 11px);
+    font-size: 24px;
+    line-height: 72px;
+  }
+  
+  .video-tabs-top {
+    height: 72px !important;
   }
 }
 </style>

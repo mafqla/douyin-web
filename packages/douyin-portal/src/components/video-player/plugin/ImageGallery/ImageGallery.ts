@@ -98,7 +98,7 @@ export class ImageGalleryPlugin extends Plugin {
       ...imageGalleryConfig
     }
 
-    console.log('配置已加载:', this.cfg)
+    // console.log('配置已加载:', this.cfg)
 
     const { images } = this.cfg
     if (!images || images.length === 0) return
@@ -477,13 +477,13 @@ export class ImageGalleryPlugin extends Plugin {
         targetIndex = this.currentIndex + 1
       }
 
-      console.log('拖动结束，计算目标索引:', {
-        currentIndex: this.currentIndex,
-        deltaX: deltaX,
-        direction: deltaX > 0 ? 'right' : 'left',
-        targetIndexBeforeBoundary: targetIndex,
-        loop: this.cfg.loop
-      })
+      // console.log('拖动结束，计算目标索引:', {
+      //   currentIndex: this.currentIndex,
+      //   deltaX: deltaX,
+      //   direction: deltaX > 0 ? 'right' : 'left',
+      //   targetIndexBeforeBoundary: targetIndex,
+      //   loop: this.cfg.loop
+      // })
 
       // 边界检查 - 禁止在第一张图片时向左拖动，禁止在最后一张图片时向右拖动
       if (targetIndex < 0) {
@@ -502,10 +502,10 @@ export class ImageGalleryPlugin extends Plugin {
         targetIndex = 0
       }
 
-      console.log('拖动结束，最终目标索引:', {
-        targetIndex: targetIndex,
-        loop: this.cfg.loop
-      })
+      // console.log('拖动结束，最终目标索引:', {
+      //   targetIndex: targetIndex,
+      //   loop: this.cfg.loop
+      // })
 
       this.goto(targetIndex)
     } else {
@@ -575,13 +575,13 @@ export class ImageGalleryPlugin extends Plugin {
         targetIndex = this.currentIndex + 1
       }
 
-      console.log('拖动结束，计算目标索引:', {
-        currentIndex: this.currentIndex,
-        deltaX: deltaX,
-        direction: deltaX > 0 ? 'right' : 'left',
-        targetIndexBeforeBoundary: targetIndex,
-        loop: this.cfg.loop
-      })
+      // console.log('拖动结束，计算目标索引:', {
+      //   currentIndex: this.currentIndex,
+      //   deltaX: deltaX,
+      //   direction: deltaX > 0 ? 'right' : 'left',
+      //   targetIndexBeforeBoundary: targetIndex,
+      //   loop: this.cfg.loop
+      // })
 
       // 边界检查 - 禁止在第一张图片时向左拖动，禁止在最后一张图片时向右拖动
       if (targetIndex < 0) {
@@ -600,10 +600,10 @@ export class ImageGalleryPlugin extends Plugin {
         targetIndex = 0
       }
 
-      console.log('拖动结束，最终目标索引:', {
-        targetIndex: targetIndex,
-        loop: this.cfg.loop
-      })
+      // console.log('拖动结束，最终目标索引:', {
+      //   targetIndex: targetIndex,
+      //   loop: this.cfg.loop
+      // })
 
       this.goto(targetIndex)
     } else {
@@ -637,7 +637,7 @@ export class ImageGalleryPlugin extends Plugin {
   private keydownCooldown = false
 
   private onKeydown = (e: KeyboardEvent) => {
-    console.log('键盘事件:', e.key)
+    // console.log('键盘事件:', e.key)
     // 添加防抖，防止快速按键导致的问题
     if (this.keydownCooldown) return
 
@@ -653,21 +653,21 @@ export class ImageGalleryPlugin extends Plugin {
     }, 200) // 200ms 防抖间隔
 
     if (e.key === 'ArrowLeft') {
-      console.log('向左箭头被按下')
+      // console.log('向左箭头被按下')
       this.prev()
     }
     if (e.key === 'ArrowRight') {
-      console.log('向右箭头被按下')
+      // console.log('向右箭头被按下')
       this.next()
     }
   }
 
   private next() {
-    console.log('next 被调用:', {
-      currentIndex: this.currentIndex,
-      imagesLength: this.cfg.images.length,
-      loop: this.cfg.loop
-    })
+    // console.log('next 被调用:', {
+    //   currentIndex: this.currentIndex,
+    //   imagesLength: this.cfg.images.length,
+    //   loop: this.cfg.loop
+    // })
     let targetIndex = this.currentIndex + 1
     // 边界检查 - 禁止在最后一张图片时继续向右
     if (targetIndex >= this.cfg.images.length) {
@@ -676,16 +676,16 @@ export class ImageGalleryPlugin extends Plugin {
       }
       targetIndex = 0
     }
-    console.log('next 计算的目标索引:', targetIndex)
+    // console.log('next 计算的目标索引:', targetIndex)
     this.goto(targetIndex)
   }
 
   private prev() {
-    console.log('prev 被调用:', {
-      currentIndex: this.currentIndex,
-      imagesLength: this.cfg.images.length,
-      loop: this.cfg.loop
-    })
+    // console.log('prev 被调用:', {
+    //   currentIndex: this.currentIndex,
+    //   imagesLength: this.cfg.images.length,
+    //   loop: this.cfg.loop
+    // })
     let targetIndex = this.currentIndex - 1
     // 边界检查 - 禁止在第一张图片时继续向左
     if (targetIndex < 0) {
@@ -694,7 +694,7 @@ export class ImageGalleryPlugin extends Plugin {
       }
       targetIndex = this.cfg.images.length - 1
     }
-    console.log('prev 计算的目标索引:', targetIndex)
+    // console.log('prev 计算的目标索引:', targetIndex)
     this.goto(targetIndex)
   }
 
@@ -715,22 +715,22 @@ export class ImageGalleryPlugin extends Plugin {
       index < 0 ||
       index >= this.cfg.images.length
     ) {
-      console.log('goto 返回，条件不满足')
+      // console.log('goto 返回，条件不满足')
       return
     }
 
     // 标记这是用户发起的更改（仅当不是自动播放时）
     if (!isAutoplay) {
       this._isUserInitiatedChange = true
-      console.log('_isUserInitiatedChange 设置为 true')
+      // console.log('_isUserInitiatedChange 设置为 true')
     } else {
       // 标记这是自动播放发起的更改
       this._isAutoplayChange = true
-      console.log('_isAutoplayChange 设置为 true')
+      // console.log('_isAutoplayChange 设置为 true')
     }
 
     this.currentIndex = index
-    console.log('currentIndex 更新为:', this.currentIndex)
+    // console.log('currentIndex 更新为:', this.currentIndex)
     this.updateSlidePosition()
 
     // 只有当播放器正在播放且不是自动播放调用时才重启自动播放
@@ -744,13 +744,13 @@ export class ImageGalleryPlugin extends Plugin {
     // 重置用户发起更改的标志（仅当不是自动播放时）
     if (!isAutoplay) {
       setTimeout(() => {
-        console.log('_isUserInitiatedChange 重置为 false')
+        // console.log('_isUserInitiatedChange 重置为 false')
         this._isUserInitiatedChange = false
       }, 300)
     } else {
       // 重置自动播放更改的标志
       setTimeout(() => {
-        console.log('_isAutoplayChange 重置为 false')
+        // console.log('_isAutoplayChange 重置为 false')
         this._isAutoplayChange = false
       }, 300)
     }
@@ -786,21 +786,21 @@ export class ImageGalleryPlugin extends Plugin {
 
     // 如果正在同步进度条，不进行图片切换
     if (this._isSyncingProgress) {
-      console.log('正在同步进度条，不进行图片切换')
+      // console.log('正在同步进度条，不进行图片切换')
       return
     }
 
     // 如果播放器已暂停，不进行图片切换
     if (this.player.paused) {
-      console.log('播放器已暂停，不进行图片切换')
+      // console.log('播放器已暂停，不进行图片切换')
       return
     }
 
     // 如果是用户发起的更改，不进行自动切换
     if (this._isUserInitiatedChange) {
-      console.log('用户发起的更改，不进行自动切换', {
-        isUserInitiatedChange: this._isUserInitiatedChange
-      })
+      // console.log('用户发起的更改，不进行自动切换', {
+      //   isUserInitiatedChange: this._isUserInitiatedChange
+      // })
       return
     }
 
@@ -808,26 +808,26 @@ export class ImageGalleryPlugin extends Plugin {
     const currentTime = this.player.currentTime || 0
     const progress = duration > 0 ? currentTime / duration : 0
 
-    console.log('handleTimeUpdate 被调用:', {
-      currentTime,
-      duration,
-      progress,
-      currentIndex: this.currentIndex,
-      imagesLength: this.cfg.images.length,
-      isUserInitiatedChange: this._isUserInitiatedChange,
-      isSyncingProgress: this._isSyncingProgress
-    })
+    // console.log('handleTimeUpdate 被调用:', {
+    //   currentTime,
+    //   duration,
+    //   progress,
+    //   currentIndex: this.currentIndex,
+    //   imagesLength: this.cfg.images.length,
+    //   isUserInitiatedChange: this._isUserInitiatedChange,
+    //   isSyncingProgress: this._isSyncingProgress
+    // })
 
     // 防止在播放结束后继续切换图片
     if (duration > 0 && currentTime >= duration) {
-      console.log('播放已结束')
+      // console.log('播放已结束')
       // 如果不循环播放，停止在最后一张图片
       if (!this.cfg.loop) {
         const lastIndex = this.cfg.images.length - 1
-        console.log('不循环播放，停止在最后一张图片:', {
-          lastIndex,
-          currentIndex: this.currentIndex
-        })
+        // console.log('不循环播放，停止在最后一张图片:', {
+        //   lastIndex,
+        //   currentIndex: this.currentIndex
+        // })
         if (this.currentIndex !== lastIndex) {
           // 检查是否是用户发起的更改
           if (!this._isUserInitiatedChange) {
@@ -835,7 +835,7 @@ export class ImageGalleryPlugin extends Plugin {
             this.updateSlidePosition()
             this.ensureImageLoaded(lastIndex)
           } else {
-            console.log('用户发起的更改，不更新到最后一张图片')
+            // console.log('用户发起的更改，不更新到最后一张图片')
           }
         }
       }
@@ -851,18 +851,18 @@ export class ImageGalleryPlugin extends Plugin {
       Math.min(newIndex, this.cfg.images.length - 1)
     )
 
-    console.log('计算得到的索引:', {
-      newIndex,
-      clampedIndex,
-      currentIndex: this.currentIndex
-    })
+    // console.log('计算得到的索引:', {
+    //   newIndex,
+    //   clampedIndex,
+    //   currentIndex: this.currentIndex
+    // })
 
     // 只有当索引发生变化时才更新
     if (clampedIndex !== this.currentIndex) {
-      console.log('索引发生变化，更新图片:', {
-        from: this.currentIndex,
-        to: clampedIndex
-      })
+      // console.log('索引发生变化，更新图片:', {
+      //   from: this.currentIndex,
+      //   to: clampedIndex
+      // })
       this.currentIndex = clampedIndex
       this.updateSlidePosition()
 

@@ -267,4 +267,25 @@ const props = defineProps<SideItemProps>()
     opacity: 1;
   }
 }
+
+@media screen and (min-width: 1440px) and (max-width: 2560px) {
+  .author-card-user-video-like {
+    font-size: calc(0.357143vw + 6.85714px) !important;
+
+    .icon {
+      width: calc(0.892857vw + 1.14286px) !important;
+      height: calc(0.892857vw + 1.14286px) !important;
+    }
+  }
+}
+@media screen and (max-width: 2560px) {
+  .author-card-user-video-like {
+    font-size: 16px !important;
+
+    .icon {
+      width: 24px !important;
+      height: 24px !important;
+    }
+  }
+}
 </style>
