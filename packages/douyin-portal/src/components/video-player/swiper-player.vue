@@ -198,12 +198,12 @@ const thumbnail = computed(() => {
       @closeComments="closeComments"
       v-if="!control.isShowComment"
     />
-    <div class="video-blur">
+    <!-- <div class="video-blur">
       <img
         :src="props.awemeInfo.video.cover.url_list[0] ?? ''"
         :alt="props.awemeInfo.desc"
       />
-    </div>
+    </div> -->
   </div>
 </template>
 

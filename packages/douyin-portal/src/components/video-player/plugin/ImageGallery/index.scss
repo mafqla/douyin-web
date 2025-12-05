@@ -5,8 +5,28 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  // background-color: #000;
   z-index: 1;
+}
+
+.image-gallery-blur {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  overflow: hidden;
+  transform: scale(1.2);
+
+  .image-gallery-blur-img {
+    width: 100%;
+    height: 100%;
+    filter: blur(60px);
+    opacity: 0.8;
+    user-select: none;
+    object-fit: cover;
+    transition: opacity 0.3s ease;
+  }
 }
 
 .image-gallery-slides {
@@ -80,12 +100,12 @@
 
   // 左箭头
   &.image-gallery-arrow-left {
-    left: 20px;
+    left: 70px;
   }
 
   // 右箭头
   &.image-gallery-arrow-right {
-    right: 20px;
+    right: 70px;
   }
 
   // 箭头图标样式

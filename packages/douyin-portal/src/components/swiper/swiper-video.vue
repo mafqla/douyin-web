@@ -10,7 +10,7 @@ import {
   onBeforeUnmount
 } from 'vue'
 import swiperPlayer from '../video-player/swiper-player.vue'
-import { useElementSize, useThrottleFn } from '@vueuse/core'
+import { useElementSize } from '@vueuse/core'
 import { useKeyboardNavigation } from '@/hooks'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 
@@ -47,32 +47,51 @@ const videoHeight = ref()
 const { height } = useElementSize(videoHeight)
 
 const dragOffset = ref(0)
+const accumulatedDelta = ref(0)
+const wheelThreshold = 150
+let lastWheelTime = 0
+const wheelCooldown = 500
 
 watchEffect(() => {
   store.initTranslateY = height.value + 12
 })
 
 const isDragging = ref(false)
+const isActualDragging = ref(false)
 const startY = ref(0)
 const isSwitching = ref(false)
+const dragThreshold = 10
+let shouldPreventClick = false
 
 const handleMouseDown = (event: MouseEvent) => {
   isDragging.value = true
+  isActualDragging.value = false
   startY.value = event.clientY
   dragOffset.value = 0
-  transitionDuration.value = 0
-  event.preventDefault()
 }
 
 const handleMouseMove = (event: MouseEvent) => {
   if (!isDragging.value) return
-  event.preventDefault()
-  dragOffset.value = event.clientY - startY.value
+  const deltaY = event.clientY - startY.value
+  if (!isActualDragging.value && Math.abs(deltaY) > dragThreshold) {
+    isActualDragging.value = true
+    transitionDuration.value = 0
+  }
+  if (isActualDragging.value) {
+    event.preventDefault()
+    dragOffset.value = deltaY
+  }
 }
 
 const handleMouseUp = () => {
   if (!isDragging.value) return
   isDragging.value = false
+  if (!isActualDragging.value) {
+    shouldPreventClick = false
+    return
+  }
+  shouldPreventClick = true
+  isActualDragging.value = false
   transitionDuration.value = 250
   const threshold = height.value / 4
   if (isSwitching.value) {
@@ -95,16 +114,13 @@ const handleMouseUp = () => {
   dragOffset.value = 0
 }
 
-const debouncedNext = useThrottleFn(() => {
-  if (!store.stopScroll && !isSwitching.value) {
-    store.handleNext()
+const handleClick = (event: MouseEvent) => {
+  if (shouldPreventClick) {
+    event.stopPropagation()
+    event.preventDefault()
+    shouldPreventClick = false
   }
-}, 300)
-const debouncedPrev = useThrottleFn(() => {
-  if (!isSwitching.value) {
-    store.handlePrev()
-  }
-}, 300)
+}
 
 const handleWheel = (event: WheelEvent) => {
   const target = event.target as HTMLElement
@@ -113,11 +129,25 @@ const handleWheel = (event: WheelEvent) => {
     return
   }
   event.preventDefault()
-  const delta = event.deltaY
-  if (delta > 0) {
-    debouncedNext()
-  } else if (delta < 0) {
-    debouncedPrev()
+  const now = Date.now()
+  if (isSwitching.value || now - lastWheelTime < wheelCooldown) return
+  accumulatedDelta.value += event.deltaY
+  if (accumulatedDelta.value > wheelThreshold) {
+    accumulatedDelta.value = 0
+    lastWheelTime = now
+    isSwitching.value = true
+    store.handleNext()
+    setTimeout(() => {
+      isSwitching.value = false
+    }, wheelCooldown)
+  } else if (accumulatedDelta.value < -wheelThreshold) {
+    accumulatedDelta.value = 0
+    lastWheelTime = now
+    isSwitching.value = true
+    store.handlePrev()
+    setTimeout(() => {
+      isSwitching.value = false
+    }, wheelCooldown)
   }
 }
 
@@ -133,11 +163,13 @@ watch(
 
 onMounted(() => {
   videoHeight.value?.addEventListener('wheel', handleWheel, { passive: false })
+  videoHeight.value?.addEventListener('click', handleClick, true)
   document.addEventListener('mousemove', handleMouseMove)
   document.addEventListener('mouseup', handleMouseUp)
 })
 
 onBeforeUnmount(() => {
+  videoHeight.value?.removeEventListener('click', handleClick, true)
   document.removeEventListener('mousemove', handleMouseMove)
   document.removeEventListener('mouseup', handleMouseUp)
 })

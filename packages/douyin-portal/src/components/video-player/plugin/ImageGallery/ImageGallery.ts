@@ -38,22 +38,20 @@ export class ImageGalleryPlugin extends Plugin {
 
   private _currentIndex = 0
   private _isUserInitiatedChange = false
-  private _isAutoplayChange = false
   private _isSyncingProgress = false
+  private _userChangeUntil = 0
 
   private get currentIndex(): number {
     return this._currentIndex
   }
 
   private set currentIndex(value: number) {
-    console.log('currentIndex 变化:', {
-      from: this._currentIndex,
-      to: value,
-      stack: new Error().stack
-    })
+    const oldValue = this._currentIndex
     this._currentIndex = value
-    // 更新箭头图标的禁用状态
     this.updateArrowStates()
+    if (oldValue !== value) {
+      this.updateBlurBackground(value)
+    }
   }
   private autoplayTimer: number | null = null
   private touchStartX = 0
@@ -119,6 +117,7 @@ export class ImageGalleryPlugin extends Plugin {
     // 初始显示第一张
     this.updateSlidePosition()
     this.updateArrowStates()
+    this.updateBlurBackground(0)
     this.startAutoplay()
 
     // 预加载图片
@@ -127,6 +126,16 @@ export class ImageGalleryPlugin extends Plugin {
       // 确保第一张图片正确显示
       this.preloadImage(0)
     }, 0)
+  }
+
+  private updateBlurBackground(index: number) {
+    const blurImg = this.root.querySelector('.image-gallery-blur-img') as HTMLImageElement
+    if (blurImg) {
+      const imageUrl = this.getBestImageUrl(index)
+      if (imageUrl) {
+        blurImg.src = imageUrl
+      }
+    }
   }
 
   render() {
@@ -274,6 +283,9 @@ export class ImageGalleryPlugin extends Plugin {
       <div class="image-gallery-plugin">
         ${arrowHtml}
         
+        <div class="image-gallery-blur">
+          <img class="image-gallery-blur-img" src="" alt="blur background">
+        </div>
         <div class="image-gallery-slides">
           ${images
             .map((image: any, index: number) => {
@@ -699,174 +711,83 @@ export class ImageGalleryPlugin extends Plugin {
   }
 
   private goto(index: number, isAutoplay: boolean = false) {
-    console.log('goto 被调用:', {
-      fromIndex: this.currentIndex,
-      toIndex: index,
-      imagesLength: this.cfg.images.length,
-      condition:
-        index === this.currentIndex ||
-        index < 0 ||
-        index >= this.cfg.images.length,
-      isAutoplay: isAutoplay
-    })
-
     if (
       index === this.currentIndex ||
       index < 0 ||
       index >= this.cfg.images.length
     ) {
-      // console.log('goto 返回，条件不满足')
       return
     }
 
-    // 标记这是用户发起的更改（仅当不是自动播放时）
     if (!isAutoplay) {
       this._isUserInitiatedChange = true
-      // console.log('_isUserInitiatedChange 设置为 true')
-    } else {
-      // 标记这是自动播放发起的更改
-      this._isAutoplayChange = true
-      // console.log('_isAutoplayChange 设置为 true')
+      this._userChangeUntil = Date.now() + 1000
     }
 
     this.currentIndex = index
-    // console.log('currentIndex 更新为:', this.currentIndex)
     this.updateSlidePosition()
 
-    // 只有当播放器正在播放且不是自动播放调用时才重启自动播放
     if (!isAutoplay && this.player && !this.player.paused) {
       this.restartAutoplay()
     }
 
-    // 同步更新播放器进度
     this.syncPlayerProgress()
 
-    // 重置用户发起更改的标志（仅当不是自动播放时）
     if (!isAutoplay) {
       setTimeout(() => {
-        // console.log('_isUserInitiatedChange 重置为 false')
         this._isUserInitiatedChange = false
-      }, 300)
-    } else {
-      // 重置自动播放更改的标志
-      setTimeout(() => {
-        // console.log('_isAutoplayChange 重置为 false')
-        this._isAutoplayChange = false
       }, 300)
     }
   }
 
   private syncPlayerProgress() {
-    // 同步播放器进度条与当前图片索引
     if (this.player && this.cfg.images.length > 0) {
-      // 设置同步标志，防止在同步进度条时触发图片切换
-      this._isSyncingProgress = true;
+      this._isSyncingProgress = true
       
-      // 计算当前图片对应的进度范围
-      const imageDuration = 1 / this.cfg.images.length;
-      const progress = (this.currentIndex + 1) * imageDuration;
-      const duration = this.player.duration || 1;
-      const currentTime = progress * duration;
+      const imageDuration = 1 / this.cfg.images.length
+      const progress = (this.currentIndex + 0.5) * imageDuration
+      const duration = this.player.duration || 1
+      const targetTime = progress * duration
       
-      // 更新播放器的当前时间，这会自动更新进度条
-      if (this.player.currentTime !== currentTime) {
-        this.player.currentTime = currentTime;
+      if (Math.abs(this.player.currentTime - targetTime) > 0.1) {
+        this.player.currentTime = targetTime
       }
       
-      // 在下一帧重置同步标志
-      requestAnimationFrame(() => {
-        this._isSyncingProgress = false;
-      });
+      setTimeout(() => {
+        this._isSyncingProgress = false
+      }, 100)
     }
   }
 
   private handleTimeUpdate = () => {
-    // 根据播放器当前时间计算应该显示的图片索引
     if (!this.player || !this.cfg.images || this.cfg.images.length === 0) return
 
-    // 如果正在同步进度条，不进行图片切换
-    if (this._isSyncingProgress) {
-      // console.log('正在同步进度条，不进行图片切换')
-      return
-    }
-
-    // 如果播放器已暂停，不进行图片切换
-    if (this.player.paused) {
-      // console.log('播放器已暂停，不进行图片切换')
-      return
-    }
-
-    // 如果是用户发起的更改，不进行自动切换
-    if (this._isUserInitiatedChange) {
-      // console.log('用户发起的更改，不进行自动切换', {
-      //   isUserInitiatedChange: this._isUserInitiatedChange
-      // })
-      return
-    }
+    if (this._isSyncingProgress) return
+    if (this.player.paused) return
+    if (this._isUserInitiatedChange || Date.now() < this._userChangeUntil) return
 
     const duration = this.player.duration || 1
     const currentTime = this.player.currentTime || 0
     const progress = duration > 0 ? currentTime / duration : 0
 
-    // console.log('handleTimeUpdate 被调用:', {
-    //   currentTime,
-    //   duration,
-    //   progress,
-    //   currentIndex: this.currentIndex,
-    //   imagesLength: this.cfg.images.length,
-    //   isUserInitiatedChange: this._isUserInitiatedChange,
-    //   isSyncingProgress: this._isSyncingProgress
-    // })
-
-    // 防止在播放结束后继续切换图片
     if (duration > 0 && currentTime >= duration) {
-      // console.log('播放已结束')
-      // 如果不循环播放，停止在最后一张图片
       if (!this.cfg.loop) {
         const lastIndex = this.cfg.images.length - 1
-        // console.log('不循环播放，停止在最后一张图片:', {
-        //   lastIndex,
-        //   currentIndex: this.currentIndex
-        // })
         if (this.currentIndex !== lastIndex) {
-          // 检查是否是用户发起的更改
-          if (!this._isUserInitiatedChange) {
-            this.currentIndex = lastIndex
-            this.updateSlidePosition()
-            this.ensureImageLoaded(lastIndex)
-          } else {
-            // console.log('用户发起的更改，不更新到最后一张图片')
-          }
+          this.currentIndex = lastIndex
+          this.updateSlidePosition()
+          this.ensureImageLoaded(lastIndex)
         }
       }
       return
     }
 
-    // 计算应该显示的图片索引
     const newIndex = Math.floor(progress * this.cfg.images.length)
+    const clampedIndex = Math.max(0, Math.min(newIndex, this.cfg.images.length - 1))
 
-    // 确保索引在有效范围内
-    const clampedIndex = Math.max(
-      0,
-      Math.min(newIndex, this.cfg.images.length - 1)
-    )
-
-    // console.log('计算得到的索引:', {
-    //   newIndex,
-    //   clampedIndex,
-    //   currentIndex: this.currentIndex
-    // })
-
-    // 只有当索引发生变化时才更新
     if (clampedIndex !== this.currentIndex) {
-      // console.log('索引发生变化，更新图片:', {
-      //   from: this.currentIndex,
-      //   to: clampedIndex
-      // })
       this.currentIndex = clampedIndex
       this.updateSlidePosition()
-
-      // 确保当前图片已加载
       this.ensureImageLoaded(clampedIndex)
     }
   }
@@ -962,14 +883,11 @@ export class ImageGalleryPlugin extends Plugin {
   private startAutoplay() {
     if (!this.cfg.autoplay || this.cfg.autoplay <= 0) return
     this.autoplayTimer = window.setInterval(() => {
-      // 只有当播放器正在播放时才自动切换图片
-      if (this.player && !this.player.paused) {
-        // 根据播放器当前时间计算应该显示的图片索引
+      if (this.player && !this.player.paused && Date.now() >= this._userChangeUntil) {
         const duration = this.player.duration || 1
         const currentTime = this.player.currentTime || 0
         const progress = duration > 0 ? currentTime / duration : 0
         
-        // 计算目标索引
         const targetIndex = Math.max(
           0,
           Math.min(
@@ -978,7 +896,6 @@ export class ImageGalleryPlugin extends Plugin {
           )
         )
         
-        // 只有当目标索引与当前索引不同时才切换
         if (targetIndex !== this.currentIndex) {
           this.goto(targetIndex, true)
         }

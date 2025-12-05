@@ -51,7 +51,10 @@ onMounted(() => {
   getVideoDetail(awemeId)
 })
 const awemeUrl = computed(() => {
-  if (videoDetail.value?.is_live_photo === 1 && videoDetail.value?.images?.[0]?.video) {
+  if (
+    videoDetail.value?.is_live_photo === 1 &&
+    videoDetail.value?.images?.[0]?.video
+  ) {
     return videoDetail.value.images[0].video.play_addr.url_list
   }
   return videoDetail.value?.video.play_addr.url_list ?? []
@@ -59,7 +62,8 @@ const awemeUrl = computed(() => {
 
 const isImageGallery = computed(
   () =>
-    videoDetail.value?.aweme_type === 68 && videoDetail.value?.is_live_photo !== 1
+    videoDetail.value?.aweme_type === 68 &&
+    videoDetail.value?.is_live_photo !== 1
 )
 
 const imgGallery = computed(() => {
@@ -186,6 +190,27 @@ const onEnded = () => {
       // padding-top: calc(56.25% + 33px);
       padding-top: calc(56.25% + 60px);
       display: block;
+    }
+
+    .video-blur {
+      bottom: 0;
+      left: 0;
+      overflow: hidden;
+      position: absolute;
+      right: 0;
+      top: 0;
+      z-index: 0;
+      transform: scale(1.2);
+
+      img {
+        filter: blur(60px);
+        height: 100%;
+        opacity: 0.8;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        width: 100%;
+      }
     }
 
     .related-video {
