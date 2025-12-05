@@ -131,13 +131,14 @@ const thumbnail = computed(() => {
           :thumbnail="thumbnail"
         >
           <video-info
-            v-if="props.isShowInfo"
+            v-if="props.isShowInfo && !control.isImmersive"
             :username="props.awemeInfo.author.nickname"
             :uploadTime="props.awemeInfo.create_time"
             :description="props.awemeInfo.desc"
             :text-extra="props.awemeInfo?.text_extra ?? []"
           />
           <video-action
+            v-if="!control.isImmersive"
             :aweme_id="props.awemeInfo.aweme_id"
             :user_id="props.awemeInfo.author.sec_uid"
             :avatar="props.awemeInfo.author.avatar_thumb.url_list[0] ?? ''"
@@ -160,13 +161,14 @@ const thumbnail = computed(() => {
           :isPlay="isPlay"
         >
           <video-info
-            v-if="props.isShowInfo"
+            v-if="props.isShowInfo && !control.isImmersive"
             :username="props.awemeInfo.author.nickname"
             :uploadTime="props.awemeInfo.create_time"
             :description="props.awemeInfo.desc"
             :text-extra="props.awemeInfo?.text_extra ?? []"
           />
           <video-action
+            v-if="!control.isImmersive"
             :aweme_id="props.awemeInfo.aweme_id"
             :user_id="props.awemeInfo.author.sec_uid"
             :avatar="props.awemeInfo.author.avatar_thumb.url_list[0] ?? ''"
@@ -184,7 +186,7 @@ const thumbnail = computed(() => {
         </ImageGalleryPlayer>
       </div>
       <video-search-btn @click="openRelated" v-if="!control.isShowRelated" />
-      <video-side-bar-btn @click="openComments" v-if="control.isShowComment" />
+      <!-- <video-side-bar-btn @click="openComments" v-if="control.isShowComment" /> -->
     </div>
     <slot></slot>
     <video-sidebar

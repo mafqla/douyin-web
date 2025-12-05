@@ -7,6 +7,8 @@ export const videosCtrolStore = defineStore('control', () => {
   //是否打开相关内容
   const isShowRelated = ref(true)
   const isMuted = ref(true)
+  const isAutoContinuous = ref(true) //是否自动连播
+  const isImmersive = ref(false) //是否清屏
   const refresh_index = ref(1)
   const count = ref(10)
   const translateY = ref(0)
@@ -63,6 +65,8 @@ export const videosCtrolStore = defineStore('control', () => {
     isShowComment,
     isShowRelated,
     isMuted,
+    isAutoContinuous,
+    isImmersive,
     refresh_index,
     count,
     videosNum,
