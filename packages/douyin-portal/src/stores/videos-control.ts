@@ -40,8 +40,8 @@ export const videosCtrolStore = defineStore('control', () => {
     activeVideoIndex.value = activeVideoIndex.value + 1
     activeVideoPlayState.value = true
 
-    //判断是否到达最后一个视频
-    if (activeVideoIndex.value === videosNum.value - 1) {
+    //提前3个视频预加载下一页
+    if (activeVideoIndex.value >= videosNum.value - 3) {
       refresh_index.value = refresh_index.value + 1
     }
   }

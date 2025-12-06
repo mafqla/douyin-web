@@ -4,7 +4,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  // overflow: hidden;
   z-index: 1;
 }
 
@@ -75,6 +75,27 @@
   display: block;
 }
 
+// 实况照片视频样式
+.image-gallery-container .live-photo-video {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+// 实况照片标签
+.live-photo-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  color: #fff;
+  font-size: 12px;
+  z-index: 5;
+}
+
 // 箭头图标样式
 .image-gallery-arrow {
   position: absolute;
@@ -129,6 +150,63 @@
 
       g>g>path {
         fill: #fff;
+      }
+    }
+  }
+}
+
+// 底部箭头导航样式
+.image-gallery-bottom-nav {
+  width: 106px;
+  height: 36px;
+  z-index: 3;
+  background-color: rgba(0, 0, 0, .18);
+  border-radius: 100px;
+  justify-content: space-around;
+  align-items: center;
+  display: flex;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  margin-left: -53px !important;
+
+  .image-gallery-counter {
+    color: var(--Dark-color-text-0, rgba(255, 255, 255, .9));
+    font-feature-settings: "clig" off, "liga" off;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .25);
+    font-family: PingFang SC;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 22px;
+    user-select: none;
+  }
+
+  .image-gallery-bottom-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.75);
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #fff;
+    }
+
+    &.disabled {
+      color: rgba(255, 255, 255, .34);
+      cursor: not-allowed;
+    }
+
+    svg {
+      width: 26px;
+      height: 26px;
+
+      g>path {
+        fill: currentColor;
       }
     }
   }

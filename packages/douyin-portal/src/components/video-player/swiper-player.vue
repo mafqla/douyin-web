@@ -159,6 +159,7 @@ const thumbnail = computed(() => {
           :music_url="props.awemeInfo.music.play_url.url_list"
           :imgGallery="imgGallery"
           :isPlay="isPlay"
+          :arrow-style="'bottom'"
         >
           <video-info
             v-if="props.isShowInfo && !control.isImmersive"

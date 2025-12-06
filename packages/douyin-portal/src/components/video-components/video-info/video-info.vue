@@ -99,6 +99,16 @@ onUnmounted(() => {
         line-height: 26px;
       }
     }
+    @media (min-width: 1920px) {
+      .video-info-author span {
+        font-size: 24px;
+        line-height: 34px;
+      }
+      .video-info-time {
+        font-size: 16px !important;
+        line-height: 22px;
+      }
+    }
     .video-info-time {
       padding: 0 10px;
       font-size: 14px;

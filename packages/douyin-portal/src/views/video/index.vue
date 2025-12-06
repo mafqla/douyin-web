@@ -108,6 +108,9 @@ const onEnded = () => {
               v-if="isImageGallery"
               :music_url="musicUrl"
               :imgGallery="imgGallery"
+              :showAutoContinuous="false"
+              :showImmersiveSwitch="false"
+              :arrow-style="'bottom'"
               class="related-video"
             />
             <BasePlayer

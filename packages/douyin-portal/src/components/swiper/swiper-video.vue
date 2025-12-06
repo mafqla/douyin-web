@@ -24,14 +24,25 @@ const props = defineProps({
 const store = videosCtrolStore()
 
 const cachedRange = ref({ start: 0, end: 2 })
+let shrinkTimer: ReturnType<typeof setTimeout> | null = null
 
 watch(
   () => store.activeVideoIndex,
-  (currentIndex) => {
-    cachedRange.value = {
-      start: Math.max(0, currentIndex - 1),
-      end: currentIndex + 1
+  (currentIndex, oldIndex) => {
+    if (shrinkTimer) {
+      clearTimeout(shrinkTimer)
+      shrinkTimer = null
     }
+    cachedRange.value = {
+      start: Math.max(0, Math.min(currentIndex, oldIndex ?? currentIndex) - 1),
+      end: Math.max(currentIndex, oldIndex ?? currentIndex) + 2
+    }
+    shrinkTimer = setTimeout(() => {
+      cachedRange.value = {
+        start: Math.max(0, currentIndex - 1),
+        end: currentIndex + 2
+      }
+    }, 350)
   },
   { immediate: true }
 )

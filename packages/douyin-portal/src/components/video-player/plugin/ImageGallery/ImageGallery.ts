@@ -10,14 +10,24 @@ export interface ImageItem {
   height: number
   url_list: string[]
   download_url_list: string[]
+  clip_type?: number
+  live_photo_type?: number
+  video?: {
+    play_addr?: {
+      url_list: string[]
+    }
+  }
 }
+
+export type ArrowStyle = 'side' | 'bottom'
 
 export interface ImageGalleryConfig {
   images: ImageItem[]
   autoplay?: number
   preloadCount?: number
-  loop?: boolean // 是否循环播放
-  showArrows?: boolean // 是否显示箭头图标
+  loop?: boolean
+  showArrows?: boolean
+  arrowStyle?: ArrowStyle
 }
 
 export class ImageGalleryPlugin extends Plugin {
@@ -30,7 +40,8 @@ export class ImageGalleryPlugin extends Plugin {
       position: POSITIONS.ROOT,
       index: 1,
       preloadCount: 2,
-      showArrows: true // 默认显示箭头图标
+      showArrows: true,
+      arrowStyle: 'side' as ArrowStyle
     }
   }
 
@@ -40,6 +51,7 @@ export class ImageGalleryPlugin extends Plugin {
   private _isUserInitiatedChange = false
   private _isSyncingProgress = false
   private _userChangeUntil = 0
+  private _stopAutoSwitch = false
 
   private get currentIndex(): number {
     return this._currentIndex
@@ -49,6 +61,7 @@ export class ImageGalleryPlugin extends Plugin {
     const oldValue = this._currentIndex
     this._currentIndex = value
     this.updateArrowStates()
+    this.updateCounter()
     if (oldValue !== value) {
       this.updateBlurBackground(value)
     }
@@ -58,6 +71,7 @@ export class ImageGalleryPlugin extends Plugin {
   private touchStartY = 0
   private isDragging = false
   private preloadedImages: Map<number, HTMLImageElement> = new Map()
+  private livePhotoVideos: Map<number, HTMLVideoElement> = new Map()
   private swiperContainer: HTMLElement | null = null
   private slidesContainer: HTMLElement | null = null
   private slides: HTMLElement[] = []
@@ -72,10 +86,11 @@ export class ImageGalleryPlugin extends Plugin {
       images: [],
       autoplay: 0,
       preloadCount: 2,
-      loop: true, // 默认开启循环播放
-      showArrows: true // 默认显示箭头图标
+      loop: false,
+      showArrows: true,
+      arrowStyle: 'side'
     }
-    
+
     // 初始化触摸起始位置
     this.touchStartX = 0
     this.touchStartY = 0
@@ -90,9 +105,15 @@ export class ImageGalleryPlugin extends Plugin {
       autoplay: 0,
       preloadCount: 2,
       loop:
-        imageGalleryConfig.loop !== undefined ? imageGalleryConfig.loop : true, // 默认开启循环播放
+        imageGalleryConfig.loop !== undefined ? imageGalleryConfig.loop : true,
       showArrows:
-        imageGalleryConfig.showArrows !== undefined ? imageGalleryConfig.showArrows : true, // 默认显示箭头图标
+        imageGalleryConfig.showArrows !== undefined
+          ? imageGalleryConfig.showArrows
+          : true,
+      arrowStyle:
+        imageGalleryConfig.arrowStyle !== undefined
+          ? imageGalleryConfig.arrowStyle
+          : 'side',
       ...imageGalleryConfig
     }
 
@@ -114,6 +135,13 @@ export class ImageGalleryPlugin extends Plugin {
     // 监听播放器进度变化
     this.on('timeupdate', this.handleTimeUpdate)
 
+    // 监听播放器播放/暂停事件
+    this.on('play', this.handlePlayerPlay)
+    this.on('pause', this.handlePlayerPause)
+
+    // 拦截进度条事件，只切换图片不改变音频进度
+    this.interceptProgressEvents()
+
     // 初始显示第一张
     this.updateSlidePosition()
     this.updateArrowStates()
@@ -125,11 +153,62 @@ export class ImageGalleryPlugin extends Plugin {
       this.preloadImages()
       // 确保第一张图片正确显示
       this.preloadImage(0)
+      // 初始化实况照片视频
+      this.initLivePhotoVideos()
+      // 处理当前图片的实况视频
+      this.handleLivePhotoPlayback(0)
     }, 0)
   }
 
+  private isLivePhoto(index: number): boolean {
+    const image = this.cfg.images[index]
+    return (
+      image?.clip_type === 5 &&
+      image?.live_photo_type === 1 &&
+      (image?.video?.play_addr?.url_list?.length ?? 0) > 0
+    )
+  }
+
+  private initLivePhotoVideos() {
+    const videos = this.root.querySelectorAll(
+      '.live-photo-video'
+    ) as NodeListOf<HTMLVideoElement>
+    console.log('初始化实况视频数量:', videos.length)
+    videos.forEach((video) => {
+      const index = parseInt(video.dataset.index || '0', 10)
+      this.livePhotoVideos.set(index, video)
+    })
+  }
+
+  private handleLivePhotoPlayback(currentIndex: number) {
+    if (this.player.paused) return
+    this.livePhotoVideos.forEach((video, index) => {
+      if (index === currentIndex) {
+        video.play().catch(() => {})
+      } else {
+        video.pause()
+        video.currentTime = 0
+      }
+    })
+  }
+
+  private handlePlayerPlay = () => {
+    const video = this.livePhotoVideos.get(this.currentIndex)
+    if (video) {
+      video.play().catch(() => {})
+    }
+  }
+
+  private handlePlayerPause = () => {
+    this.livePhotoVideos.forEach((video) => {
+      video.pause()
+    })
+  }
+
   private updateBlurBackground(index: number) {
-    const blurImg = this.root.querySelector('.image-gallery-blur-img') as HTMLImageElement
+    const blurImg = this.root.querySelector(
+      '.image-gallery-blur-img'
+    ) as HTMLImageElement
     if (blurImg) {
       const imageUrl = this.getBestImageUrl(index)
       if (imageUrl) {
@@ -139,148 +218,193 @@ export class ImageGalleryPlugin extends Plugin {
   }
 
   render() {
-    // 在render方法中不能访问this.cfg，因为此时插件还未完全初始化
-    // 我们需要从playerConfig中获取配置
     const imageGalleryConfig = this.playerConfig?.imageGallery || {}
     const images = imageGalleryConfig.images || []
-    const showArrows = imageGalleryConfig.showArrows !== undefined ? imageGalleryConfig.showArrows : true
-    const loop = imageGalleryConfig.loop !== undefined ? imageGalleryConfig.loop : true
+    const showArrows =
+      imageGalleryConfig.showArrows !== undefined
+        ? imageGalleryConfig.showArrows
+        : true
+    const loop =
+      imageGalleryConfig.loop !== undefined ? imageGalleryConfig.loop : true
+    const arrowStyle =
+      imageGalleryConfig.arrowStyle !== undefined
+        ? imageGalleryConfig.arrowStyle
+        : 'side'
 
     if (!images || images.length === 0) {
       return ''
     }
 
-    // 始终显示箭头图标，但根据边界条件添加禁用状态
-    const arrowHtml = showArrows ? `
-        <!-- 左箭头图标 -->
-        <div class="image-gallery-arrow image-gallery-arrow-left ${this.currentIndex === 0 && !loop ? 'disabled' : ''}">
-          <svg
-            width="56"
-            height="56"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            class="arrow-left-icon"
-            viewBox="0 0 56 56"
-          >
+    const sideArrowHtml = `
+        <div class="image-gallery-arrow image-gallery-arrow-left ${
+          this.currentIndex === 0 && !loop ? 'disabled' : ''
+        }">
+          <svg width="56" height="56" fill="none" xmlns="http://www.w3.org/2000/svg" class="arrow-left-icon" viewBox="0 0 56 56">
             <g clip-path="url(#arrowLeft_svg__clip0_1670_162489)">
-              <path
-                d="M0 28c0 15.464 12.536 28 28 28s28-12.536 28-28S43.464 0 28 0 0 12.536 0 28z"
-                fill="#000"
-              ></path>
+              <path d="M0 28c0 15.464 12.536 28 28 28s28-12.536 28-28S43.464 0 28 0 0 12.536 0 28z" fill="#000"></path>
               <g filter="url(#arrowLeft_svg__filter0_d_1670_162489)">
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M31.402 18.573a2 2 0 0 1 .024 2.829l-6.598 6.713 6.574 6.458a2 2 0 1 1-2.804 2.854l-8-7.86a2 2 0 0 1-.024-2.829l8-8.14a2 2 0 0 1 2.828-.024z"
-                  fill="#fff"
-                ></path>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M31.402 18.573a2 2 0 0 1 .024 2.829l-6.598 6.713 6.574 6.458a2 2 0 1 1-2.804 2.854l-8-7.86a2 2 0 0 1-.024-2.829l8-8.14a2 2 0 0 1 2.828-.024z" fill="#fff"></path>
               </g>
             </g>
             <defs>
-              <filter
-                id="arrowLeft_svg__filter0_d_1670_162489"
-                x="19"
-                y="18"
-                width="14"
-                height="22"
-                filterUnits="userSpaceOnUse"
-                color-interpolation-filters="sRGB"
-              >
+              <filter id="arrowLeft_svg__filter0_d_1670_162489" x="19" y="18" width="14" height="22" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
                 <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
-                <feColorMatrix
-                  in="SourceAlpha"
-                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                  result="hardAlpha"
-                ></feColorMatrix>
+                <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"></feColorMatrix>
                 <feOffset dy="1"></feOffset>
                 <feGaussianBlur stdDeviation=".5"></feGaussianBlur>
                 <feComposite in2="hardAlpha" operator="out"></feComposite>
-                <feColorMatrix
-                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0"
-                ></feColorMatrix>
-                <feBlend
-                  in2="BackgroundImageFix"
-                  result="effect1_dropShadow_1670_162489"
-                ></feBlend>
-                <feBlend
-                  in="SourceGraphic"
-                  in2="effect1_dropShadow_1670_162489"
-                  result="shape"
-                ></feBlend>
+                <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0"></feColorMatrix>
+                <feBlend in2="BackgroundImageFix" result="effect1_dropShadow_1670_162489"></feBlend>
+                <feBlend in="SourceGraphic" in2="effect1_dropShadow_1670_162489" result="shape"></feBlend>
               </filter>
-              <clipPath id="arrowLeft_svg__clip0_1670_162489">
-                <path fill="currentColor" d="M0 0h56v56H0z"></path>
-              </clipPath>
+              <clipPath id="arrowLeft_svg__clip0_1670_162489"><path fill="currentColor" d="M0 0h56v56H0z"></path></clipPath>
             </defs>
           </svg>
         </div>
-        
-        <!-- 右箭头图标 -->
-        <div class="image-gallery-arrow image-gallery-arrow-right ${this.currentIndex === images.length - 1 && !loop ? 'disabled' : ''}">
-          <svg
-            width="56"
-            height="56"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 56 56"
-            class="arrow-right-icon"
-          >
+        <div class="image-gallery-arrow image-gallery-arrow-right ${
+          this.currentIndex === images.length - 1 && !loop ? 'disabled' : ''
+        }">
+          <svg width="56" height="56" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56" class="arrow-right-icon">
             <g clip-path="url(#arrowRight_svg__clip0_1683_162494)">
-              <path
-                d="M0 28c0 15.464 12.536 28 28 28s28-12.536 28-28S43.464 0 28 0 0 12.536 0 28z"
-                fill="#000"
-              ></path>
+              <path d="M0 28c0 15.464 12.536 28 28 28s28-12.536 28-28S43.464 0 28 0 0 12.536 0 28z" fill="#000"></path>
               <g filter="url(#arrowRight_svg__filter0_d_1683_162494)">
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M24.598 37.426a2 2 0 0 1-.024-2.828l6.598-6.713-6.574-6.458a2 2 0 1 1 2.804-2.854l8 7.86a2 2 0 0 1 .024 2.829l-8 8.14a2 2 0 0 1-2.828.024z"
-                  fill="#fff"
-                ></path>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M24.598 37.426a2 2 0 0 1-.024-2.828l6.598-6.713-6.574-6.458a2 2 0 1 1 2.804-2.854l8 7.86a2 2 0 0 1 .024 2.829l-8 8.14a2 2 0 0 1-2.828.024z" fill="#fff"></path>
               </g>
             </g>
             <defs>
-              <filter
-                id="arrowRight_svg__filter0_d_1683_162494"
-                x="23"
-                y="18"
-                width="14"
-                height="22"
-                filterUnits="userSpaceOnUse"
-                color-interpolation-filters="sRGB"
-              >
+              <filter id="arrowRight_svg__filter0_d_1683_162494" x="23" y="18" width="14" height="22" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
                 <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
-                <feColorMatrix
-                  in="SourceAlpha"
-                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                  result="hardAlpha"
-                ></feColorMatrix>
+                <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"></feColorMatrix>
                 <feOffset dy="1"></feOffset>
                 <feGaussianBlur stdDeviation=".5"></feGaussianBlur>
                 <feComposite in2="hardAlpha" operator="out"></feComposite>
-                <feColorMatrix
-                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0"
-                ></feColorMatrix>
-                <feBlend
-                  in2="BackgroundImageFix"
-                  result="effect1_dropShadow_1683_162494"
-                ></feBlend>
-                <feBlend
-                  in="SourceGraphic"
-                  in2="effect1_dropShadow_1683_162494"
-                  result="shape"
-                ></feBlend>
+                <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0"></feColorMatrix>
+                <feBlend in2="BackgroundImageFix" result="effect1_dropShadow_1683_162494"></feBlend>
+                <feBlend in="SourceGraphic" in2="effect1_dropShadow_1683_162494" result="shape"></feBlend>
               </filter>
-              <clipPath id="arrowRight_svg__clip0_1683_162494">
-                <path fill="#fff" d="M0 0h56v56H0z"></path>
-              </clipPath>
+              <clipPath id="arrowRight_svg__clip0_1683_162494"><path fill="#fff" d="M0 0h56v56H0z"></path></clipPath>
             </defs>
           </svg>
         </div>
-      ` : '';
+      `
+
+    const bottomArrowHtml = `
+        <div class="image-gallery-bottom-nav">
+          <div class="image-gallery-bottom-arrow image-gallery-bottom-left ${
+            this.currentIndex === 0 && !loop ? 'disabled' : ''
+          }">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="26"
+      height="26"
+      fill="none"
+      class=""
+      viewBox="0 0 26 26"
+    >
+      <g filter="url(#arrowLeft_svg__filter_arrow_left)">
+        <path
+          d="M16.71 7.269a1.393 1.393 0 0 0-1.97 0l-5.056 5.056a1.393 1.393 0 0 0 0 1.97l.011.011 5.045 5.045a1.393 1.393 0 1 0 1.97-1.97l-4.072-4.071 4.071-4.071a1.393 1.393 0 0 0 0-1.97z"
+          fill="#fff"
+        ></path>
+      </g>
+      <defs>
+        <filter
+          id="arrowLeft_svg__filter_arrow_left"
+          x="-1"
+          y="0"
+          width="28"
+          height="28"
+          filterUnits="userSpaceOnUse"
+          color-interpolation-filters="sRGB"
+        >
+          <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+          <feColorMatrix
+            in="SourceAlpha"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+            result="hardAlpha"
+          ></feColorMatrix>
+          <feOffset dy="1"></feOffset>
+          <feGaussianBlur stdDeviation=".5"></feGaussianBlur>
+          <feComposite in2="hardAlpha" operator="out"></feComposite>
+          <feColorMatrix
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"
+          ></feColorMatrix>
+          <feBlend
+            in2="BackgroundImageFix"
+            result="effect1_dropShadow_6302_471173"
+          ></feBlend>
+          <feBlend
+            in="SourceGraphic"
+            in2="effect1_dropShadow_6302_471173"
+            result="shape"
+          ></feBlend>
+        </filter>
+      </defs>
+    </svg>
+          </div>
+          <span class="image-gallery-counter">${images.length > 0 ? `1/${images.length}` : ''}</span>
+          <div class="image-gallery-bottom-arrow image-gallery-bottom-right ${
+            this.currentIndex === images.length - 1 && !loop ? 'disabled' : ''
+          }">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="26"
+      height="26"
+      fill="none"
+      class=""
+      viewBox="0 0 26 26"
+    >
+      <g filter="url(#arrowRight_svg__filter_arrow_right)">
+        <path
+          d="M9.684 7.269a1.393 1.393 0 0 1 1.97 0l5.055 5.056a1.393 1.393 0 0 1 0 1.97l-.011.011-5.045 5.045a1.393 1.393 0 1 1-1.97-1.97l4.072-4.071-4.071-4.071a1.393 1.393 0 0 1 0-1.97z"
+          fill="#fff"
+        ></path>
+      </g>
+      <defs>
+        <filter
+          id="arrowRight_svg__filter_arrow_right"
+          x="-1"
+          y="0"
+          width="28"
+          height="28"
+          filterUnits="userSpaceOnUse"
+          color-interpolation-filters="sRGB"
+        >
+          <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+          <feColorMatrix
+            in="SourceAlpha"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+            result="hardAlpha"
+          ></feColorMatrix>
+          <feOffset dy="1"></feOffset>
+          <feGaussianBlur stdDeviation=".5"></feGaussianBlur>
+          <feComposite in2="hardAlpha" operator="out"></feComposite>
+          <feColorMatrix
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"
+          ></feColorMatrix>
+          <feBlend
+            in2="BackgroundImageFix"
+            result="effect1_dropShadow_6302_471172"
+          ></feBlend>
+          <feBlend
+            in="SourceGraphic"
+            in2="effect1_dropShadow_6302_471172"
+            result="shape"
+          ></feBlend>
+        </filter>
+      </defs>
+    </svg>
+          </div>
+        </div>
+      `
+
+    let arrowHtml = ''
+    if (showArrows) {
+      arrowHtml = arrowStyle === 'bottom' ? bottomArrowHtml : sideArrowHtml
+    }
 
     return `
-      <div class="image-gallery-plugin">
+      <div class="image-gallery-plugin" data-arrow-style="${arrowStyle}">
         ${arrowHtml}
         
         <div class="image-gallery-blur">
@@ -289,7 +413,13 @@ export class ImageGalleryPlugin extends Plugin {
         <div class="image-gallery-slides">
           ${images
             .map((image: any, index: number) => {
-              // 优先使用 webp 格式
+              const isLivePhoto =
+                image.clip_type === 5 &&
+                image.live_photo_type === 1 &&
+                image.video?.play_addr?.url_list?.length > 0
+              console.log(
+                `图片${index}: clip_type=${image.clip_type}, live_photo_type=${image.live_photo_type}, isLivePhoto=${isLivePhoto}`
+              )
               const webpUrl =
                 image.url_list && image.url_list.find
                   ? image.url_list.find(
@@ -297,12 +427,38 @@ export class ImageGalleryPlugin extends Plugin {
                         url && url.includes && url.includes('.webp')
                     )
                   : undefined
-              // 获取第一张图片的URL
               const imageUrl =
                 webpUrl ||
                 (image.url_list && image.url_list[0]) ||
                 (image.download_url_list && image.download_url_list[0]) ||
                 this.PLACEHOLDER_IMAGE
+
+              if (isLivePhoto) {
+                const videoUrls = image.video.play_addr.url_list
+                console.log('实况视频URL列表:', videoUrls)
+                return `
+            <div class="image-gallery-slide image-gallery-slide-live" data-index="${index}" data-live="true">
+              <div class="image-gallery-container">
+                <video 
+                  class="live-photo-video" 
+                  data-index="${index}" 
+                  poster="${imageUrl}"
+                  loop
+                  muted
+                  playsinline
+                  preload="auto"
+                >
+                  ${videoUrls
+                    .map(
+                      (url: string) => `<source src="${url}" type="video/mp4">`
+                    )
+                    .join('')}
+                </video>
+                <div class="live-photo-badge">实况</div>
+              </div>
+            </div>
+          `
+              }
               return `
             <div class="image-gallery-slide" data-index="${index}">
               <div class="image-gallery-container">
@@ -375,6 +531,9 @@ export class ImageGalleryPlugin extends Plugin {
     // 确保当前图片已加载并显示
     this.ensureImageLoaded(this.currentIndex)
 
+    // 处理实况照片视频播放
+    this.handleLivePhotoPlayback(this.currentIndex)
+
     // 预加载相邻图片
     setTimeout(() => {
       this.preloadImages()
@@ -394,37 +553,69 @@ export class ImageGalleryPlugin extends Plugin {
     this.bind('click', this.onClick)
 
     // 键盘导航 - 使用捕获阶段并在 document 上监听
-    document.addEventListener('keydown', this.onKeydown, true);
+    document.addEventListener('keydown', this.onKeydown, true)
 
-    // 等待 DOM 更新后绑定箭头图标事件
     setTimeout(() => {
-      const leftArrow = this.root.querySelector('.image-gallery-arrow-left')
-      const rightArrow = this.root.querySelector('.image-gallery-arrow-right')
-      
+      const leftArrow =
+        this.root.querySelector('.image-gallery-arrow-left') ||
+        this.root.querySelector('.image-gallery-bottom-left')
+      const rightArrow =
+        this.root.querySelector('.image-gallery-arrow-right') ||
+        this.root.querySelector('.image-gallery-bottom-right')
+
       if (leftArrow) {
         leftArrow.addEventListener('click', (e) => {
-          // 阻止事件冒泡到父容器
-          e.stopPropagation();
-          // 检查是否禁用
+          e.stopPropagation()
           if (leftArrow.classList.contains('disabled')) {
-            return;
+            return
           }
           this.prev()
         })
       }
-      
+
       if (rightArrow) {
         rightArrow.addEventListener('click', (e) => {
-          // 阻止事件冒泡到父容器
-          e.stopPropagation();
-          // 检查是否禁用
+          e.stopPropagation()
           if (rightArrow.classList.contains('disabled')) {
-            return;
+            return
           }
           this.next()
         })
       }
     }, 0)
+  }
+
+  private interceptProgressEvents() {
+    setTimeout(() => {
+      const progressEl = this.player.root?.querySelector('.xgplayer-progress')
+      if (!progressEl) return
+
+      const handleProgressClick = (e: Event) => {
+        e.stopPropagation()
+        e.preventDefault()
+
+        const mouseEvent = e as MouseEvent
+        const rect = (progressEl as HTMLElement).getBoundingClientRect()
+        const percent = Math.max(
+          0,
+          Math.min(1, (mouseEvent.clientX - rect.left) / rect.width)
+        )
+        const targetIndex = Math.min(
+          Math.floor(percent * this.cfg.images.length),
+          this.cfg.images.length - 1
+        )
+
+        if (targetIndex !== this.currentIndex) {
+          this._stopAutoSwitch = true
+          this.currentIndex = targetIndex
+          this.updateSlidePosition()
+          this.syncPlayerProgress()
+        }
+      }
+
+      progressEl.addEventListener('mousedown', handleProgressClick, true)
+      progressEl.addEventListener('click', handleProgressClick, true)
+    }, 100)
   }
 
   private onTouchStart = (e: TouchEvent) => {
@@ -626,22 +817,27 @@ export class ImageGalleryPlugin extends Plugin {
 
   private onClick = (e: MouseEvent) => {
     // 防止在拖动时触发点击事件
-    if (Math.abs(e.clientX - this.touchStartX) > 5 || Math.abs(e.clientY - this.touchStartY) > 5) {
-      return;
+    if (
+      Math.abs(e.clientX - this.touchStartX) > 5 ||
+      Math.abs(e.clientY - this.touchStartY) > 5
+    ) {
+      return
     }
-    
-    // 检查点击目标是否是箭头按钮，如果是则不处理
-    const target = e.target as HTMLElement;
-    if (target.closest('.image-gallery-arrow')) {
-      return;
+
+    const target = e.target as HTMLElement
+    if (
+      target.closest('.image-gallery-arrow') ||
+      target.closest('.image-gallery-bottom-nav')
+    ) {
+      return
     }
 
     // 切换播放器的播放/暂停状态
     if (this.player) {
       if (this.player.paused) {
-        this.player.play();
+        this.player.play()
       } else {
-        this.player.pause();
+        this.player.pause()
       }
     }
   }
@@ -722,6 +918,7 @@ export class ImageGalleryPlugin extends Plugin {
     if (!isAutoplay) {
       this._isUserInitiatedChange = true
       this._userChangeUntil = Date.now() + 1000
+      this._stopAutoSwitch = true
     }
 
     this.currentIndex = index
@@ -743,16 +940,15 @@ export class ImageGalleryPlugin extends Plugin {
   private syncPlayerProgress() {
     if (this.player && this.cfg.images.length > 0) {
       this._isSyncingProgress = true
-      
+
       const imageDuration = 1 / this.cfg.images.length
-      const progress = (this.currentIndex + 0.5) * imageDuration
-      const duration = this.player.duration || 1
-      const targetTime = progress * duration
-      
-      if (Math.abs(this.player.currentTime - targetTime) > 0.1) {
-        this.player.currentTime = targetTime
+      const progress = (this.currentIndex + 1) * imageDuration
+
+      const progressPlugin = this.player.plugins?.progress
+      if (progressPlugin) {
+        progressPlugin.updatePercent(progress, true)
       }
-      
+
       setTimeout(() => {
         this._isSyncingProgress = false
       }, 100)
@@ -764,7 +960,9 @@ export class ImageGalleryPlugin extends Plugin {
 
     if (this._isSyncingProgress) return
     if (this.player.paused) return
-    if (this._isUserInitiatedChange || Date.now() < this._userChangeUntil) return
+    if (this._stopAutoSwitch) return
+    if (this._isUserInitiatedChange || Date.now() < this._userChangeUntil)
+      return
 
     const duration = this.player.duration || 1
     const currentTime = this.player.currentTime || 0
@@ -783,7 +981,10 @@ export class ImageGalleryPlugin extends Plugin {
     }
 
     const newIndex = Math.floor(progress * this.cfg.images.length)
-    const clampedIndex = Math.max(0, Math.min(newIndex, this.cfg.images.length - 1))
+    const clampedIndex = Math.max(
+      0,
+      Math.min(newIndex, this.cfg.images.length - 1)
+    )
 
     if (clampedIndex !== this.currentIndex) {
       this.currentIndex = clampedIndex
@@ -802,26 +1003,36 @@ export class ImageGalleryPlugin extends Plugin {
   }
 
   private updateArrowStates() {
-    // 只有当显示箭头图标时才更新状态
-    if (!this.cfg.showArrows) return;
+    if (!this.cfg.showArrows) return
 
-    const leftArrow = this.root.querySelector('.image-gallery-arrow-left');
-    const rightArrow = this.root.querySelector('.image-gallery-arrow-right');
+    const leftArrow =
+      this.root.querySelector('.image-gallery-arrow-left') ||
+      this.root.querySelector('.image-gallery-bottom-left')
+    const rightArrow =
+      this.root.querySelector('.image-gallery-arrow-right') ||
+      this.root.querySelector('.image-gallery-bottom-right')
 
     if (leftArrow) {
       if (this.currentIndex === 0 && !this.cfg.loop) {
-        leftArrow.classList.add('disabled');
+        leftArrow.classList.add('disabled')
       } else {
-        leftArrow.classList.remove('disabled');
+        leftArrow.classList.remove('disabled')
       }
     }
 
     if (rightArrow) {
       if (this.currentIndex === this.cfg.images.length - 1 && !this.cfg.loop) {
-        rightArrow.classList.add('disabled');
+        rightArrow.classList.add('disabled')
       } else {
-        rightArrow.classList.remove('disabled');
+        rightArrow.classList.remove('disabled')
       }
+    }
+  }
+
+  private updateCounter() {
+    const counter = this.root.querySelector('.image-gallery-counter')
+    if (counter) {
+      counter.textContent = `${this.currentIndex + 1}/${this.cfg.images.length}`
     }
   }
 
@@ -883,11 +1094,16 @@ export class ImageGalleryPlugin extends Plugin {
   private startAutoplay() {
     if (!this.cfg.autoplay || this.cfg.autoplay <= 0) return
     this.autoplayTimer = window.setInterval(() => {
-      if (this.player && !this.player.paused && Date.now() >= this._userChangeUntil) {
+      if (this._stopAutoSwitch) return
+      if (
+        this.player &&
+        !this.player.paused &&
+        Date.now() >= this._userChangeUntil
+      ) {
         const duration = this.player.duration || 1
         const currentTime = this.player.currentTime || 0
         const progress = duration > 0 ? currentTime / duration : 0
-        
+
         const targetIndex = Math.max(
           0,
           Math.min(
@@ -895,7 +1111,7 @@ export class ImageGalleryPlugin extends Plugin {
             this.cfg.images.length - 1
           )
         )
-        
+
         if (targetIndex !== this.currentIndex) {
           this.goto(targetIndex, true)
         }
@@ -915,8 +1131,14 @@ export class ImageGalleryPlugin extends Plugin {
       clearInterval(this.autoplayTimer)
       this.autoplayTimer = null
     }
+    // 暂停并清理所有实况视频
+    this.livePhotoVideos.forEach((video) => {
+      video.pause()
+      video.src = ''
+    })
+    this.livePhotoVideos.clear()
     // 移除键盘事件监听器
-    document.removeEventListener('keydown', this.onKeydown, true);
+    document.removeEventListener('keydown', this.onKeydown, true)
     this.preloadedImages.clear()
     super.destroy()
   }

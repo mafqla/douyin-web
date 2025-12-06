@@ -109,7 +109,8 @@ const playerOptions = ref<IPlayerOptions>({
   },
   dynamicBg: {
     disable: false,
-    framerate: 30
+    mode:'firstframe',
+    filter: 'blur(60px)'
   },
   MiniScreen: {
     disableDrag: true
