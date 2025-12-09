@@ -23,6 +23,10 @@ export default {
   user_mix_detail: `/aweme/v1/web/mix/aweme/`,
   //用户的点赞列表
   user_like: `/aweme/v1/web/aweme/favorite/`,
+  //用户收藏夹列表
+  user_collect_folder: `/aweme/v1/web/collects/list/`,
+  //用户收藏夹详细信息
+  user_collect_folder_detail: `/aweme/v1/web/collects/video/list/`,
   //用户的收藏视频列表
   user_collect_video: `/aweme/v1/web/aweme/listcollection/`,
   //用户的关注列表

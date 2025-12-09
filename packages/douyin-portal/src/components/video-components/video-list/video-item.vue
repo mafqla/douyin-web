@@ -17,7 +17,7 @@ const dianzan = computed(() => {
   }
 })
 const isVideoVisible = ref(false)
-const volume = ref(0)
+const volume = ref(0) 
 let timer: any = null
 const showVideo = () => {
   timer = setTimeout(() => {

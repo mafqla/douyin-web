@@ -21,6 +21,8 @@ import type {
   SearchResponse,
   searchSuggestResponse
 } from './tyeps/request_response/searchResponse'
+import type { IUserCollectFloderDetail } from './tyeps/request_response/userCollectFloderDetailRes'
+import type { IUserCollectsListRes } from './tyeps/request_response/userCollectsListRes'
 import type { IUserCollectVideo } from './tyeps/request_response/userCollectVideoRes'
 import type { IUserDetailRes } from './tyeps/request_response/userDetailRes'
 import type { IUserLikeRes } from './tyeps/request_response/userLikeRes'
@@ -219,6 +221,43 @@ export default {
       params
     })
   },
+  /**
+   * @description 获取用户收藏夹列表
+   * @param {Number} count 数量
+   * @param {String} cursor 分页游标
+   * @return {Promise<IUserCollectsListRes>} 用户收藏夹列表
+   */
+  getUserCollectFloderList: (
+    count: number,
+    cursor: string
+  ): Promise<IUserCollectsListRes> => {
+    return request.get(urls.user_collect_folder, {
+      params: {
+        count,
+        cursor
+      }
+    })
+  },
+  /**
+   * @description 获取用户收藏夹下的视频列表
+   * @param {String} collects_id 收藏夹id
+   * @param {Number} count 数量
+   * @param {String} cursor 分页游标
+   * @return {Promise<IUserCollectFloderDetail>} 用户收藏夹下的视频列表
+   */ getUserCollectFloderDetail: (
+    collects_id: string,
+    count: number,
+    cursor: string
+  ): Promise<IUserCollectFloderDetail> => {
+    return request.get(urls.user_collect_folder_detail, {
+      params: {
+        collects_id,
+        count,
+        cursor
+      }
+    })
+  },
+
   /**
    * @description 获取用户收藏的视频列表
    * @param {Number} count 数量
