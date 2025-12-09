@@ -7,10 +7,12 @@ import { ref } from 'vue'
 const route = useRoute()
 const router = useRouter()
 const tabs = ['favorite_folder', 'video', 'music', 'compilation', 'playlet']
-const activeTab = ref((route.query.showSubTab as string) || 'favorite_folder')
+const activeTab = ref((route.query.showSubTab as string) || 'video')
 
 // CollectionFolder 组件引用
-const collectionFolderRef = ref<InstanceType<typeof CollectionFolder> | null>(null)
+const collectionFolderRef = ref<InstanceType<typeof CollectionFolder> | null>(
+  null
+)
 
 // 是否在详情模式（选中了某个收藏夹）
 const isDetailMode = ref(false)
@@ -68,7 +70,11 @@ const handleTabChange = (tab: string) => {
       <div class="tabbar-2-end">
         <div class="media-control-container">
           <!-- 新建收藏夹按钮 - 收藏夹列表模式显示 -->
-          <div v-if="activeTab === 'favorite_folder' && !isDetailMode" class="media-btn" @click="handleCreateFolder">
+          <div
+            v-if="activeTab === 'favorite_folder' && !isDetailMode"
+            class="media-btn"
+            @click="handleCreateFolder"
+          >
             <span role="img" class="media-icon"
               ><svg
                 viewBox="0 0 16 16"

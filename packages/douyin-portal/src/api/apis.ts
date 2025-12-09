@@ -23,6 +23,7 @@ import type {
 } from './tyeps/request_response/searchResponse'
 import type { IUserCollectFloderDetail } from './tyeps/request_response/userCollectFloderDetailRes'
 import type { IUserCollectsListRes } from './tyeps/request_response/userCollectsListRes'
+import type { IUserCollectMusicRes } from './tyeps/request_response/userCollectMusicRes'
 import type { IUserCollectVideo } from './tyeps/request_response/userCollectVideoRes'
 import type { IUserDetailRes } from './tyeps/request_response/userDetailRes'
 import type { IUserLikeRes } from './tyeps/request_response/userLikeRes'
@@ -335,6 +336,23 @@ export default {
     return request.get(urls.user_record_live, {
       params: {
         max_time
+      }
+    })
+  },
+  /**
+   * @description 获取用户收藏的音乐列表
+   * @param {Number} count 数量
+   * @param {Number} cursor 分页游标
+   * @return {Promise<IUserCollectMusicRes>} 用户收藏的音乐列表
+   */
+  getUserCollectMusic: (
+    count: number,
+    cursor: number
+  ): Promise<IUserCollectMusicRes> => {
+    return request.get(urls.user_collect_music, {
+      params: {
+        count,
+        cursor
       }
     })
   }

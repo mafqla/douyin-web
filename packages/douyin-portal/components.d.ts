@@ -15,6 +15,7 @@ declare module '@vue/runtime-core' {
     ClientBox: typeof import('./src/components/header/client-box/index.vue')['default']
     CodeLogin: typeof import('./src/components/auth/login/code-login.vue')['default']
     CollectionFolder: typeof import('./src/components/user/user-collection/collection-folder/index.vue')['default']
+    CollectionMusic: typeof import('./src/components/user/user-collection/collection-music/index.vue')['default']
     CollectionsItem: typeof import('./src/components/my/user-tab/collections-list/collections-item.vue')['default']
     CollectionsList: typeof import('./src/components/my/user-tab/collections-list/collections-list.vue')['default']
     CollectionVideo: typeof import('./src/components/user/user-collection/collection-video/index.vue')['default']

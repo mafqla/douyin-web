@@ -29,6 +29,8 @@ export default {
   user_collect_folder_detail: `/aweme/v1/web/collects/video/list/`,
   //用户的收藏视频列表
   user_collect_video: `/aweme/v1/web/aweme/listcollection/`,
+  //用户收藏的音乐列表
+  user_collect_music: `/aweme/v1/web/music/listcollection/`,
   //用户的关注列表
   user_follow: `/aweme/v1/web/user/following/list/`,
   //用户的粉丝列表
