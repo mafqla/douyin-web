@@ -226,11 +226,22 @@ watch(volume, (newVal) => {
   }
 })
 
+// 重置播放器状态
+const reset = () => {
+  if (audioRef.value) {
+    audioRef.value.currentTime = 0
+  }
+  currentTime.value = 0
+  progress.value = 0
+  isPlaying.value = false
+}
+
 // 暴露方法
 defineExpose({
   play,
   pause,
   togglePlay,
+  reset,
   isPlaying
 })
 

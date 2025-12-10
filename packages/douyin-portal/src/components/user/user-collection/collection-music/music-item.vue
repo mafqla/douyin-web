@@ -54,6 +54,17 @@ watch(isPlaying, (newVal) => {
   }
 })
 
+// 监听当前播放ID变化，当其他音乐开始播放时重置本播放器
+watch(
+  () => musicPlayer?.currentPlayingId.value,
+  (newId) => {
+    // 如果有新的音乐开始播放，且不是本音乐，则重置本播放器
+    if (newId !== null && newId !== props.music.id_str) {
+      playerRef.value?.reset()
+    }
+  }
+)
+
 // 点击封面播放/暂停
 const handleCoverClick = () => {
   if (isPlaying.value) {

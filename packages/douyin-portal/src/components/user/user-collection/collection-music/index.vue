@@ -3,6 +3,7 @@ import { ref, onMounted, provide } from 'vue'
 import UserError from '../../user-error/index.vue'
 import MusicItem from './music-item.vue'
 import apis from '@/api/apis'
+import { useGridScrollToItem } from '@/hooks'
 import type { ICollectMusicItem } from '@/api/tyeps/request_response/userCollectMusicRes'
 
 // 播放模式类型
@@ -23,6 +24,19 @@ const cursor = ref(0)
 // ========== 播放状态管理 ==========
 const currentPlayingId = ref<string | null>(null)
 const playMode = ref<PlayMode>('sequence')
+
+// 音乐列表容器引用
+const musicListRef = ref<HTMLElement | null>(null)
+
+// 使用滚动 Hook，自动滚动到当前播放项
+const { scrollToItem } = useGridScrollToItem({
+  containerRef: musicListRef,
+  currentId: currentPlayingId,
+  items: musicList,
+  idKey: 'id_str',
+  block: 'start',
+  offsetTop: 178 // 导航栏高度
+})
 
 // 切换播放模式
 const togglePlayMode = () => {
@@ -67,8 +81,14 @@ const stopMusic = () => {
 }
 
 // 播放结束处理
-const handleMusicEnded = (musicId: string) => {
+const handleMusicEnded = async (musicId: string) => {
   const currentIndex = musicList.value.findIndex((m) => m.id_str === musicId)
+
+  // 如果播放到接近末尾（倒数3首内），且还有更多数据，则预加载
+  if (currentIndex >= musicList.value.length - 3 && hasMore.value && !isLoadingMore.value) {
+    await getMusicList()
+  }
+
   const nextIndex = getNextIndex(currentIndex)
 
   if (nextIndex >= 0 && nextIndex < musicList.value.length) {
@@ -140,7 +160,7 @@ useInfiniteScroll(
 
       <!-- 音乐列表 -->
       <template v-if="musicList.length > 0">
-        <div class="music-list">
+        <div ref="musicListRef" class="music-list">
           <MusicItem
             v-for="music in musicList"
             :key="music.id_str"
