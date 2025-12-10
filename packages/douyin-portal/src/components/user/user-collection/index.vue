@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import CollectionVideo from './collection-video/index.vue'
 import CollectionFolder from './collection-folder/index.vue'
+import CollectionMusic from './collection-music/index.vue'
 
 import { ref } from 'vue'
 
@@ -142,6 +143,7 @@ const handleTabChange = (tab: string) => {
         @detail-mode-change="handleDetailModeChange"
       />
       <collection-video v-if="activeTab === 'video'" />
+      <collection-music v-if="activeTab === 'music'" />
     </div>
   </div>
 </template>
@@ -256,5 +258,9 @@ const handleTabChange = (tab: string) => {
       box-sizing: border-box;
     }
   }
+}
+
+.user-collection-content {
+  margin-top: 8px;
 }
 </style>

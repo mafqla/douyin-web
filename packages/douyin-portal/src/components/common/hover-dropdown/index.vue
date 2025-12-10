@@ -42,7 +42,7 @@
  * ```
  *
  * @props
- * - placement: 菜单位置，支持 'top-start' | 'top' | 'top-end' | 'bottom-start' | 'bottom' | 'bottom-end' | 'auto'
+ * - placement: 菜单位置，支持 'top-start' | 'top' | 'top-end' | 'bottom-start' | 'bottom' | 'bottom-end' | 'left-start' | 'left' | 'left-end' | 'right-start' | 'right' | 'right-end' | 'auto'
  * - offset: 菜单与触发元素的间距，默认 4px
  * - showDelay: 显示延迟时间(ms)，默认 0
  * - hideDelay: 隐藏延迟时间(ms)，默认 100
@@ -69,6 +69,12 @@ type Placement =
   | 'bottom-start'
   | 'bottom'
   | 'bottom-end'
+  | 'left-start'
+  | 'left'
+  | 'left-end'
+  | 'right-start'
+  | 'right'
+  | 'right-end'
   | 'auto'
 
 const props = withDefaults(
@@ -148,24 +154,51 @@ const calculatePlacement = (): Exclude<Placement, 'auto'> => {
   const spaceLeft = triggerRect.left
   const spaceRight = viewportWidth - triggerRect.right
 
-  // 确定垂直方向：优先下方，空间不足则上方
-  const vertical =
-    spaceBelow >= contentRect.height + props.offset ? 'bottom' : 'top'
+  // 判断是否适合水平方向（左/右）
+  const canPlaceRight = spaceRight >= contentRect.width + props.offset
+  const canPlaceLeft = spaceLeft >= contentRect.width + props.offset
+  const canPlaceBottom = spaceBelow >= contentRect.height + props.offset
+  const canPlaceTop = spaceAbove >= contentRect.height + props.offset
 
-  // 确定水平对齐：优先左对齐，空间不足则右对齐或居中
-  let horizontal: 'start' | '' | 'end' = 'start'
-  const contentWidth = contentRect.width
+  // 优先级：下方 > 上方 > 右侧 > 左侧
+  let primary: 'top' | 'bottom' | 'left' | 'right' = 'bottom'
 
-  if (triggerRect.left + contentWidth > viewportWidth) {
-    // 左对齐会超出右边界
-    if (triggerRect.right - contentWidth >= 0) {
-      horizontal = 'end' // 右对齐
-    } else {
-      horizontal = '' // 居中
+  if (canPlaceBottom) {
+    primary = 'bottom'
+  } else if (canPlaceTop) {
+    primary = 'top'
+  } else if (canPlaceRight) {
+    primary = 'right'
+  } else if (canPlaceLeft) {
+    primary = 'left'
+  }
+
+  // 确定对齐方式
+  let alignment: 'start' | '' | 'end' = 'start'
+
+  if (primary === 'top' || primary === 'bottom') {
+    // 垂直方向：确定水平对齐
+    const contentWidth = contentRect.width
+    if (triggerRect.left + contentWidth > viewportWidth) {
+      if (triggerRect.right - contentWidth >= 0) {
+        alignment = 'end'
+      } else {
+        alignment = ''
+      }
+    }
+  } else {
+    // 水平方向：确定垂直对齐
+    const contentHeight = contentRect.height
+    if (triggerRect.top + contentHeight > viewportHeight) {
+      if (triggerRect.bottom - contentHeight >= 0) {
+        alignment = 'end'
+      } else {
+        alignment = ''
+      }
     }
   }
 
-  return `${vertical}${horizontal ? '-' + horizontal : ''}` as Exclude<
+  return `${primary}${alignment ? '-' + alignment : ''}` as Exclude<
     Placement,
     'auto'
   >
@@ -325,6 +358,40 @@ defineExpose({
     &--top-end {
       bottom: calc(100% + v-bind('`${offset}px`'));
       right: 0;
+    }
+
+    // 左侧位置
+    &--left-start {
+      right: calc(100% + v-bind('`${offset}px`'));
+      top: 0;
+    }
+
+    &--left {
+      right: calc(100% + v-bind('`${offset}px`'));
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    &--left-end {
+      right: calc(100% + v-bind('`${offset}px`'));
+      bottom: 0;
+    }
+
+    // 右侧位置
+    &--right-start {
+      left: calc(100% + v-bind('`${offset}px`'));
+      top: 0;
+    }
+
+    &--right {
+      left: calc(100% + v-bind('`${offset}px`'));
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    &--right-end {
+      left: calc(100% + v-bind('`${offset}px`'));
+      bottom: 0;
     }
   }
 }

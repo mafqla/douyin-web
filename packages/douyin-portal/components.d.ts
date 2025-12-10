@@ -74,6 +74,8 @@ declare module '@vue/runtime-core' {
     MiniPlayer: typeof import('./src/components/video-player/mini-player.vue')['default']
     Modal: typeof import('./src/components/common/modal.vue')['default']
     ModalPlayer: typeof import('./src/components/video-player/modal-player.vue')['default']
+    MusicItem: typeof import('./src/components/user/user-collection/collection-music/music-item.vue')['default']
+    MusicPlayer: typeof import('./src/components/user/user-collection/collection-music/music-player.vue')['default']
     NewItem: typeof import('./src/components/discover/discover-new/new-item.vue')['default']
     NewItemRight: typeof import('./src/components/discover/discover-new/new-item-right.vue')['default']
     NoticeList: typeof import('./src/components/header/notification-box/notice-list.vue')['default']
