@@ -6,6 +6,10 @@ import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 
 const props = defineProps<{
   aweme: IAwemeInfo
+  // 是否显示选择框
+  selectable?: boolean
+  // 是否选中
+  selected?: boolean
 }>()
 
 // 点赞数转换
@@ -17,14 +21,17 @@ const dianzan = computed(() => {
   }
 })
 const isVideoVisible = ref(false)
-const volume = ref(0) 
+const volume = ref(0)
 let timer: any = null
 const showVideo = () => {
+  // 选择模式下禁用 hover 播放
+  if (props.selectable) return
   timer = setTimeout(() => {
     isVideoVisible.value = true
   }, 1000)
 }
 const hideVideo = () => {
+  if (props.selectable) return
   clearTimeout(timer)
   timer = setTimeout(() => {
     isVideoVisible.value = false
@@ -33,6 +40,11 @@ const hideVideo = () => {
 const router = useRouter()
 //点击设置modal的显示与隐藏
 const toggleModal = (event: any) => {
+  // 选择模式下禁用点击跳转
+  if (props.selectable) {
+    event.preventDefault()
+    return
+  }
   event.preventDefault()
 
   isVideoVisible.value = !isVideoVisible.value
@@ -134,6 +146,29 @@ const toggleModal = (event: any) => {
       </div>
       <p class="video-title">{{ aweme.desc }}</p>
     </a>
+
+    <!-- 选中状态遮罩 -->
+    <div v-if="selectable" class="select-overlay">
+      <div class="select-checkbox" :class="{ checked: selected }">
+        <svg
+          v-if="selected"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          width="1em"
+          height="1em"
+          focusable="false"
+          aria-hidden="true"
+        >
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M17.4111 7.30848C18.0692 7.81171 18.1947 8.75312 17.6915 9.41119L11.1915 17.9112C10.909 18.2806 10.4711 18.4981 10.0061 18.5C9.54105 18.5019 9.10143 18.288 8.81592 17.9209L5.31592 13.4209C4.80731 12.767 4.92512 11.8246 5.57904 11.316C6.23296 10.8074 7.17537 10.9252 7.68398 11.5791L9.98988 14.5438L15.3084 7.58884C15.8116 6.93077 16.7531 6.80525 17.4111 7.30848Z"
+            fill="currentColor"
+          />
+        </svg>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -329,6 +364,36 @@ const toggleModal = (event: any) => {
       text-overflow: ellipsis;
       transition-duration: 0.35s;
       transition-property: margin;
+    }
+  }
+}
+// 选中状态遮罩
+.select-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: linear-gradient(rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+
+  .select-checkbox {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    &.checked {
+      background: var(--color-primary);
+      color: var(--color-const-text-white);
+      box-shadow: inset 0 0 0 1px var(--color-primary);
     }
   }
 }

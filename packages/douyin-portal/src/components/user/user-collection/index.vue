@@ -33,6 +33,11 @@ const handleCreateFolder = () => {
   collectionFolderRef.value?.openCreateDialog()
 }
 
+// 打开添加视频弹框
+const handleAddVideo = () => {
+  collectionFolderRef.value?.openAddVideoDialog()
+}
+
 const getTabTitle = (tab: string) => {
   const titles: { [key: string]: string } = {
     favorite_folder: '收藏夹',
@@ -94,7 +99,7 @@ const handleTabChange = (tab: string) => {
           <!-- 详情模式工具栏 - 收藏夹详情模式显示 -->
           <template v-if="activeTab === 'favorite_folder' && isDetailMode">
             <!-- 添加视频按钮 -->
-            <div class="media-btn">
+            <div class="media-btn" @click="handleAddVideo">
               <span role="img" class="media-icon"
                 ><svg
                   viewBox="0 0 16 16"

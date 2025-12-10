@@ -329,6 +329,9 @@ useInfiniteScroll(
         opacity: 1;
       }
     }
+
+    //未选中样式 opacity: .3;cursor: not-allowed;
+   
   }
 }
 

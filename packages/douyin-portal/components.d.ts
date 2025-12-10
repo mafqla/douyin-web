@@ -8,6 +8,7 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     ActionMore: typeof import('./src/components/header/message-box/action-more.vue')['default']
+    AddCollectDialog: typeof import('./src/components/user/user-collection/collection-folder/add-collect-dialog.vue')['default']
     ArrowLeftIcon: typeof import('./src/components/common/swiper/arrow-left-icon.vue')['default']
     ArrowRightIcon: typeof import('./src/components/common/swiper/arrow-right-icon.vue')['default']
     AtBox: typeof import('./src/components/common/dy-input/at-box.vue')['default']

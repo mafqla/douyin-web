@@ -8,6 +8,7 @@ import FolderDetail from './folder-detail.vue'
 import CreateFolderDialog from './create-folder-dialog.vue'
 import EditFolderDialog from './edit-folder-dialog.vue'
 import DeleteFolderDialog from './delete-folder-dialog.vue'
+import AddCollectDialog from './add-collect-dialog.vue'
 import apis from '@/api/apis'
 
 // 收藏夹预加载数据类型
@@ -55,6 +56,7 @@ watch(
 const showCreateDialog = ref(false)
 const showEditDialog = ref(false)
 const showDeleteDialog = ref(false)
+const showAddCollectDialog = ref(false)
 const currentFolder = ref<ICollectsItem | null>(null)
 
 // 获取单个收藏夹的视频列表（用于预加载封面）
@@ -169,6 +171,21 @@ const handleDeleteSuccess = () => {
   getCollectionFolderList()
 }
 
+// 打开添加视频弹框
+const handleAddVideoToFolder = (folder: ICollectsItem) => {
+  currentFolder.value = folder
+  showAddCollectDialog.value = true
+}
+
+// 添加视频成功回调
+const handleAddCollectSuccess = () => {
+  showAddCollectDialog.value = false
+  // 刷新当前收藏夹的视频列表
+  if (currentFolder.value) {
+    fetchFolderVideos(currentFolder.value)
+  }
+}
+
 onMounted(() => {
   getCollectionFolderList()
 })
@@ -188,10 +205,19 @@ const openCreateDialog = () => {
   showCreateDialog.value = true
 }
 
+// 打开添加视频弹框（用于详情模式下的添加视频按钮）
+const openAddVideoDialog = () => {
+  if (selectedFolder.value) {
+    currentFolder.value = selectedFolder.value
+    showAddCollectDialog.value = true
+  }
+}
+
 // 暴露方法给父组件
 defineExpose({
   handleBack,
-  openCreateDialog
+  openCreateDialog,
+  openAddVideoDialog
 })
 </script>
 
@@ -218,6 +244,7 @@ defineExpose({
             @select="handleSelectFolder"
             @edit="handleEditFolder"
             @delete="handleDeleteFolder"
+            @add-video="handleAddVideoToFolder"
           />
           <Loading :show="isLoadingMore" />
           <list-footer v-if="!hasMore" />
@@ -257,6 +284,13 @@ defineExpose({
     v-model="showDeleteDialog"
     :folder="currentFolder"
     @success="handleDeleteSuccess"
+  />
+
+  <!-- 添加视频到收藏夹弹框 -->
+  <add-collect-dialog
+    v-model="showAddCollectDialog"
+    :folder="currentFolder"
+    @success="handleAddCollectSuccess"
   />
 </template>
 

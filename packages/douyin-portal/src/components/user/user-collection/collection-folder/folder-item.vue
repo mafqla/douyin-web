@@ -22,6 +22,7 @@ const emit = defineEmits<{
   select: [folder: ICollectsItem]
   edit: [folder: ICollectsItem]
   delete: [folder: ICollectsItem]
+  addVideo: [folder: ICollectsItem]
 }>()
 
 // 获取前6张封面图片
@@ -60,6 +61,13 @@ const handleDelete = (event: Event) => {
   event.preventDefault()
   event.stopPropagation()
   emit('delete', props.folder)
+}
+
+// 添加视频
+const handleAddVideo = (event: Event) => {
+  event.preventDefault()
+  event.stopPropagation()
+  emit('addVideo', props.folder)
 }
 </script>
 
@@ -106,7 +114,7 @@ const handleDelete = (event: Event) => {
             </div>
           </template>
           <template #content>
-            <div class="more-menu-item">添加视频</div>
+            <div class="more-menu-item" @click="handleAddVideo">添加视频</div>
             <div class="more-menu-item" @click="handleEdit">编辑收藏夹</div>
             <div class="more-menu-item delete" @click="handleDelete">
               删除收藏夹
