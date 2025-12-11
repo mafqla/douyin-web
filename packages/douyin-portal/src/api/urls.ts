@@ -6,7 +6,7 @@ export default {
   search: `/aweme/v1/web/general/search/single/`,
   suggest_words: `/aweme/v1/web/api/suggest_words/`,
   //首页视频流,
-  home_feed: `/aweme/v1/web/module/feed/`,
+  home_feed: `/aweme/v2/web/module/feed/`,
   recomend_feed: `/aweme/v1/web/tab/feed/`,
   video_detail: `/aweme/v1/web/aweme/detail/`,
   video_related: `/aweme/v1/web/aweme/related/`,
