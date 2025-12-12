@@ -60,6 +60,20 @@ const openConnectionsPopup = (name: string) => {
     console.log(message)
   }
 }
+
+// 解析账号认证信息
+const accountCertLabel = computed(() => {
+  try {
+    const certInfo = props.userInfo.user?.account_cert_info
+    if (certInfo) {
+      const parsed = JSON.parse(certInfo)
+      return parsed.label_text || ''
+    }
+  } catch {
+    return ''
+  }
+  return ''
+})
 </script>
 
 <template>
@@ -80,9 +94,9 @@ const openConnectionsPopup = (name: string) => {
         <h1 class="user-name-login">
           <span class="bage-name">{{ userInfo.user?.nickname }}</span>
         </h1>
-        <div class="user-bage" v-if="userInfo.user?.custom_verify">
-          <div class="bage-icon">认证徽章</div>
-          <span class="bage-name">{{ userInfo.user?.custom_verify }}</span>
+        <div class="user-bage" v-if="accountCertLabel">
+          <div class="bage-icon"></div>
+          <span class="bage-name">{{ accountCertLabel }}</span>
         </div>
       </div>
       <div class="user-info-detail">
@@ -95,7 +109,7 @@ const openConnectionsPopup = (name: string) => {
         <div class="user-item" @click="openConnectionsPopup('fans')">
           <div class="user-info-text">粉丝</div>
           <div class="user-number">
-            {{ useCount(userInfo.user?.follower_count) }}
+            {{ useCount(userInfo.user?.mplatform_followers_count) }}
           </div>
         </div>
         <modal :open="isOpenConnect" @close="isOpenConnect = false">
@@ -220,7 +234,7 @@ const openConnectionsPopup = (name: string) => {
           height: 16px;
           width: 16px;
           text-indent: -99999px;
-          background: url(//lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/ies/douyin_web/media/douyin-pc-icons-color@ic_color_personal.0e5e4f19918da3d7.svg)
+          background: url(https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/ies/douyin_web/media/douyin-pc-icons-color@ic_verify_yellow_outlined.4a5e14eb950c5d79.svg)
             50% / contain no-repeat;
         }
         .bage-name {

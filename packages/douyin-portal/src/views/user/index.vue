@@ -3,6 +3,7 @@ import apis from '@/api/apis'
 import type { IUserDetailRes } from '@/api/tyeps/request_response/userDetailRes'
 import ErrorPage from '@/components/common/error-page/index.vue'
 import Loading from '@/components/common/loading.vue'
+import { DyButton } from '@/components/ui'
 import {
   UserLike,
   UserPost,
@@ -99,21 +100,25 @@ watchEffect(() => {
           <template #user-header>
             <user-header :userInfo="userInfo">
               <div class="share-box">
-                <dy-button class="share-btn">
+                <div class="share-btn">
                   <svg-icon icon="more" class="icon" />
-                </dy-button>
-                <dy-button class="share-btn">
+                </div>
+                <div class="share-btn">
                   <span class="share-text">分享主页</span>
-                </dy-button>
+                </div>
               </div>
               <div class="user-action">
-                <dy-button
+                <DyButton
                   class="follow-btn"
                   :class="{ follow: !userInfo.user?.follow_status }"
+                  :theme="userInfo.user?.follow_status ? 'light' : 'solid'"
+                  type="secondary"
                 >
                   {{ userInfo.user?.follow_status ? '已关注' : '关注' }}
-                </dy-button>
-                <dy-button class="message-btn">私信</dy-button>
+                </DyButton>
+                <DyButton class="message-btn" theme="light" type="secondary"
+                  >私信</DyButton
+                >
               </div>
             </user-header>
           </template>
@@ -189,13 +194,18 @@ watchEffect(() => {
     height: 26px;
     margin: 0 0 0 8px;
     padding: 0;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    user-select: none;
     .share-text {
       color: var(--color-text-t1);
     }
     .icon {
       color: var(--color-text-t1);
-      width: 50px;
-      height: 45px;
+      width: 36px;
+      height: 26px;
     }
   }
 }
@@ -206,6 +216,9 @@ watchEffect(() => {
 .follow-btn {
   background: var(--btn-bg);
   color: var(--btn-color);
+  margin: 0 8px 0 0;
+  border-radius: 12px;
+  height: 33px;
   &:hover {
     background: var(--btn-bg-hover);
     color: var(--btn-color);
@@ -219,6 +232,8 @@ watchEffect(() => {
 .message-btn {
   background: var(--btn-bg);
   color: var(--btn-color);
+  border-radius: 12px;
+  height: 33px;
   &:hover {
     background: var(--btn-bg-hover);
     color: var(--btn-color);

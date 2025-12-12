@@ -2,6 +2,10 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import type { ToastInstance } from './types'
 
+defineOptions({
+  name: 'DyToastItem'
+})
+
 const props = defineProps<{
   toast: ToastInstance
 }>()

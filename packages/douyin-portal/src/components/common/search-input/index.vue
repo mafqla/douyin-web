@@ -116,6 +116,8 @@ const handleSearch = () => {
         ref="input"
       />
     </div>
+    <!--|-->
+    <div class="center-border"></div>
     <button @click="handleSearch">
       <svg-icon class="icon-search" icon="search" />
       <span class="btn-title">搜索</span>
@@ -129,7 +131,10 @@ const handleSearch = () => {
 .search-input {
   border-radius: 12px;
   // background-color: var(--color-bg-b0);
-  border: 2px solid var(--input-border);
+  // border: 2px solid var(--input-border);
+  // border: 1px solid transparent;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.15);
   align-items: center;
   box-sizing: border-box;
   display: flex;
@@ -151,6 +156,13 @@ const handleSearch = () => {
     z-index: 50;
   }
 
+  .center-border {
+    width: 1px;
+    height: 16px;
+    border-left: 1px solid rgba(255, 255, 255, 0.16);
+    position: relative;
+    right: -4px;
+  }
   .clear-search {
     align-items: center;
     cursor: pointer;
@@ -203,20 +215,23 @@ const handleSearch = () => {
     border-top-left-radius: 12px !important;
     height: 40px;
     padding: 0 12px;
-    background-color: transparent;
+    // background-color: transparent;
+    background: 0 0;
     margin: 0;
     border: none;
     outline: none;
     caret-color: #fe2c55;
     user-select: none;
+    opacity: 1;
+    font-size: 16px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.75);
 
     &::placeholder {
       // color: rgba(47, 48, 53, 0.4);
-      color: var(--color-text-t4);
-      opacity: 1;
-      font-size: 14px;
-      font-weight: 200;
-      line-height: 40px;
+      // color: var(--color-text-t4);
+
+      // color: var(--color-text-t4);
     }
   }
 

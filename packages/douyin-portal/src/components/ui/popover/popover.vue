@@ -7,6 +7,10 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, useAttrs } from 'vue'
 import type { PopoverPosition, PopoverTrigger, PopoverTheme } from './types'
 
+defineOptions({
+  name: 'DyPopover'
+})
+
 const props = withDefaults(
   defineProps<{
     /** 弹出层内容 */

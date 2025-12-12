@@ -3,6 +3,10 @@ import { computed } from 'vue'
 import ToastItem from './toast-item.vue'
 import type { ToastInstance, ToastConfig } from './types'
 
+defineOptions({
+  name: 'DyToastContainer'
+})
+
 const props = defineProps<{
   toasts: ToastInstance[]
   config: ToastConfig

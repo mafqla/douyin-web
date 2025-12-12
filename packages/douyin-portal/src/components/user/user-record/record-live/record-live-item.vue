@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { ILiveRecordItem } from '@/api/tyeps/request_response/liveRecordRes'
 import DyAvatar from '@/components/common/dy-avatar.vue'
-import {} from 'vue'
+import { DyButton } from '@/components/ui'
+
 const props = defineProps<{
   item: {
     date: ILiveRecordItem
@@ -40,12 +41,15 @@ const props = defineProps<{
             {{ item.UserLiveRecord.scheduled_text }}
           </div>
         </div>
-        <dy-button
+        <DyButton
           class="follow-btn"
           :class="{ follow: item.UserLiveRecord.follow_status }"
+          :theme="item.UserLiveRecord.follow_status ? 'light' : 'solid'"
+          type="primary"
+          size="small"
         >
           {{ item.UserLiveRecord.follow_status ? '已关注' : '关注' }}
-        </dy-button>
+        </DyButton>
       </div>
     </div>
   </div>

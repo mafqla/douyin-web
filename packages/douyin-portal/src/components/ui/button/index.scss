@@ -1,0 +1,488 @@
+// ==================== DyButton 按钮组件样式 ====================
+
+// 基础样式
+.dy-btn {
+  align-items: center;
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  outline: none;
+  position: relative;
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  gap: 6px;
+  box-sizing: border-box;
+  text-decoration: none;
+  user-select: none;
+  vertical-align: middle;
+  white-space: nowrap;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  // ==================== 尺寸 ====================
+  &--size-large {
+    height: 44px;
+    padding: 0 20px;
+    min-width: 100px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+
+  &--size-default {
+    height: 36px;
+    padding: 0 16px;
+    min-width: 88px;
+    line-height: 22px;
+  }
+
+  &--size-small {
+    height: 28px;
+    padding: 0 12px;
+    min-width: 64px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  // ==================== 块级按钮 ====================
+  &--block {
+    width: 100%;
+  }
+
+  // ==================== 仅图标按钮 ====================
+  &--icon-only {
+    min-width: auto;
+    padding: 0;
+
+    &.dy-btn--size-large {
+      width: 44px;
+    }
+
+    &.dy-btn--size-default {
+      width: 36px;
+    }
+
+    &.dy-btn--size-small {
+      width: 28px;
+    }
+  }
+
+  // ==================== 图标位置 ====================
+  &--icon-right {
+    flex-direction: row-reverse;
+  }
+
+  // ==================== 去除水平内边距 ====================
+  &--no-padding-left {
+    padding-left: 0;
+  }
+
+  &--no-padding-right {
+    padding-right: 0;
+  }
+
+  // ==================== Light 主题（浅色背景） ====================
+  &--theme-light {
+    &.dy-btn--type-primary {
+      background-color: rgba(254, 44, 89, 0.15);
+      color: var(--color-primary);
+
+      &:hover:not(:disabled) {
+        background-color: rgba(254, 44, 89, 0.25);
+      }
+
+      &:active:not(:disabled) {
+        background-color: rgba(254, 44, 89, 0.35);
+      }
+    }
+
+    &.dy-btn--type-secondary {
+      background-color: var(--color-bg-b3);
+      color: var(--color-text-t1);
+
+      &:hover:not(:disabled) {
+        background-color: var(--btn-bg-hover);
+      }
+
+      &:active:not(:disabled) {
+        background-color: var(--btn-bg-hover);
+      }
+    }
+
+    &.dy-btn--type-tertiary {
+      background-color: var(--secondary-bg-color, var(--color-bg-b3));
+      color: var(--color-text-t3);
+
+      &:hover:not(:disabled) {
+        background-color: var(--btn-bg-hover);
+      }
+
+      &:active:not(:disabled) {
+        background-color: var(--btn-bg-hover);
+      }
+    }
+
+    &.dy-btn--type-warning {
+      background-color: rgba(250, 173, 20, 0.15);
+      color: #faad14;
+
+      &:hover:not(:disabled) {
+        background-color: rgba(250, 173, 20, 0.25);
+      }
+
+      &:active:not(:disabled) {
+        background-color: rgba(250, 173, 20, 0.35);
+      }
+    }
+
+    &.dy-btn--type-danger {
+      background-color: rgba(255, 77, 79, 0.15);
+      color: #ff4d4f;
+
+      &:hover:not(:disabled) {
+        background-color: rgba(255, 77, 79, 0.25);
+      }
+
+      &:active:not(:disabled) {
+        background-color: rgba(255, 77, 79, 0.35);
+      }
+    }
+  }
+
+  // ==================== Solid 主题（深色背景） ====================
+  &--theme-solid {
+    &.dy-btn--type-primary {
+      background-color: var(--color-primary);
+      color: var(--color-const-text-white, #fff);
+
+      &:hover:not(:disabled) {
+        background-color: var(--color-primary-hover, #ff4d6a);
+      }
+
+      &:active:not(:disabled) {
+        background-color: var(--color-primary-active, #e6284f);
+      }
+    }
+
+    &.dy-btn--type-secondary {
+      background-color: var(--btn-bg-hover);
+      color: var(--color-text-t1);
+
+      &:hover:not(:disabled) {
+        background-color: var(--btn-bg-hover);
+      }
+
+      &:active:not(:disabled) {
+        background-color: var(--color-bg-b3);
+      }
+    }
+
+    &.dy-btn--type-tertiary {
+      background-color: var(--color-bg-b3);
+      color: var(--color-text-t2);
+
+      &:hover:not(:disabled) {
+        background-color: var(--btn-bg-hover);
+      }
+
+      &:active:not(:disabled) {
+        background-color: var(--color-bg-b2);
+      }
+    }
+
+    &.dy-btn--type-warning {
+      background-color: #faad14;
+      color: #fff;
+
+      &:hover:not(:disabled) {
+        background-color: #ffc53d;
+      }
+
+      &:active:not(:disabled) {
+        background-color: #d48806;
+      }
+    }
+
+    &.dy-btn--type-danger {
+      background-color: #ff4d4f;
+      color: #fff;
+
+      &:hover:not(:disabled) {
+        background-color: #ff7875;
+      }
+
+      &:active:not(:disabled) {
+        background-color: #d9363e;
+      }
+    }
+  }
+
+  // ==================== Borderless 主题（无背景） ====================
+  &--theme-borderless {
+    background-color: transparent;
+
+    &.dy-btn--type-primary {
+      color: var(--color-primary);
+
+      &:hover:not(:disabled) {
+        background-color: rgba(254, 44, 89, 0.1);
+      }
+
+      &:active:not(:disabled) {
+        background-color: rgba(254, 44, 89, 0.2);
+      }
+    }
+
+    &.dy-btn--type-secondary {
+      color: var(--color-text-t1);
+
+      &:hover:not(:disabled) {
+        background-color: var(--color-bg-b3);
+      }
+
+      &:active:not(:disabled) {
+        background-color: var(--btn-bg-hover);
+      }
+    }
+
+    &.dy-btn--type-tertiary {
+      color: var(--color-text-t3);
+
+      &:hover:not(:disabled) {
+        background-color: var(--color-bg-b3);
+      }
+
+      &:active:not(:disabled) {
+        background-color: var(--btn-bg-hover);
+      }
+    }
+
+    &.dy-btn--type-warning {
+      color: #faad14;
+
+      &:hover:not(:disabled) {
+        background-color: rgba(250, 173, 20, 0.1);
+      }
+
+      &:active:not(:disabled) {
+        background-color: rgba(250, 173, 20, 0.2);
+      }
+    }
+
+    &.dy-btn--type-danger {
+      color: #ff4d4f;
+
+      &:hover:not(:disabled) {
+        background-color: rgba(255, 77, 79, 0.1);
+      }
+
+      &:active:not(:disabled) {
+        background-color: rgba(255, 77, 79, 0.2);
+      }
+    }
+  }
+
+  // ==================== Outline 主题（边框模式） ====================
+  &--theme-outline {
+    background-color: transparent;
+    border: 1px solid;
+
+    &.dy-btn--type-primary {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+
+      &:hover:not(:disabled) {
+        background-color: rgba(254, 44, 89, 0.1);
+      }
+
+      &:active:not(:disabled) {
+        background-color: rgba(254, 44, 89, 0.2);
+      }
+    }
+
+    &.dy-btn--type-secondary {
+      border-color: var(--color-line-l2);
+      color: var(--color-text-t1);
+
+      &:hover:not(:disabled) {
+        background-color: var(--color-bg-b3);
+      }
+
+      &:active:not(:disabled) {
+        background-color: var(--btn-bg-hover);
+      }
+    }
+
+    &.dy-btn--type-tertiary {
+      border-color: var(--color-line-l3, var(--color-line-l2));
+      color: var(--color-text-t3);
+
+      &:hover:not(:disabled) {
+        background-color: var(--color-bg-b3);
+      }
+
+      &:active:not(:disabled) {
+        background-color: var(--btn-bg-hover);
+      }
+    }
+
+    &.dy-btn--type-warning {
+      border-color: #faad14;
+      color: #faad14;
+
+      &:hover:not(:disabled) {
+        background-color: rgba(250, 173, 20, 0.1);
+      }
+
+      &:active:not(:disabled) {
+        background-color: rgba(250, 173, 20, 0.2);
+      }
+    }
+
+    &.dy-btn--type-danger {
+      border-color: #ff4d4f;
+      color: #ff4d4f;
+
+      &:hover:not(:disabled) {
+        background-color: rgba(255, 77, 79, 0.1);
+      }
+
+      &:active:not(:disabled) {
+        background-color: rgba(255, 77, 79, 0.2);
+      }
+    }
+  }
+
+  // ==================== 禁用状态 ====================
+  &--disabled,
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  // ==================== 加载状态 ====================
+  &--loading {
+    cursor: wait;
+    pointer-events: none;
+  }
+}
+
+// ==================== 加载图标 ====================
+.dy-btn__loading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dy-btn__loading-icon {
+  width: 16px;
+  height: 16px;
+  animation: dy-btn-spin 1s linear infinite;
+}
+
+@keyframes dy-btn-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ==================== 图标 ====================
+.dy-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1em;
+
+  svg {
+    width: 1em;
+    height: 1em;
+  }
+}
+
+// ==================== 内容 ====================
+.dy-btn__content {
+  display: inline-flex;
+  align-items: center;
+}
+
+// ==================== 按钮组 ====================
+.dy-btn-group {
+  display: inline-flex;
+  vertical-align: middle;
+
+  .dy-btn {
+    border-radius: 0;
+    margin: 0;
+
+    &:first-child {
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+    }
+
+    &:last-child {
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+
+    // outline 主题下相邻按钮合并边框
+    &.dy-btn--theme-outline + .dy-btn--theme-outline {
+      margin-left: -1px;
+    }
+  }
+
+  // 尺寸
+  &--size-large .dy-btn {
+    &:first-child {
+      border-top-left-radius: 12px;
+      border-bottom-left-radius: 12px;
+    }
+
+    &:last-child {
+      border-top-right-radius: 12px;
+      border-bottom-right-radius: 12px;
+    }
+  }
+
+  &--size-small .dy-btn {
+    &:first-child {
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+
+    &:last-child {
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+  }
+}
+
+// ==================== 分裂按钮组 ====================
+.dy-split-btn-group {
+  display: inline-flex;
+  vertical-align: middle;
+  gap: 2px;
+
+  .dy-btn {
+    &:first-child {
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+    }
+
+    &:last-child {
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+    }
+
+    &:only-child {
+      border-radius: 10px;
+    }
+  }
+}

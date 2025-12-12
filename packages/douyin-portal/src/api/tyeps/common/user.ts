@@ -1,3 +1,102 @@
+// 图片资源接口
+export interface IImageResource {
+  uri: string
+  url_list: string[]
+  width?: number
+  height?: number
+}
+
+// 商业信息接口
+export interface ICommerceInfo {
+  challenge_list: any[] | null
+  head_image_list: any[] | null
+  offline_info_list: any[]
+  smart_phone_list: any[] | null
+  task_list: any[] | null
+}
+
+// 商业用户信息接口
+export interface ICommerceUserInfo {
+  ad_revenue_rits: any | null
+  has_ads_entry: boolean
+  show_star_atlas_cooperation: boolean
+  star_atlas: number
+}
+
+// 封面和头图信息接口
+export interface ICoverAndHeadImageInfo {
+  cover_list: any[] | null
+  profile_cover_list: Array<{
+    cover_url: IImageResource
+    dark_cover_color: string
+    light_cover_color: string
+  }> | null
+}
+
+// 官方合作信息接口
+export interface IOfficialCooperation {
+  schema: string
+  text: string
+  track_type: string
+}
+
+// 原创音乐人信息接口
+export interface IOriginalMusician {
+  digg_count: number
+  music_count: number
+  music_used_count: number
+}
+
+// 分享信息接口
+export interface IShareInfo {
+  bool_persist: number
+  life_share_ext: string
+  share_desc: string
+  share_image_url: IImageResource
+  share_qrcode_url: IImageResource
+  share_title: string
+  share_url: string
+  share_weibo_desc: string
+}
+
+// 催更详情接口
+export interface IUrgeDetail {
+  ctl_map: string
+  user_urged: number
+}
+
+// 伴侣关系接口
+export interface IMateRelation {
+  mate_apply_forward: number
+  mate_apply_reverse: number
+  mate_status: number
+}
+
+// 生活故事屏蔽接口
+export interface ILifeStoryBlock {
+  life_story_block: boolean
+}
+
+// 标签设置接口
+export interface ITabSettings {
+  private_tab: {
+    private_tab_style: number
+    show_private_tab: boolean
+  }
+}
+
+// 个人主页标签信息接口
+export interface IProfileTabInfo {
+  profile_landing_tab: number
+  profile_tab_list: any[] | null
+  profile_tab_list_v2: any[] | null
+}
+
+// 个人主页展示接口
+export interface IProfileShow {
+  identify_auth_infos: any[] | null
+}
+
 export interface IUser {
   // 用户的唯一标识符
   uid: string
@@ -5,8 +104,8 @@ export interface IUser {
   short_id: string
   // 用户昵称
   nickname: string
-  //用户性别
-  gender: number
+  // 用户性别
+  gender: number | null
   // 用户签名
   signature: string
   // 168x168尺寸头像信息
@@ -44,7 +143,7 @@ export interface IUser {
     width: number
     height: number
   }
-  user_age: number
+  user_age?: number | null
   // 作品数量
   aweme_count: number
   aweme_count_correction_threshold: string
@@ -68,6 +167,8 @@ export interface IUser {
   following_count: number
   // 粉丝数量
   follower_count: number
+  
+  mplatform_followers_count: number
   // 收藏数量
   favoriting_count: number
   // 总被收藏次数
@@ -283,9 +384,7 @@ export interface IUser {
   // 秒拍用户ID
   sec_uid: string
   // 用户催促详情
-  urge_detail: {
-    user_urged: number
-  }
+  urge_detail?: IUrgeDetail
   // 需要积分
   need_points: any
   // 首页底部提示
@@ -298,8 +397,8 @@ export interface IUser {
   can_set_geofencing: any
   // 直播间ID字符串
   room_id_str: string
-  // 白色封面URL
-  white_cover_url: string
+  // 白色封面URL列表
+  white_cover_url?: Array<IImageResource>
   // 用户标签列表
   user_tags: any
   // 拼接设置
@@ -364,8 +463,10 @@ export interface IUser {
   // 是否被屏蔽V2
   is_blocked_v2: boolean
   // 关注粉丝列表提示
-  general_permission: {
+  general_permission?: {
+    fans_page_toast?: number
     following_follower_list_toast: number
+    is_hit_active_fans_grayed?: boolean
   }
   // 签名额外信息
   signature_extra: any
@@ -403,4 +504,116 @@ export interface IUser {
   special_people_labels: any
   // 特殊关注状态
   special_follow_status: number
+  // 账号认证信息（JSON字符串）
+  account_cert_info?: string
+  // 商业信息
+  commerce_info?: ICommerceInfo
+  // 商业用户信息
+  commerce_user_info?: ICommerceUserInfo
+  // 封面和头图信息
+  cover_and_head_image_info?: ICoverAndHeadImageInfo
+  // 封面颜色
+  cover_colour?: string
+  // 动态数量
+  dongtai_count?: number
+  // 动态封面
+  dynamic_cover?: Record<string, any>
+  // 表情状态
+  elfemoji_status?: number
+  // 是否启用AI分身
+  enable_ai_double?: number
+  // 是否启用心愿
+  enable_wish?: boolean
+  // 企业用户信息（JSON字符串）
+  enterprise_user_info?: string
+  // 熟悉度置信度
+  familiar_confidence?: number
+  // 收藏权限
+  favorite_permission?: number
+  // 转发数量
+  forward_count?: number
+  // 是否有电商角色
+  has_e_account_role?: boolean
+  // 是否有订阅
+  has_subscription?: boolean
+  // 隐藏请求更新
+  hide_request_update?: number
+  // IM主要角色ID
+  im_primary_role_id?: number
+  // 图片发送豁免
+  image_send_exempt?: boolean
+  // 是否是活跃用户
+  is_activity_user?: boolean
+  // 是否被屏蔽
+  is_blocked?: boolean
+  // 是否是特效艺术家
+  is_effect_artist?: boolean
+  // 是否是IM海外用户
+  is_im_oversea_user?: number
+  // 是否是系列用户
+  is_series_user?: boolean
+  // 是否是分享个人资料用户
+  is_sharing_profile_user?: number
+  // 是否置顶
+  is_top?: number
+  // 生活故事屏蔽
+  life_story_block?: ILifeStoryBlock
+  // 伴侣添加权限
+  mate_add_permission?: number
+  // 伴侣关系
+  mate_relation?: IMateRelation
+  // 消息聊天入口
+  message_chat_entry?: boolean
+  // 合集数量
+  mix_count?: number
+  // 官方合作
+  official_cooperation?: IOfficialCooperation
+  // 原创音乐人
+  original_musician?: IOriginalMusician
+  // 鸽子达人状态
+  pigeon_daren_status?: string
+  // 鸽子达人警告标签
+  pigeon_daren_warn_tag?: string
+  // 个人主页组件禁用列表
+  profile_component_disabled?: string[]
+  // 个人主页记录参数（JSON字符串）
+  profile_record_params?: string
+  // 个人主页展示
+  profile_show?: IProfileShow
+  // 个人主页标签信息
+  profile_tab_info?: IProfileTabInfo
+  // 个人主页标签类型
+  profile_tab_type?: number
+  // 公开收藏数量
+  public_collects_count?: number
+  // 发布落地标签
+  publish_landing_tab?: number
+  // 粉丝群信息
+  r_fans_group_info?: Record<string, any>
+  // 推荐原因关系
+  recommend_reason_relation?: string
+  // 推荐用户原因来源
+  recommend_user_reason_source?: number
+  // 角色ID
+  role_id?: string
+  // 系列数量
+  series_count?: number
+  // 分享信息
+  share_info?: IShareInfo
+  // 签名语言
+  signature_language?: string
+  // 社交真实关系类型
+  social_real_relation_type?: number
+  // 故事标签是否为空
+  story_tab_empty?: boolean
+  // 标签设置
+  tab_settings?: ITabSettings
+  // 总被收藏次数修正阈值
+  total_favorited_correction_threshold?: number
+  // 观看状态
+  watch_status?: boolean
+  // 是否有商业企业标签入口
+  with_commerce_enterprise_tab_entry?: boolean
+  // 是否有新商品
+  with_new_goods?: boolean
 }
