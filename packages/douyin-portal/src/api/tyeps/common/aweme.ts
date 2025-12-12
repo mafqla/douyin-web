@@ -35,7 +35,7 @@ export interface IAwemeInfo {
   share_info: IShareInfo // 分享信息
   // 直播
   cell_room: {
-    rawdata: ILiveStreamInfo
+    rawdata: string // 原始 JSON 字符串，解析后为 ILiveStreamInfo
   }
   // 视频标签，用于分类或标记视频内容，当前为null表示没有标签或数据未提供
   video_labels: null

@@ -198,7 +198,7 @@ export default class PlaybackPlugin extends Plugin {
 
   render() {
     return `
-      <div class="xgplayer-playback-setting" data-state="normal">
+      <xg-icon class="xgplayer-playback-setting" data-state="normal">
         <div class="xgplayer-setting-playbackRatio">${
           this.curValue || '倍速'
         }</div>
@@ -208,7 +208,7 @@ export default class PlaybackPlugin extends Plugin {
             </div>
           </div>
         </div>
-      </div>
+      </xg-icon>
     `
   }
 }

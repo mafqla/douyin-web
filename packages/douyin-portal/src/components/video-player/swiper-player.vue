@@ -28,7 +28,7 @@ const props = withDefaults(defineProps<SwiperPlayerProps>(), {
 
 const { isPlay } = toRefs(props)
 const playerOptions = {
-  ignores: ['miniWin', 'playbackrate']
+  ignores: ['playbackrate']
 }
 const awemeUrl = computed(() => {
   if (

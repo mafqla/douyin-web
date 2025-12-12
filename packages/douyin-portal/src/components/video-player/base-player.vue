@@ -75,7 +75,8 @@ const isPlay = computed(() => {
 const loop = computed(() => {
   return props.loop
 })
-const setting = toRef(playerSettingStore(), 'isMini')
+const playerSetting = playerSettingStore()
+const setting = toRef(playerSetting, 'isMini')
 const playerOptions = ref<IPlayerOptions>({
   ...props.options,
   id: `xgplayer-${uniqueId}`,
@@ -92,11 +93,15 @@ const playerOptions = ref<IPlayerOptions>({
       <div class="xg-douyin-loading"></div>`
   },
   volume: {
-    default: 0.5,
+    default: playerSetting.volume,
     showValueLabel: true
   },
   // autoplayMuted: true,
-  closeInactive: true,
+  inactive: 2000,
+  closeFocusVideoFocus: false,
+  closePauseVideoFocus: true,
+  closePlayerVideoBlur: true,
+  closeVideoDblclick: true,
   allowSeekPlayed: true,
   allowPlayAfterEnded: true,
   allowSeekAfterEnded: true,
@@ -109,7 +114,7 @@ const playerOptions = ref<IPlayerOptions>({
   },
   dynamicBg: {
     disable: false,
-    mode:'firstframe',
+    mode: 'firstframe',
     filter: 'blur(60px)'
   },
   MiniScreen: {
@@ -162,8 +167,13 @@ const playerOptions = ref<IPlayerOptions>({
 
 let xgPlayer: Player | null = null
 let isDestroyed = false
+let isUpdatingFromPlayer = false // 防止音量循环更新
 const initPlayer = () => {
   xgPlayer = new Player(playerOptions.value)
+  // 恢复保存的静音状态
+  if (xgPlayer && playerSetting.muted) {
+    xgPlayer.muted = true
+  }
 }
 
 const play = () => {
@@ -234,9 +244,16 @@ onMounted(() => {
   })
   xgPlayer.on(Events.VOLUME_CHANGE, () => {
     emit('volumechange')
-    console.log('volumechange')
-    const muted = xgPlayer?.muted
-    console.log(muted)
+    // 保存音量设置到 store
+    if (xgPlayer) {
+      isUpdatingFromPlayer = true
+      playerSetting.setVolume(xgPlayer.volume)
+      playerSetting.setMuted(xgPlayer.muted)
+      // 下一个 tick 后重置标志位
+      setTimeout(() => {
+        isUpdatingFromPlayer = false
+      }, 0)
+    }
   })
   xgPlayer.usePluginHooks('progresspreview', 'previewClick', (plugin, time) => {
     console.log('...args', time)
@@ -271,6 +288,23 @@ watch(
     } else {
       xgPlayer.pause()
     }
+  }
+)
+
+// 监听 store 中的音量变化，实时同步到播放器
+watch(
+  () => playerSetting.volume,
+  (newVolume) => {
+    if (isDestroyed || !xgPlayer || isUpdatingFromPlayer) return
+    xgPlayer.volume = newVolume
+  }
+)
+
+watch(
+  () => playerSetting.muted,
+  (newMuted) => {
+    if (isDestroyed || !xgPlayer || isUpdatingFromPlayer) return
+    xgPlayer.muted = newMuted
   }
 )
 
@@ -397,10 +431,19 @@ xg-start-inner {
       width: 100%;
     }
   }
-
+  &.xgplayer-inactive .xgplayer-controls {
+    pointer-events: auto;
+    visibility: visible;
+    opacity: 1;
+  }
   .xgplayer-controls {
     height: 48px;
-    background-image: linear-gradient(transparent 0%, rgba(0, 0, 0, 0.6) 100%);
+    // background-image: linear-gradient(transparent 0%, rgba(0, 0, 0, 0.6) 100%);
+    background-image: linear-gradient(
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.85) 100%
+    );
+    z-index: 13;
   }
 
   .xgplayer-replay {
@@ -666,6 +709,32 @@ xg-start-inner {
   &.xgplayer-is-fullscreen {
     position: absolute !important;
     z-index: auto !important;
+  }
+}
+
+// 播放器非活跃状态下的控件透明度
+.xgplayer.xgplayer-pc.xgplayer-inactive {
+  // 左侧控件
+  .xg-left-grid {
+    .xgplayer-play,
+    .xgplayer-time {
+      opacity: 0.3;
+    }
+  }
+
+  // 右侧控件
+  .xg-right-grid {
+    xg-icon:not(.xgplayer-inner-autoplay):not(.xgplayer-setting-list):not(
+        .immersive-switch
+      ):not(.xgplayer-picture-in-picture-setting),
+    xg-icon .inner-autoplay-item,
+    xg-icon .setting-icon,
+    xg-icon.immersive-switch .xgplayer-setting-label,
+    xg-icon.xgplayer-picture-in-picture-setting
+      .xgplayer-icon-picture-in-picture,
+    xg-icon .xgplayer-playback-setting {
+      opacity: 0.3;
+    }
   }
 }
 </style>

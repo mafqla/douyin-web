@@ -10,6 +10,7 @@ import {
   onBeforeUnmount
 } from 'vue'
 import swiperPlayer from '../video-player/swiper-player.vue'
+import livePreviewPlayer from '../video-player/live-preview-player.vue'
 import { useElementSize } from '@vueuse/core'
 import { useKeyboardNavigation } from '@/hooks'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
@@ -52,6 +53,39 @@ const shouldRender = (index: number) => {
 }
 
 const isActiveIndex = (index: number) => index === store.activeVideoIndex
+
+// 解析直播间 rawdata 字符串
+const parseLiveRoomData = (rawdata: string | undefined) => {
+  if (!rawdata) return null
+  try {
+    return JSON.parse(rawdata)
+  } catch {
+    return null
+  }
+}
+
+// 从直播间数据中提取所有可用的直播流 URL（返回数组，支持备用流）
+const getLiveStreamUrls = (roomData: any): string[] => {
+  if (!roomData) return []
+  const urls: string[] = []
+  const streamUrl = roomData?.stream_url
+  const hlsMap = roomData?.hls_pull_url_map
+
+  // 优先添加 HLS 流（兼容性更好）
+  if (streamUrl?.hls_pull_url) urls.push(streamUrl.hls_pull_url)
+  if (hlsMap?.FULL_HD1) urls.push(hlsMap.FULL_HD1)
+  if (hlsMap?.HD1) urls.push(hlsMap.HD1)
+  if (hlsMap?.SD1) urls.push(hlsMap.SD1)
+  if (hlsMap?.SD2) urls.push(hlsMap.SD2)
+
+  // 添加 FLV 流作为备用
+  if (streamUrl?.flv_pull_url?.HD1) urls.push(streamUrl.flv_pull_url.HD1)
+  if (streamUrl?.flv_pull_url?.SD1) urls.push(streamUrl.flv_pull_url.SD1)
+  if (streamUrl?.flv_pull_url?.SD2) urls.push(streamUrl.flv_pull_url.SD2)
+
+  // 去重
+  return [...new Set(urls)]
+}
 
 const transitionDuration = ref(0)
 const videoHeight = ref()
@@ -215,9 +249,13 @@ useKeyboardNavigation()
           :aweme-info="item"
           :isPlay="isActiveIndex(index)"
         />
-        <template v-if="shouldRender(index) && item?.aweme_type === 101">
-          {{ item.cell_room.rawdata }}
-        </template>
+        <live-preview-player
+          v-if="shouldRender(index) && item?.aweme_type === 101"
+          :key="item.aweme_id"
+          :url="getLiveStreamUrls(parseLiveRoomData(item.cell_room?.rawdata))"
+          :room-data="parseLiveRoomData(item.cell_room?.rawdata)"
+          :is-play="isActiveIndex(index)"
+        />
       </div>
     </div>
   </div>
