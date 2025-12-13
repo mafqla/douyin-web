@@ -9,26 +9,43 @@ interface IProps {
 const props = defineProps<IProps>()
 
 const spanText = ref<HTMLElement | null>(null)
+const textEl = ref<HTMLElement | null>(null)
 const expanded = ref(false)
 const shouldShowButton = ref(false)
 const addShow = ref(false)
-const spanHeight = ref()
-const clientHeight = ref()
+
+// 检查文本内容是否溢出
+const checkOverflow = () => {
+  if (!textEl.value) return
+  // 只在未展开状态下检查是否需要显示按钮
+  if (!expanded.value) {
+    const text = textEl.value
+    // 获取文本的行高
+    const style = getComputedStyle(text)
+    const lineHeight = parseFloat(style.lineHeight) || 22
+    // 计算文本实际需要的行数
+    const actualLines = text.scrollHeight / lineHeight
+    // 获取允许的最大行数（默认2行）
+    const maxLines = 2
+    // 如果实际行数超过最大行数，显示按钮
+    const isOverflow = actualLines > maxLines + 0.5
+    shouldShowButton.value = isOverflow
+    addShow.value = isOverflow
+  }
+}
+
 // 监听容器尺寸变化
 onMounted(() => {
-  const resizeObserver = new ResizeObserver((entries) => {
-    for (const entry of entries) {
-      spanHeight.value = entry.target.scrollHeight
-      clientHeight.value = entry.target.clientHeight
-
-      shouldShowButton.value = spanHeight.value > clientHeight.value
-      addShow.value = spanHeight.value > clientHeight.value
-      if (expanded.value) {
-        shouldShowButton.value = true
-      }
-    }
+  // 延迟检查，确保 DOM 渲染完成
+  requestAnimationFrame(() => {
+    checkOverflow()
   })
-  resizeObserver.observe(spanText.value!)
+  const resizeObserver = new ResizeObserver(() => {
+    checkOverflow()
+  })
+  if (textEl.value) {
+    resizeObserver.observe(textEl.value)
+  }
 })
 
 // watchEffect(() => {
@@ -36,7 +53,10 @@ onMounted(() => {
 // })
 const toggleExpand = () => {
   expanded.value = !expanded.value
-  // addShow.value = !expanded.value
+  // 展开后仍需显示按钮（用于收起）
+  if (expanded.value) {
+    shouldShowButton.value = true
+  }
 }
 
 const formattedDescription = computed(() => {
@@ -97,7 +117,7 @@ const formattedDescription = computed(() => {
           {{ expanded ? '收起' : '展开' }}
         </button>
       </div>
-      <span class="text" v-html="formattedDescription"></span>
+      <span class="text" ref="textEl" v-html="formattedDescription"></span>
     </div>
   </div>
 </template>

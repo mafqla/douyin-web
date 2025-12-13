@@ -5,9 +5,8 @@ import {
   type PropType,
   ref,
   onMounted,
-  computed,
-  watch,
-  onBeforeUnmount
+  onBeforeUnmount,
+  watch
 } from 'vue'
 import swiperPlayer from '../video-player/swiper-player.vue'
 import livePreviewPlayer from '../video-player/live-preview-player.vue'
@@ -108,14 +107,29 @@ const isSwitching = ref(false)
 const dragThreshold = 10
 let shouldPreventClick = false
 
-const handleMouseDown = (event: MouseEvent) => {
+// Pointer Events 统一处理鼠标和触摸
+const handlePointerDown = (event: PointerEvent) => {
+  // 只处理主按钮（鼠标左键或触摸）
+  if (event.button !== 0) return
+
+  const target = event.target as HTMLElement
+  // 排除不可拖动的区域：sidebar、按钮、输入框等交互元素
+  const isInteractiveElement = target.closest(
+    'button, a, input, textarea, [data-no-drag], .video-sidebar, .video-action, .xgplayer-controls, .xg-right-grid, .xg-left-grid, .xgplayer-start'
+  )
+  if (isInteractiveElement) return
+
+  // 只在视频容器区域内才能拖动
+  const isInVideoContainer = target.closest('.videos-container, .slide-video, .base-player, .xgplayer')
+  if (!isInVideoContainer) return
+
   isDragging.value = true
   isActualDragging.value = false
   startY.value = event.clientY
   dragOffset.value = 0
 }
 
-const handleMouseMove = (event: MouseEvent) => {
+const handlePointerMove = (event: PointerEvent) => {
   if (!isDragging.value) return
   const deltaY = event.clientY - startY.value
   if (!isActualDragging.value && Math.abs(deltaY) > dragThreshold) {
@@ -123,18 +137,18 @@ const handleMouseMove = (event: MouseEvent) => {
     transitionDuration.value = 0
   }
   if (isActualDragging.value) {
-    event.preventDefault()
     dragOffset.value = deltaY
   }
 }
 
-const handleMouseUp = () => {
+const handlePointerUp = () => {
   if (!isDragging.value) return
   isDragging.value = false
   if (!isActualDragging.value) {
     shouldPreventClick = false
     return
   }
+  // 发生了实际拖动，需要阻止后续的点击事件
   shouldPreventClick = true
   isActualDragging.value = false
   transitionDuration.value = 250
@@ -159,6 +173,7 @@ const handleMouseUp = () => {
   dragOffset.value = 0
 }
 
+// 处理点击事件，在实际拖动后阻止点击
 const handleClick = (event: MouseEvent) => {
   if (shouldPreventClick) {
     event.stopPropagation()
@@ -208,21 +223,27 @@ watch(
 
 onMounted(() => {
   videoHeight.value?.addEventListener('wheel', handleWheel, { passive: false })
+  // 捕获阶段监听 click，在拖动后阻止点击事件传播
   videoHeight.value?.addEventListener('click', handleClick, true)
-  document.addEventListener('mousemove', handleMouseMove)
-  document.addEventListener('mouseup', handleMouseUp)
+  // 在 document 上监听 pointermove 和 pointerup，确保拖出元素外也能正常工作
+  document.addEventListener('pointermove', handlePointerMove)
+  document.addEventListener('pointerup', handlePointerUp)
 })
 
 onBeforeUnmount(() => {
   videoHeight.value?.removeEventListener('click', handleClick, true)
-  document.removeEventListener('mousemove', handleMouseMove)
-  document.removeEventListener('mouseup', handleMouseUp)
+  document.removeEventListener('pointermove', handlePointerMove)
+  document.removeEventListener('pointerup', handlePointerUp)
 })
 
 useKeyboardNavigation()
 </script>
 <template>
-  <div class="carousel" ref="videoHeight" @mousedown="handleMouseDown">
+  <div
+    class="carousel"
+    ref="videoHeight"
+    @pointerdown="handlePointerDown"
+  >
     <div
       class="carousel-inner"
       :style="{

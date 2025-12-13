@@ -1,0 +1,107 @@
+.xgplayer-live-refresh {
+  width: 32px;
+  height: 32px;
+  opacity: 0.9;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  cursor: pointer;
+  position: relative;
+
+  .xgplayer-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .refresh-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .refresh-icon {
+    width: 20px;
+    height: 20px;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease;
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    // 刷新中旋转动画
+    &.refreshing {
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  &:hover {
+    .refresh-icon {
+      opacity: 1;
+    }
+
+    .xgTips {
+      visibility: visible;
+    }
+  }
+
+  &:active {
+    .refresh-icon {
+      transform: scale(0.9);
+    }
+  }
+
+  .xgTips {
+    visibility: hidden;
+    white-space: nowrap;
+    text-align: center;
+    color: #fff;
+    cursor: default;
+    background-color: #252632;
+    border-radius: 12px;
+    padding: 10px;
+    font-size: 12px;
+    line-height: 20px;
+    transition-property: visibility;
+    position: absolute;
+    top: auto;
+    bottom: 37px;
+    left: 50%;
+    transform: translate(-50%);
+    transition-delay: 50ms !important;
+    z-index: 13;
+    width: 90px;
+
+    .shortcutKey {
+      width: 18px;
+      height: 18px;
+      vertical-align: baseline;
+      color: #33343f;
+      background: #fff;
+      border-radius: 6px;
+      justify-content: center;
+      align-items: center;
+      margin-left: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 21px;
+      display: inline-flex;
+    }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -161,7 +161,9 @@ const playerOptions = ref<IPlayerOptions>({
     watchLater,
     automaticContinuous,
     immersiveSwitch,
-    ImageGalleryPlugin
+    ImageGalleryPlugin,
+    // 合并传入的额外插件
+    ...(props.options?.plugins || [])
   ]
 })
 
@@ -717,7 +719,8 @@ xg-start-inner {
   // 左侧控件
   .xg-left-grid {
     .xgplayer-play,
-    .xgplayer-time {
+    .xgplayer-time,
+    .xgplayer-live-refresh {
       opacity: 0.3;
     }
   }
