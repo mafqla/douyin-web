@@ -18,6 +18,16 @@ const props = defineProps({
   videoList: {
     type: Array as PropType<IAwemeInfo[]>,
     default: []
+  },
+  // 是否显示 swiper 控制按钮
+  showSwiperControl: {
+    type: Boolean,
+    default: false
+  },
+  // 是否是 modal 模式（全屏弹框）
+  isModal: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -120,7 +130,9 @@ const handlePointerDown = (event: PointerEvent) => {
   if (isInteractiveElement) return
 
   // 只在视频容器区域内才能拖动
-  const isInVideoContainer = target.closest('.videos-container, .slide-video, .base-player, .xgplayer')
+  const isInVideoContainer = target.closest(
+    '.videos-container, .slide-video, .base-player, .xgplayer'
+  )
   if (!isInVideoContainer) return
 
   isDragging.value = true
@@ -241,6 +253,7 @@ useKeyboardNavigation()
 <template>
   <div
     class="carousel"
+    :class="{ 'carousel-modal': props.isModal }"
     ref="videoHeight"
     @pointerdown="handlePointerDown"
   >
@@ -262,6 +275,7 @@ useKeyboardNavigation()
         }"
       >
         <swiper-player
+          :class="{ 'swiper-modal': props.isModal }"
           v-if="
             (shouldRender(index) && item?.media_type === 4) ||
             (shouldRender(index) && item?.aweme_type === 68)
@@ -269,6 +283,7 @@ useKeyboardNavigation()
           :key="item.aweme_id"
           :aweme-info="item"
           :isPlay="isActiveIndex(index)"
+          :showSwiperControl="props.showSwiperControl"
         />
         <live-preview-player
           v-if="shouldRender(index) && item?.aweme_type === 101"
@@ -293,6 +308,13 @@ useKeyboardNavigation()
   overscroll-behavior: contain;
   padding-left: 0px;
   padding-right: 68px;
+
+  // modal 模式样式
+  &.carousel-modal {
+    padding-right: 0;
+    height: 100%;
+  }
+
   .carousel-inner {
     width: 100%;
     height: 100%;
@@ -308,6 +330,10 @@ useKeyboardNavigation()
       .carousel-item {
         min-width: 440px;
       }
+    }
+
+    .swiper-modal {
+      border-radius: 0;
     }
   }
 }

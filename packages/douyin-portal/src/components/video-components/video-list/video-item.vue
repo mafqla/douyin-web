@@ -10,6 +10,8 @@ const props = defineProps<{
   selectable?: boolean
   // 是否选中
   selected?: boolean
+  // 是否禁用点击时切换视频播放（用于外部控制点击行为）
+  disableClickToggle?: boolean
 }>()
 
 // 点赞数转换
@@ -21,7 +23,6 @@ const dianzan = computed(() => {
   }
 })
 const isVideoVisible = ref(false)
-const volume = ref(0)
 let timer: any = null
 const showVideo = () => {
   // 选择模式下禁用 hover 播放
@@ -46,6 +47,11 @@ const toggleModal = (event: any) => {
     return
   }
   event.preventDefault()
+
+  // 如果禁用点击切换视频，直接返回（由外部处理点击事件）
+  if (props.disableClickToggle) {
+    return
+  }
 
   isVideoVisible.value = !isVideoVisible.value
 

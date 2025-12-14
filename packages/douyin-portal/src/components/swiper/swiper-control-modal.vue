@@ -34,10 +34,17 @@ import { videosCtrolStore } from '@/stores/videos-control'
 <style lang="scss" scoped>
 .xgplayer-playswitch {
   flex-shrink: 0;
-  width: 35px;
+
+  svg {
+    position: relative;
+    top: 7px;
+    left: 4px;
+    height: 26px !important;
+    width: 26px !important;
+  }
 }
 .modal-controls {
-  border: 1px solid hsla(0, 0%, 100%, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 18px;
   box-sizing: content-box;
 
@@ -51,7 +58,7 @@ import { videosCtrolStore } from '@/stores/videos-control'
     height: 80px;
 
     background: rgba(0, 0, 0, 0.18);
-    border: 0.5px solid hsla(0, 0%, 100%, 0.15);
+    border: 0.5px solid rgba(255, 255, 255, 0.15);
     position: relative;
     &:hover {
       opacity: 0.9;
@@ -65,23 +72,24 @@ import { videosCtrolStore } from '@/stores/videos-control'
       opacity: 0.7;
 
       .icon {
-        left: 5px;
-        // left: 9px;
-        position: relative;
-        top: 7px;
-        height: 26px !important;
-        width: 26px !important;
+        color: rgba(255, 255, 255, 0.25);
+      }
+
+      &:hover {
         color: #fff;
-        // color: rgba(22, 24, 35, 0.6);
       }
     }
     .modal-controls-switch-up.disabled {
+      .icon {
+        fill: rgba(255, 255, 255, 0.12);
+      }
       cursor: not-allowed;
-      opacity: 0.3;
     }
     .modal-controls-switch-down.disabled {
       cursor: not-allowed;
-      opacity: 0.3;
+      .icon {
+        fill: rgba(255, 255, 255, 0.12);
+      }
     }
 
     .modal-controls-switch-down {
@@ -93,14 +101,11 @@ import { videosCtrolStore } from '@/stores/videos-control'
       cursor: pointer;
 
       .icon {
-        left: 5px;
-        // left: 9px;
-        position: relative;
-        top: 7px;
-        height: 26px !important;
-        width: 26px !important;
+        color: rgba(255, 255, 255, 0.25);
+      }
+
+      &:hover {
         color: #fff;
-        // color: rgba(22, 24, 35, 0.6);
       }
     }
   }

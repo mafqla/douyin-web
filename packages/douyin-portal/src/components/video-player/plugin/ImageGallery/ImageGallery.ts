@@ -1,5 +1,6 @@
 import { Plugin } from 'xgplayer'
 import type { IPluginOptions } from 'xgplayer/es/plugin/plugin'
+import { videosCtrolStore } from '@/stores/videos-control'
 import './index.scss'
 
 const { POSITIONS } = Plugin
@@ -16,7 +17,19 @@ export interface ImageItem {
     play_addr?: {
       url_list: string[]
     }
+    // 视频时长（毫秒），用于确定该图片的展示时长
+    duration?: number
   }
+}
+
+// 图集音乐信息
+export interface ImageAlbumMusicInfo {
+  // 音乐开始时间（毫秒）
+  begin_time: number
+  // 音乐结束时间（毫秒）
+  end_time: number
+  // 音量 (0-100)
+  volume: number
 }
 
 export type ArrowStyle = 'side' | 'bottom'
@@ -28,6 +41,10 @@ export interface ImageGalleryConfig {
   loop?: boolean
   showArrows?: boolean
   arrowStyle?: ArrowStyle
+  // 图集音乐信息，用于控制音乐播放时间
+  musicInfo?: ImageAlbumMusicInfo
+  // 默认每张图片展示时长（毫秒），当图片没有 video.duration 时使用
+  defaultDuration?: number
 }
 
 export class ImageGalleryPlugin extends Plugin {
@@ -51,7 +68,7 @@ export class ImageGalleryPlugin extends Plugin {
   private _isUserInitiatedChange = false
   private _isSyncingProgress = false
   private _userChangeUntil = 0
-  private _stopAutoSwitch = false
+  private _destroyed = false
 
   private get currentIndex(): number {
     return this._currentIndex
@@ -75,7 +92,20 @@ export class ImageGalleryPlugin extends Plugin {
   private swiperContainer: HTMLElement | null = null
   private slidesContainer: HTMLElement | null = null
   private slides: HTMLElement[] = []
-  private cfg: Required<ImageGalleryConfig>
+  private resizeObserver: ResizeObserver | null = null
+  private cfg: Omit<Required<ImageGalleryConfig>, 'musicInfo'> & { musicInfo?: ImageAlbumMusicInfo }
+  // 每张图片的展示时长（毫秒）
+  private imageDurations: number[] = []
+  // 每张图片的开始时间点（毫秒）
+  private imageStartTimes: number[] = []
+  // 图集总时长（毫秒）
+  private totalDuration = 0
+  // 图集播放开始时间戳（毫秒）
+  private _playStartTime = 0
+  // 图集已播放的时间（毫秒），用于暂停恢复
+  private _playedTime = 0
+  // 首个媒体是否已加载完成（防止动图还没加载好就切换）
+  private _firstMediaReady = false
 
   constructor(args: IPluginOptions) {
     super(args)
@@ -88,7 +118,9 @@ export class ImageGalleryPlugin extends Plugin {
       preloadCount: 2,
       loop: false,
       showArrows: true,
-      arrowStyle: 'side'
+      arrowStyle: 'side',
+      musicInfo: undefined,
+      defaultDuration: 5000 // 默认每张图片展示 5 秒
     }
 
     // 初始化触摸起始位置
@@ -114,6 +146,8 @@ export class ImageGalleryPlugin extends Plugin {
         imageGalleryConfig.arrowStyle !== undefined
           ? imageGalleryConfig.arrowStyle
           : 'side',
+      musicInfo: imageGalleryConfig.musicInfo,
+      defaultDuration: imageGalleryConfig.defaultDuration || 5000,
       ...imageGalleryConfig
     }
 
@@ -121,6 +155,9 @@ export class ImageGalleryPlugin extends Plugin {
 
     const { images } = this.cfg
     if (!images || images.length === 0) return
+
+    // 计算每张图片的展示时长
+    this.calculateImageDurations()
 
     // 获取DOM元素
     this.swiperContainer = this.root.querySelector('.image-gallery-plugin')
@@ -150,6 +187,7 @@ export class ImageGalleryPlugin extends Plugin {
 
     // 预加载图片
     setTimeout(() => {
+      if (this._destroyed || !this.root) return
       this.preloadImages()
       // 确保第一张图片正确显示
       this.preloadImage(0)
@@ -169,7 +207,54 @@ export class ImageGalleryPlugin extends Plugin {
     )
   }
 
+  /**
+   * 计算每张图片的展示时长
+   * 优先使用 video.duration，否则使用默认时长
+   * 图集总时长 = 所有图片展示时长之和
+   */
+  private calculateImageDurations() {
+    const { images, defaultDuration } = this.cfg
+
+    this.imageDurations = []
+    this.imageStartTimes = []
+    let currentTime = 0
+
+    // 计算每张图片的时长
+    for (const image of images) {
+      // 优先使用图片自带的 video.duration（Live Photo 的视频时长）
+      // 否则使用默认时长
+      const duration = image.video?.duration || defaultDuration
+      this.imageDurations.push(duration)
+      this.imageStartTimes.push(currentTime)
+      currentTime += duration
+    }
+
+    // 图集总时长 = 所有图片展示时长之和
+    // 添加一点缓冲时间（100ms），确保最后一张图片能完整播放
+    // 避免因为浮点数精度或计时器误差导致提前结束
+    this.totalDuration = currentTime + 100
+
+    console.log('图片时长计算完成:', {
+      durations: this.imageDurations,
+      startTimes: this.imageStartTimes,
+      totalDuration: this.totalDuration
+    })
+  }
+
+  /**
+   * 根据当前播放时间获取应该显示的图片索引
+   */
+  private getImageIndexByTime(currentTimeMs: number): number {
+    for (let i = this.imageStartTimes.length - 1; i >= 0; i--) {
+      if (currentTimeMs >= this.imageStartTimes[i]) {
+        return i
+      }
+    }
+    return 0
+  }
+
   private initLivePhotoVideos() {
+    if (this._destroyed || !this.root) return
     const videos = this.root.querySelectorAll(
       '.live-photo-video'
     ) as NodeListOf<HTMLVideoElement>
@@ -177,14 +262,47 @@ export class ImageGalleryPlugin extends Plugin {
     videos.forEach((video) => {
       const index = parseInt(video.dataset.index || '0', 10)
       this.livePhotoVideos.set(index, video)
+
+      // 监听第一张图片的视频加载完成事件
+      if (index === 0) {
+        const onCanPlay = () => {
+          if (!this._firstMediaReady) {
+            this._firstMediaReady = true
+            console.log('首个 Live Photo 视频已加载完成，开始计时')
+            // 如果播放器正在播放，重置播放开始时间
+            if (!this.player.paused && this._playStartTime > 0) {
+              this._playStartTime = Date.now() - this._playedTime
+            }
+          }
+          video.removeEventListener('canplay', onCanPlay)
+        }
+        // 如果视频已经可以播放，直接标记为就绪
+        if (video.readyState >= 3) {
+          this._firstMediaReady = true
+          console.log('首个 Live Photo 视频已就绪')
+        } else {
+          video.addEventListener('canplay', onCanPlay)
+        }
+      }
     })
+
+    // 如果没有 Live Photo 视频，直接标记为就绪
+    if (videos.length === 0 || !this.isLivePhoto(0)) {
+      this._firstMediaReady = true
+    }
   }
 
-  private handleLivePhotoPlayback(currentIndex: number) {
-    if (this.player.paused) return
+  private handleLivePhotoPlayback(currentIndex: number, resetTime: boolean = true) {
+    if (this._destroyed) return
     this.livePhotoVideos.forEach((video, index) => {
       if (index === currentIndex) {
-        video.play().catch(() => {})
+        // 当切换到当前 Live Photo 时，根据参数决定是否重置时间
+        if (resetTime) {
+          video.currentTime = 0
+        }
+        if (!this.player.paused) {
+          video.play().catch(() => {})
+        }
       } else {
         video.pause()
         video.currentTime = 0
@@ -193,19 +311,48 @@ export class ImageGalleryPlugin extends Plugin {
   }
 
   private handlePlayerPlay = () => {
-    const video = this.livePhotoVideos.get(this.currentIndex)
-    if (video) {
-      video.play().catch(() => {})
+    // 重置图集结束标志，允许重新播放
+    if (this._galleryEnded) {
+      this._galleryEnded = false
+      // 重新开始播放时，重置播放时间和媒体就绪状态
+      this._playedTime = 0
+      this._firstMediaReady = false
+      this.currentIndex = 0
+      this.updateSlidePosition()
+      // 重新检查首个媒体是否已就绪
+      this.checkFirstMediaReady()
+    }
+    // 记录播放开始时间（考虑之前已播放的时间）
+    this._playStartTime = Date.now() - this._playedTime
+    // 恢复播放当前 Live Photo 视频（不重置时间）
+    this.handleLivePhotoPlayback(this.currentIndex, false)
+  }
+
+  private checkFirstMediaReady() {
+    // 检查首个媒体是否已就绪
+    if (this.isLivePhoto(0)) {
+      const video = this.livePhotoVideos.get(0)
+      if (video && video.readyState >= 3) {
+        this._firstMediaReady = true
+      }
+    } else {
+      // 普通图片，直接标记为就绪
+      this._firstMediaReady = true
     }
   }
 
   private handlePlayerPause = () => {
+    // 记录已播放的时间
+    if (this._playStartTime > 0) {
+      this._playedTime = Date.now() - this._playStartTime
+    }
     this.livePhotoVideos.forEach((video) => {
       video.pause()
     })
   }
 
   private updateBlurBackground(index: number) {
+    if (this._destroyed || !this.root) return
     const blurImg = this.root.querySelector(
       '.image-gallery-blur-img'
     ) as HTMLImageElement
@@ -399,7 +546,8 @@ export class ImageGalleryPlugin extends Plugin {
       `
 
     let arrowHtml = ''
-    if (showArrows) {
+    // 只有一张图片时不显示切换按钮
+    if (showArrows && images.length > 1) {
       arrowHtml = arrowStyle === 'bottom' ? bottomArrowHtml : sideArrowHtml
     }
 
@@ -517,7 +665,7 @@ export class ImageGalleryPlugin extends Plugin {
   private lastUpdateTime = 0
 
   private updateSlidePosition() {
-    if (!this.slidesContainer || !this.root) return
+    if (this._destroyed || !this.slidesContainer || !this.root) return
 
     // 移除节流控制以确保按钮切换时图片能正确更新
     this.lastUpdateTime = Date.now()
@@ -536,6 +684,7 @@ export class ImageGalleryPlugin extends Plugin {
 
     // 预加载相邻图片
     setTimeout(() => {
+      if (this._destroyed) return
       this.preloadImages()
     }, 0)
   }
@@ -555,7 +704,17 @@ export class ImageGalleryPlugin extends Plugin {
     // 键盘导航 - 使用捕获阶段并在 document 上监听
     document.addEventListener('keydown', this.onKeydown, true)
 
+    // 监听窗口大小变化
+    window.addEventListener('resize', this.onResize)
+
+    // 使用 ResizeObserver 监听容器尺寸变化
+    if (this.swiperContainer) {
+      this.resizeObserver = new ResizeObserver(this.onResize)
+      this.resizeObserver.observe(this.swiperContainer)
+    }
+
     setTimeout(() => {
+      if (this._destroyed || !this.root) return
       const leftArrow =
         this.root.querySelector('.image-gallery-arrow-left') ||
         this.root.querySelector('.image-gallery-bottom-left')
@@ -587,6 +746,7 @@ export class ImageGalleryPlugin extends Plugin {
 
   private interceptProgressEvents() {
     setTimeout(() => {
+      if (this._destroyed || !this.player?.root) return
       const progressEl = this.player.root?.querySelector('.xgplayer-progress')
       if (!progressEl) return
 
@@ -606,10 +766,21 @@ export class ImageGalleryPlugin extends Plugin {
         )
 
         if (targetIndex !== this.currentIndex) {
-          this._stopAutoSwitch = true
+          this._isUserInitiatedChange = true
+          this._userChangeUntil = Date.now() + 1000
           this.currentIndex = targetIndex
           this.updateSlidePosition()
           this.syncPlayerProgress()
+          // 同步更新播放时间到目标图片的开始时间
+          if (this.imageStartTimes.length > 0) {
+            this._playedTime = this.imageStartTimes[targetIndex]
+            if (!this.player.paused) {
+              this._playStartTime = Date.now() - this._playedTime
+            }
+          }
+          setTimeout(() => {
+            this._isUserInitiatedChange = false
+          }, 300)
         }
       }
 
@@ -844,6 +1015,18 @@ export class ImageGalleryPlugin extends Plugin {
 
   private keydownCooldown = false
 
+  private onResize = () => {
+    if (this._destroyed || !this.slidesContainer) return
+    // 尺寸变化时，禁用过渡效果并立即更新位置
+    this.slidesContainer.style.transition = 'none'
+    this.updateSlidePosition()
+    // 下一帧恢复过渡效果
+    requestAnimationFrame(() => {
+      if (this._destroyed || !this.slidesContainer) return
+      this.slidesContainer.style.transition = ''
+    })
+  }
+
   private onKeydown = (e: KeyboardEvent) => {
     // console.log('键盘事件:', e.key)
     // 添加防抖，防止快速按键导致的问题
@@ -918,7 +1101,17 @@ export class ImageGalleryPlugin extends Plugin {
     if (!isAutoplay) {
       this._isUserInitiatedChange = true
       this._userChangeUntil = Date.now() + 1000
-      this._stopAutoSwitch = true
+      // 用户手动切换图片时，如果不是最后一张，重置图集结束标志
+      if (index < this.cfg.images.length - 1) {
+        this._galleryEnded = false
+      }
+      // 同步更新播放时间到目标图片的开始时间
+      if (this.imageStartTimes.length > 0) {
+        this._playedTime = this.imageStartTimes[index]
+        if (!this.player.paused) {
+          this._playStartTime = Date.now() - this._playedTime
+        }
+      }
     }
 
     this.currentIndex = index
@@ -941,8 +1134,10 @@ export class ImageGalleryPlugin extends Plugin {
     if (this.player && this.cfg.images.length > 0) {
       this._isSyncingProgress = true
 
-      const imageDuration = 1 / this.cfg.images.length
-      const progress = (this.currentIndex + 1) * imageDuration
+      // 进度条基于图片索引等分显示
+      // 每张图片占 1/n 的进度条长度，切换时显示到该图片末尾
+      const imageCount = this.cfg.images.length
+      const progress = (this.currentIndex + 1) / imageCount
 
       const progressPlugin = this.player.plugins?.progress
       if (progressPlugin) {
@@ -955,32 +1150,99 @@ export class ImageGalleryPlugin extends Plugin {
     }
   }
 
+  // 标记图集是否已播放完成
+  private _galleryEnded = false
+
   private handleTimeUpdate = () => {
     if (!this.player || !this.cfg.images || this.cfg.images.length === 0) return
 
     if (this._isSyncingProgress) return
     if (this.player.paused) return
-    if (this._stopAutoSwitch) return
     if (this._isUserInitiatedChange || Date.now() < this._userChangeUntil)
       return
 
-    const duration = this.player.duration || 1
-    const currentTime = this.player.currentTime || 0
-    const progress = duration > 0 ? currentTime / duration : 0
+    // 使用真实时间来控制图片切换，而不是音乐进度
+    let newIndex: number
+    let currentTimeMs: number
 
-    if (duration > 0 && currentTime >= duration) {
-      if (!this.cfg.loop) {
-        const lastIndex = this.cfg.images.length - 1
-        if (this.currentIndex !== lastIndex) {
-          this.currentIndex = lastIndex
-          this.updateSlidePosition()
-          this.ensureImageLoaded(lastIndex)
-        }
+    if (this.imageStartTimes.length > 0 && this.totalDuration > 0 && this._playStartTime > 0) {
+      // 计算从播放开始到现在的真实时间（毫秒）
+      currentTimeMs = Date.now() - this._playStartTime
+      newIndex = this.getImageIndexByTime(currentTimeMs)
+
+      // 先处理图片切换，确保最后一张图片能正确显示和播放
+      const clampedIndex = Math.max(
+        0,
+        Math.min(newIndex, this.cfg.images.length - 1)
+      )
+
+      if (clampedIndex !== this.currentIndex) {
+        this.currentIndex = clampedIndex
+        this.updateSlidePosition()
+        this.ensureImageLoaded(clampedIndex)
       }
+
+      // 进度条显示基于图片索引（等分），而不是时间比例
+      // 计算当前图片内的播放进度
+      const currentImageStartTime = this.imageStartTimes[clampedIndex]
+      const currentImageDuration = this.imageDurations[clampedIndex]
+      const timeInCurrentImage = currentTimeMs - currentImageStartTime
+      const imageInternalProgress = Math.min(timeInCurrentImage / currentImageDuration, 1)
+
+      // 每张图片占 1/n 的进度条长度
+      const imageCount = this.cfg.images.length
+      const baseProgress = clampedIndex / imageCount
+      const imageProgressWidth = 1 / imageCount
+      const progress = Math.min(baseProgress + imageInternalProgress * imageProgressWidth, 1)
+
+      const progressPlugin = this.player.plugins?.progress
+      if (progressPlugin) {
+        progressPlugin.updatePercent(progress, true)
+      }
+
+      // 检查图集是否播放完成（真实时间超过图集总时长）
+      // 只有当首个媒体已加载完成时才进行结束判断，防止动图还没加载好就切换
+      if (currentTimeMs >= this.totalDuration && !this._galleryEnded && this._firstMediaReady) {
+        this._galleryEnded = true
+
+        // 检查是否开启了自动连播
+        const store = videosCtrolStore()
+        if (store.isAutoContinuous) {
+          // 开启自动连播：暂停播放器并触发 ended 事件，切换到下一个视频
+          this.player.pause()
+          this.player.emit('ended')
+        } else {
+          // 关闭自动连播：循环播放当前图集
+          // 使用 setTimeout 延迟重置，避免在同一帧内多次更新导致跳动
+          setTimeout(() => {
+            if (this._destroyed || this.player.paused) return
+            this._galleryEnded = false
+            this._playedTime = 0
+            this._playStartTime = Date.now()
+            this._currentIndex = 0
+            // 直接设置位置，不触发 handleLivePhotoPlayback 中的重置
+            if (this.slidesContainer) {
+              this.slidesContainer.style.transform = `translate3d(0px, 0, 0)`
+            }
+            this.updateArrowStates()
+            this.updateCounter()
+            this.updateBlurBackground(0)
+            // 重置第一张图片的 Live Photo 视频
+            this.handleLivePhotoPlayback(0, true)
+          }, 50)
+        }
+        return
+      }
+      // 已在上面处理过图片切换，直接返回
       return
+    } else {
+      // 回退到基于音乐进度的计算
+      const duration = this.player.duration || 1
+      const currentTime = this.player.currentTime || 0
+      const progress = duration > 0 ? currentTime / duration : 0
+      newIndex = Math.floor(progress * this.cfg.images.length)
     }
 
-    const newIndex = Math.floor(progress * this.cfg.images.length)
     const clampedIndex = Math.max(
       0,
       Math.min(newIndex, this.cfg.images.length - 1)
@@ -997,13 +1259,14 @@ export class ImageGalleryPlugin extends Plugin {
     // 如果图片还没有加载，则加载它
     if (!this.preloadedImages.has(index)) {
       setTimeout(() => {
+        if (this._destroyed) return
         this.preloadImage(index)
       }, 0)
     }
   }
 
   private updateArrowStates() {
-    if (!this.cfg.showArrows) return
+    if (!this.cfg.showArrows || this._destroyed || !this.root) return
 
     const leftArrow =
       this.root.querySelector('.image-gallery-arrow-left') ||
@@ -1030,6 +1293,7 @@ export class ImageGalleryPlugin extends Plugin {
   }
 
   private updateCounter() {
+    if (this._destroyed || !this.root) return
     const counter = this.root.querySelector('.image-gallery-counter')
     if (counter) {
       counter.textContent = `${this.currentIndex + 1}/${this.cfg.images.length}`
@@ -1041,7 +1305,7 @@ export class ImageGalleryPlugin extends Plugin {
     if (!images || index >= images.length || index < 0) return
 
     // 检查元素是否还存在
-    if (!this.root) return
+    if (this._destroyed || !this.root) return
 
     const imageUrl = this.getBestImageUrl(index)
     if (!imageUrl) return
@@ -1092,41 +1356,17 @@ export class ImageGalleryPlugin extends Plugin {
   }
 
   private startAutoplay() {
-    if (!this.cfg.autoplay || this.cfg.autoplay <= 0) return
-    this.autoplayTimer = window.setInterval(() => {
-      if (this._stopAutoSwitch) return
-      if (
-        this.player &&
-        !this.player.paused &&
-        Date.now() >= this._userChangeUntil
-      ) {
-        const duration = this.player.duration || 1
-        const currentTime = this.player.currentTime || 0
-        const progress = duration > 0 ? currentTime / duration : 0
-
-        const targetIndex = Math.max(
-          0,
-          Math.min(
-            Math.floor(progress * this.cfg.images.length),
-            this.cfg.images.length - 1
-          )
-        )
-
-        if (targetIndex !== this.currentIndex) {
-          this.goto(targetIndex, true)
-        }
-      }
-    }, this.cfg.autoplay) as unknown as number
+    // 注意：图片切换现在由 handleTimeUpdate 使用真实时间控制
+    // 这里的 autoplay 功能已不再需要，因为 timeupdate 事件会持续触发
+    // 保留此方法是为了兼容性，但不再执行图片切换逻辑
   }
 
   private restartAutoplay() {
-    if (this.autoplayTimer) {
-      clearInterval(this.autoplayTimer)
-    }
-    this.startAutoplay()
+    // 不再需要，由 handleTimeUpdate 控制
   }
 
   destroy() {
+    this._destroyed = true
     if (this.autoplayTimer) {
       clearInterval(this.autoplayTimer)
       this.autoplayTimer = null
@@ -1139,6 +1379,13 @@ export class ImageGalleryPlugin extends Plugin {
     this.livePhotoVideos.clear()
     // 移除键盘事件监听器
     document.removeEventListener('keydown', this.onKeydown, true)
+    // 移除 resize 事件监听器
+    window.removeEventListener('resize', this.onResize)
+    // 断开 ResizeObserver
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect()
+      this.resizeObserver = null
+    }
     this.preloadedImages.clear()
     super.destroy()
   }

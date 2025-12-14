@@ -2,21 +2,24 @@
 import { ref } from 'vue'
 import VideoSideList from '../video-side-list/video-side-list.vue'
 import VideoComment from '../video-comment/video-comment.vue'
+import SidebarRelatedVideo from './sidebar-related-video.vue'
+import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 
 const activeName = ref('comment')
 
 const handleClick = (tab: string) => {
-  // console.log(activeName)
   activeName.value = tab
 }
 
-const props = defineProps({
-  aweme_id: String,
-  user_sec_id: String,
-  username: String,
-  author_id: Number,
-  relatedText: String
-})
+const props = defineProps<{
+  aweme_id?: string
+  user_sec_id?: string
+  username?: string
+  author_id?: number
+  relatedText?: string
+  // 当前播放的视频信息（用于相关推荐显示第一个）
+  currentAweme?: IAwemeInfo
+}>()
 </script>
 <template>
   <div class="video-sidebar">
@@ -46,14 +49,23 @@ const props = defineProps({
               >
                 <span class="video-tabs-title-text">合集</span>
               </div>
+              <div
+                class="video-tabs-title"
+                :class="{ active: activeName === 'related' }"
+                @click="handleClick('related')"
+              >
+                <span class="video-tabs-title-text">相关推荐</span>
+              </div>
+            </div>
+            <div class="video-sidebar-close" @click="$emit('closeComments')">
+              <svg-icon class="icon" icon="close" />
             </div>
           </div>
         </div>
-        <div class="video-sidebar-close" @click="$emit('closeComments')">
-          <svg-icon class="icon" icon="close" />
-        </div>
+
         <div class="video-tabs-border"></div>
         <div class="video-tabs-content">
+          <!-- TA的作品 -->
           <div
             class="video-tabs-content-item works"
             v-show="activeName === 'works'"
@@ -64,6 +76,7 @@ const props = defineProps({
               :aweme_id="props.aweme_id ?? ''"
             />
           </div>
+          <!-- 评论 -->
           <div
             class="video-tabs-content-item"
             v-show="activeName === 'comment'"
@@ -74,11 +87,24 @@ const props = defineProps({
               :relatedText="props.relatedText"
             />
           </div>
+          <!-- 合集 -->
           <div
             class="video-tabs-content-item"
             v-show="activeName === 'collection'"
           >
             <!-- 合集的内容 -->
+          </div>
+          <!-- 相关推荐 -->
+          <div
+            class="video-tabs-content-item related"
+            v-show="activeName === 'related'"
+            data-scrollable
+          >
+            <SidebarRelatedVideo
+              v-if="props.aweme_id"
+              :awemeId="props.aweme_id"
+              :currentAweme="props.currentAweme"
+            />
           </div>
         </div>
       </div>
@@ -89,16 +115,13 @@ const props = defineProps({
 <style lang="scss" scoped>
 .video-sidebar {
   width: 336px;
-  background-color: rgba(0, 0, 0, 0.32);
+  background-color: rgba(0, 0, 0, 0.7);
   height: 100%;
   overflow: -moz-scrollbars-none;
   position: relative;
   scrollbar-width: none;
   transform: translateZ(0);
   z-index: 3;
-  // position: absolute;
-  // right: 0;
-  // top: 0;
 
   .related-video-card {
     scrollbar-width: none;
@@ -108,7 +131,6 @@ const props = defineProps({
     display: flex;
     position: absolute;
     top: 0px;
-    // border-radius: 4px 0px 0px 4px;
     border-width: 0px;
     border-style: initial;
     border-color: initial;
@@ -152,7 +174,6 @@ const props = defineProps({
         }
         .video-tabs-title {
           font-size: 14px;
-          margin-left: 16px;
           line-height: 46px;
           text-align: center;
           font-weight: 400;
@@ -194,7 +215,15 @@ const props = defineProps({
         flex: 1 1 0%;
         &-item {
           height: 100%;
+          overflow-y: auto;
+          scrollbar-width: none;
+          &::-webkit-scrollbar {
+            display: none;
+          }
           &.works {
+            padding: 0 16px;
+          }
+          &.related {
             padding: 0 16px;
           }
         }
@@ -202,12 +231,13 @@ const props = defineProps({
     }
   }
   .video-sidebar-close {
-    position: absolute;
-    top: 4px;
-    right: 16px;
-    display: flex;
-    justify-content: center;
     align-items: center;
+    margin: 0 -8px 0 0;
+    display: flex;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
     cursor: pointer;
 
     .icon {
@@ -225,6 +255,7 @@ const props = defineProps({
   .video-sidebar .related-video-card .video-tabs-bar .video-tabs-title {
     font-size: calc(0.892857vw + 1.14286px);
     line-height: calc(2.32143vw + 12.5714px);
+    margin-right: 13.2203%;
   }
 
   .video-tabs-top {
@@ -241,7 +272,7 @@ const props = defineProps({
     font-size: 24px;
     line-height: 72px;
   }
-  
+
   .video-tabs-top {
     height: 72px !important;
   }

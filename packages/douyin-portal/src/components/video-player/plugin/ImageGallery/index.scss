@@ -72,7 +72,10 @@
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  display: block;
+  overflow-clip-margin: content-box;
+  overflow: clip;
+  height: 100%;
+  width: 100%;
 }
 
 // 实况照片视频样式
@@ -121,12 +124,12 @@
 
   // 左箭头
   &.image-gallery-arrow-left {
-    left: 70px;
+    left: 140px;
   }
 
   // 右箭头
   &.image-gallery-arrow-right {
-    right: 70px;
+    right: 140px;
   }
 
   // 箭头图标样式

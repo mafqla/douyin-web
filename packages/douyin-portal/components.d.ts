@@ -102,6 +102,7 @@ declare module '@vue/runtime-core' {
     SearchResult: typeof import('./src/components/common/search-input/search-result.vue')['default']
     SearchSuggestion: typeof import('./src/components/common/search-suggestion.vue')['default']
     ShortcutKeys: typeof import('./src/components/common/shortcut-keys.vue')['default']
+    SidebarRelatedVideo: typeof import('./src/components/video-components/video-sidebar/sidebar-related-video.vue')['default']
     SideItem: typeof import('./src/components/video-components/video-side-list/side-item.vue')['default']
     SplitButtonGroup: typeof import('./src/components/ui/button/split-button-group.vue')['default']
     SvgIcon: typeof import('./src/components/common/svg-icon.vue')['default']

@@ -3,6 +3,7 @@ import { computed, ref, watchEffect } from 'vue'
 import { ElAvatar } from 'element-plus'
 import { attention } from '@/service/attention'
 import { useCount } from '@/hooks/useCount'
+import SwiperControlModal from '@/components/swiper/swiper-control-modal.vue'
 
 const props = defineProps({
   aweme_id: String,
@@ -18,6 +19,11 @@ const props = defineProps({
   isShowAvatar: {
     type: Boolean,
     default: true
+  },
+  // 是否显示 swiper 控制按钮
+  showSwiperControl: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -137,10 +143,13 @@ onUnmounted(() => {
 <template>
   <div
     class="video-action"
-    :style="{ transform: `scale(${scale})`, transformOrigin: 'center bottom' }"
+    :style="{ transform: `scale(${scale})`, transformOrigin: 'right bottom' }"
   >
     <slot />
     <div class="video-action-content">
+      <!-- Swiper 控制按钮 -->
+      <SwiperControlModal v-if="showSwiperControl" />
+
       <div class="video-action-item" v-if="isShowAvatar">
         <div class="avatar-content">
           <div class="video-action-avatar">

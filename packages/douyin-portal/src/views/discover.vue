@@ -13,7 +13,7 @@ import { getVideoList } from '@/service/videos/videos'
 import type { IFeedParams, IVideoList } from '@/service/videos/videosType'
 import { useInfiniteScroll } from '@vueuse/core'
 import { useRoute, useRouter } from 'vue-router'
-import modelPlayer from '@/components/video-player/modal-player.vue'
+import modelPlayer from '@/views/modal-player.vue'
 import { discoverStore } from '@/stores/discover'
 
 const loading = ref(true)

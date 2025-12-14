@@ -73,7 +73,7 @@ onUnmounted(() => {
   color: var(--color-const-text-white);
 
   user-select: none;
-  z-index: 2;
+  z-index: 12;
 
   & div {
     pointer-events: all;

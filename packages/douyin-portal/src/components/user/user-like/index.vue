@@ -1,19 +1,43 @@
 <script setup lang="ts">
-import {} from 'vue'
+import { ref, reactive, computed, onMounted, nextTick } from 'vue'
+import { useInfiniteScroll } from '@vueuse/core'
+import { useRoute, useRouter } from 'vue-router'
+import { useGridScrollToItem } from '@/hooks'
 import UserError from '../user-error/index.vue'
+import VideoItem from '@/components/video-components/video-list/video-item.vue'
+import ModalPlayer from '@/views/modal-player.vue'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 import apis from '@/api/apis'
 
 const props = defineProps<{
-  //根据传入的值进行判断是否显示点赞列表
+  // 根据传入的值进行判断是否显示点赞列表
   showLikeList: boolean
-  //用户id
+  // 用户id
   user_id: string
 }>()
+
+const route = useRoute()
+const router = useRouter()
+
 const loading = ref(true)
 const isLoadingMore = ref(true)
 const hasMore = ref(true)
 const likeList = ref<IAwemeInfo[]>([])
+// 视频列表容器 ref
+const videoListRef = ref<HTMLElement | null>(null)
+// 当前需要滚动到的视频 ID
+const currentScrollId = ref<string | null>(null)
+
+// 使用 useGridScrollToItem 实现滚动定位
+const { scrollToItem } = useGridScrollToItem({
+  containerRef: videoListRef,
+  currentId: currentScrollId,
+  items: likeList,
+  idKey: 'aweme_id',
+  autoScroll: false, // 手动触发滚动
+  block: 'center',
+  offsetTop: 60 // 顶部导航栏高度
+})
 
 const params = reactive({
   sec_user_id: props.user_id,
@@ -21,6 +45,7 @@ const params = reactive({
   max_cursor: 0,
   min_cursor: 0
 })
+
 const getLikeList = async () => {
   if (!hasMore.value) return
   isLoadingMore.value = true
@@ -30,7 +55,6 @@ const getLikeList = async () => {
     params.max_cursor = res.max_cursor
     loading.value = false
     isLoadingMore.value = false
-    // console.log(res)
     if (!res.has_more) {
       hasMore.value = false
       isLoadingMore.value = false
@@ -42,9 +66,11 @@ const getLikeList = async () => {
     isLoadingMore.value = false
   }
 }
+
 onMounted(() => {
   getLikeList()
 })
+
 useInfiniteScroll(
   window,
   () => {
@@ -54,6 +80,31 @@ useInfiniteScroll(
   },
   { distance: 600 }
 )
+
+// 点击视频打开 modal
+const handleOpenModal = (item: IAwemeInfo) => {
+  router.push({
+    query: {
+      ...route.query,
+      modal_id: item.aweme_id
+    }
+  })
+}
+
+// modal 是否显示
+const showModal = computed(() => {
+  return route.query.modal_id !== undefined
+})
+
+// 关闭 modal 后滚动到当前视频位置
+const handleModalClose = async (currentAwemeId: string) => {
+  // 等待 DOM 更新完成（modal 关闭后 body 样式恢复）
+  await nextTick()
+  // 延迟一帧确保布局完成
+  requestAnimationFrame(() => {
+    scrollToItem(currentAwemeId)
+  })
+}
 </script>
 <template>
   <Loading :show="loading">
@@ -79,11 +130,28 @@ useInfiniteScroll(
           class="no-show"
         />
         <template v-if="likeList.length !== 0 && showLikeList">
-          <video-list :videoList="likeList" />
+          <div class="video-list" ref="videoListRef">
+            <VideoItem
+              v-for="item in likeList"
+              :key="item.aweme_id"
+              :aweme="item"
+              :data-aweme-id="item.aweme_id"
+              :disableClickToggle="true"
+              @click="handleOpenModal(item)"
+            />
+          </div>
           <Loading :show="isLoadingMore" />
           <list-footer v-if="!hasMore" />
         </template>
       </div>
+
+      <!-- Modal Player 全屏播放器 -->
+      <ModalPlayer
+        v-if="showModal"
+        :videoList="likeList"
+        @close="handleModalClose"
+        @loadMore="getLikeList"
+      />
     </div>
   </Loading>
 </template>
@@ -95,7 +163,12 @@ useInfiniteScroll(
 .user-like {
   position: relative;
 }
-//批量管理
+
+.video-list {
+  width: 100%;
+}
+
+// 批量管理
 .batch-management {
   height: 44px;
   width: 100%;

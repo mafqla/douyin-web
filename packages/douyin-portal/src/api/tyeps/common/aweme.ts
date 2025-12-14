@@ -10,12 +10,37 @@ export interface IAwemeImage {
   download_url_list: string[]
   width: number
   height: number
-  image_type: number
-  live_photo_type: number
-  interaction_stickers: null
-  mask_url_list: null
-  watermark_free_download_url_list: null
-  video: IVideo  // 用于动图
+  image_type?: number
+  live_photo_type?: number
+  interaction_stickers?: null
+  mask_url_list?: null
+  watermark_free_download_url_list?: null
+  // 图片类型：2=静态图片, 5=Live Photo（实况照片）
+  clip_type?: number
+  // Live Photo 视频信息
+  video?: {
+    play_addr?: {
+      url_list: string[]
+      data_size?: number
+      height?: number
+      width?: number
+    }
+    // 视频时长（毫秒），用于确定该图片的展示时长
+    duration?: number
+    cover?: {
+      url_list: string[]
+    }
+  }
+}
+
+// 图集音乐信息
+export interface IImageAlbumMusicInfo {
+  // 音乐开始时间（毫秒）
+  begin_time: number
+  // 音乐结束时间（毫秒）
+  end_time: number
+  // 音量 (0-100)
+  volume: number
 }
 
 export interface IAwemeInfo {
@@ -85,6 +110,8 @@ export interface IAwemeInfo {
   geofencing_regions: null // 地理围栏区域信息，具体含义未知
   cover_labels: null // 封面标签，具体含义未知
   images: IAwemeImage[] | null
+  // 图集音乐信息，控制每张图片的播放时间
+  image_album_music_info?: IImageAlbumMusicInfo
   relation_labels: null // 关系标签，具体含义未知
   is_live_photo: number // 是否动图
   impression_data: ImpressionData // 印象数据

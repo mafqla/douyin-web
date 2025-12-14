@@ -19,11 +19,13 @@ interface SwiperPlayerProps {
   globalVolume?: number
   isShowInfo?: boolean
   isShowAvatar?: boolean
+  showSwiperControl?: boolean
 }
 const props = withDefaults(defineProps<SwiperPlayerProps>(), {
   globalVolume: 0,
   isShowInfo: true,
-  isShowAvatar: true
+  isShowAvatar: true,
+  showSwiperControl: false
 })
 
 const { isPlay } = toRefs(props)
@@ -35,12 +37,12 @@ const awemeUrl = computed(() => {
     props.awemeInfo?.is_live_photo === 1 &&
     props.awemeInfo?.images?.[0]?.video
   ) {
-    return props.awemeInfo?.images[0].video.play_addr.url_list
+    return props.awemeInfo.images[0].video?.play_addr?.url_list ?? []
   }
   return props.awemeInfo?.video.play_addr.url_list ?? []
 })
 const isImageGallery = computed(
-  () => props.awemeInfo.aweme_type === 68 && props.awemeInfo.is_live_photo !== 1
+  () => props.awemeInfo.aweme_type === 68 || props.awemeInfo.is_live_photo === 1
 )
 
 const imgGallery = computed(() => {
@@ -150,6 +152,7 @@ const thumbnail = computed(() => {
             :collect_stat="props.awemeInfo.collect_stat"
             :follow_status="props.awemeInfo.author.follow_status"
             :isShowAvatar="props.isShowAvatar"
+            :showSwiperControl="props.showSwiperControl"
             @toggleComments="toggleComments(props.awemeInfo.aweme_id)"
           >
           </video-action>
@@ -160,6 +163,7 @@ const thumbnail = computed(() => {
           :imgGallery="imgGallery"
           :isPlay="isPlay"
           :arrow-style="'side'"
+          :musicInfo="props.awemeInfo.image_album_music_info"
         >
           <video-info
             v-if="props.isShowInfo && !control.isImmersive"
@@ -181,6 +185,7 @@ const thumbnail = computed(() => {
             :collect_stat="props.awemeInfo.collect_stat"
             :follow_status="props.awemeInfo.author.follow_status"
             :isShowAvatar="props.isShowAvatar"
+            :showSwiperControl="props.showSwiperControl"
             @toggleComments="toggleComments(props.awemeInfo.aweme_id)"
           >
           </video-action>
@@ -195,18 +200,19 @@ const thumbnail = computed(() => {
       :aweme_id="props.awemeInfo.aweme_id"
       :username="props.awemeInfo.author.nickname"
       :author_id="props.awemeInfo.author_user_id ?? ''"
+      :currentAweme="props.awemeInfo"
       :relatedText="
         props.awemeInfo.suggest_words?.suggest_words[0]?.words[0]?.word ?? ''
       "
       @closeComments="closeComments"
       v-if="!control.isShowComment"
     />
-    <!-- <div class="video-blur">
+    <div class="video-blur">
       <img
         :src="props.awemeInfo.video.cover.url_list[0] ?? ''"
         :alt="props.awemeInfo.desc"
       />
-    </div> -->
+    </div>
   </div>
 </template>
 
