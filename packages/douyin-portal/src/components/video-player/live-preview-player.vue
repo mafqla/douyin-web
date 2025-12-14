@@ -74,7 +74,11 @@ const hasAlternativeStream = computed(() => {
   const urls = streamUrls.value
   if (urls.length <= 1) return false
   // 检查是否还有未尝试过的流
-  return urls.some((_, index) => !failedStreamIndexes.value.has(index) && index !== currentStreamIndex.value)
+  return urls.some(
+    (_, index) =>
+      !failedStreamIndexes.value.has(index) &&
+      index !== currentStreamIndex.value
+  )
 })
 
 // 检测配置
@@ -116,7 +120,8 @@ const checkBlackFrame = (video: HTMLVideoElement): boolean => {
 
     for (let i = 0; i < data.length; i += 4) {
       // 使用感知亮度公式
-      const brightness = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]
+      const brightness =
+        0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]
       totalBrightness += brightness
     }
 
@@ -222,10 +227,17 @@ const checkStreamStatus = () => {
   // 更新状态
   if (issues.length > 0) {
     consecutiveIssueCount++
-    console.log(`[LivePreview] 检测到问题: ${issues.join('、')} (连续 ${consecutiveIssueCount} 次)`)
+    console.log(
+      `[LivePreview] 检测到问题: ${issues.join(
+        '、'
+      )} (连续 ${consecutiveIssueCount} 次)`
+    )
 
     // 连续检测到问题达到阈值时，尝试切换流
-    if (consecutiveIssueCount >= ISSUE_THRESHOLD && hasAlternativeStream.value) {
+    if (
+      consecutiveIssueCount >= ISSUE_THRESHOLD &&
+      hasAlternativeStream.value
+    ) {
       console.log('[LivePreview] 尝试切换到备用流...')
       if (switchToNextStream()) {
         streamCheckMessage.value = '正在切换备用线路...'
@@ -298,7 +310,9 @@ const switchToNextStream = (): boolean => {
   // 查找下一个可用的流
   for (let i = 0; i < urls.length; i++) {
     if (!failedStreamIndexes.value.has(i)) {
-      console.log(`[LivePreview] 切换直播流: ${currentStreamIndex.value} -> ${i}`)
+      console.log(
+        `[LivePreview] 切换直播流: ${currentStreamIndex.value} -> ${i}`
+      )
       currentStreamIndex.value = i
       lastSwitchTime = now
       isSwitchingStream.value = true
@@ -484,12 +498,17 @@ watch(
         </svg>
       </div>
       <div class="tip-text">{{ streamCheckMessage || '直播流异常' }}</div>
-      <div class="tip-hint" v-if="hasAlternativeStream">正在尝试切换备用线路...</div>
+      <div class="tip-hint" v-if="hasAlternativeStream">
+        正在尝试切换备用线路...
+      </div>
       <div class="tip-hint" v-else>可能是主播暂时离开或网络问题</div>
     </div>
 
     <!-- 当前线路指示器（多线路时显示） -->
-    <div v-if="streamUrls.length > 1 && !isSwitchingStream" class="stream-indicator">
+    <div
+      v-if="streamUrls.length > 1 && !isSwitchingStream"
+      class="stream-indicator"
+    >
       线路 {{ currentStreamIndex + 1 }}/{{ streamUrls.length }}
     </div>
 
@@ -621,22 +640,24 @@ watch(
         }
 
         &::before {
-          animation: 1s ease-in-out infinite VX_RNMqX;
-          left: 38%;
+          animation: 1s ease-in-out infinite wave-bounce;
+          left: 10%;
+        }
+        span {
+          animation: 1s ease-in-out 0.2s infinite wave-bounce;
+          left: 50%;
+          transform: translate(-50%);
         }
         &::after {
-          animation: 1s ease-in-out 0.4s infinite VX_RNMqX;
+          animation: 1s ease-in-out 0.4s infinite wave-bounce;
           right: 10%;
         }
-        @keyframes VX_RNMqX {
-          50% {
+        @keyframes wave-bounce {
+          0%, 100% {
             height: 50%;
           }
-          100% {
+          50% {
             height: 100%;
-          }
-          50% {
-            height: 50%;
           }
         }
       }
