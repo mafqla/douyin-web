@@ -166,6 +166,7 @@ watchEffect(() => {
                 <user-post :user_id="userId" v-if="activeTab === 'posts'" />
                 <user-like
                   :user_id="userId"
+                  :uid="userInfo.user.uid"
                   v-if="activeTab === 'like'"
                   :show-like-list="userInfo.user.show_favorite_list"
                 />

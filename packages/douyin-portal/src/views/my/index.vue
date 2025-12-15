@@ -191,6 +191,7 @@ watchEffect(() => {
               />
               <user-like
                 :user_id="store.userInfo.user.sec_uid"
+                :uid="store.userInfo.user.uid"
                 v-if="activeTab === 'like'"
                 :show-like-list="true"
               />

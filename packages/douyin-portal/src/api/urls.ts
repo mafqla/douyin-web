@@ -39,6 +39,8 @@ export default {
   user_record_video: `/aweme/v1/web/history/read/`,
   user_record_vs: `/aweme/v1/web/lvideo/query/history/`,
   user_record_live: `/aweme/v1/web/webcast/feed/`,
+  //用户页搜索
+  user_home_search: `/aweme/v1/web/home/search/item/`,
   //评论
   comment_list: `/aweme/v1/web/comment/list/`,
   //评论回复

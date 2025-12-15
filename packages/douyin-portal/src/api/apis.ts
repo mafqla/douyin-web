@@ -5,6 +5,7 @@ import type {
   IFollowingParams
 } from './tyeps/request_params/followParams'
 import type { searchParams } from './tyeps/request_params/searchParams'
+import type { IUserHomeSearchParams } from './tyeps/request_params/userHomeSearchParams'
 import type { IuserLikeParams } from './tyeps/request_params/userLikeParams'
 import type { IuserPostParams } from './tyeps/request_params/userPostParams'
 import type {
@@ -26,6 +27,7 @@ import type { IUserCollectsListRes } from './tyeps/request_response/userCollects
 import type { IUserCollectMusicRes } from './tyeps/request_response/userCollectMusicRes'
 import type { IUserCollectVideo } from './tyeps/request_response/userCollectVideoRes'
 import type { IUserDetailRes } from './tyeps/request_response/userDetailRes'
+import type { IUserHomeSearchRes } from './tyeps/request_response/userHomeSearchRes'
 import type { IUserLikeRes } from './tyeps/request_response/userLikeRes'
 import type { IUserPostRes } from './tyeps/request_response/userPostRes'
 import type { IVideoDetailRes } from './tyeps/request_response/videoDetailRes'
@@ -354,6 +356,19 @@ export default {
         count,
         cursor
       }
+    })
+  },
+
+  /**
+   * @description 用户主页搜索（搜索用户喜欢的视频等）
+   * @param {IUserHomeSearchParams} params 搜索参数
+   * @return {Promise<IUserHomeSearchRes>} 搜索结果
+   */
+  getUserHomeSearch: (
+    params: IUserHomeSearchParams
+  ): Promise<IUserHomeSearchRes> => {
+    return request.get(urls.user_home_search, {
+      params
     })
   }
 }

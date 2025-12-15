@@ -130,6 +130,7 @@ declare module '@vue/runtime-core' {
     UserPopup: typeof import('./src/components/header/user-popup/index.vue')['default']
     UserPost: typeof import('./src/components/user/user-post/index.vue')['default']
     UserRecord: typeof import('./src/components/user/user-record/index.vue')['default']
+    UserSearchBar: typeof import('./src/components/user/user-search-bar/index.vue')['default']
     UserTab: typeof import('./src/components/user/user-tab/index.vue')['default']
     UserTabbar2: typeof import('./src/components/user/user-tabbar-2/index.vue')['default']
     UserTabOther: typeof import('./src/components/my/user-tab/user-tab-other.vue')['default']

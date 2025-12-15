@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import {} from 'vue'
-
-const props = defineProps<{
+defineProps<{
   icon?: 'no-show-like' | 'empty-list-user'
   title?: string
   desc?: string
@@ -11,7 +9,11 @@ const props = defineProps<{
   <div class="user-error">
     <svg-icon :icon="icon" class="icon" />
     <p class="error-text">{{ title }}</p>
-    <p class="error-desc">{{ desc }}</p>
+    <p v-if="desc" class="error-desc">{{ desc }}</p>
+    <!-- 按钮插槽 -->
+    <div v-if="$slots.actions" class="error-actions">
+      <slot name="actions" />
+    </div>
   </div>
 </template>
 
@@ -40,6 +42,14 @@ const props = defineProps<{
     font-size: 14px;
     font-weight: 400;
     line-height: 22px;
+  }
+  .error-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+    width: 180px;
   }
 }
 </style>
