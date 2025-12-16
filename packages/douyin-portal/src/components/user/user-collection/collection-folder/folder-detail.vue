@@ -8,12 +8,19 @@ import apis from '@/api/apis'
 const props = defineProps<{
   folder: ICollectsItem
   folderList: ICollectsItem[]
+  batchMode?: boolean
 }>()
 
 const emit = defineEmits<{
   select: [folder: ICollectsItem]
   back: []
+  createFolder: []
 }>()
+
+// 打开新建收藏夹弹框
+const handleCreateFolder = () => {
+  emit('createFolder')
+}
 
 
 // 视频列表
@@ -91,6 +98,74 @@ useInfiniteScroll(
   },
   { distance: 600 }
 )
+
+// 批量选择相关状态
+const selectedIds = ref<Set<string>>(new Set())
+
+// 列表长度
+const listLength = computed(() => folderVideoList.value.length)
+
+// 清空选中状态
+const clearSelection = () => {
+  selectedIds.value.clear()
+}
+
+// 切换全选状态
+const toggleSelectAll = () => {
+  if (selectedIds.value.size === folderVideoList.value.length) {
+    // 取消全选
+    selectedIds.value.clear()
+  } else {
+    // 全选
+    selectedIds.value = new Set(
+      folderVideoList.value.map((item) => item.aweme_id)
+    )
+  }
+}
+
+// 切换单个视频的选中状态
+const toggleVideoSelection = (awemeId: string) => {
+  if (selectedIds.value.has(awemeId)) {
+    selectedIds.value.delete(awemeId)
+  } else {
+    selectedIds.value.add(awemeId)
+  }
+}
+
+// 处理视频项点击事件
+const handleVideoItemClick = (item: IAwemeInfo) => {
+  if (props.batchMode) {
+    // 批量管理模式：切换选中状态
+    toggleVideoSelection(item.aweme_id)
+  }
+}
+
+// 从收藏夹移除选中的视频
+const deleteSelected = async () => {
+  try {
+    // TODO: 调用 API 批量从收藏夹移除
+    console.log('从收藏夹移除的视频 ID:', Array.from(selectedIds.value))
+
+    // 从列表中移除已删除的项
+    folderVideoList.value = folderVideoList.value.filter(
+      (item) => !selectedIds.value.has(item.aweme_id)
+    )
+
+    // 清空选中状态
+    selectedIds.value.clear()
+  } catch (error) {
+    console.error('从收藏夹移除失败:', error)
+  }
+}
+
+// 暴露给父组件使用
+defineExpose({
+  selectedIds,
+  listLength,
+  clearSelection,
+  toggleSelectAll,
+  deleteSelected
+})
 </script>
 
 <template>
@@ -98,7 +173,11 @@ useInfiniteScroll(
     <!--左边收藏夹列表-->
     <div class="folder-left">
       <div class="collection-navigation">
-        <div class="collection-navigation-item">
+        <div
+          class="collection-navigation-item"
+          :class="{ disabled: batchMode }"
+          @click="!batchMode && handleCreateFolder()"
+        >
           <div class="folder-info">
             <div class="folder-info-top">
               <span role="img" class="add-icon">
@@ -144,8 +223,11 @@ useInfiniteScroll(
           v-for="item in folderList"
           :key="item.collects_id_str"
           class="collection-navigation-item"
-          :class="{ active: folder.collects_id_str === item.collects_id_str }"
-          @click="handleSelectFolder(item)"
+          :class="{
+            active: folder.collects_id_str === item.collects_id_str,
+            disabled: batchMode && folder.collects_id_str !== item.collects_id_str
+          }"
+          @click="!batchMode && handleSelectFolder(item)"
         >
           <div class="folder-cover">
             <div class="cover-img">
@@ -265,7 +347,12 @@ useInfiniteScroll(
               v-for="item in folderVideoList"
               :key="item.aweme_id"
               :aweme="item"
+              :data-aweme-id="item.aweme_id"
+              :disableClickToggle="true"
+              :selectable="batchMode"
+              :selected="selectedIds.has(item.aweme_id)"
               class="folder-item"
+              @click="handleVideoItemClick(item)"
             />
             <Loading :show="isLoadingMore" />
             <list-footer v-if="!hasMore" />
@@ -330,7 +417,17 @@ useInfiniteScroll(
       }
     }
 
-    //未选中样式 opacity: .3;cursor: not-allowed;
+    // 批量管理模式下禁用非当前选中的收藏夹
+    &.disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      pointer-events: none;
+
+      &:hover {
+        color: var(--color-text-t2);
+        background-color: var(--color-bg-b2);
+      }
+    }
    
   }
 }

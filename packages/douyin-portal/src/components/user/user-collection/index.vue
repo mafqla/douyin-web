@@ -2,8 +2,12 @@
 import CollectionVideo from './collection-video/index.vue'
 import CollectionFolder from './collection-folder/index.vue'
 import CollectionMusic from './collection-music/index.vue'
+import BatchActionBar from '../batch-action-bar/index.vue'
+import UserConfirmDialog from '../user-confirm-dialog/index.vue'
+import SelectFolderDialog from './collection-video/select-folder-dialog.vue'
+import CreateFolderDialog from './collection-folder/create-folder-dialog.vue'
 
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -14,9 +18,16 @@ const activeTab = ref((route.query.showSubTab as string) || 'video')
 const collectionFolderRef = ref<InstanceType<typeof CollectionFolder> | null>(
   null
 )
+// CollectionVideo 组件引用
+const collectionVideoRef = ref<InstanceType<typeof CollectionVideo> | null>(
+  null
+)
 
 // 是否在详情模式（选中了某个收藏夹）
 const isDetailMode = ref(false)
+
+// 批量管理模式
+const isBatchMode = ref(false)
 
 // 处理详情模式变化
 const handleDetailModeChange = (value: boolean) => {
@@ -38,6 +49,209 @@ const handleAddVideo = () => {
   collectionFolderRef.value?.openAddVideoDialog()
 }
 
+// 切换批量管理模式
+const toggleBatchMode = () => {
+  isBatchMode.value = !isBatchMode.value
+  // 退出批量管理时清空选中状态
+  if (!isBatchMode.value) {
+    // 清空收藏夹列表和详情的选中状态
+    collectionFolderRef.value?.clearSelection()
+    collectionFolderRef.value?.clearCurrentSelection()
+    collectionVideoRef.value?.clearSelection()
+  }
+}
+
+// 获取当前选中的 ID 集合
+const selectedIds = computed(() => {
+  if (activeTab.value === 'favorite_folder') {
+    // 详情模式下使用详情组件的选中状态
+    if (isDetailMode.value) {
+      return collectionFolderRef.value?.currentSelectedIds ?? new Set<string>()
+    }
+    return collectionFolderRef.value?.selectedIds ?? new Set<string>()
+  } else if (activeTab.value === 'video') {
+    return collectionVideoRef.value?.selectedIds ?? new Set<string>()
+  }
+  return new Set<string>()
+})
+
+// 获取当前列表长度
+const currentListLength = computed(() => {
+  if (activeTab.value === 'favorite_folder') {
+    // 详情模式下使用详情组件的列表长度
+    if (isDetailMode.value) {
+      return collectionFolderRef.value?.currentListLength ?? 0
+    }
+    return collectionFolderRef.value?.listLength ?? 0
+  } else if (activeTab.value === 'video') {
+    return collectionVideoRef.value?.listLength ?? 0
+  }
+  return 0
+})
+
+// 是否全选
+const isAllSelected = computed(() => {
+  return currentListLength.value > 0 && selectedIds.value.size === currentListLength.value
+})
+
+// 切换全选状态
+const handleToggleSelectAll = () => {
+  if (activeTab.value === 'favorite_folder') {
+    // 详情模式下使用详情组件的全选
+    if (isDetailMode.value) {
+      collectionFolderRef.value?.toggleCurrentSelectAll()
+    } else {
+      collectionFolderRef.value?.toggleSelectAll()
+    }
+  } else if (activeTab.value === 'video') {
+    collectionVideoRef.value?.toggleSelectAll()
+  }
+}
+
+// 删除确认弹框
+const showDeleteDialog = ref(false)
+
+// 处理删除按钮点击
+const handleDelete = () => {
+  if (selectedIds.value.size === 0) return
+  showDeleteDialog.value = true
+}
+
+// 确认删除
+const confirmDelete = async () => {
+  showDeleteDialog.value = false
+  if (activeTab.value === 'favorite_folder') {
+    // 详情模式下使用详情组件的删除
+    if (isDetailMode.value) {
+      await collectionFolderRef.value?.deleteCurrentSelected()
+    } else {
+      await collectionFolderRef.value?.deleteSelected()
+    }
+  } else if (activeTab.value === 'video') {
+    await collectionVideoRef.value?.deleteSelected()
+  }
+}
+
+// 取消弹框
+const cancelDialog = () => {
+  showDeleteDialog.value = false
+}
+
+// 收藏夹选择弹框
+const showSelectFolderDialog = ref(false)
+
+// 新建收藏夹弹框（从收藏夹选择弹框打开）
+const showCreateFolderFromSelect = ref(false)
+
+// 处理加入收藏按钮点击
+const handleAddToCollection = () => {
+  if (selectedIds.value.size === 0) return
+  showSelectFolderDialog.value = true
+}
+
+// 确认选择收藏夹（多选）
+const handleSelectFolderConfirm = async (folderIds: string[]) => {
+  try {
+    // TODO: 调用 API 将选中的视频加入收藏夹
+    console.log('加入收藏夹:', folderIds, '视频 ID:', Array.from(selectedIds.value))
+    // 清空选中状态
+    collectionVideoRef.value?.clearSelection()
+  } catch (error) {
+    console.error('加入收藏夹失败:', error)
+  }
+}
+
+// 从收藏夹选择弹框打开新建收藏夹弹框
+const handleCreateFolderFromSelect = () => {
+  showSelectFolderDialog.value = false
+  showCreateFolderFromSelect.value = true
+}
+
+// 新建收藏夹成功后重新打开选择弹框
+const handleCreateFolderSuccess = () => {
+  showCreateFolderFromSelect.value = false
+  showSelectFolderDialog.value = true
+}
+
+// 获取操作按钮文本
+const actionText = computed(() => {
+  if (activeTab.value === 'favorite_folder') {
+    // 详情模式下显示"从收藏夹移除"
+    return isDetailMode.value ? '从收藏夹移除' : '删除收藏夹'
+  }
+  return '取消收藏'
+})
+
+// 获取选中项提示文本
+const selectedTextTemplate = computed(() => {
+  if (activeTab.value === 'favorite_folder') {
+    // 详情模式下显示"已选 {count} 个收藏的视频"
+    return isDetailMode.value ? '已选 {count} 个收藏的视频' : '已选 {count} 个收藏夹'
+  }
+  return '已选 {count} 个收藏视频'
+})
+
+// 获取删除确认弹框标题
+const deleteDialogTitle = computed(() => {
+  if (activeTab.value === 'favorite_folder') {
+    if (isDetailMode.value) {
+      return `确认从收藏夹移除 ${selectedIds.value.size} 个视频吗？`
+    }
+    return `确认删除该收藏夹吗，删除后视频依旧可在收藏视频中查看～`
+  }
+  return `确认取消收藏 ${selectedIds.value.size} 个视频吗？`
+})
+
+// 是否显示移动到按钮（收藏夹详情模式下显示）
+const showMoveTo = computed(() => {
+  return activeTab.value === 'favorite_folder' && isDetailMode.value
+})
+
+// 移动到弹框
+const showMoveToDialog = ref(false)
+
+// 当前收藏夹 ID（用于排除）
+const currentFolderId = computed(() => {
+  return collectionFolderRef.value?.selectedFolder?.collects_id_str ?? ''
+})
+
+// 处理移动到按钮点击
+const handleMoveTo = () => {
+  if (selectedIds.value.size === 0) return
+  showMoveToDialog.value = true
+}
+
+// 确认移动到收藏夹（单选）
+const handleMoveToConfirm = async (folderIds: string[]) => {
+  try {
+    const targetFolderId = folderIds[0]
+    // TODO: 调用 API 将选中的视频移动到目标收藏夹
+    console.log('移动到收藏夹:', targetFolderId, '视频 ID:', Array.from(selectedIds.value))
+    // 清空选中状态并刷新列表
+    collectionFolderRef.value?.clearCurrentSelection()
+  } catch (error) {
+    console.error('移动失败:', error)
+  }
+}
+
+// 从移动到弹框打开新建收藏夹弹框
+const handleCreateFolderFromMoveTo = () => {
+  showMoveToDialog.value = false
+  showCreateFolderFromSelect.value = true
+}
+
+// 新建收藏夹成功后重新打开移动到弹框
+const handleCreateFolderSuccessForMoveTo = () => {
+  showCreateFolderFromSelect.value = false
+  showMoveToDialog.value = true
+}
+
+// 暴露给父组件使用
+defineExpose({
+  isBatchMode,
+  toggleBatchMode
+})
+
 const getTabTitle = (tab: string) => {
   const titles: { [key: string]: string } = {
     favorite_folder: '收藏夹',
@@ -50,6 +264,11 @@ const getTabTitle = (tab: string) => {
 }
 
 const handleTabChange = (tab: string) => {
+  // 切换 tab 时重置详情模式
+  if (activeTab.value === 'favorite_folder' && isDetailMode.value) {
+    collectionFolderRef.value?.handleBack()
+  }
+  isDetailMode.value = false
   activeTab.value = tab
   router.push({
     query: {
@@ -61,8 +280,25 @@ const handleTabChange = (tab: string) => {
 </script>
 <template>
   <div class="user-collection">
-    <user-tabbar-2>
-      <div class="tabbar-2-content">
+    <user-tabbar-2 :style="isBatchMode ? 'height: 72px' : ''">
+      <!-- 批量操作工具栏 -->
+      <BatchActionBar
+        v-if="isBatchMode"
+        :selected-count="selectedIds.size"
+        :all-selected="isAllSelected"
+        :disabled="currentListLength === 0"
+        :action-text="actionText"
+        :selected-text-template="selectedTextTemplate"
+        :show-add-to-collection="activeTab === 'video'"
+        :show-move-to="showMoveTo"
+        @select-all="handleToggleSelectAll"
+        @action="handleDelete"
+        @add-to-collection="handleAddToCollection"
+        @move-to="handleMoveTo"
+      />
+
+      <!-- 非批量管理模式下显示标签栏 -->
+      <div v-if="!isBatchMode" class="tabbar-2-content">
         <div
           v-for="tab in tabs"
           :key="tab"
@@ -73,7 +309,7 @@ const handleTabChange = (tab: string) => {
           <span class="tabbar-2-item-text">{{ getTabTitle(tab) }}</span>
         </div>
       </div>
-      <div class="tabbar-2-end">
+      <div v-if="!isBatchMode" class="tabbar-2-end">
         <div class="media-control-container">
           <!-- 新建收藏夹按钮 - 收藏夹列表模式显示 -->
           <div
@@ -145,11 +381,49 @@ const handleTabChange = (tab: string) => {
       <collection-folder
         v-if="activeTab === 'favorite_folder'"
         ref="collectionFolderRef"
+        :batch-mode="isBatchMode"
         @detail-mode-change="handleDetailModeChange"
       />
-      <collection-video v-if="activeTab === 'video'" />
+      <collection-video
+        v-if="activeTab === 'video'"
+        ref="collectionVideoRef"
+        :batch-mode="isBatchMode"
+      />
       <collection-music v-if="activeTab === 'music'" />
     </div>
+
+    <!-- 删除确认弹框 -->
+    <UserConfirmDialog
+      v-model="showDeleteDialog"
+      :title="deleteDialogTitle"
+      cancel-text="暂不删除"
+      confirm-text="确认删除"
+      @confirm="confirmDelete"
+      @cancel="cancelDialog"
+    />
+
+    <!-- 收藏夹选择弹框 -->
+    <SelectFolderDialog
+      v-model="showSelectFolderDialog"
+      @confirm="handleSelectFolderConfirm"
+      @create-folder="handleCreateFolderFromSelect"
+    />
+
+    <!-- 新建收藏夹弹框（从收藏夹选择弹框打开） -->
+    <CreateFolderDialog
+      v-model="showCreateFolderFromSelect"
+      @success="handleCreateFolderSuccess"
+    />
+
+    <!-- 移动到收藏夹弹框（单选模式，排除当前收藏夹） -->
+    <SelectFolderDialog
+      v-model="showMoveToDialog"
+      title="选择收藏夹"
+      :single-select="true"
+      :exclude-folder-id="currentFolderId"
+      @confirm="handleMoveToConfirm"
+      @create-folder="handleCreateFolderFromMoveTo"
+    />
   </div>
 </template>
 

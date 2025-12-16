@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, reactive, watch } from 'vue'
+import { ref, onMounted, reactive, watch, computed } from 'vue'
 import UserError from '../../user-error/index.vue'
 import type { ICollectsItem } from '@/api/tyeps/request_response/userCollectsListRes'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
@@ -23,6 +23,11 @@ export interface IFolderPreloadData {
   loading: boolean
 }
 
+// 接收 props
+const props = defineProps<{
+  batchMode?: boolean
+}>()
+
 const loading = ref(true)
 const isLoadingMore = ref(false)
 const hasMore = ref(true)
@@ -38,6 +43,9 @@ const cursor = ref('0')
 
 // 当前选中的收藏夹
 const selectedFolder = ref<ICollectsItem | null>(null)
+
+// FolderDetail 组件引用
+const folderDetailRef = ref<InstanceType<typeof FolderDetail> | null>(null)
 
 // 定义事件
 const emit = defineEmits<{
@@ -213,11 +221,133 @@ const openAddVideoDialog = () => {
   }
 }
 
+// 批量选择相关状态
+const selectedIds = ref<Set<string>>(new Set())
+
+// 列表长度
+const listLength = computed(() => collectionFolderList.value.length)
+
+// 清空选中状态
+const clearSelection = () => {
+  selectedIds.value.clear()
+}
+
+// 切换全选状态
+const toggleSelectAll = () => {
+  if (selectedIds.value.size === collectionFolderList.value.length) {
+    // 取消全选
+    selectedIds.value.clear()
+  } else {
+    // 全选
+    selectedIds.value = new Set(
+      collectionFolderList.value.map((item) => item.collects_id_str)
+    )
+  }
+}
+
+// 切换单个收藏夹的选中状态
+const toggleFolderSelection = (folderId: string) => {
+  if (selectedIds.value.has(folderId)) {
+    selectedIds.value.delete(folderId)
+  } else {
+    selectedIds.value.add(folderId)
+  }
+}
+
+// 处理收藏夹项点击事件
+const handleFolderItemClick = (folder: ICollectsItem) => {
+  if (props.batchMode) {
+    // 批量管理模式：切换选中状态
+    toggleFolderSelection(folder.collects_id_str)
+  } else {
+    // 普通模式：进入详情
+    handleSelectFolder(folder)
+  }
+}
+
+// 删除选中的收藏夹
+const deleteSelected = async () => {
+  try {
+    // TODO: 调用 API 批量删除收藏夹
+    console.log('删除收藏夹 ID:', Array.from(selectedIds.value))
+
+    // 从列表中移除已删除的项
+    collectionFolderList.value = collectionFolderList.value.filter(
+      (item) => !selectedIds.value.has(item.collects_id_str)
+    )
+
+    // 清空选中状态
+    selectedIds.value.clear()
+  } catch (error) {
+    console.error('删除收藏夹失败:', error)
+  }
+}
+
+// 是否在详情模式
+const isDetailMode = computed(() => !!selectedFolder.value)
+
+// 获取当前选中的 ID（根据是否在详情模式返回不同的选中状态）
+const currentSelectedIds = computed(() => {
+  if (isDetailMode.value) {
+    return folderDetailRef.value?.selectedIds ?? new Set<string>()
+  }
+  return selectedIds.value
+})
+
+// 获取当前列表长度
+const currentListLength = computed(() => {
+  if (isDetailMode.value) {
+    return folderDetailRef.value?.listLength ?? 0
+  }
+  return listLength.value
+})
+
+// 清空当前选中状态
+const clearCurrentSelection = () => {
+  if (isDetailMode.value) {
+    folderDetailRef.value?.clearSelection()
+  } else {
+    clearSelection()
+  }
+}
+
+// 切换当前全选状态
+const toggleCurrentSelectAll = () => {
+  if (isDetailMode.value) {
+    folderDetailRef.value?.toggleSelectAll()
+  } else {
+    toggleSelectAll()
+  }
+}
+
+// 删除当前选中项
+const deleteCurrentSelected = async () => {
+  if (isDetailMode.value) {
+    await folderDetailRef.value?.deleteSelected()
+  } else {
+    await deleteSelected()
+  }
+}
+
 // 暴露方法给父组件
 defineExpose({
   handleBack,
   openCreateDialog,
-  openAddVideoDialog
+  openAddVideoDialog,
+  selectedIds,
+  listLength,
+  clearSelection,
+  toggleSelectAll,
+  deleteSelected,
+  // 详情模式相关
+  isDetailMode,
+  selectedFolder,
+  currentSelectedIds,
+  currentListLength,
+  clearCurrentSelection,
+  toggleCurrentSelectAll,
+  deleteCurrentSelected,
+  folderDetailRef
 })
 </script>
 
@@ -241,7 +371,9 @@ defineExpose({
             :folder="folder"
             :preload-data="folderPreloadDataMap.get(folder.collects_id_str)"
             :selected="false"
-            @select="handleSelectFolder"
+            :selectable="batchMode"
+            :checked="selectedIds.has(folder.collects_id_str)"
+            @select="handleFolderItemClick"
             @edit="handleEditFolder"
             @delete="handleDeleteFolder"
             @add-video="handleAddVideoToFolder"
@@ -252,13 +384,16 @@ defineExpose({
         <!-- 收藏夹详情 -->
         <div v-if="selectedFolder" class="folder-detail-wrapper">
           <FolderDetail
+            ref="folderDetailRef"
             :folder="selectedFolder"
             :folder-list="collectionFolderList"
+            :batch-mode="batchMode"
             :preload-data="
               folderPreloadDataMap.get(selectedFolder.collects_id_str)
             "
             @select="handleSelectFolder"
             @back="handleBack"
+            @create-folder="openCreateDialog"
             class="folder-main"
           />
         </div>

@@ -5,9 +5,11 @@ import { useRoute, useRouter } from 'vue-router'
 import { useGridScrollToItem } from '@/hooks'
 import UserError from '../user-error/index.vue'
 import UserSearchBar from '../user-search-bar/index.vue'
+import BatchActionBar from '../batch-action-bar/index.vue'
+import UserConfirmDialog from '../user-confirm-dialog/index.vue'
+import DyButton from '@/components/ui/button/button.vue'
 import VideoItem from '@/components/video-components/video-list/video-item.vue'
 import ModalPlayer from '@/views/modal-player.vue'
-import DyButton from '@/components/ui/button/button.vue'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 import apis from '@/api/apis'
 
@@ -178,6 +180,15 @@ const handleSearchClose = () => {
   searchResultText.value = ''
 }
 
+// 批量管理模式下执行搜索（会关闭批量管理模式）
+const handleSearchInBatchMode = async (keyword: string) => {
+  // 先关闭批量管理模式
+  isBatchMode.value = false
+  selectedIds.value.clear()
+  // 然后执行搜索
+  await handleSearch(keyword)
+}
+
 // 搜索更多视频（跳转到全局搜索页）
 const handleSearchMore = () => {
   router.push({
@@ -247,19 +258,141 @@ const handleModalClose = async (currentAwemeId: string) => {
     scrollToItem(currentAwemeId)
   })
 }
+
+// 批量操作相关状态
+const isBatchMode = ref(false) // 是否进入批量管理模式
+const selectedIds = ref<Set<string>>(new Set())
+const showCancelDialog = ref(false) // 显示取消喜欢确认弹框
+
+// 是否全选
+const isAllSelected = computed(() => {
+  return (
+    displayList.value.length > 0 &&
+    selectedIds.value.size === displayList.value.length
+  )
+})
+
+// 切换批量管理模式
+const toggleBatchMode = () => {
+  isBatchMode.value = !isBatchMode.value
+  // 退出批量管理时清空选中状态
+  if (!isBatchMode.value) {
+    selectedIds.value.clear()
+  }
+}
+
+// 切换全选状态
+const handleToggleSelectAll = () => {
+  if (isAllSelected.value) {
+    // 取消全选
+    selectedIds.value.clear()
+  } else {
+    // 全选
+    selectedIds.value = new Set(displayList.value.map((item) => item.aweme_id))
+  }
+}
+
+// 处理取消喜欢按钮点击
+const handleCancelLike = () => {
+  if (selectedIds.value.size === 0) return
+  // 显示确认弹框
+  showCancelDialog.value = true
+}
+
+// 确认取消喜欢
+const confirmCancelLike = async () => {
+  showCancelDialog.value = false
+
+  try {
+    // TODO: 调用 API 取消喜欢
+    console.log('取消喜欢的作品 ID:', Array.from(selectedIds.value))
+
+    // 模拟 API 调用
+    // await apis.cancelLike(Array.from(selectedIds.value))
+
+    // 从列表中移除已取消的项
+    likeList.value = likeList.value.filter(
+      (item) => !selectedIds.value.has(item.aweme_id)
+    )
+
+    // 清空选中状态
+    selectedIds.value.clear()
+
+    // 可选：退出批量管理模式
+    // isBatchMode.value = false
+  } catch (error) {
+    console.error('取消喜欢失败:', error)
+  }
+}
+
+// 取消弹框
+const cancelDialog = () => {
+  showCancelDialog.value = false
+}
+
+// 切换单个视频的选中状态
+const toggleVideoSelection = (awemeId: string) => {
+  if (selectedIds.value.has(awemeId)) {
+    selectedIds.value.delete(awemeId)
+  } else {
+    selectedIds.value.add(awemeId)
+  }
+}
+
+// 处理视频项点击事件
+const handleVideoItemClick = (item: IAwemeInfo) => {
+  if (isBatchMode.value) {
+    // 批量管理模式：切换选中状态
+    toggleVideoSelection(item.aweme_id)
+  } else {
+    // 普通模式：打开 modal 播放器
+    handleOpenModal(item)
+  }
+}
+
+// 暴露给父组件使用
+defineExpose({
+  isBatchMode,
+  toggleBatchMode
+})
 </script>
 <template>
   <Loading :show="loading">
     <div class="user-like">
-      <user-tabbar-2>
-        <!-- 搜索结果提示文案（仅在有结果时显示） -->
+      <!-- 批量操作工具栏 -->
+      <user-tabbar-2 :style="isBatchMode ? 'height: 72px' : ''">
+        <BatchActionBar
+          v-if="isBatchMode"
+          :selected-count="selectedIds.size"
+          :all-selected="isAllSelected"
+          :disabled="displayList.length === 0"
+          @select-all="handleToggleSelectAll"
+          @action="handleCancelLike"
+        >
+          <template #right>
+            <UserSearchBar
+              placeholder="搜索你赞过的作品"
+              @search="handleSearchInBatchMode"
+              @close="handleSearchClose"
+            />
+          </template>
+        </BatchActionBar>
+
+        <!-- 搜索结果提示文案（仅在有结果时显示，非批量模式） -->
         <div
-          v-if="isSearching && searchResultText && searchList.length > 0"
+          v-if="
+            !isBatchMode &&
+            isSearching &&
+            searchResultText &&
+            searchList.length > 0
+          "
           class="search-result-text"
         >
           {{ searchResultText }}
         </div>
+        <!-- 非批量管理模式下显示搜索栏 -->
         <UserSearchBar
+          v-if="!isBatchMode"
           class="user-tabbar-r"
           placeholder="搜索你赞过的作品"
           @search="handleSearch"
@@ -283,7 +416,9 @@ const handleModalClose = async (currentAwemeId: string) => {
               :aweme="item"
               :data-aweme-id="item.aweme_id"
               :disableClickToggle="true"
-              @click="handleOpenModal(item)"
+              :selectable="isBatchMode"
+              :selected="selectedIds.has(item.aweme_id)"
+              @click="handleVideoItemClick(item)"
             />
           </div>
           <Loading :show="displayLoading" />
@@ -298,10 +433,20 @@ const handleModalClose = async (currentAwemeId: string) => {
           class="no-show"
         >
           <template #actions>
-            <dy-button type="primary" theme="solid" block @click="handleSearchClose">
+            <dy-button
+              type="primary"
+              theme="solid"
+              block
+              @click="handleSearchClose"
+            >
               返回全部视频
             </dy-button>
-            <dy-button type="tertiary" theme="solid" block @click="handleSearchMore">
+            <dy-button
+              type="tertiary"
+              theme="solid"
+              block
+              @click="handleSearchMore"
+            >
               搜索更多视频
             </dy-button>
           </template>
@@ -314,6 +459,16 @@ const handleModalClose = async (currentAwemeId: string) => {
         :videoList="displayList"
         @close="handleModalClose"
         @loadMore="isSearching ? loadMoreSearch : getLikeList"
+      />
+
+      <!-- 取消喜欢确认弹框 -->
+      <UserConfirmDialog
+        v-model="showCancelDialog"
+        :title="`确认取消 ${selectedIds.size} 个喜欢的作品，取消后不可恢复`"
+        cancel-text="暂不取消"
+        confirm-text="确认取消"
+        @confirm="confirmCancelLike"
+        @cancel="cancelDialog"
       />
     </div>
   </Loading>

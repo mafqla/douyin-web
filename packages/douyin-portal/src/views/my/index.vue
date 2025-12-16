@@ -10,6 +10,12 @@ import {
   UserRecord,
   UserCollection
 } from '@/components/user'
+import DyButton from '@/components/ui/button/button.vue'
+
+// user-like 组件 ref
+const userLikeRef = ref<InstanceType<typeof UserLike> | null>(null)
+// user-collection 组件 ref
+const userCollectionRef = ref<InstanceType<typeof UserCollection> | null>(null)
 
 // 滚动监听
 const { y } = useScroll(window)
@@ -183,19 +189,46 @@ watchEffect(() => {
                 <svg-icon icon="lock" class="icon" />
               </div>
             </template>
-            <template v-slot:tabs-item-left> </template>
+            <template v-slot:tabs-item-left>
+              <!-- 批量管理按钮（喜欢标签页） -->
+              <dy-button
+                v-if="activeTab === 'like'"
+                type="secondary"
+                theme="light"
+                size="default"
+                style="width: 76px; height: 26px; border-radius: 8px"
+                @click="userLikeRef?.toggleBatchMode()"
+              >
+                {{ userLikeRef?.isBatchMode ? '退出管理' : '批量管理' }}
+              </dy-button>
+              <!-- 批量管理按钮（收藏标签页） -->
+              <dy-button
+                v-if="activeTab === 'favorite_collection'"
+                type="secondary"
+                theme="light"
+                size="default"
+                style="width: 76px; height: 26px; border-radius: 8px"
+                @click="userCollectionRef?.toggleBatchMode()"
+              >
+                {{ userCollectionRef?.isBatchMode ? '退出管理' : '批量管理' }}
+              </dy-button>
+            </template>
             <template v-slot:taba-content>
               <user-post
                 :user_id="store.userInfo.user.sec_uid"
                 v-if="activeTab === 'posts'"
               />
               <user-like
+                ref="userLikeRef"
                 :user_id="store.userInfo.user.sec_uid"
                 :uid="store.userInfo.user.uid"
                 v-if="activeTab === 'like'"
                 :show-like-list="true"
               />
-              <user-collection v-if="activeTab === 'favorite_collection'" />
+              <user-collection
+                ref="userCollectionRef"
+                v-if="activeTab === 'favorite_collection'"
+              />
 
               <user-record v-if="activeTab === 'record'" />
             </template>

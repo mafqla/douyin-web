@@ -16,6 +16,10 @@ const props = defineProps<{
   folder: ICollectsItem
   preloadData?: IFolderPreloadData
   selected?: boolean
+  // 是否显示选择框（批量管理模式）
+  selectable?: boolean
+  // 是否选中（批量管理模式）
+  checked?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -73,7 +77,36 @@ const handleAddVideo = (event: Event) => {
 
 <template>
   <div class="folfer-item" @click="handleClick">
-    <div class="folder-item-content" :class="{ active: selected }">
+    <div
+      class="folder-item-content"
+      :class="{ active: selected, selectable: selectable }"
+    >
+      <!-- 选择框（批量管理模式） -->
+      <div
+        v-if="selectable"
+        class="folder-checkbox"
+        :class="{ checked: checked }"
+      >
+        <span class="checkbox-icon">
+          <svg
+            v-show="checked"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            width="1em"
+            height="1em"
+            focusable="false"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M17.4111 7.30848C18.0692 7.81171 18.1947 8.75312 17.6915 9.41119L11.1915 17.9112C10.909 18.2806 10.4711 18.4981 10.0061 18.5C9.54105 18.5019 9.10143 18.288 8.81592 17.9209L5.31592 13.4209C4.80731 12.767 4.92512 11.8246 5.57904 11.316C6.23296 10.8074 7.17537 10.9252 7.68398 11.5791L9.98988 14.5438L15.3084 7.58884C15.8116 6.93077 16.7531 6.80525 17.4111 7.30848Z"
+              fill="currentColor"
+            ></path>
+          </svg>
+        </span>
+      </div>
       <!-- 顶部信息 -->
       <div class="folder-info">
         <div class="folder-info-left">
@@ -94,8 +127,12 @@ const handleAddVideo = (event: Event) => {
             </svg>
           </span>
         </div>
-        <!-- 更多按钮 -->
-        <HoverDropdown placement="auto" content-class="more-menu">
+        <!-- 更多按钮（非批量模式显示） -->
+        <HoverDropdown
+          v-if="!selectable"
+          placement="auto"
+          content-class="more-menu"
+        >
           <template #trigger>
             <div class="folder-more-btn">
               <svg
@@ -199,6 +236,58 @@ const handleAddVideo = (event: Event) => {
 
   &:hover {
     background-color: var(--color-bg-b2);
+
+    .folder-cover-item {
+      background-color: var(--color-bg-b3);
+
+      path {
+        fill: var(--color-bg-b2) !important;
+        stroke: var(--color-bg-b2) !important;
+      }
+    }
+  }
+
+  // 批量选择模式样式
+  &.selectable {
+    .folder-checkbox {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 10;
+    }
+  }
+}
+
+// 选择框样式
+.folder-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .checkbox-icon {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: var(--color-text-3);
+    transition: all 0.2s ease;
+    box-shadow: inset 0 0 0 1px var(--color-text-3);
+    border-radius: 4px;
+    background: transparent;
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  // 选中状态
+  &.checked .checkbox-icon {
+    background: linear-gradient(135deg, #ff2c55 0%, #ff0050 100%);
+    box-shadow: none;
+    color: #fff;
   }
 }
 .folder-info {

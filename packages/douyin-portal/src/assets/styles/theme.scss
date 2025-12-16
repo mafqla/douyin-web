@@ -171,6 +171,7 @@
         --color-bg-b2-white: rgba(var(--white), 1);
         --color-bg-b3-white: rgba(var(--white), 1);
         --color-fill-hover: rgba(var(--neutral-900), 0.08);
+        --color-fill-hover-alpha10: rgba(var(--neutral-900), .1);
         --color-fill-press: rgba(var(--neutral-900), 0.12);
         --color-fill-tag: rgba(var(--primary-500), 0.06);
         --color-fill-tag-grey: rgba(var(--neutral-950), 0.05);
@@ -331,6 +332,7 @@
         --color-bg-b2-white: rgba(var(--neutral-800), 1);
         --color-bg-b3-white: rgba(var(--neutral-700), 1);
         --color-fill-hover: rgba(var(--neutral-100), 0.08);
+        --color-fill-hover-alpha10: rgba(var(--neutral-100), .1);
         --color-fill-press: rgba(var(--neutral-100), 0.12);
         --color-fill-tag: rgba(var(--primary-500), 0.12);
         --color-fill-tag-grey: rgba(var(--white), 0.15);

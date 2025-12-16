@@ -185,6 +185,12 @@ const props = defineProps<{
           display: inline-block;
           position: relative;
           cursor: pointer;
+          margin-right: 16px;
+          line-height: 46px;
+
+          &:not(:last-of-type) {
+            margin-right: 24px;
+          }
 
           &:hover {
             color: rgba(249, 249, 249, 1);
