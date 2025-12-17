@@ -54,6 +54,7 @@ const paddingStyle = computed(() => {
     :style="paddingStyle"
   >
     <div class="user-tabbar-2-content">
+      <div></div>
       <slot />
     </div>
   </div>

@@ -91,17 +91,26 @@ watch(
   }
 )
 
+// 保存打开 modal 前的滚动位置
+const savedScrollY = ref(0)
+
 // 组件挂载时
 onMounted(() => {
+  // 保存当前滚动位置
+  savedScrollY.value = window.scrollY
   // 设置 body 为 position:fixed 防止背景滚动
   document.body.style.position = 'fixed'
   document.body.style.width = '100%'
+  document.body.style.top = `-${savedScrollY.value}px`
 })
 
-// 组件销毁时，去除 body 的 position:fixed
+// 组件销毁时，去除 body 的 position:fixed 并恢复滚动位置
 onBeforeUnmount(() => {
   document.body.style.position = ''
   document.body.style.width = ''
+  document.body.style.top = ''
+  // 恢复滚动位置
+  window.scrollTo(0, savedScrollY.value)
 })
 
 // 关闭弹框，移除 URL 的 modal_id 参数

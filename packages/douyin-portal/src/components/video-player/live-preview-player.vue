@@ -475,6 +475,7 @@ watch(
       :options="playerOptions"
       :isPlay="props.isPlay && !isSwitchingStream"
       :loop="false"
+      :marginControls="false"
       class="live-preview"
       @play="onPlay"
       @pause="onPause"
@@ -653,7 +654,8 @@ watch(
           right: 10%;
         }
         @keyframes wave-bounce {
-          0%, 100% {
+          0%,
+          100% {
             height: 50%;
           }
           50% {

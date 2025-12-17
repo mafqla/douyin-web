@@ -93,7 +93,9 @@ export class ImageGalleryPlugin extends Plugin {
   private slidesContainer: HTMLElement | null = null
   private slides: HTMLElement[] = []
   private resizeObserver: ResizeObserver | null = null
-  private cfg: Omit<Required<ImageGalleryConfig>, 'musicInfo'> & { musicInfo?: ImageAlbumMusicInfo }
+  private cfg: Omit<Required<ImageGalleryConfig>, 'musicInfo'> & {
+    musicInfo?: ImageAlbumMusicInfo
+  }
   // 每张图片的展示时长（毫秒）
   private imageDurations: number[] = []
   // 每张图片的开始时间点（毫秒）
@@ -201,12 +203,11 @@ export class ImageGalleryPlugin extends Plugin {
   private isLivePhoto(index: number): boolean {
     const image = this.cfg.images[index]
     return (
-      image?.clip_type === 5 &&
-      image?.live_photo_type === 1 &&
+      image?.clip_type === 4 || (image?.clip_type === 5 &&
+      image?.live_photo_type === 1) &&
       (image?.video?.play_addr?.url_list?.length ?? 0) > 0
     )
   }
-
   /**
    * 计算每张图片的展示时长
    * 优先使用 video.duration，否则使用默认时长
@@ -292,7 +293,10 @@ export class ImageGalleryPlugin extends Plugin {
     }
   }
 
-  private handleLivePhotoPlayback(currentIndex: number, resetTime: boolean = true) {
+  private handleLivePhotoPlayback(
+    currentIndex: number,
+    resetTime: boolean = true
+  ) {
     if (this._destroyed) return
     this.livePhotoVideos.forEach((video, index) => {
       if (index === currentIndex) {
@@ -489,7 +493,9 @@ export class ImageGalleryPlugin extends Plugin {
       </defs>
     </svg>
           </div>
-          <span class="image-gallery-counter">${images.length > 0 ? `1/${images.length}` : ''}</span>
+          <span class="image-gallery-counter">${
+            images.length > 0 ? `1/${images.length}` : ''
+          }</span>
           <div class="image-gallery-bottom-arrow image-gallery-bottom-right ${
             this.currentIndex === images.length - 1 && !loop ? 'disabled' : ''
           }">
@@ -562,8 +568,8 @@ export class ImageGalleryPlugin extends Plugin {
           ${images
             .map((image: any, index: number) => {
               const isLivePhoto =
-                image.clip_type === 5 &&
-                image.live_photo_type === 1 &&
+                image?.clip_type === 4 || (image?.clip_type === 5 &&
+                 image?.live_photo_type === 1)  &&
                 image.video?.play_addr?.url_list?.length > 0
               console.log(
                 `图片${index}: clip_type=${image.clip_type}, live_photo_type=${image.live_photo_type}, isLivePhoto=${isLivePhoto}`
@@ -1165,7 +1171,11 @@ export class ImageGalleryPlugin extends Plugin {
     let newIndex: number
     let currentTimeMs: number
 
-    if (this.imageStartTimes.length > 0 && this.totalDuration > 0 && this._playStartTime > 0) {
+    if (
+      this.imageStartTimes.length > 0 &&
+      this.totalDuration > 0 &&
+      this._playStartTime > 0
+    ) {
       // 计算从播放开始到现在的真实时间（毫秒）
       currentTimeMs = Date.now() - this._playStartTime
       newIndex = this.getImageIndexByTime(currentTimeMs)
@@ -1187,13 +1197,19 @@ export class ImageGalleryPlugin extends Plugin {
       const currentImageStartTime = this.imageStartTimes[clampedIndex]
       const currentImageDuration = this.imageDurations[clampedIndex]
       const timeInCurrentImage = currentTimeMs - currentImageStartTime
-      const imageInternalProgress = Math.min(timeInCurrentImage / currentImageDuration, 1)
+      const imageInternalProgress = Math.min(
+        timeInCurrentImage / currentImageDuration,
+        1
+      )
 
       // 每张图片占 1/n 的进度条长度
       const imageCount = this.cfg.images.length
       const baseProgress = clampedIndex / imageCount
       const imageProgressWidth = 1 / imageCount
-      const progress = Math.min(baseProgress + imageInternalProgress * imageProgressWidth, 1)
+      const progress = Math.min(
+        baseProgress + imageInternalProgress * imageProgressWidth,
+        1
+      )
 
       const progressPlugin = this.player.plugins?.progress
       if (progressPlugin) {
@@ -1202,7 +1218,11 @@ export class ImageGalleryPlugin extends Plugin {
 
       // 检查图集是否播放完成（真实时间超过图集总时长）
       // 只有当首个媒体已加载完成时才进行结束判断，防止动图还没加载好就切换
-      if (currentTimeMs >= this.totalDuration && !this._galleryEnded && this._firstMediaReady) {
+      if (
+        currentTimeMs >= this.totalDuration &&
+        !this._galleryEnded &&
+        this._firstMediaReady
+      ) {
         this._galleryEnded = true
 
         // 检查是否开启了自动连播

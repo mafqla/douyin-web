@@ -67,6 +67,8 @@ export interface UseGridScrollToItemOptions<T> {
   block?: ScrollLogicalPosition
   /** 顶部偏移量（用于处理固定导航栏等情况） */
   offsetTop?: number
+  /** 用于查找元素的 data 属性名（如 'aweme-id' 会查找 data-aweme-id） */
+  dataAttr?: string
 }
 
 export interface UseGridScrollToItemReturn {
@@ -87,28 +89,24 @@ export function useGridScrollToItem<T extends Record<string, any>>(
     autoScroll = true,
     behavior = 'smooth',
     block = 'start',
-    offsetTop = 0
+    offsetTop = 0,
+    dataAttr
   } = options
 
   /**
-   * 查找最近的可滚动父元素
+   * 检查元素是否在滚动容器的可视区域内
    */
-  const findScrollableParent = (element: HTMLElement): HTMLElement | null => {
-    let parent = element.parentElement
-    while (parent) {
-      const style = getComputedStyle(parent)
-      const overflowY = style.overflowY
-      const overflow = style.overflow
-      // 检查是否可滚动
-      if (
-        (overflowY === 'auto' || overflowY === 'scroll' || overflow === 'auto' || overflow === 'scroll') &&
-        parent.scrollHeight > parent.clientHeight
-      ) {
-        return parent
-      }
-      parent = parent.parentElement
-    }
-    return null
+  const isElementInContainerView = (
+    element: HTMLElement,
+    scrollContainer: HTMLElement
+  ): boolean => {
+    const elementRect = element.getBoundingClientRect()
+    const containerRect = scrollContainer.getBoundingClientRect()
+
+    return (
+      elementRect.top >= containerRect.top + offsetTop &&
+      elementRect.bottom <= containerRect.bottom
+    )
   }
 
   /**
@@ -123,96 +121,58 @@ export function useGridScrollToItem<T extends Record<string, any>>(
     const targetElement = container.children[index] as HTMLElement
     if (!targetElement) return
 
-    // 查找可滚动的父容器
-    const scrollParent = findScrollableParent(targetElement)
+    // 检查容器本身是否是可滚动的
+    const style = getComputedStyle(container)
+    const isContainerScrollable =
+      (style.overflowY === 'auto' || style.overflowY === 'scroll') &&
+      container.scrollHeight > container.clientHeight
 
-    // 获取目标元素的位置
-    const targetRect = targetElement.getBoundingClientRect()
-
-    if (scrollParent) {
-      const parentRect = scrollParent.getBoundingClientRect()
-
-      // 根据 block 参数计算目标滚动位置
-      let targetScrollTop: number
-
-      // 检查元素是否完全在视口内（考虑顶部偏移量）
-      const visibleTop = parentRect.top + offsetTop
-      const isFullyVisible = targetRect.top >= visibleTop && targetRect.bottom <= parentRect.bottom
-
-      if (block === 'start') {
-        // 如果元素完全可见，不滚动
-        if (isFullyVisible) return
-        // 滚动到顶部，考虑偏移量
-        targetScrollTop = scrollParent.scrollTop + (targetRect.top - visibleTop)
-      } else if (block === 'center') {
-        targetScrollTop = scrollParent.scrollTop + (targetRect.top - parentRect.top) - (parentRect.height - targetRect.height) / 2
-      } else if (block === 'end') {
-        targetScrollTop = scrollParent.scrollTop + (targetRect.bottom - parentRect.bottom)
-      } else {
-        // nearest: 只在元素不完全可见时滚动
-        const isAbove = targetRect.top < visibleTop
-        const isBelow = targetRect.bottom > parentRect.bottom
-
-        if (!isAbove && !isBelow) {
-          // 元素已经完全可见，不需要滚动
-          return
-        }
-
-        if (isAbove) {
-          targetScrollTop = scrollParent.scrollTop + (targetRect.top - visibleTop)
-        } else {
-          targetScrollTop = scrollParent.scrollTop + (targetRect.bottom - parentRect.bottom)
-        }
+    if (isContainerScrollable) {
+      // 容器本身可滚动，检查元素是否在容器可视区域内
+      const isInView = isElementInContainerView(targetElement, container)
+      if (!isInView) {
+        targetElement.scrollIntoView({ behavior, block })
       }
-
-      scrollParent.scrollTo({
-        top: targetScrollTop,
-        behavior
-      })
     } else {
-      // 没有找到可滚动父元素，使用 window 滚动
-      let targetScrollTop: number
-
-      // 检查元素是否完全在视口内（考虑顶部偏移量）
-      const visibleTop = offsetTop
-      const isFullyVisible = targetRect.top >= visibleTop && targetRect.bottom <= window.innerHeight
-
-      if (block === 'start') {
-        // 如果元素完全可见，不滚动
-        if (isFullyVisible) return
-        // 滚动到顶部，考虑偏移量
-        targetScrollTop = window.scrollY + targetRect.top - offsetTop
-      } else if (block === 'center') {
-        targetScrollTop = window.scrollY + targetRect.top - (window.innerHeight - targetRect.height) / 2
-      } else if (block === 'end') {
-        targetScrollTop = window.scrollY + targetRect.bottom - window.innerHeight
-      } else {
-        // nearest
-        const isAbove = targetRect.top < visibleTop
-        const isBelow = targetRect.bottom > window.innerHeight
-
-        if (!isAbove && !isBelow) {
-          return
-        }
-
-        if (isAbove) {
-          targetScrollTop = window.scrollY + targetRect.top - offsetTop
-        } else {
-          targetScrollTop = window.scrollY + targetRect.bottom - window.innerHeight
-        }
+      // 容器不可滚动，使用视口判断
+      const rect = targetElement.getBoundingClientRect()
+      const isInViewport =
+        rect.top >= offsetTop && rect.bottom <= window.innerHeight
+      if (!isInViewport) {
+        targetElement.scrollIntoView({ behavior, block })
       }
-
-      window.scrollTo({
-        top: targetScrollTop,
-        behavior
-      })
     }
+  }
+
+  /**
+   * 检查元素是否在视口可视区域内
+   */
+  const isElementInViewport = (element: HTMLElement): boolean => {
+    const rect = element.getBoundingClientRect()
+    // 使用与直接实现一致的判断逻辑
+    return rect.top >= 0 && rect.bottom <= window.innerHeight
   }
 
   /**
    * 滚动到指定 ID 的项
    */
   const scrollToItem = async (id: string): Promise<void> => {
+    await nextTick()
+
+    // 优先使用 data 属性查找元素（更可靠）
+    if (dataAttr) {
+      const element = document.querySelector(
+        `[data-${dataAttr}="${id}"]`
+      ) as HTMLElement
+      if (element) {
+        if (!isElementInViewport(element)) {
+          element.scrollIntoView({ behavior, block })
+        }
+        return
+      }
+    }
+
+    // 回退到索引查找
     const itemList = toValue(items)
     const index = itemList.findIndex((item) => String(item[idKey]) === id)
     if (index !== -1) {

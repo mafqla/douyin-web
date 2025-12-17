@@ -52,7 +52,8 @@ const { scrollToItem } = useGridScrollToItem({
   idKey: 'aweme_id',
   autoScroll: false, // 手动触发滚动
   block: 'center',
-  offsetTop: 60 // 顶部导航栏高度
+  offsetTop: 60, // 顶部导航栏高度
+  dataAttr: 'aweme-id' // 使用 data-aweme-id 属性查找元素
 })
 
 const params = reactive({
@@ -249,14 +250,23 @@ const showModal = computed(() => {
   return route.query.modal_id !== undefined
 })
 
+// Modal 滚动到末尾时加载更多
+const handleLoadMore = async () => {
+  if (isSearching.value) {
+    await loadMoreSearch()
+  } else {
+    await getLikeList()
+  }
+}
+
 // 关闭 modal 后滚动到当前视频位置
 const handleModalClose = async (currentAwemeId: string) => {
-  // 等待 DOM 更新完成（modal 关闭后 body 样式恢复）
+  // 等待 modal 组件完全销毁并恢复滚动位置
   await nextTick()
-  // 延迟一帧确保布局完成
-  requestAnimationFrame(() => {
+  // 使用 setTimeout 确保 onBeforeUnmount 中的 scrollTo 已执行
+  setTimeout(() => {
     scrollToItem(currentAwemeId)
-  })
+  }, 50)
 }
 
 // 批量操作相关状态
@@ -457,8 +467,9 @@ defineExpose({
       <ModalPlayer
         v-if="showModal"
         :videoList="displayList"
+        :hasMore="displayHasMore"
         @close="handleModalClose"
-        @loadMore="isSearching ? loadMoreSearch : getLikeList"
+        @loadMore="handleLoadMore"
       />
 
       <!-- 取消喜欢确认弹框 -->
@@ -489,9 +500,9 @@ defineExpose({
   line-height: 21px;
 }
 .user-tabbar-r {
-  position: absolute;
-  top: 0;
-  right: 0;
+  // position: absolute;
+  // top: 0;
+  // right: 0;
 }
 .video-list {
   width: 100%;
