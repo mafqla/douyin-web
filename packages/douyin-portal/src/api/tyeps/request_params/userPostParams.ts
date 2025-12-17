@@ -15,9 +15,16 @@ export interface IuserPostParams {
   max_cursor: string
   // 数量
   count: number
-  time_list_query?: []
+  time_list_query?: number
   need_time_list?: number
   locate_query: boolean
   locate_item_id?: string
-  forward_end_cursor?: string
+  // 定位项游标（第二次调用时使用）
+  locate_item_cursor?: number
+  // 向上加载：当前锚点游标
+  forward_anchor_cursor?: number
+  // 向上加载：结束游标
+  forward_end_cursor?: number
+  // 直播回放策略
+  show_live_replay_strategy?: number
 }

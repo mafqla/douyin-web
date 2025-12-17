@@ -1,18 +1,39 @@
 <script setup lang="ts">
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 import { useCount } from '@/hooks'
-import {} from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
 interface SideItemProps {
   item: IAwemeInfo
   aweme_id: string
 }
 
 const props = defineProps<SideItemProps>()
+const route = useRoute()
+const router = useRouter()
+
+// 点击切换视频
+const handleClick = (e: Event) => {
+  e.preventDefault()
+  // 如果已经是当前播放的视频，不做任何操作
+  if (props.item.aweme_id === props.aweme_id) return
+
+  // 更新 URL 的 modal_id 参数来切换视频
+  if (route.query.modal_id) {
+    router.replace({
+      path: route.path,
+      query: {
+        ...route.query,
+        modal_id: props.item.aweme_id
+      }
+    })
+  }
+}
 </script>
 <template>
   <div class="side-item" :aweme_id="props.item.aweme_id">
     <div class="side-item-content">
-      <a href="#" class="side-link">
+      <a href="#" class="side-link" @click="handleClick">
         <div class="side-link-content">
           <div class="side-link-content-img">
             <img

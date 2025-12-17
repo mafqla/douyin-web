@@ -6,6 +6,9 @@ import { formatMillisecondsToTime } from '@/utils/date-format'
 import { Loading } from '@/components/common'
 import RelatedVideoItem from '@/views/video/components/related-video-item.vue'
 import { useCount } from '@/hooks/useCount'
+import { useSidebarStore } from '@/stores/sidebar'
+
+const sidebarStore = useSidebarStore()
 
 interface Props {
   awemeId: string
@@ -17,6 +20,17 @@ const props = defineProps<Props>()
 
 const loading = ref(true)
 const awemeList = ref<IAwemeInfo[]>([])
+
+// 同步视频列表到 store（包含当前视频）
+watch(
+  awemeList,
+  (newList) => {
+    // 将当前视频和相关推荐合并后同步到 store
+    const fullList = props.currentAweme ? [props.currentAweme, ...newList] : newList
+    sidebarStore.setRelatedVideoList(fullList)
+  },
+  { immediate: true }
+)
 
 const params = reactive({
   aweme_id: props.awemeId,

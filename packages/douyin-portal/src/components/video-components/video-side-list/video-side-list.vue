@@ -2,10 +2,13 @@
 import apis from '@/api/apis'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 import type { IUser } from '@/api/tyeps/common/user'
-import { useCount } from '@/hooks'
+import { useCount, useGridScrollToItem } from '@/hooks'
 import { vInfiniteScroll } from '@vueuse/components'
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch, computed, reactive, nextTick } from 'vue'
 import SideItem from './side-item.vue'
+import { useSidebarStore } from '@/stores/sidebar'
+
+const sidebarStore = useSidebarStore()
 
 const props = defineProps({
   user_sec_id: {
@@ -23,45 +26,224 @@ const props = defineProps({
 })
 
 const userInfo = ref<IUser>({} as IUser)
+const scrollContainerRef = ref<HTMLElement | null>(null)
+
 // 请求用户信息
 const getUserInfo = async (user_id: string) => {
   const { user } = await apis.getUserOtherInfo(props.user_sec_id)
-  // console.log(user)
   userInfo.value = user
 }
 
-const isLoadingMore = ref(true)
+const isLoadingMore = ref(false)
+const isLoadingPrev = ref(false)
 const hasMore = ref(true)
-const postParams = reactive({
-  sec_user_id: props.user_sec_id,
-  count: 24,
-  locate_item_id: props.aweme_id,
-  locate_query: false,
-  max_cursor: '0',
-  need_time_list: 0
-})
+const hasPrev = ref(false)
+
+// 向下加载游标
+const maxCursor = ref('0')
+// 向上加载游标
+const forwardAnchorCursor = ref(0)
+const forwardEndCursor = ref(0)
+
+// 视频列表数据
 const postList = ref<IAwemeInfo[]>([])
-// 获取作品列表
-const getUserPostList = async () => {
-  if (!hasMore.value) return
+
+// 同步视频列表到 store
+watch(
+  postList,
+  (newList) => {
+    if (newList && newList.length > 0) {
+      sidebarStore.setWorksVideoList(newList)
+    }
+  },
+  { deep: true }
+)
+
+// 当前视频 ID（用于滚动定位）
+const currentId = ref<string | null>(props.aweme_id)
+
+// 列表容器 ref
+const listContainerRef = ref<HTMLElement | null>(null)
+
+// 使用滚动定位 hook
+const { scrollToItem } = useGridScrollToItem({
+  containerRef: listContainerRef,
+  currentId,
+  items: postList,
+  idKey: 'aweme_id',
+  autoScroll: false,
+  behavior: 'smooth',
+  block: 'start'
+})
+
+// 初始化加载（定位到当前视频）
+const initLoad = async () => {
+  // 参数校验
+  if (!props.user_sec_id || !props.aweme_id) return
+
   isLoadingMore.value = true
   try {
-    const res = await apis.getUserPost(postParams)
-    postParams.max_cursor = res.max_cursor
-    postList.value.push(...res.aweme_list)
-    isLoadingMore.value = false
-    // console.log(res)
-    if (!res.has_more) {
-      hasMore.value = false
-      isLoadingMore.value = false
+    // 第一次调用：获取最新列表，不定位
+    const firstRes = await apis.getUserPost({
+      sec_user_id: props.user_sec_id,
+      count: 24,
+      max_cursor: '0',
+      locate_query: false,
+      locate_item_id: props.aweme_id,
+      show_live_replay_strategy: 1,
+      need_time_list: 0,
+      time_list_query: 0
+    })
+
+    // 检查当前视频是否在第一次返回的列表中
+    const currentInFirst = firstRes.aweme_list.some(
+      (item) => item.aweme_id === props.aweme_id
+    )
+
+    if (currentInFirst) {
+      // 当前视频在第一页，直接使用
+      postList.value = firstRes.aweme_list
+      maxCursor.value = firstRes.max_cursor
+      hasMore.value = firstRes.has_more
+    } else if ((firstRes as any).locate_item_cursor) {
+      // 当前视频不在第一页，需要第二次调用定位
+      const locateRes = await apis.getUserPost({
+        sec_user_id: props.user_sec_id,
+        count: 10,
+        max_cursor: firstRes.max_cursor,
+        locate_query: true,
+        locate_item_id: props.aweme_id,
+        locate_item_cursor: (firstRes as any).locate_item_cursor
+      })
+
+      // 合并列表（第一次 + 第二次）
+      const allList = [...firstRes.aweme_list, ...locateRes.aweme_list]
+      // 去重
+      postList.value = allList.filter(
+        (item, index, self) =>
+          self.findIndex((t) => t.aweme_id === item.aweme_id) === index
+      )
+
+      // 设置向下加载游标
+      maxCursor.value = locateRes.max_cursor
+      hasMore.value = locateRes.has_more
+
+      // 设置向上加载游标
+      if ((locateRes as any).min_cursor) {
+        forwardAnchorCursor.value = Number((locateRes as any).min_cursor)
+        forwardEndCursor.value = Number(firstRes.max_cursor)
+        hasPrev.value = (locateRes as any).forward_has_more === 1
+      }
+    } else {
+      // 没有 locate_item_cursor，直接使用第一次结果
+      postList.value = firstRes.aweme_list
+      maxCursor.value = firstRes.max_cursor
+      hasMore.value = firstRes.has_more
     }
+
+    // 滚动到当前视频位置
+    await nextTick()
+    scrollToItem(props.aweme_id)
   } catch (error) {
+    console.error('initLoad error:', error)
     hasMore.value = false
-    isLoadingMore.value = false
   } finally {
     isLoadingMore.value = false
   }
 }
+
+
+
+// 获取作品列表（向下加载更多）
+const getUserPostList = async () => {
+  if (!props.user_sec_id || !hasMore.value || isLoadingMore.value) return
+  isLoadingMore.value = true
+  try {
+    const res = await apis.getUserPost({
+      sec_user_id: props.user_sec_id,
+      count: 20,
+      max_cursor: maxCursor.value,
+      locate_query: false,
+      locate_item_id: props.aweme_id,
+      show_live_replay_strategy: 1,
+      need_time_list: 0,
+      time_list_query: 0
+    })
+
+    maxCursor.value = res.max_cursor
+    postList.value.push(...res.aweme_list)
+    hasMore.value = res.has_more
+  } catch (error) {
+    hasMore.value = false
+  } finally {
+    isLoadingMore.value = false
+  }
+}
+
+// 向上滚动加载更早的视频
+const loadPrevVideos = async () => {
+  if (!hasPrev.value || isLoadingPrev.value || !forwardAnchorCursor.value) return
+
+  isLoadingPrev.value = true
+  try {
+    const res = await apis.getUserPost({
+      sec_user_id: props.user_sec_id,
+      count: 20,
+      max_cursor: String(forwardAnchorCursor.value),
+      locate_query: false,
+      locate_item_id: props.aweme_id,
+      forward_anchor_cursor: forwardAnchorCursor.value,
+      forward_end_cursor: forwardEndCursor.value,
+      show_live_replay_strategy: 1,
+      need_time_list: 0,
+      time_list_query: 0
+    })
+
+    if (res.aweme_list.length > 0) {
+      // 记录当前滚动位置
+      const scrollContainer = scrollContainerRef.value
+      const prevScrollHeight = scrollContainer?.scrollHeight || 0
+
+      // 将新数据插入到列表前面
+      postList.value.unshift(...res.aweme_list)
+
+      // 更新向上加载游标（使用 min_cursor）
+      const minCursor = (res as any).min_cursor
+      if (minCursor && Number(minCursor) > 0) {
+        forwardAnchorCursor.value = Number(minCursor)
+      } else {
+        hasPrev.value = false
+      }
+
+      // 检查是否还有更多
+      if ((res as any).forward_has_more === 0) {
+        hasPrev.value = false
+      }
+
+      // 保持滚动位置
+      await nextTick()
+      if (scrollContainer) {
+        const newScrollHeight = scrollContainer.scrollHeight
+        scrollContainer.scrollTop = newScrollHeight - prevScrollHeight
+      }
+    } else {
+      hasPrev.value = false
+    }
+  } catch (error) {
+    hasPrev.value = false
+  } finally {
+    isLoadingPrev.value = false
+  }
+}
+
+// 处理滚动事件，检测是否滚动到顶部
+const handleScroll = (event: Event) => {
+  const target = event.target as HTMLElement
+  if (target.scrollTop < 100 && hasPrev.value && !isLoadingPrev.value) {
+    loadPrevVideos()
+  }
+}
+
 // 获取合集列表
 const getMixList = async (
   sec_user_id: string,
@@ -69,20 +251,20 @@ const getMixList = async (
   cursor: string
 ) => {
   const res = await apis.getUserMix(sec_user_id, count, cursor)
-  // console.log(res)
 }
 
 const observer = ref<IntersectionObserver | null>(null)
 const target = ref(null)
 
 onMounted(() => {
+  // 初始化加载
+  initLoad()
+
   // 创建一个观察者对象并传入回调函数
   observer.value = new IntersectionObserver((entries) => {
-    // 如果元素进入可视区域
     if (entries[0].isIntersecting) {
       getUserInfo(props.user_sec_id)
       getMixList(props.user_sec_id, 12, '0')
-      // 一旦数据被加载，可以停止观察
       if (observer.value && target.value) {
         observer.value.unobserve(target.value)
       }
@@ -95,7 +277,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  // 组件卸载时，停止观察
   if (observer.value && target.value) {
     observer.value.unobserve(target.value)
   }
@@ -125,16 +306,25 @@ onUnmounted(() => {
     <div class="side-list-content">
       <div class="user-post-list">
         <div
+          ref="scrollContainerRef"
           class="scroll-content"
           data-scrollable
           v-infinite-scroll="[getUserPostList, { distance: 10 }]"
+          @scroll="handleScroll"
         >
-          <side-item
-            v-for="item in postList"
-            :key="item.aweme_id"
-            :item="item"
-            :aweme_id="props.aweme_id"
-          />
+          <!-- 顶部加载提示 -->
+          <Loading :show="isLoadingPrev" />
+
+          <div ref="listContainerRef" class="list-container">
+            <side-item
+              v-for="item in postList"
+              :key="item.aweme_id"
+              :item="item"
+              :aweme_id="props.aweme_id"
+            />
+          </div>
+
+          <!-- 底部加载提示 -->
           <Loading :show="isLoadingMore" />
           <list-footer v-if="!hasMore" />
         </div>
@@ -158,7 +348,6 @@ onUnmounted(() => {
     margin-bottom: 4px;
 
     .side-list-header-info {
-      // flex: 1 1;
       display: flex;
       align-items: center;
 
@@ -176,7 +365,6 @@ onUnmounted(() => {
           font-size: 14px;
           font-weight: 500;
           max-width: unset;
-          // max-width: 200px;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
@@ -190,7 +378,6 @@ onUnmounted(() => {
 
         .info-number {
           align-items: center;
-          // color: #161823;
           color: rgba(255, 255, 255, 0.9);
           display: flex;
           font-size: 12px;
@@ -200,7 +387,6 @@ onUnmounted(() => {
           span {
             border-left: 1px solid;
             border-color: #f2f2f4;
-            // border-color: rgba(242, 242, 243, 0.08);
             display: block;
             height: 10px;
             margin: 0 8px;

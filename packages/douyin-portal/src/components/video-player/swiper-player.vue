@@ -127,6 +127,7 @@ const thumbnail = computed(() => {
         <BasePlayer
           v-if="!isImageGallery"
           ref="playerRef"
+          :key="props.awemeInfo.aweme_id"
           :url="awemeUrl"
           :options="playerOptions"
           :is-play="isPlay"
@@ -159,6 +160,7 @@ const thumbnail = computed(() => {
         </BasePlayer>
         <ImageGalleryPlayer
           v-if="isImageGallery"
+          :key="props.awemeInfo.aweme_id"
           :music_url="props.awemeInfo.music.play_url.url_list"
           :imgGallery="imgGallery"
           :isPlay="isPlay"

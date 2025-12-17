@@ -75,7 +75,7 @@ import { videosCtrolStore } from '@/stores/videos-control'
         color: rgba(255, 255, 255, 0.25);
       }
 
-      &:hover {
+      &:hover .icon {
         color: #fff;
       }
     }
@@ -104,7 +104,7 @@ import { videosCtrolStore } from '@/stores/videos-control'
         color: rgba(255, 255, 255, 0.25);
       }
 
-      &:hover {
+      &:hover .icon {
         color: #fff;
       }
     }

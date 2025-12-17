@@ -105,6 +105,7 @@ declare module '@vue/runtime-core' {
     SearchSuggestion: typeof import('./src/components/common/search-suggestion.vue')['default']
     SelectFolderDialog: typeof import('./src/components/user/user-collection/collection-video/select-folder-dialog.vue')['default']
     ShortcutKeys: typeof import('./src/components/common/shortcut-keys.vue')['default']
+    SidebarFolderPlaylist: typeof import('./src/components/video-components/video-sidebar/sidebar-folder-playlist.vue')['default']
     SidebarRelatedVideo: typeof import('./src/components/video-components/video-sidebar/sidebar-related-video.vue')['default']
     SideItem: typeof import('./src/components/video-components/video-side-list/side-item.vue')['default']
     SplitButtonGroup: typeof import('./src/components/ui/button/split-button-group.vue')['default']

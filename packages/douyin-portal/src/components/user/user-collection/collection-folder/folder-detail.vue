@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import { ref, shallowRef, watch, computed } from 'vue'
+import { ref, shallowRef, watch, computed, onBeforeUnmount } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import UserError from '../../user-error/index.vue'
+import SidebarModalPlayer from '@/views/sidebar-modal-player.vue'
 import type { ICollectsItem } from '@/api/tyeps/request_response/userCollectsListRes'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 import apis from '@/api/apis'
+import { useSidebarStore } from '@/stores/sidebar'
+
+const route = useRoute()
+const router = useRouter()
+const sidebarStore = useSidebarStore()
 
 const props = defineProps<{
   folder: ICollectsItem
@@ -137,6 +144,54 @@ const handleVideoItemClick = (item: IAwemeInfo) => {
   if (props.batchMode) {
     // 批量管理模式：切换选中状态
     toggleVideoSelection(item.aweme_id)
+  } else {
+    // 普通模式：打开 modal-player
+    openModalPlayer(item.aweme_id)
+  }
+}
+
+// modal-player 相关
+const showModalPlayer = ref(false)
+
+// 打开 modal-player
+const openModalPlayer = (awemeId: string) => {
+  // 设置收藏夹信息到 store，让 video-sidebar 显示收藏夹 tab
+  sidebarStore.setFolder(props.folder)
+  // 显示 modal player
+  showModalPlayer.value = true
+  router.push({
+    path: route.path,
+    query: {
+      ...route.query,
+      modal_id: awemeId
+    }
+  })
+}
+
+// 关闭 modal-player
+const handleModalClose = (currentAwemeId: string) => {
+  // 隐藏 modal player
+  showModalPlayer.value = false
+  // 清除收藏夹信息
+  sidebarStore.clearFolder()
+  // 滚动到当前播放的视频位置
+  const videoElement = document.querySelector(
+    `[data-aweme-id="${currentAwemeId}"]`
+  )
+  if (videoElement) {
+    videoElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
+}
+
+// 组件卸载时清除收藏夹信息
+onBeforeUnmount(() => {
+  sidebarStore.clearFolder()
+})
+
+// 加载更多视频
+const handleLoadMore = () => {
+  if (hasMore.value && !isLoadingMore.value) {
+    getFolderVideoList()
   }
 }
 
@@ -360,6 +415,14 @@ defineExpose({
         </div>
       </Loading>
     </div>
+
+    <!-- Sidebar Modal Player -->
+    <SidebarModalPlayer
+      v-if="showModalPlayer"
+      :videoList="folderVideoList"
+      @close="handleModalClose"
+      @loadMore="handleLoadMore"
+    />
   </div>
 </template>
 

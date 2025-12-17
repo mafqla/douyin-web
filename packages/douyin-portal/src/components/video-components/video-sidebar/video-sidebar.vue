@@ -1,14 +1,20 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch, computed } from 'vue'
 import VideoSideList from '../video-side-list/video-side-list.vue'
 import VideoComment from '../video-comment/video-comment.vue'
 import SidebarRelatedVideo from './sidebar-related-video.vue'
+import SidebarFolderPlaylist from './sidebar-folder-playlist.vue'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
+import { useSidebarStore, type SidebarTabType } from '@/stores/sidebar'
 
-const activeName = ref('comment')
+const sidebarStore = useSidebarStore()
 
-const handleClick = (tab: string) => {
+const activeName = ref<SidebarTabType>('comment')
+
+const handleClick = (tab: SidebarTabType) => {
   activeName.value = tab
+  // 同步到 store
+  sidebarStore.setActiveTab(tab)
 }
 
 const props = defineProps<{
@@ -20,6 +26,21 @@ const props = defineProps<{
   // 当前播放的视频信息（用于相关推荐显示第一个）
   currentAweme?: IAwemeInfo
 }>()
+
+// 从 store 获取收藏夹信息
+const folder = computed(() => sidebarStore.currentFolder)
+
+// 当有收藏夹信息时，默认切换到收藏夹 tab
+watch(
+  folder,
+  (newFolder) => {
+    if (newFolder) {
+      activeName.value = 'folder'
+      sidebarStore.setActiveTab('folder')
+    }
+  },
+  { immediate: true }
+)
 </script>
 <template>
   <div class="video-sidebar">
@@ -28,6 +49,14 @@ const props = defineProps<{
         <div class="video-tabs-top">
           <div class="video-tabs-top-content">
             <div class="video-tabs-bar">
+              <div
+                v-if="folder"
+                class="video-tabs-title"
+                :class="{ active: activeName === 'folder' }"
+                @click="handleClick('folder')"
+              >
+                <span class="video-tabs-title-text">收藏夹</span>
+              </div>
               <div
                 class="video-tabs-title"
                 :class="{ active: activeName === 'works' }"
@@ -71,6 +100,7 @@ const props = defineProps<{
             v-show="activeName === 'works'"
           >
             <video-side-list
+              :key="props.user_sec_id"
               :user_sec_id="props.user_sec_id ?? ''"
               :username="props.username ?? ''"
               :aweme_id="props.aweme_id ?? ''"
@@ -82,6 +112,7 @@ const props = defineProps<{
             v-show="activeName === 'comment'"
           >
             <video-comment
+              :key="props.aweme_id"
               :id="props.aweme_id"
               :author_id="props.author_id"
               :relatedText="props.relatedText"
@@ -102,8 +133,20 @@ const props = defineProps<{
           >
             <SidebarRelatedVideo
               v-if="props.aweme_id"
+              :key="props.aweme_id"
               :awemeId="props.aweme_id"
               :currentAweme="props.currentAweme"
+            />
+          </div>
+          <!-- 收藏夹播放列表 -->
+          <div
+            v-if="folder"
+            class="video-tabs-content-item folder"
+            v-show="activeName === 'folder'"
+          >
+            <SidebarFolderPlaylist
+              :folder="folder"
+              :aweme_id="props.aweme_id ?? ''"
             />
           </div>
         </div>
@@ -230,6 +273,9 @@ const props = defineProps<{
             padding: 0 16px;
           }
           &.related {
+            padding: 0 16px;
+          }
+          &.folder {
             padding: 0 16px;
           }
         }
