@@ -72,9 +72,26 @@ const { scrollToItem } = useGridScrollToItem({
   items: postList,
   idKey: 'aweme_id',
   autoScroll: false,
-  behavior: 'smooth',
+  behavior: 'instant',
   block: 'start'
 })
+
+// 手动滚动到当前视频位置
+const scrollToCurrentVideo = () => {
+  if (!listContainerRef.value || !scrollContainerRef.value) return
+  const currentIndex = postList.value.findIndex(
+    (item) => item.aweme_id === props.aweme_id
+  )
+  if (currentIndex >= 0) {
+    const targetElement = listContainerRef.value.children[currentIndex] as HTMLElement
+    if (targetElement) {
+      const containerRect = scrollContainerRef.value.getBoundingClientRect()
+      const targetRect = targetElement.getBoundingClientRect()
+      const scrollTop = scrollContainerRef.value.scrollTop + (targetRect.top - containerRect.top)
+      scrollContainerRef.value.scrollTo({ top: scrollTop, behavior: 'instant' })
+    }
+  }
+}
 
 // 初始化加载（定位到当前视频）
 const initLoad = async () => {
@@ -105,9 +122,12 @@ const initLoad = async () => {
       postList.value = firstRes.aweme_list
       maxCursor.value = firstRes.max_cursor
       hasMore.value = firstRes.has_more
+
+      // 当前视频在第一页，不需要向上加载（已经是最新的了）
+      hasPrev.value = false
     } else if ((firstRes as any).locate_item_cursor) {
       // 当前视频不在第一页，需要第二次调用定位
-      const locateRes = await apis.getUserPost({
+      const locateRes = await apis.getUserLocatePost({
         sec_user_id: props.user_sec_id,
         count: 10,
         max_cursor: firstRes.max_cursor,
@@ -116,23 +136,20 @@ const initLoad = async () => {
         locate_item_cursor: (firstRes as any).locate_item_cursor
       })
 
-      // 合并列表（第一次 + 第二次）
-      const allList = [...firstRes.aweme_list, ...locateRes.aweme_list]
-      // 去重
-      postList.value = allList.filter(
-        (item, index, self) =>
-          self.findIndex((t) => t.aweme_id === item.aweme_id) === index
-      )
+      // 只使用第二次定位返回的列表（以当前视频为起点）
+      postList.value = locateRes.aweme_list
 
       // 设置向下加载游标
       maxCursor.value = locateRes.max_cursor
       hasMore.value = locateRes.has_more
 
       // 设置向上加载游标
-      if ((locateRes as any).min_cursor) {
-        forwardAnchorCursor.value = Number((locateRes as any).min_cursor)
+      const minCursor = (locateRes as any).min_cursor
+      if (minCursor && Number(minCursor) > 0) {
+        forwardAnchorCursor.value = Number(minCursor)
         forwardEndCursor.value = Number(firstRes.max_cursor)
-        hasPrev.value = (locateRes as any).forward_has_more === 1
+        // 只要有 min_cursor 就可以向上加载
+        hasPrev.value = true
       }
     } else {
       // 没有 locate_item_cursor，直接使用第一次结果
@@ -143,7 +160,7 @@ const initLoad = async () => {
 
     // 滚动到当前视频位置
     await nextTick()
-    scrollToItem(props.aweme_id)
+    scrollToCurrentVideo()
   } catch (error) {
     console.error('initLoad error:', error)
     hasMore.value = false
@@ -182,7 +199,7 @@ const getUserPostList = async () => {
 
 // 向上滚动加载更早的视频
 const loadPrevVideos = async () => {
-  if (!hasPrev.value || isLoadingPrev.value || !forwardAnchorCursor.value) return
+  if (!hasPrev.value || isLoadingPrev.value) return
 
   isLoadingPrev.value = true
   try {

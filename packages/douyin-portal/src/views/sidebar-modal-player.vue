@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Loading } from '@/components/common'
-import { computed, onMounted, onBeforeUnmount, watch, ref } from 'vue'
+import { computed, onMounted, onBeforeUnmount, watch, ref, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 import SwiperPlayer from '@/components/video-player/swiper-player.vue'
@@ -100,9 +100,24 @@ const switchToVideo = (awemeId: string) => {
 // 初始化 store 状态
 const initStoreState = () => {
   const idx = currentIndexInActiveList.value
-  control.activeVideoIndex = idx >= 0 ? idx : 0
-  control.videosNum = activeVideoList.value.length
-  control.stopScroll = idx >= activeVideoList.value.length - 1
+  // 只有当前视频在列表中时才更新索引，否则保持 URL 中的 modal_id
+  if (idx >= 0) {
+    isInternalUpdate = true
+    control.activeVideoIndex = idx
+    control.videosNum = activeVideoList.value.length
+    control.stopScroll = idx >= activeVideoList.value.length - 1
+    isInternalUpdate = false
+  } else {
+    // 当前视频不在活动列表中，使用 props.videoList 的长度
+    control.videosNum = props.videoList.length
+    const propsIdx = props.videoList.findIndex((item) => item.aweme_id === modalId.value)
+    if (propsIdx >= 0) {
+      isInternalUpdate = true
+      control.activeVideoIndex = propsIdx
+      control.stopScroll = propsIdx >= props.videoList.length - 1
+      isInternalUpdate = false
+    }
+  }
 }
 
 // 监听 activeTab 变化，更新 store 状态（不强制切换视频）
@@ -135,10 +150,13 @@ watch(
 
 // 监听 store 的 activeVideoIndex 变化，同步切换视频
 let isInternalUpdate = false
+// 是否已完成初始化（防止初始化时错误切换视频）
+const isInitialized = ref(false)
+
 watch(
   () => control.activeVideoIndex,
   (newIndex) => {
-    if (isInternalUpdate) return
+    if (isInternalUpdate || !isInitialized.value) return
 
     const targetVideo = activeVideoList.value[newIndex]
     if (targetVideo && targetVideo.aweme_id !== modalId.value) {
@@ -214,14 +232,26 @@ const handleWheel = (event: WheelEvent) => {
   }
 }
 
+// 保存打开 modal 前的滚动位置
+let savedScrollY = 0
+
 // 组件挂载时
 onMounted(() => {
-  // 设置 body 为 position:fixed 防止背景滚动
+  // 保存当前滚动位置
+  savedScrollY = window.scrollY
+
+  // 设置 body 为 position:fixed 防止背景滚动，同时保持视觉位置
   document.body.style.position = 'fixed'
   document.body.style.width = '100%'
+  document.body.style.top = `-${savedScrollY}px`
 
   // 初始化 store 状态
   initStoreState()
+
+  // 标记初始化完成，允许后续的 activeVideoIndex 变化触发视频切换
+  nextTick(() => {
+    isInitialized.value = true
+  })
 
   // 添加键盘和滚轮事件监听
   document.addEventListener('keydown', handleKeydown)
@@ -230,8 +260,13 @@ onMounted(() => {
 
 // 组件销毁时
 onBeforeUnmount(() => {
+  // 先移除 fixed 样式
   document.body.style.position = ''
   document.body.style.width = ''
+  document.body.style.top = ''
+
+  // 恢复滚动位置
+  window.scrollTo(0, savedScrollY)
 
   // 移除事件监听
   document.removeEventListener('keydown', handleKeydown)

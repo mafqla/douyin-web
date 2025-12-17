@@ -36,9 +36,12 @@ export const useSidebarStore = defineStore('sidebar', () => {
     }
   })
 
-  // 设置当前收藏夹
+  // 设置当前收藏夹（同时切换到 folder tab）
   const setFolder = (folder: ICollectsItem | null) => {
     currentFolder.value = folder
+    if (folder) {
+      activeTab.value = 'folder'
+    }
   }
 
   // 清除收藏夹信息

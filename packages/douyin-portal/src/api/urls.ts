@@ -17,6 +17,9 @@ export default {
   user_other_info: `/aweme/v1/web/user/profile/other/`,
   //用户作品列表
   user_post: `/aweme/v1/web/aweme/post/`,
+  //用户当前的作品列表
+  user_locate_post: `/aweme/v1/web/locate/post/`,
+
   //用户创建的合集
   user_mix: `/aweme/v1/web/mix/list/`,
   // 用户创建的合集详细信息

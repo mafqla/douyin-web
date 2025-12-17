@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { ref, shallowRef, watch, computed, onBeforeUnmount } from 'vue'
+import {
+  ref,
+  shallowRef,
+  watch,
+  computed,
+  onBeforeUnmount,
+  nextTick
+} from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import UserError from '../../user-error/index.vue'
 import SidebarModalPlayer from '@/views/sidebar-modal-player.vue'
@@ -28,7 +35,6 @@ const emit = defineEmits<{
 const handleCreateFolder = () => {
   emit('createFolder')
 }
-
 
 // 视频列表
 const folderVideoList = shallowRef<IAwemeInfo[]>([])
@@ -145,7 +151,6 @@ const handleVideoItemClick = (item: IAwemeInfo) => {
     // 批量管理模式：切换选中状态
     toggleVideoSelection(item.aweme_id)
   } else {
-    // 普通模式：打开 modal-player
     openModalPlayer(item.aweme_id)
   }
 }
@@ -157,6 +162,8 @@ const showModalPlayer = ref(false)
 const openModalPlayer = (awemeId: string) => {
   // 设置收藏夹信息到 store，让 video-sidebar 显示收藏夹 tab
   sidebarStore.setFolder(props.folder)
+  // 设置收藏夹视频列表到 store
+  sidebarStore.setFolderVideoList(folderVideoList.value)
   // 显示 modal player
   showModalPlayer.value = true
   router.push({
@@ -169,17 +176,29 @@ const openModalPlayer = (awemeId: string) => {
 }
 
 // 关闭 modal-player
-const handleModalClose = (currentAwemeId: string) => {
+const handleModalClose = async (currentAwemeId: string) => {
   // 隐藏 modal player
   showModalPlayer.value = false
   // 清除收藏夹信息
   sidebarStore.clearFolder()
-  // 滚动到当前播放的视频位置
+
+  // 等待 DOM 更新
+  await nextTick()
+
+  // 检查当前视频是否在可视区域内
   const videoElement = document.querySelector(
     `[data-aweme-id="${currentAwemeId}"]`
   )
   if (videoElement) {
-    videoElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    const rect = videoElement.getBoundingClientRect()
+    const isInViewport =
+      rect.top >= 0 &&
+      rect.bottom <= window.innerHeight
+
+    // 如果不在可视区域内，滚动到该视频位置
+    if (!isInViewport) {
+      videoElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
   }
 }
 
@@ -280,7 +299,8 @@ defineExpose({
           class="collection-navigation-item"
           :class="{
             active: folder.collects_id_str === item.collects_id_str,
-            disabled: batchMode && folder.collects_id_str !== item.collects_id_str
+            disabled:
+              batchMode && folder.collects_id_str !== item.collects_id_str
           }"
           @click="!batchMode && handleSelectFolder(item)"
         >
@@ -491,7 +511,6 @@ defineExpose({
         background-color: var(--color-bg-b2);
       }
     }
-   
   }
 }
 

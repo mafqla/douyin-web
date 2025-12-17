@@ -35,6 +35,7 @@ import type { IVideoRecordRes } from './tyeps/request_response/videoRecordRes'
 import type { IVsRecordRes } from './tyeps/request_response/vsRecord'
 
 import urls from './urls'
+import type { IuserLocatePostParams } from './tyeps/request_params/userLocatePostParams'
 
 export default {
   /**
@@ -212,6 +213,15 @@ export default {
    */
   getUserPost: (params: IuserPostParams): Promise<IUserPostRes> => {
     return request.get(urls.user_post, {
+      params
+    })
+  },
+  /**
+   * @description 获取用户当前打开的视频列表
+   * @return {Promise<IUserCollectVideo>} 用户收藏的视频列表
+   */
+  getUserLocatePost: (params: IuserLocatePostParams): Promise<IUserPostRes> => {
+    return request.get(urls.user_locate_post, {
       params
     })
   },

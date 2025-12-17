@@ -39,6 +39,8 @@ const count = ref(20)
 const scrollContentRef = ref<HTMLElement | null>(null)
 // 当前播放的视频 ID（用于滚动定位）
 const currentScrollId = ref<string | null>(null)
+// 最后一个在收藏夹中播放的视频 ID（用于高亮显示）
+const lastFolderAwemeId = ref<string | null>(null)
 
 // 使用 useGridScrollToItem 实现滚动定位
 const { scrollToItem } = useGridScrollToItem({
@@ -46,7 +48,7 @@ const { scrollToItem } = useGridScrollToItem({
   currentId: currentScrollId,
   items: folderVideoList,
   idKey: 'aweme_id',
-  autoScroll: true,
+  autoScroll: false, // 关闭自动滚动，手动控制
   block: 'start'
 })
 
@@ -55,7 +57,14 @@ watch(
   () => props.aweme_id,
   (newId) => {
     if (newId) {
-      currentScrollId.value = newId
+      // 只有当视频在收藏夹列表中时才更新
+      const isInList = folderVideoList.value.some(
+        (item) => item.aweme_id === newId
+      )
+      if (isInList) {
+        lastFolderAwemeId.value = newId
+        currentScrollId.value = newId
+      }
     }
   },
   { immediate: true }
@@ -66,8 +75,18 @@ watch(
   () => folderVideoList.value.length,
   (newLen, oldLen) => {
     // 首次加载完成后滚动
-    if (oldLen === 0 && newLen > 0 && props.aweme_id) {
-      scrollToItem(props.aweme_id)
+    if (oldLen === 0 && newLen > 0) {
+      const targetId = lastFolderAwemeId.value || props.aweme_id
+      if (targetId) {
+        // 检查目标视频是否在列表中
+        const isInList = folderVideoList.value.some(
+          (item) => item.aweme_id === targetId
+        )
+        if (isInList) {
+          lastFolderAwemeId.value = targetId
+          scrollToItem(targetId)
+        }
+      }
     }
   }
 )
@@ -134,7 +153,7 @@ watch(
               v-for="item in folderVideoList"
               :key="item.aweme_id"
               :item="item"
-              :aweme_id="props.aweme_id"
+              :aweme_id="lastFolderAwemeId || props.aweme_id"
             />
             <Loading :show="isLoadingMore" />
             <list-footer v-if="!hasMore" />
