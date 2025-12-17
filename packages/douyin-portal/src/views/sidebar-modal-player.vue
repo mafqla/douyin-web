@@ -86,6 +86,9 @@ const currentAweme = computed(() => {
 
 const loading = computed(() => !currentAweme.value)
 
+// 内部更新标记，防止 watch 循环触发视频切换
+let isInternalUpdate = false
+
 // 切换到指定视频（通过 URL）
 const switchToVideo = (awemeId: string) => {
   router.replace({
@@ -135,21 +138,21 @@ watch(
 
     // 检查当前视频是否在新列表中
     const newIndex = newList.findIndex((item) => item.aweme_id === modalId.value)
+
+    // 使用 isInternalUpdate 标记，防止触发视频切换
+    isInternalUpdate = true
     if (newIndex >= 0) {
       // 当前视频在新列表中，更新索引
       control.activeVideoIndex = newIndex
       control.stopScroll = newIndex >= newList.length - 1
-    } else {
-      // 当前视频不在新列表中，重置索引为 0（但不切换视频）
-      // 下次上下切换时会从新列表的第一个开始
-      control.activeVideoIndex = 0
-      control.stopScroll = newList.length <= 1
     }
+    // 当前视频不在新列表中时，不更新 activeVideoIndex，保持当前视频不变
+    // 等待列表加载完成后再处理
+    isInternalUpdate = false
   }
 )
 
 // 监听 store 的 activeVideoIndex 变化，同步切换视频
-let isInternalUpdate = false
 // 是否已完成初始化（防止初始化时错误切换视频）
 const isInitialized = ref(false)
 
@@ -191,9 +194,20 @@ watch(
 watch(
   () => activeVideoList.value.length,
   (newLen) => {
+    if (newLen === 0) return
+
     control.videosNum = newLen
     const idx = currentIndexInActiveList.value
-    control.stopScroll = idx >= newLen - 1
+
+    // 使用 isInternalUpdate 标记，防止触发视频切换
+    isInternalUpdate = true
+    if (idx >= 0) {
+      // 当前视频在列表中，更新索引
+      control.activeVideoIndex = idx
+      control.stopScroll = idx >= newLen - 1
+    }
+    // 当前视频不在列表中时，不更新 activeVideoIndex，等待列表继续加载
+    isInternalUpdate = false
   }
 )
 
