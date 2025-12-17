@@ -165,8 +165,8 @@ const handleClose = () => {
 
   .close-btn {
     position: fixed;
-    top: 20px;
-    left: 20px;
+    top: 35px;
+    left: 35px;
     width: 64px;
     height: 64px;
     background-color: rgba(0, 0, 0, 0.18);
