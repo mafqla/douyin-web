@@ -22,8 +22,10 @@ export default {
 
   //用户创建的合集
   user_mix: `/aweme/v1/web/mix/list/`,
-  // 用户创建的合集详细信息
+  // 用户创建的合集详细信息（视频列表）
   user_mix_detail: `/aweme/v1/web/mix/aweme/`,
+  // 合集详情
+  mix_detail: `/aweme/v1/web/mix/detail/`,
   //用户的点赞列表
   user_like: `/aweme/v1/web/aweme/favorite/`,
   //用户收藏夹列表

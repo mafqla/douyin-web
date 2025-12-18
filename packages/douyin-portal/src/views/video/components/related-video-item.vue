@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import {} from 'vue'
-
-defineProps({
+const props = defineProps({
   videoTitle: String,
   videoLink: String,
   thumbnailSrc: String,
@@ -13,18 +11,36 @@ defineProps({
   isPlaying: {
     type: Boolean,
     default: false
+  },
+  // 是否禁用链接跳转（在侧边栏中使用时禁用）
+  disableLink: {
+    type: Boolean,
+    default: false
   }
 })
+
+const emit = defineEmits<{
+  click: []
+}>()
+
+const handleClick = (e: Event) => {
+  if (props.disableLink) {
+    e.preventDefault()
+    emit('click')
+  }
+}
 </script>
 <template>
   <li class="list-item" :class="{ 'is-playing': isPlaying }">
     <div class="list-item-container">
       <div class="thumbnail-container">
         <!-- 普通缩略图 -->
-        <router-link
-          :to="videoLink ?? ''"
+        <component
+          :is="disableLink ? 'div' : 'router-link'"
+          :to="disableLink ? undefined : (videoLink ?? '')"
           class="video-link"
           rel="noopener noreferrer"
+          @click="handleClick"
         >
           <div class="image-container">
             <img :src="thumbnailSrc" alt="视频缩略图" class="thumbnail-image" />
@@ -46,14 +62,15 @@ defineProps({
           <div v-if="!isPlaying" class="video-duration">
             {{ videoDuration }}
           </div>
-        </router-link>
+        </component>
       </div>
       <div class="interaction-section">
         <h3>
           <component
-            :is="isPlaying ? 'div' : 'router-link'"
-            :to="isPlaying ? undefined : videoLink ?? ''"
+            :is="isPlaying || disableLink ? 'div' : 'router-link'"
+            :to="isPlaying || disableLink ? undefined : (videoLink ?? '')"
             class="title-link"
+            @click="handleClick"
           >
             <div class="video-title">{{ videoTitle }}</div>
           </component>
@@ -78,6 +95,7 @@ defineProps({
 .list-item {
   margin-top: 24px;
   display: block;
+  cursor: pointer;
 
   &.is-playing {
     .image-container {

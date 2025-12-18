@@ -37,7 +37,10 @@ import type { IVsRecordRes } from './tyeps/request_response/vsRecord'
 
 import urls from './urls'
 import type { IuserLocatePostParams } from './tyeps/request_params/userLocatePostParams'
+import type { IUserMixDetailParams } from './tyeps/request_params/userMixDetailParams'
+import type { IMixDetailRes } from './tyeps/request_response/mixDetailRes'
 import type { IMixListRes } from './tyeps/request_response/mixListRes'
+import type { IUserMixDetailRes } from './tyeps/request_response/userMixDetailRes'
 
 export default {
   /**
@@ -307,6 +310,30 @@ export default {
         sec_user_id,
         count,
         cursor
+      }
+    })
+  },
+  /**
+   * @description 获取用户创建的合集详细信息（视频列表）
+   * @param {IUserMixDetailParams} params 请求参数
+   * @return {Promise<IUserMixDetailRes>} 合集详细信息（包含视频列表）
+   */
+  getUserMixDetail: (
+    params: IUserMixDetailParams
+  ): Promise<IUserMixDetailRes> => {
+    return request.get(urls.user_mix_detail, {
+      params
+    })
+  },
+  /**
+   * @description 获取合集详情
+   * @param {String} mix_id 合集ID
+   * @return {Promise<IMixDetailRes>} 合集详情
+   */
+  getMixDetail: (mix_id: string): Promise<IMixDetailRes> => {
+    return request.get(urls.mix_detail, {
+      params: {
+        mix_id
       }
     })
   },

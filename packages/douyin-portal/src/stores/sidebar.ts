@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, shallowRef, computed } from 'vue'
 import type { ICollectsItem } from '@/api/tyeps/request_response/userCollectsListRes'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
+import type { IMixDetailInfo } from '@/api/tyeps/request_response/mixDetailRes'
 
 // 侧边栏 tab 类型
 export type SidebarTabType = 'folder' | 'works' | 'comment' | 'collection' | 'related'
@@ -14,6 +15,9 @@ export const useSidebarStore = defineStore('sidebar', () => {
   // 当前播放的收藏夹信息（用于显示收藏夹 tab）
   const currentFolder = ref<ICollectsItem | null>(null)
 
+  // 当前播放的合集信息（用于显示合集 tab）
+  const currentMix = ref<IMixDetailInfo | null>(null)
+
   // 当前活动的 tab
   const activeTab = ref<SidebarTabType>('comment')
 
@@ -21,6 +25,7 @@ export const useSidebarStore = defineStore('sidebar', () => {
   const folderVideoList = shallowRef<IAwemeInfo[]>([])
   const worksVideoList = shallowRef<IAwemeInfo[]>([])
   const relatedVideoList = shallowRef<IAwemeInfo[]>([])
+  const collectionVideoList = shallowRef<IAwemeInfo[]>([])
 
   // 未看视频 id 列表（用于显示未看角标）
   const notSeenItemIds = ref<Set<string>>(new Set())
@@ -34,6 +39,8 @@ export const useSidebarStore = defineStore('sidebar', () => {
         return worksVideoList.value
       case 'related':
         return relatedVideoList.value
+      case 'collection':
+        return collectionVideoList.value
       default:
         return []
     }
@@ -50,6 +57,19 @@ export const useSidebarStore = defineStore('sidebar', () => {
   // 清除收藏夹信息
   const clearFolder = () => {
     currentFolder.value = null
+  }
+
+  // 设置当前合集（同时切换到 collection tab）
+  const setMix = (mix: IMixDetailInfo | null) => {
+    currentMix.value = mix
+    if (mix) {
+      activeTab.value = 'collection'
+    }
+  }
+
+  // 清除合集信息
+  const clearMix = () => {
+    currentMix.value = null
   }
 
   // 设置活动 tab
@@ -70,11 +90,16 @@ export const useSidebarStore = defineStore('sidebar', () => {
     relatedVideoList.value = list
   }
 
+  const setCollectionVideoList = (list: IAwemeInfo[]) => {
+    collectionVideoList.value = list
+  }
+
   // 清除所有视频列表
   const clearVideoLists = () => {
     folderVideoList.value = []
     worksVideoList.value = []
     relatedVideoList.value = []
+    collectionVideoList.value = []
   }
 
   // 设置未看视频 id 列表
@@ -94,18 +119,23 @@ export const useSidebarStore = defineStore('sidebar', () => {
 
   return {
     currentFolder,
+    currentMix,
     activeTab,
     folderVideoList,
     worksVideoList,
     relatedVideoList,
+    collectionVideoList,
     currentVideoList,
     notSeenItemIds,
     setFolder,
     clearFolder,
+    setMix,
+    clearMix,
     setActiveTab,
     setFolderVideoList,
     setWorksVideoList,
     setRelatedVideoList,
+    setCollectionVideoList,
     clearVideoLists,
     setNotSeenItemIds,
     clearNotSeenItemIds,

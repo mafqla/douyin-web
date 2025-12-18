@@ -4,6 +4,7 @@ import VideoSideList from '../video-side-list/video-side-list.vue'
 import VideoComment from '../video-comment/video-comment.vue'
 import SidebarRelatedVideo from './sidebar-related-video.vue'
 import SidebarFolderPlaylist from './sidebar-folder-playlist.vue'
+import SidebarMixPlaylist from './sidebar-mix-playlist.vue'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 import { useSidebarStore, type SidebarTabType } from '@/stores/sidebar'
 
@@ -30,6 +31,9 @@ const props = defineProps<{
 // 从 store 获取收藏夹信息
 const folder = computed(() => sidebarStore.currentFolder)
 
+// 从 store 获取合集信息
+const mix = computed(() => sidebarStore.currentMix)
+
 // 当有收藏夹信息时，默认切换到收藏夹 tab
 watch(
   folder,
@@ -37,6 +41,18 @@ watch(
     if (newFolder) {
       activeName.value = 'folder'
       sidebarStore.setActiveTab('folder')
+    }
+  },
+  { immediate: true }
+)
+
+// 当有合集信息时，默认切换到合集 tab
+watch(
+  mix,
+  (newMix) => {
+    if (newMix) {
+      activeName.value = 'collection'
+      sidebarStore.setActiveTab('collection')
     }
   },
   { immediate: true }
@@ -131,10 +147,14 @@ watch(
           </div>
           <!-- 合集 -->
           <div
-            class="video-tabs-content-item"
+            v-if="mix"
+            class="video-tabs-content-item collection"
             v-show="activeName === 'collection'"
           >
-            <!-- 合集的内容 -->
+            <SidebarMixPlaylist
+              :mix="mix"
+              :aweme_id="props.aweme_id ?? ''"
+            />
           </div>
           <!-- 相关推荐 -->
           <div
@@ -287,6 +307,9 @@ watch(
             padding: 0 16px;
           }
           &.folder {
+            padding: 0 16px;
+          }
+          &.collection {
             padding: 0 16px;
           }
         }

@@ -1,10 +1,20 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, shallowRef, onMounted, onBeforeUnmount, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import UserError from '../../user-error/index.vue'
 import UserConfirmDialog from '../../user-confirm-dialog/index.vue'
 import MixItem from './mix-item.vue'
+import SidebarModalPlayer from '@/views/sidebar-modal-player.vue'
 import apis from '@/api/apis'
 import type { IMixInfo } from '@/api/tyeps/common/mix'
+import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
+import { useSidebarStore } from '@/stores/sidebar'
+import { videosCtrolStore } from '@/stores/videos-control'
+
+const route = useRoute()
+const router = useRouter()
+const sidebarStore = useSidebarStore()
+const controlStore = videosCtrolStore()
 
 // 接收 props
 const props = defineProps<{
@@ -52,14 +62,72 @@ const toggleMixSelection = (mixId: string) => {
   }
 }
 
+// modal-player 相关
+const showModalPlayer = ref(false)
+const currentVideoList = shallowRef<IAwemeInfo[]>([])
+
+// 打开 modal-player
+const openModalPlayer = async (mix: IMixInfo) => {
+  try {
+    // 获取合集详情
+    const detailRes = await apis.getMixDetail(mix.mix_id)
+    if (!detailRes.mix_info) {
+      console.error('获取合集详情失败')
+      return
+    }
+
+    // 获取合集视频列表
+    const videosRes = await apis.getUserMixDetail({
+      mix_id: mix.mix_id,
+      cursor: 0,
+      count: 20
+    })
+
+    if (!videosRes.aweme_list?.length) {
+      console.error('合集暂无视频')
+      return
+    }
+
+    const awemeId = videosRes.aweme_list[0].aweme_id
+    currentVideoList.value = videosRes.aweme_list
+
+    // 设置合集信息到 store
+    sidebarStore.setMix(detailRes.mix_info)
+    sidebarStore.setCollectionVideoList(videosRes.aweme_list)
+
+    // 打开侧边栏
+    controlStore.isShowComment = false
+
+    // 显示 modal player
+    showModalPlayer.value = true
+    router.push({
+      path: route.path,
+      query: {
+        ...route.query,
+        modal_id: awemeId
+      }
+    })
+  } catch (error) {
+    console.error('打开合集失败:', error)
+  }
+}
+
 // 处理合集项点击事件
 const handleMixItemClick = (mix: IMixInfo) => {
   if (props.batchMode) {
     toggleMixSelection(mix.mix_id)
   } else {
-    // 普通模式：跳转到合集详情
-    window.open(`/collection/${mix.mix_id}`, '_blank')
+    // 普通模式：打开合集播放器
+    openModalPlayer(mix)
   }
+}
+
+// 关闭 modal-player
+const handleModalClose = () => {
+  showModalPlayer.value = false
+  currentVideoList.value = []
+  sidebarStore.clearMix()
+  sidebarStore.clearVideoLists()
 }
 
 // 取消收藏确认弹框
@@ -125,8 +193,19 @@ const getMixList = async () => {
   }
 }
 
+// 加载更多合集视频
+const loadMoreMixVideos = async () => {
+  // 由 SidebarMixPlaylist 组件内部处理
+}
+
 onMounted(() => {
   getMixList()
+})
+
+// 组件卸载时清除
+onBeforeUnmount(() => {
+  sidebarStore.clearMix()
+  sidebarStore.clearVideoLists()
 })
 
 // 无限滚动加载
@@ -188,6 +267,14 @@ defineExpose({
     cancel-text="暂不取消"
     confirm-text="确认取消"
     @confirm="confirmUncollect"
+  />
+
+  <!-- Sidebar Modal Player -->
+  <SidebarModalPlayer
+    v-if="showModalPlayer"
+    :videoList="currentVideoList"
+    @close="handleModalClose"
+    @loadMore="loadMoreMixVideos"
   />
 </template>
 

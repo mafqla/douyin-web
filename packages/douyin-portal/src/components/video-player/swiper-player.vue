@@ -51,26 +51,29 @@ const imgGallery = computed(() => {
 })
 
 const control = videosCtrolStore()
-let currentWidth = ref('100%')
 
-watch(control, () => {
+// 计算视频容器宽度
+const calcWidth = () => {
   if (control.isShowComment) {
-    //设置宽度
-    currentWidth.value = '100%'
+    return '100%'
   } else {
-    //设置宽度
-    currentWidth.value = 'calc(100% - 336px)'
-
-    //获取屏幕宽度
     const screenWidth = document.body.clientWidth
-    // console.log(screenWidth)
-
-    //如果屏幕宽度大于等于2560px，就设置宽度为100%-28.5714285714%
     if (screenWidth >= 1440) {
-      currentWidth.value = 'calc(100% - 28.5714285714%)'
+      return 'calc(100% - 28.5714285714%)'
     }
+    return 'calc(100% - 336px)'
   }
-})
+}
+
+let currentWidth = ref(calcWidth())
+
+watch(
+  () => control.isShowComment,
+  () => {
+    currentWidth.value = calcWidth()
+  },
+  { immediate: true }
+)
 //打开评论
 const openComments = () => {
   //隐藏按钮
