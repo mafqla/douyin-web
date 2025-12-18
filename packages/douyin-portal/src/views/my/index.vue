@@ -201,9 +201,9 @@ watchEffect(() => {
               >
                 {{ userLikeRef?.isBatchMode ? '退出管理' : '批量管理' }}
               </dy-button>
-              <!-- 批量管理按钮（收藏标签页） -->
+              <!-- 批量管理按钮（收藏标签页，仅支持收藏夹、视频、合集） -->
               <dy-button
-                v-if="activeTab === 'favorite_collection'"
+                v-if="activeTab === 'favorite_collection' && userCollectionRef?.supportBatchMode"
                 type="secondary"
                 theme="light"
                 size="default"

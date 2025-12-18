@@ -36,6 +36,7 @@ import type { IVsRecordRes } from './tyeps/request_response/vsRecord'
 
 import urls from './urls'
 import type { IuserLocatePostParams } from './tyeps/request_params/userLocatePostParams'
+import type { IMixListRes } from './tyeps/request_response/mixListRes'
 
 export default {
   /**
@@ -362,6 +363,20 @@ export default {
     cursor: number
   ): Promise<IUserCollectMusicRes> => {
     return request.get(urls.user_collect_music, {
+      params: {
+        count,
+        cursor
+      }
+    })
+  },
+  /**
+   * @description 获取用户收藏的合集列表
+   * @param {Number} count 数量
+   * @param {String} cursor 分页游标
+   * @return {Promise<IMixInfo>} 用户收藏的合集列表
+   */
+  getUserCollectMix: (count: number, cursor: string): Promise<IMixListRes> => {
+    return request.get(urls.user_collect_mix, {
       params: {
         count,
         cursor

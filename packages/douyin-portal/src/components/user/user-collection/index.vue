@@ -2,6 +2,7 @@
 import CollectionVideo from './collection-video/index.vue'
 import CollectionFolder from './collection-folder/index.vue'
 import CollectionMusic from './collection-music/index.vue'
+import CollectionMix from './collection-mix/index.vue'
 import BatchActionBar from '../batch-action-bar/index.vue'
 import UserConfirmDialog from '../user-confirm-dialog/index.vue'
 import SelectFolderDialog from './collection-video/select-folder-dialog.vue'
@@ -22,6 +23,8 @@ const collectionFolderRef = ref<InstanceType<typeof CollectionFolder> | null>(
 const collectionVideoRef = ref<InstanceType<typeof CollectionVideo> | null>(
   null
 )
+// CollectionMix 组件引用
+const collectionMixRef = ref<InstanceType<typeof CollectionMix> | null>(null)
 
 // 是否在详情模式（选中了某个收藏夹）
 const isDetailMode = ref(false)
@@ -58,6 +61,7 @@ const toggleBatchMode = () => {
     collectionFolderRef.value?.clearSelection()
     collectionFolderRef.value?.clearCurrentSelection()
     collectionVideoRef.value?.clearSelection()
+    collectionMixRef.value?.clearSelection()
   }
 }
 
@@ -71,6 +75,8 @@ const selectedIds = computed(() => {
     return collectionFolderRef.value?.selectedIds ?? new Set<string>()
   } else if (activeTab.value === 'video') {
     return collectionVideoRef.value?.selectedIds ?? new Set<string>()
+  } else if (activeTab.value === 'compilation') {
+    return collectionMixRef.value?.selectedIds ?? new Set<string>()
   }
   return new Set<string>()
 })
@@ -85,6 +91,8 @@ const currentListLength = computed(() => {
     return collectionFolderRef.value?.listLength ?? 0
   } else if (activeTab.value === 'video') {
     return collectionVideoRef.value?.listLength ?? 0
+  } else if (activeTab.value === 'compilation') {
+    return collectionMixRef.value?.listLength ?? 0
   }
   return 0
 })
@@ -105,6 +113,8 @@ const handleToggleSelectAll = () => {
     }
   } else if (activeTab.value === 'video') {
     collectionVideoRef.value?.toggleSelectAll()
+  } else if (activeTab.value === 'compilation') {
+    collectionMixRef.value?.toggleSelectAll()
   }
 }
 
@@ -129,6 +139,8 @@ const confirmDelete = async () => {
     }
   } else if (activeTab.value === 'video') {
     await collectionVideoRef.value?.deleteSelected()
+  } else if (activeTab.value === 'compilation') {
+    await collectionMixRef.value?.deleteSelected()
   }
 }
 
@@ -178,6 +190,8 @@ const actionText = computed(() => {
   if (activeTab.value === 'favorite_folder') {
     // 详情模式下显示"从收藏夹移除"
     return isDetailMode.value ? '从收藏夹移除' : '删除收藏夹'
+  } else if (activeTab.value === 'compilation') {
+    return '取消收藏'
   }
   return '取消收藏'
 })
@@ -187,6 +201,8 @@ const selectedTextTemplate = computed(() => {
   if (activeTab.value === 'favorite_folder') {
     // 详情模式下显示"已选 {count} 个收藏的视频"
     return isDetailMode.value ? '已选 {count} 个收藏的视频' : '已选 {count} 个收藏夹'
+  } else if (activeTab.value === 'compilation') {
+    return '已选 {count} 个收藏的合集'
   }
   return '已选 {count} 个收藏视频'
 })
@@ -198,8 +214,25 @@ const deleteDialogTitle = computed(() => {
       return `确认从收藏夹移除 ${selectedIds.value.size} 个视频吗？`
     }
     return `确认删除该收藏夹吗，删除后视频依旧可在收藏视频中查看～`
+  } else if (activeTab.value === 'compilation') {
+    return `确认取消收藏 ${selectedIds.value.size} 个收藏合集，取消后不可恢复`
   }
   return `确认取消收藏 ${selectedIds.value.size} 个视频吗？`
+})
+
+// 获取删除确认弹框按钮文案
+const deleteDialogCancelText = computed(() => {
+  if (activeTab.value === 'compilation') {
+    return '暂不取消'
+  }
+  return '暂不删除'
+})
+
+const deleteDialogConfirmText = computed(() => {
+  if (activeTab.value === 'compilation') {
+    return '确认取消'
+  }
+  return '确认删除'
 })
 
 // 是否显示移动到按钮（收藏夹详情模式下显示）
@@ -246,10 +279,16 @@ const handleCreateFolderSuccessForMoveTo = () => {
   showMoveToDialog.value = true
 }
 
+// 是否支持批量管理（音乐和短剧暂不支持）
+const supportBatchMode = computed(() => {
+  return ['favorite_folder', 'video', 'compilation'].includes(activeTab.value)
+})
+
 // 暴露给父组件使用
 defineExpose({
   isBatchMode,
-  toggleBatchMode
+  toggleBatchMode,
+  supportBatchMode
 })
 
 const getTabTitle = (tab: string) => {
@@ -390,14 +429,19 @@ const handleTabChange = (tab: string) => {
         :batch-mode="isBatchMode"
       />
       <collection-music v-if="activeTab === 'music'" />
+      <collection-mix
+        v-if="activeTab === 'compilation'"
+        ref="collectionMixRef"
+        :batch-mode="isBatchMode"
+      />
     </div>
 
     <!-- 删除确认弹框 -->
     <UserConfirmDialog
       v-model="showDeleteDialog"
       :title="deleteDialogTitle"
-      cancel-text="暂不删除"
-      confirm-text="确认删除"
+      :cancel-text="deleteDialogCancelText"
+      :confirm-text="deleteDialogConfirmText"
       @confirm="confirmDelete"
       @cancel="cancelDialog"
     />
