@@ -9,6 +9,8 @@ import { videosCtrolStore } from '@/stores/videos-control'
 const props = defineProps<{
   // 外部传入的视频列表
   videoList: IAwemeInfo[]
+  // 是否还有更多数据
+  hasMore?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -83,11 +85,24 @@ watch(
   }
 )
 
+// 监听 hasMore 和 activeVideoIndex 变化，控制下一个按钮的禁用状态
+watch(
+  [() => props.hasMore, () => control.activeVideoIndex, () => control.videosNum],
+  ([hasMore, activeIndex, videosNum]) => {
+    // 当没有更多数据且已经是最后一个视频时，禁用下一个按钮
+    control.stopScroll = hasMore === false && activeIndex >= videosNum - 1
+  },
+  { immediate: true }
+)
+
 // 监听 refresh_index 变化，通知父组件加载更多
 watch(
   () => control.refresh_index,
   () => {
-    emit('loadMore')
+    // 只有在还有更多数据时才触发加载
+    if (props.hasMore !== false) {
+      emit('loadMore')
+    }
   }
 )
 
