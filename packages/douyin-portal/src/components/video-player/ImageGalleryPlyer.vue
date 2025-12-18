@@ -37,7 +37,13 @@ const isSingleImage = computed(() => {
 const playerOptions = computed(() => {
   const imgGallery = props.imgGallery || []
 
-  const ignores = ['playbackrate', 'PlaybackPlugin', 'watchLater', 'miniWin']
+  const ignores = [
+    'playbackrate',
+    'PlaybackPlugin',
+    'watchLater',
+    'miniWin',
+    'claritySwitch'
+  ]
   if (!props.showAutoContinuous) {
     ignores.push('automaticContinuous')
   }
@@ -121,7 +127,6 @@ function calculateProgressFragments(images: IAwemeImage[]) {
       height: 6px !important;
       margin: unset !important;
       .xgplayer-progress-inner {
-
         &:hover {
           background: #fff !important;
         }

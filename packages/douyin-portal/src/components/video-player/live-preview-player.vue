@@ -33,7 +33,8 @@ const playerOptions = {
     'watchLater',
     'immersiveSwitch',
     'progress', // 直播没有进度条
-    'time' // 直播没有时间显示
+    'time', // 直播没有时间显示
+    'claritySwitch'
   ],
   isLive: true, // 标记为直播模式
   plugins: [LiveRefresh] // 直播刷新插件

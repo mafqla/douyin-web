@@ -18,7 +18,8 @@ const playerOptions = {
     'miniWin',
     'watchLater',
     'automaticContinuous',
-    'immersiveSwitch'
+    'immersiveSwitch',
+    'claritySwitch'
   ]
 }
 

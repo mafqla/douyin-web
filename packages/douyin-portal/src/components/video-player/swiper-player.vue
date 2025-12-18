@@ -129,6 +129,7 @@ const thumbnail = computed(() => {
           ref="playerRef"
           :key="props.awemeInfo.aweme_id"
           :url="awemeUrl"
+          :bit-rates="props.awemeInfo.video.bit_rate"
           :options="playerOptions"
           :is-play="isPlay"
           :thumbnail="thumbnail"

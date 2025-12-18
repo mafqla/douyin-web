@@ -116,6 +116,7 @@ const onEnded = () => {
             <BasePlayer
               v-else
               :url="awemeUrl"
+              :bit-rates="videoDetail?.video.bit_rate"
               :options="playerOptions"
               class="related-video"
               @ended="onEnded"

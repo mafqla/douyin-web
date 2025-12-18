@@ -16,11 +16,14 @@ import { onBeforeUnmount, onMounted, ref, toRef, watch } from 'vue'
 import Player, { Events, type IPlayerOptions } from 'xgplayer'
 import 'xgplayer/dist/index.min.css'
 import automaticContinuous from './plugin/automatic-continuous/automatic-continuous'
+import ClaritySwitch from './plugin/clarity-switch/clarity-switch'
 import immersiveSwitch from './plugin/immersive-switch/immersive-switch'
 import miniWin from './plugin/miniWin/miniWin'
 import PlaybackPlugin from './plugin/playbackSetting/playbackPlugin'
 import watchLater from './plugin/watch-later/watch-later'
 import ImageGalleryPlugin from './plugin/ImageGallery/ImageGallery'
+
+import type { BitRate } from '@/api/tyeps/common/video'
 
 interface PlayerProps {
   url: string | string[]
@@ -32,6 +35,7 @@ interface PlayerProps {
     height?: number // 预览图每一帧的高度（单位：px）
     width?: number // 预览图每一帧的宽度（单位：px）
   }
+  bitRates?: BitRate[] // 视频清晰度列表
   options?: IPlayerOptions
   isPlay?: boolean
   autoHide?: boolean
@@ -155,6 +159,10 @@ const playerOptions = ref<IPlayerOptions>({
   },
   cssfullscreen: document.querySelector('.slide-list') as HTMLElement,
   fullscreenTarget: document.querySelector('.slide-list') as HTMLElement,
+  // 清晰度切换插件配置
+  claritySwitch: {
+    bitRates: props.bitRates
+  },
   plugins: [
     PlaybackPlugin,
     miniWin,
@@ -162,6 +170,7 @@ const playerOptions = ref<IPlayerOptions>({
     automaticContinuous,
     immersiveSwitch,
     ImageGalleryPlugin,
+    ClaritySwitch,
     // 合并传入的额外插件
     ...(props.options?.plugins || [])
   ]
@@ -279,6 +288,10 @@ onMounted(() => {
   xgPlayer.on('watch-later', (data: any) => {
     console.log('watch-later', data)
   })
+  xgPlayer.on('clarityChange', (data: any) => {
+    console.log('clarityChange', data)
+    emit('clarityChange', data)
+  })
 })
 
 watch(
@@ -327,6 +340,7 @@ const emit = defineEmits<{
   volumechange: []
   fullscreenchange: []
   cssfullscreenchange: []
+  clarityChange: [data: { value: string; label: string; clarityOption?: any }]
   error: []
   destroy: []
 }>()

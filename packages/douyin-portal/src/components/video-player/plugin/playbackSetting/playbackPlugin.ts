@@ -73,14 +73,14 @@ export default class PlaybackPlugin extends Plugin {
     this.root.addEventListener('click', this.onItemClick)
   }
 
-  show() {
+  showPanel() {
     if (!this.config.list || this.config.list.length === 0) {
       return
     }
     Util.addClass(this.root, 'slide-show')
   }
 
-  hide() {
+  hidePanel() {
     Util.removeClass(this.root, 'slide-show')
   }
 
@@ -105,11 +105,11 @@ export default class PlaybackPlugin extends Plugin {
     const { controls } = this.player
     const { listType } = this.config
     if (isActive) {
-      listType === LIST_TYPES.SIDE ? controls.blur() : controls.focus()
-      this.show()
+      listType === LIST_TYPES.SIDE ? controls?.blur() : controls?.focus()
+      this.showPanel()
     } else {
-      listType === LIST_TYPES.SIDE ? controls.focus() : controls.focusAwhile()
-      this.hide()
+      listType === LIST_TYPES.SIDE ? controls?.focus() : controls?.focusAwhile()
+      this.hidePanel()
     }
     this.isActive = isActive
   }

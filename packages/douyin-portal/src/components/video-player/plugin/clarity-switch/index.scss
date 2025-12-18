@@ -1,0 +1,75 @@
+// 清晰度切换插件样式 - 参考 playbackPlugin
+.xgplayer-clarity-switch {
+  min-width: 40px;
+  text-align: center;
+  z-index: 20;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+  display: flex;
+
+  .clarity-btn-text {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 32px;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .clarity-slider {
+    width: auto;
+    height: auto;
+    white-space: nowrap;
+    border-radius: 4px;
+    display: none;
+    position: absolute;
+    outline: none;
+  }
+
+  &.slide-show {
+    .clarity-slider {
+      color: #fff;
+      opacity: 1;
+      background-color: #252632;
+      padding: 10px 16px;
+      font-size: 14px;
+      top: auto;
+      bottom: 32px !important;
+      border-radius: 12px !important;
+      height: auto;
+      min-width: 90px;
+      display: block;
+      right: 50%;
+      transform: translateX(50%);
+      padding: 12px 12px 4px;
+
+      .clarity-menu {
+        color: #fff;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 14px;
+
+        .clarity-item {
+          text-align: center;
+          opacity: 0.7;
+          cursor: pointer;
+          margin-bottom: 8px;
+          line-height: 28px;
+          padding: 0 8px;
+          white-space: nowrap;
+
+          &:hover,
+          &.selected {
+            opacity: 1;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+  }
+}
