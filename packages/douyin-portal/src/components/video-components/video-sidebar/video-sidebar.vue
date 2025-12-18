@@ -41,6 +41,17 @@ watch(
   },
   { immediate: true }
 )
+
+// 监听 store 中 activeTab 的变化，同步到本地状态
+watch(
+  () => sidebarStore.activeTab,
+  (newTab) => {
+    if (newTab !== activeName.value) {
+      activeName.value = newTab
+    }
+  },
+  { immediate: true }
+)
 </script>
 <template>
   <div class="video-sidebar">

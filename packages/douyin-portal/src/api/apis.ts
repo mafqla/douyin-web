@@ -30,6 +30,7 @@ import type { IUserDetailRes } from './tyeps/request_response/userDetailRes'
 import type { IUserHomeSearchRes } from './tyeps/request_response/userHomeSearchRes'
 import type { IUserLikeRes } from './tyeps/request_response/userLikeRes'
 import type { IUserPostRes } from './tyeps/request_response/userPostRes'
+import type { IUserVisitedListRes } from './tyeps/request_response/userVisitedListRes'
 import type { IVideoDetailRes } from './tyeps/request_response/videoDetailRes'
 import type { IVideoRecordRes } from './tyeps/request_response/videoRecordRes'
 import type { IVsRecordRes } from './tyeps/request_response/vsRecord'
@@ -403,6 +404,23 @@ export default {
   ): Promise<IUserHomeSearchRes> => {
     return request.get(urls.user_home_search, {
       params
+    })
+  },
+  /**
+   * @description 获取用户访客记录列表
+   * @param {Number} count 数量 默认 20
+   * @param {String} cursor 游标 初始为空
+   * @return {Promise<IUserVisitedListRes>} 用户访客记录列表
+   */
+  getUserVisitedList: (
+    count: number = 20,
+    cursor: string = ''
+  ): Promise<IUserVisitedListRes> => {
+    return request.get(urls.user_visited_list, {
+      params: {
+        count,
+        cursor
+      }
     })
   }
 }

@@ -96,6 +96,8 @@ declare module '@vue/runtime-core' {
     RecordLive: typeof import('./src/components/user/user-record/record-live/index.vue')['default']
     RecordLiveItem: typeof import('./src/components/user/user-record/record-live/record-live-item.vue')['default']
     RecordVideo: typeof import('./src/components/user/user-record/record-video.vue')['default']
+    RecordVisited: typeof import('./src/components/user/user-record/record-visited/index.vue')['default']
+    RecordVisitedItem: typeof import('./src/components/user/user-record/record-visited/record-visited-item.vue')['default']
     RecordVs: typeof import('./src/components/user/user-record/record-vs/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

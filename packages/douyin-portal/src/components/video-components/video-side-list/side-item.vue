@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 import { useCount } from '@/hooks'
 import { useRoute, useRouter } from 'vue-router'
+import { useSidebarStore } from '@/stores/sidebar'
 
 interface SideItemProps {
   item: IAwemeInfo
@@ -9,6 +11,10 @@ interface SideItemProps {
 }
 
 const props = defineProps<SideItemProps>()
+const sidebarStore = useSidebarStore()
+
+// 是否显示未看角标
+const showNotSeenTag = computed(() => sidebarStore.isNotSeen(props.item.aweme_id))
 const route = useRoute()
 const router = useRouter()
 
@@ -46,9 +52,15 @@ const handleClick = (e: Event) => {
           <div class="user-video-stats-tag">
             <div class="user-video-tag">
               <span
+                class="tag-title is-not-seen"
+                v-if="showNotSeenTag"
+              >
+                未看
+              </span>
+              <span
                 class="tag-title"
                 style="background: rgb(250, 206, 21)"
-                v-if="props.item.is_top"
+                v-else-if="props.item.is_top"
               >
                 置顶
               </span>
@@ -153,6 +165,11 @@ const handleClick = (e: Event) => {
               justify-content: center;
               line-height: 20px;
               padding: 0 4px;
+
+              &.is-not-seen {
+                background: #fe2c55;
+                color: #fff;
+              }
             }
           }
         }

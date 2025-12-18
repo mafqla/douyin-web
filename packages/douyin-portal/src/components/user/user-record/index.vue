@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import RecordVideo from './record-video.vue'
 import RecordVs from './record-vs/index.vue'
 import RecordLive from './record-live/index.vue'
+import RecordVisited from './record-visited/index.vue'
 import RecordFilter from './record-filter.vue'
 import UserSearchBar from '../user-search-bar/index.vue'
 import apis from '@/api/apis'
@@ -13,7 +14,7 @@ import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 const route = useRoute()
 const router = useRouter()
 const store = userStore()
-const tabs = ['video', 'vs', 'live']
+const tabs = ['user', 'video', 'vs', 'live']
 const activeTab = ref((route.query.showSubTab as string) || 'video')
 
 // RecordVideo 组件引用
@@ -154,6 +155,7 @@ const handleSearchMore = () => {
 
 const getTabTitle = (tab: string) => {
   const titles: { [key: string]: string } = {
+    user: '用户',
     video: '视频',
     vs: '影视综',
     live: '直播'
@@ -177,7 +179,7 @@ const handleTabChange = (tab: string) => {
 </script>
 <template>
   <div class="user-record">
-    <user-tabbar-2 style="height: 44px;">
+    <user-tabbar-2 style="height: 44px">
       <template #left>
         <div class="tabbar-2-content">
           <div
@@ -245,6 +247,7 @@ const handleTabChange = (tab: string) => {
       />
       <record-vs v-if="activeTab === 'vs'" />
       <record-live v-if="activeTab === 'live'" />
+      <record-visited v-if="activeTab === 'user'" />
     </div>
   </div>
 </template>

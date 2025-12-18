@@ -55,6 +55,8 @@ export default {
   footer_link: '/aweme/v1/web/seo/inner/link/',
 
   //搜索框热搜
-  hot_search: '/aweme/v1/web/hot/search/list/'
+  hot_search: '/aweme/v1/web/hot/search/list/',
+  //用户访客记录
+  user_visited_list: '/aweme/v1/web/view/user/visited/list/'
   // ----------------- 测试dy-url -----------------
 }

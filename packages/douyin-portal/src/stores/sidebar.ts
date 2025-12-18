@@ -22,6 +22,9 @@ export const useSidebarStore = defineStore('sidebar', () => {
   const worksVideoList = shallowRef<IAwemeInfo[]>([])
   const relatedVideoList = shallowRef<IAwemeInfo[]>([])
 
+  // 未看视频 id 列表（用于显示未看角标）
+  const notSeenItemIds = ref<Set<string>>(new Set())
+
   // 当前活动 tab 的视频列表
   const currentVideoList = computed(() => {
     switch (activeTab.value) {
@@ -74,6 +77,21 @@ export const useSidebarStore = defineStore('sidebar', () => {
     relatedVideoList.value = []
   }
 
+  // 设置未看视频 id 列表
+  const setNotSeenItemIds = (ids: string[]) => {
+    notSeenItemIds.value = new Set(ids)
+  }
+
+  // 清除未看视频 id 列表
+  const clearNotSeenItemIds = () => {
+    notSeenItemIds.value = new Set()
+  }
+
+  // 检查视频是否未看
+  const isNotSeen = (awemeId: string) => {
+    return notSeenItemIds.value.has(awemeId)
+  }
+
   return {
     currentFolder,
     activeTab,
@@ -81,12 +99,16 @@ export const useSidebarStore = defineStore('sidebar', () => {
     worksVideoList,
     relatedVideoList,
     currentVideoList,
+    notSeenItemIds,
     setFolder,
     clearFolder,
     setActiveTab,
     setFolderVideoList,
     setWorksVideoList,
     setRelatedVideoList,
-    clearVideoLists
+    clearVideoLists,
+    setNotSeenItemIds,
+    clearNotSeenItemIds,
+    isNotSeen
   }
 })
