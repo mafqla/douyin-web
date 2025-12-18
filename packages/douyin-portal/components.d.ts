@@ -146,6 +146,7 @@ declare module '@vue/runtime-core' {
     UserTab: typeof import('./src/components/user/user-tab/index.vue')['default']
     UserTabbar2: typeof import('./src/components/user/user-tabbar-2/index.vue')['default']
     UserTabOther: typeof import('./src/components/my/user-tab/user-tab-other.vue')['default']
+    UserWatchLater: typeof import('./src/components/user/user-watch-later/index.vue')['default']
     VideoAction: typeof import('./src/components/video-components/video-action/video-action.vue')['default']
     VideoComment: typeof import('./src/components/video-components/video-comment/video-comment.vue')['default']
     VideoInfo: typeof import('./src/components/video-components/video-info/video-info.vue')['default']

@@ -107,7 +107,8 @@ class ClaritySwitch extends Plugin {
     }
 
     // 初始化清晰度列表
-    if (config.bitRates?.length) {
+    const hasBitRates = config.bitRates?.length > 0
+    if (hasBitRates) {
       this.clarityList = parseClarityList(config.bitRates)
     } else {
       this.clarityList =
@@ -142,12 +143,15 @@ class ClaritySwitch extends Plugin {
     // 监听视频错误事件，自动切换备用链接
     this.on('error', this.onVideoError)
 
-    // 应用清晰度设置
-    if (savedClarity === 'auto') {
-      // 智能模式：检测网络并自动选择
-      this.detectNetworkAndApply()
-    } else if (savedClarity) {
-      this.applyClarity(savedClarity)
+    // 只有当有 bitRates 数据时才应用清晰度设置
+    // 否则等待 setBitRates 被调用时再应用
+    if (hasBitRates && savedClarity) {
+      if (savedClarity === 'auto') {
+        // 智能模式：检测网络并自动选择
+        this.detectNetworkAndApply()
+      } else {
+        this.applyClarity(savedClarity)
+      }
     }
   }
 

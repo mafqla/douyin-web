@@ -34,6 +34,7 @@ import type { IUserVisitedListRes } from './tyeps/request_response/userVisitedLi
 import type { IVideoDetailRes } from './tyeps/request_response/videoDetailRes'
 import type { IVideoRecordRes } from './tyeps/request_response/videoRecordRes'
 import type { IVsRecordRes } from './tyeps/request_response/vsRecord'
+import type { IWatchLaterListRes } from './tyeps/request_response/watchLaterListRes'
 
 import urls from './urls'
 import type { IuserLocatePostParams } from './tyeps/request_params/userLocatePostParams'
@@ -447,6 +448,20 @@ export default {
       params: {
         count,
         cursor
+      }
+    })
+  },
+  /**
+   * @description 获取稍后再看列表
+   * @param {Number} offset 偏移量
+   * @return {Promise<IWatchLaterListRes>} 稍后再看列表
+   */
+  getWatchLaterList: (offset: number = 0): Promise<IWatchLaterListRes> => {
+    return request.get(urls.watch_later_list, {
+      params: {
+        offset,
+        list_type: 0,
+        operate_type: 0
       }
     })
   }

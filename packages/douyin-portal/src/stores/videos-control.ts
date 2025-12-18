@@ -33,6 +33,15 @@ export const videosCtrolStore = defineStore('control', () => {
     stopScroll.value = false
   }
   const handleNext = () => {
+    // 检查是否已经是最后一个视频
+    if (activeVideoIndex.value >= videosNum.value - 1) {
+      // 已经是最后一个视频，触发加载更多
+      if (activeVideoIndex.value >= videosNum.value - 3) {
+        refresh_index.value = refresh_index.value + 1
+      }
+      return
+    }
+
     //暂停当前视频
     activeVideoPlayState.value = false
     // translateY.value = computeTranslateY(activeVideoIndex.value + 1)

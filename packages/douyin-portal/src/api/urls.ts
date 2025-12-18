@@ -59,6 +59,8 @@ export default {
   //搜索框热搜
   hot_search: '/aweme/v1/web/hot/search/list/',
   //用户访客记录
-  user_visited_list: '/aweme/v1/web/view/user/visited/list/'
+  user_visited_list: '/aweme/v1/web/view/user/visited/list/',
+  //稍后再看列表
+  watch_later_list: '/aweme/v1/web/watchlater/list/'
   // ----------------- 测试dy-url -----------------
 }

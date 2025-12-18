@@ -8,6 +8,7 @@ import UserPage from './user-page/index.vue'
 import userModal from './user-header/user-modal.vue'
 import UserRecord from './user-record/index.vue'
 import UserCollection from './user-collection/index.vue'
+import UserWatchLater from './user-watch-later/index.vue'
 
 export {
   UserLike,
@@ -19,5 +20,6 @@ export {
   UserPage,
   userModal,
   UserRecord,
-  UserCollection
+  UserCollection,
+  UserWatchLater
 }

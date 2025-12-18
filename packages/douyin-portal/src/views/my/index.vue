@@ -8,7 +8,8 @@ import {
   UserTab,
   userModal,
   UserRecord,
-  UserCollection
+  UserCollection,
+  UserWatchLater
 } from '@/components/user'
 import DyButton from '@/components/ui/button/button.vue'
 
@@ -16,6 +17,8 @@ import DyButton from '@/components/ui/button/button.vue'
 const userLikeRef = ref<InstanceType<typeof UserLike> | null>(null)
 // user-collection 组件 ref
 const userCollectionRef = ref<InstanceType<typeof UserCollection> | null>(null)
+// user-watch-later 组件 ref
+const userWatchLaterRef = ref<InstanceType<typeof UserWatchLater> | null>(null)
 
 // 滚动监听
 const { y } = useScroll(window)
@@ -212,6 +215,17 @@ watchEffect(() => {
               >
                 {{ userCollectionRef?.isBatchMode ? '退出管理' : '批量管理' }}
               </dy-button>
+              <!-- 批量管理按钮（稍后再看标签页） -->
+              <dy-button
+                v-if="activeTab === 'watch_later'"
+                type="secondary"
+                theme="light"
+                size="default"
+                style="width: 76px; height: 26px; border-radius: 8px"
+                @click="userWatchLaterRef?.toggleBatchMode()"
+              >
+                {{ userWatchLaterRef?.isBatchMode ? '退出管理' : '批量管理' }}
+              </dy-button>
             </template>
             <template v-slot:taba-content>
               <user-post
@@ -231,6 +245,10 @@ watchEffect(() => {
               />
 
               <user-record v-if="activeTab === 'record'" />
+              <user-watch-later
+                ref="userWatchLaterRef"
+                v-if="activeTab === 'watch_later'"
+              />
             </template>
           </user-tab>
         </template>

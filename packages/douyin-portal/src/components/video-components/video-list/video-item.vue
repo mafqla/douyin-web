@@ -12,7 +12,22 @@ const props = defineProps<{
   selected?: boolean
   // 是否禁用点击时切换视频播放（用于外部控制点击行为）
   disableClickToggle?: boolean
+  // 是否显示观看进度角标
+  showProgress?: boolean
+  // 观看进度（毫秒）
+  playProgress?: number
 }>()
+
+// 计算观看进度百分比
+const progressPercent = computed(() => {
+  if (!props.showProgress || !props.playProgress) return null
+  const duration = props.aweme.video?.duration
+  if (!duration || duration <= 0) return null
+  const percent = Math.round((props.playProgress / duration) * 100)
+  if (percent >= 100) return '已看完'
+  if (percent <= 0) return null
+  return `已看${percent}%`
+})
 
 // 点赞数转换
 const dianzan = computed(() => {
@@ -23,24 +38,53 @@ const dianzan = computed(() => {
   }
 })
 const isVideoVisible = ref(false)
-let timer: any = null
+let hoverTimer: ReturnType<typeof setTimeout> | null = null
+let leaveTimer: ReturnType<typeof setTimeout> | null = null
+
 const showVideo = () => {
   // 选择模式下禁用 hover 播放
   if (props.selectable) return
-  timer = setTimeout(() => {
+  // 清除离开定时器
+  if (leaveTimer) {
+    clearTimeout(leaveTimer)
+    leaveTimer = null
+  }
+  // 设置进入定时器
+  hoverTimer = setTimeout(() => {
     isVideoVisible.value = true
   }, 1000)
 }
+
 const hideVideo = () => {
   if (props.selectable) return
-  clearTimeout(timer)
-  timer = setTimeout(() => {
+  // 清除进入定时器
+  if (hoverTimer) {
+    clearTimeout(hoverTimer)
+    hoverTimer = null
+  }
+  // 设置离开定时器
+  leaveTimer = setTimeout(() => {
     isVideoVisible.value = false
   }, 200)
 }
+
+// 立即停止视频播放（用于点击跳转时）
+const stopVideo = () => {
+  if (hoverTimer) {
+    clearTimeout(hoverTimer)
+    hoverTimer = null
+  }
+  if (leaveTimer) {
+    clearTimeout(leaveTimer)
+    leaveTimer = null
+  }
+  isVideoVisible.value = false
+}
+
 const router = useRouter()
-//点击设置modal的显示与隐藏
-const toggleModal = (event: any) => {
+
+// 点击设置modal的显示与隐藏
+const toggleModal = (event: MouseEvent) => {
   // 选择模式下禁用点击跳转
   if (props.selectable) {
     event.preventDefault()
@@ -48,8 +92,9 @@ const toggleModal = (event: any) => {
   }
   event.preventDefault()
 
-  // 如果禁用点击切换视频，直接返回（由外部处理点击事件）
+  // 如果禁用点击切换视频，停止播放并返回（由外部处理点击事件）
   if (props.disableClickToggle) {
+    stopVideo()
     return
   }
 
@@ -61,6 +106,13 @@ const toggleModal = (event: any) => {
       ...router.currentRoute.value.query
     }
   })
+}
+
+// 处理播放器点击层点击事件（不阻止冒泡，让事件传递到外层）
+const handlePlayerClick = () => {
+  // 停止视频播放
+  stopVideo()
+  // 事件会冒泡到外层 a 标签，触发 toggleModal
 }
 </script>
 <template>
@@ -83,8 +135,13 @@ const toggleModal = (event: any) => {
           v-if="isVideoVisible"
           class="video-player"
           :url="aweme.video.play_addr.url_list"
-          @click="$emit('openModal')"
         />
+        <!-- 播放时的点击层，覆盖在播放器上方，点击时触发弹框 -->
+        <div
+          v-if="isVideoVisible"
+          class="video-click-overlay"
+          @click="handlePlayerClick"
+        ></div>
         <div class="video-item-tag">
           <div class="tag-content">
             <div
@@ -112,9 +169,20 @@ const toggleModal = (event: any) => {
           </div>
         </div>
         <div class="video-item-block"></div>
+        <!-- 观看进度角标 -->
         <div
           class="video-item-stats-tag is-top"
-          v-if="aweme.is_top && !isVideoVisible"
+          v-if="progressPercent && !isVideoVisible"
+        >
+          <div class="user-video-tag">
+            <div class="top-tag is-progress">
+              <div class="top-tag-text">{{ progressPercent }}</div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="video-item-stats-tag is-top"
+          v-else-if="aweme.is_top && !isVideoVisible"
         >
           <div class="user-video-tag">
             <div class="top-tag">
@@ -124,7 +192,7 @@ const toggleModal = (event: any) => {
         </div>
         <div
           class="video-item-stats-tag is-top"
-          v-if="aweme.hot_list && !isVideoVisible"
+          v-else-if="aweme.hot_list && !isVideoVisible"
         >
           <div class="user-video-tag">
             <div class="top-tag is-hot">
@@ -254,6 +322,17 @@ const toggleModal = (event: any) => {
         height: 100%;
         background-color: transparent;
       }
+      // 播放时的点击层，覆盖播放器上方区域
+      .video-click-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: calc(100% - 48px); // 底部留出播放器控件区域
+        z-index: 10;
+        cursor: pointer;
+        background-color: transparent;
+      }
 
       .video-item-stats-tag {
         position: absolute;
@@ -294,6 +373,10 @@ const toggleModal = (event: any) => {
                 rgb(255, 90, 68) 59.9%,
                 rgb(255, 145, 19) 91.68%
               );
+              color: #fff;
+            }
+            &.is-progress {
+              background: rgba(0, 0, 0, 0.6);
               color: #fff;
             }
             .top-tag-text {
