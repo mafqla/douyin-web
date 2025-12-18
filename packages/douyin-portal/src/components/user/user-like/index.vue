@@ -371,43 +371,47 @@ defineExpose({
     <div class="user-like">
       <!-- 批量操作工具栏 -->
       <user-tabbar-2 :style="isBatchMode ? 'height: 72px' : ''">
-        <BatchActionBar
-          v-if="isBatchMode"
-          :selected-count="selectedIds.size"
-          :all-selected="isAllSelected"
-          :disabled="displayList.length === 0"
-          @select-all="handleToggleSelectAll"
-          @action="handleCancelLike"
-        >
-          <template #right>
-            <UserSearchBar
-              placeholder="搜索你赞过的作品"
-              @search="handleSearchInBatchMode"
-              @close="handleSearchClose"
-            />
-          </template>
-        </BatchActionBar>
+        <template #left>
+          <BatchActionBar
+            v-if="isBatchMode"
+            :selected-count="selectedIds.size"
+            :all-selected="isAllSelected"
+            :disabled="displayList.length === 0"
+            @select-all="handleToggleSelectAll"
+            @action="handleCancelLike"
+          >
+            <template #right>
+              <UserSearchBar
+                placeholder="搜索你赞过的作品"
+                @search="handleSearchInBatchMode"
+                @close="handleSearchClose"
+              />
+            </template>
+          </BatchActionBar>
 
-        <!-- 搜索结果提示文案（仅在有结果时显示，非批量模式） -->
-        <div
-          v-if="
-            !isBatchMode &&
-            isSearching &&
-            searchResultText &&
-            searchList.length > 0
-          "
-          class="search-result-text"
-        >
-          {{ searchResultText }}
-        </div>
-        <!-- 非批量管理模式下显示搜索栏 -->
-        <UserSearchBar
-          v-if="!isBatchMode"
-          class="user-tabbar-r"
-          placeholder="搜索你赞过的作品"
-          @search="handleSearch"
-          @close="handleSearchClose"
-        />
+          <!-- 搜索结果提示文案（仅在有结果时显示，非批量模式） -->
+          <div
+            v-if="
+              !isBatchMode &&
+              isSearching &&
+              searchResultText &&
+              searchList.length > 0
+            "
+            class="search-result-text"
+          >
+            {{ searchResultText }}
+          </div>
+        </template>
+        <template #right>
+          <!-- 非批量管理模式下显示搜索栏 -->
+          <UserSearchBar
+            v-if="!isBatchMode"
+            class="user-tabbar-r"
+            placeholder="搜索你赞过的作品"
+            @search="handleSearch"
+            @close="handleSearchClose"
+          />
+        </template>
       </user-tabbar-2>
 
       <div class="user-like-list">

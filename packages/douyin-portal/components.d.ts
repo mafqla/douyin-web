@@ -92,6 +92,7 @@ declare module '@vue/runtime-core' {
     PopUp: typeof import('./src/components/header/pop-up/index.vue')['default']
     QrLogin: typeof import('./src/components/auth/login/qr-login.vue')['default']
     QuickBox: typeof import('./src/components/header/quick-box/index.vue')['default']
+    RecordFilter: typeof import('./src/components/user/user-record/record-filter.vue')['default']
     RecordLive: typeof import('./src/components/user/user-record/record-live/index.vue')['default']
     RecordLiveItem: typeof import('./src/components/user/user-record/record-live/record-live-item.vue')['default']
     RecordVideo: typeof import('./src/components/user/user-record/record-video.vue')['default']

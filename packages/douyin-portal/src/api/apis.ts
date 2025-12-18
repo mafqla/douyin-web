@@ -313,16 +313,25 @@ export default {
    * @description 获取用户观看视频的记录
    * @param {Number} count 数量 20
    * @param {Number} max_cursor 分页游标
+   * @param {Number} status 观看进度 不限：-1 未看完：0 已看完：1
+   * @param {Number} directory 视频时长 不限：0 小于1分钟：1 1-3分钟：2 3-10分钟：3 10分钟以上：4
+   * @param {Number} category 视频分类 不限：0 二次元：1 音乐：2 体育：3 电影：4 游戏：5
    * @return {Promise<IVideoRecordRes>} 用户观看视频的记录
    */
   getUserRecordVideo: (
     count: number,
-    max_cursor: number
+    max_cursor: number,
+    status: number = -1,
+    directory: number = 0,
+    category: number = 0
   ): Promise<IVideoRecordRes> => {
     return request.get(urls.user_record_video, {
       params: {
         count,
-        max_cursor
+        max_cursor,
+        status,
+        directory,
+        category
       }
     })
   },

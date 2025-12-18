@@ -54,8 +54,12 @@ const paddingStyle = computed(() => {
     :style="paddingStyle"
   >
     <div class="user-tabbar-2-content">
-      <div></div>
-      <slot />
+      <div class="user-tabbar-2-left">
+        <slot name="left" />
+      </div>
+      <div class="user-tabbar-2-right">
+        <slot name="right" />
+      </div>
     </div>
   </div>
 </template>
@@ -90,6 +94,19 @@ const paddingStyle = computed(() => {
     justify-content: space-between;
     align-items: center;
     display: flex;
+  }
+
+  &-left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &-right {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
   }
 }
 
