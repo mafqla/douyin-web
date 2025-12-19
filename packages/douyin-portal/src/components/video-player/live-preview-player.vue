@@ -3,6 +3,7 @@ import { computed, ref, watch, onBeforeUnmount, onMounted, nextTick } from 'vue'
 import BasePlayer from './base-player.vue'
 import type { ILiveStreamInfo } from '@/api/tyeps/common/aweme'
 import { videosCtrolStore } from '@/stores/videos-control'
+import { playerSettingStore } from '@/stores/player-setting'
 import LiveRefresh from './plugin/live-refresh/live-refresh'
 
 interface LivePreviewPlayerProps {
@@ -420,8 +421,9 @@ const onPause = () => {
 }
 
 // 当组件激活、连播开启且未暂停时开始倒计时
+const playerSettings = playerSettingStore()
 watch(
-  [() => props.isPlay, () => store.isAutoContinuous, isPaused],
+  [() => props.isPlay, () => playerSettings.isAutoContinuous, isPaused],
   ([isPlaying, isAutoContinuous, paused]) => {
     if (isPlaying && isAutoContinuous && !paused) {
       startCountdown()
@@ -529,7 +531,7 @@ watch(
             进入直播间
           </div>
         </div>
-        <div class="live-btn-time" v-if="store.isAutoContinuous && !isPaused">
+        <div class="live-btn-time" v-if="playerSettings.isAutoContinuous && !isPaused">
           {{ remainingTime }}秒后进入下一个直播间
         </div>
       </div>

@@ -21,7 +21,6 @@ import immersiveSwitch from './plugin/immersive-switch/immersive-switch'
 import miniWin from './plugin/miniWin/miniWin'
 import PlaybackPlugin from './plugin/playbackSetting/playbackPlugin'
 import watchLater from './plugin/watch-later/watch-later'
-import ImageGalleryPlugin from './plugin/ImageGallery/ImageGallery'
 
 import type { BitRate } from '@/api/tyeps/common/video'
 
@@ -106,6 +105,7 @@ const playerOptions = ref<IPlayerOptions>({
   closePauseVideoFocus: true,
   closePlayerVideoBlur: true,
   closeVideoDblclick: true,
+  keyShortcut: false,
   allowSeekPlayed: true,
   allowPlayAfterEnded: true,
   allowSeekAfterEnded: true,
@@ -169,7 +169,6 @@ const playerOptions = ref<IPlayerOptions>({
     watchLater,
     automaticContinuous,
     immersiveSwitch,
-    ImageGalleryPlugin,
     ClaritySwitch,
     // 合并传入的额外插件
     ...(props.options?.plugins || [])
@@ -270,28 +269,6 @@ onMounted(() => {
     console.log('...args', time)
     return true
   })
-
-  xgPlayer.on(Events.FULLSCREEN_CHANGE, () => {
-    emit('fullscreenchange')
-    console.log('fullscreenchange')
-  })
-  xgPlayer.on(Events.CSS_FULLSCREEN_CHANGE, () => {
-    emit('cssfullscreenchange')
-  })
-
-  xgPlayer.on('atuoPlayChange', (automatic: boolean) => {
-    console.log('atuoPlayChange', automatic)
-  })
-  xgPlayer.on('immersiveStateChange', (isImmersive: boolean) => {
-    console.log('immersiveStateChange', isImmersive)
-  })
-  xgPlayer.on('watch-later', (data: any) => {
-    console.log('watch-later', data)
-  })
-  xgPlayer.on('clarityChange', (data: any) => {
-    console.log('clarityChange', data)
-    emit('clarityChange', data)
-  })
 })
 
 watch(
@@ -320,6 +297,70 @@ watch(
   (newMuted) => {
     if (isDestroyed || !xgPlayer || isUpdatingFromPlayer) return
     xgPlayer.muted = newMuted
+  }
+)
+
+// 监听倍率变化，实时同步到播放器
+watch(
+  () => playerSetting.playbackRate,
+  (newRate) => {
+    if (isDestroyed || !xgPlayer) return
+    xgPlayer.playbackRate = newRate
+    // 更新插件 UI - 使用 getPlugin 方法
+    const playbackPlugin = xgPlayer.getPlugin('playbackPlugin')
+    if (playbackPlugin) {
+      playbackPlugin.curValue = newRate
+      playbackPlugin.renderItemList()
+      playbackPlugin.changeCurrentText()
+    }
+  }
+)
+
+// 监听连播状态变化，更新插件 UI
+watch(
+  () => playerSetting.isAutoContinuous,
+  (newValue) => {
+    if (isDestroyed || !xgPlayer) return
+    // xgplayer 使用 getPlugin 方法获取插件
+    const plugin = xgPlayer.getPlugin('automaticContinuous')
+    if (plugin) {
+      plugin.updateBtn()
+    }
+  }
+)
+
+// 监听清屏状态变化，更新插件 UI
+watch(
+  () => playerSetting.isImmersive,
+  (newValue) => {
+    if (isDestroyed || !xgPlayer) return
+    const plugin = xgPlayer.getPlugin('immersiveSwitch')
+    if (plugin) {
+      plugin.updateButtonClass()
+    }
+  }
+)
+
+// 监听清晰度变化，更新插件 UI
+watch(
+  () => playerSetting.clarity,
+  (newClarity) => {
+    if (isDestroyed || !xgPlayer) return
+    // 使用 getPlugin 方法
+    const plugin = xgPlayer.getPlugin('claritySwitch')
+    if (plugin) {
+      plugin.currentValue = newClarity
+      plugin.currentClarity =
+        newClarity === 'auto'
+          ? '智能'
+          : newClarity === '1080p'
+            ? '高清 1080P'
+            : newClarity === '720p'
+              ? '高清 720P'
+              : '标清 540P'
+      plugin.updateBtnText(plugin.currentClarity)
+      plugin.renderClarityList()
+    }
   }
 )
 

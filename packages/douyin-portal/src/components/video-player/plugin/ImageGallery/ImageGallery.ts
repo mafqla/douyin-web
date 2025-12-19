@@ -1,6 +1,6 @@
 import { Plugin } from 'xgplayer'
 import type { IPluginOptions } from 'xgplayer/es/plugin/plugin'
-import { videosCtrolStore } from '@/stores/videos-control'
+import { playerSettingStore } from '@/stores/player-setting'
 import './index.scss'
 
 const { POSITIONS } = Plugin
@@ -204,7 +204,7 @@ export class ImageGalleryPlugin extends Plugin {
     const image = this.cfg.images[index]
     return (
       image?.clip_type === 4 || (image?.clip_type === 5 &&
-      image?.live_photo_type === 1) &&
+        image?.live_photo_type === 1) &&
       (image?.video?.play_addr?.url_list?.length ?? 0) > 0
     )
   }
@@ -305,7 +305,7 @@ export class ImageGalleryPlugin extends Plugin {
           video.currentTime = 0
         }
         if (!this.player.paused) {
-          video.play().catch(() => {})
+          video.play().catch(() => { })
         }
       } else {
         video.pause()
@@ -387,9 +387,8 @@ export class ImageGalleryPlugin extends Plugin {
     }
 
     const sideArrowHtml = `
-        <div class="image-gallery-arrow image-gallery-arrow-left ${
-          this.currentIndex === 0 && !loop ? 'disabled' : ''
-        }">
+        <div class="image-gallery-arrow image-gallery-arrow-left ${this.currentIndex === 0 && !loop ? 'disabled' : ''
+      }">
           <svg width="56" height="56" fill="none" xmlns="http://www.w3.org/2000/svg" class="arrow-left-icon" viewBox="0 0 56 56">
             <g clip-path="url(#arrowLeft_svg__clip0_1670_162489)">
               <path d="M0 28c0 15.464 12.536 28 28 28s28-12.536 28-28S43.464 0 28 0 0 12.536 0 28z" fill="#000"></path>
@@ -412,9 +411,8 @@ export class ImageGalleryPlugin extends Plugin {
             </defs>
           </svg>
         </div>
-        <div class="image-gallery-arrow image-gallery-arrow-right ${
-          this.currentIndex === images.length - 1 && !loop ? 'disabled' : ''
-        }">
+        <div class="image-gallery-arrow image-gallery-arrow-right ${this.currentIndex === images.length - 1 && !loop ? 'disabled' : ''
+      }">
           <svg width="56" height="56" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56" class="arrow-right-icon">
             <g clip-path="url(#arrowRight_svg__clip0_1683_162494)">
               <path d="M0 28c0 15.464 12.536 28 28 28s28-12.536 28-28S43.464 0 28 0 0 12.536 0 28z" fill="#000"></path>
@@ -441,9 +439,8 @@ export class ImageGalleryPlugin extends Plugin {
 
     const bottomArrowHtml = `
         <div class="image-gallery-bottom-nav">
-          <div class="image-gallery-bottom-arrow image-gallery-bottom-left ${
-            this.currentIndex === 0 && !loop ? 'disabled' : ''
-          }">
+          <div class="image-gallery-bottom-arrow image-gallery-bottom-left ${this.currentIndex === 0 && !loop ? 'disabled' : ''
+      }">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="26"
@@ -493,12 +490,10 @@ export class ImageGalleryPlugin extends Plugin {
       </defs>
     </svg>
           </div>
-          <span class="image-gallery-counter">${
-            images.length > 0 ? `1/${images.length}` : ''
-          }</span>
-          <div class="image-gallery-bottom-arrow image-gallery-bottom-right ${
-            this.currentIndex === images.length - 1 && !loop ? 'disabled' : ''
-          }">
+          <span class="image-gallery-counter">${images.length > 0 ? `1/${images.length}` : ''
+      }</span>
+          <div class="image-gallery-bottom-arrow image-gallery-bottom-right ${this.currentIndex === images.length - 1 && !loop ? 'disabled' : ''
+      }">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="26"
@@ -566,31 +561,31 @@ export class ImageGalleryPlugin extends Plugin {
         </div>
         <div class="image-gallery-slides">
           ${images
-            .map((image: any, index: number) => {
-              const isLivePhoto =
-                image?.clip_type === 4 || (image?.clip_type === 5 &&
-                 image?.live_photo_type === 1)  &&
-                image.video?.play_addr?.url_list?.length > 0
-              console.log(
-                `图片${index}: clip_type=${image.clip_type}, live_photo_type=${image.live_photo_type}, isLivePhoto=${isLivePhoto}`
+        .map((image: any, index: number) => {
+          const isLivePhoto =
+            image?.clip_type === 4 || (image?.clip_type === 5 &&
+              image?.live_photo_type === 1) &&
+            image.video?.play_addr?.url_list?.length > 0
+          console.log(
+            `图片${index}: clip_type=${image.clip_type}, live_photo_type=${image.live_photo_type}, isLivePhoto=${isLivePhoto}`
+          )
+          const webpUrl =
+            image.url_list && image.url_list.find
+              ? image.url_list.find(
+                (url: string) =>
+                  url && url.includes && url.includes('.webp')
               )
-              const webpUrl =
-                image.url_list && image.url_list.find
-                  ? image.url_list.find(
-                      (url: string) =>
-                        url && url.includes && url.includes('.webp')
-                    )
-                  : undefined
-              const imageUrl =
-                webpUrl ||
-                (image.url_list && image.url_list[0]) ||
-                (image.download_url_list && image.download_url_list[0]) ||
-                this.PLACEHOLDER_IMAGE
+              : undefined
+          const imageUrl =
+            webpUrl ||
+            (image.url_list && image.url_list[0]) ||
+            (image.download_url_list && image.download_url_list[0]) ||
+            this.PLACEHOLDER_IMAGE
 
-              if (isLivePhoto) {
-                const videoUrls = image.video.play_addr.url_list
-                console.log('实况视频URL列表:', videoUrls)
-                return `
+          if (isLivePhoto) {
+            const videoUrls = image.video.play_addr.url_list
+            console.log('实况视频URL列表:', videoUrls)
+            return `
             <div class="image-gallery-slide image-gallery-slide-live" data-index="${index}" data-live="true">
               <div class="image-gallery-container">
                 <video 
@@ -603,27 +598,26 @@ export class ImageGalleryPlugin extends Plugin {
                   preload="auto"
                 >
                   ${videoUrls
-                    .map(
-                      (url: string) => `<source src="${url}" type="video/mp4">`
-                    )
-                    .join('')}
+                .map(
+                  (url: string) => `<source src="${url}" type="video/mp4">`
+                )
+                .join('')}
                 </video>
                 <div class="live-photo-badge">实况</div>
               </div>
             </div>
           `
-              }
-              return `
+          }
+          return `
             <div class="image-gallery-slide" data-index="${index}">
               <div class="image-gallery-container">
-                <img src="${imageUrl}" alt="Image ${
-                index + 1
-              }" data-index="${index}" style="display: block;">
+                <img src="${imageUrl}" alt="Image ${index + 1
+            }" data-index="${index}" style="display: block;">
               </div>
             </div>
           `
-            })
-            .join('')}
+        })
+        .join('')}
         </div>
       </div>
     `
@@ -657,8 +651,8 @@ export class ImageGalleryPlugin extends Plugin {
     const webpUrl =
       image.url_list && image.url_list.find
         ? image.url_list.find(
-            (url) => url && url.includes && url.includes('.webp')
-          )
+          (url) => url && url.includes && url.includes('.webp')
+        )
         : undefined
     return (
       webpUrl ||
@@ -1226,7 +1220,7 @@ export class ImageGalleryPlugin extends Plugin {
         this._galleryEnded = true
 
         // 检查是否开启了自动连播
-        const store = videosCtrolStore()
+        const store = playerSettingStore()
         if (store.isAutoContinuous) {
           // 开启自动连播：暂停播放器并触发 ended 事件，切换到下一个视频
           this.player.pause()

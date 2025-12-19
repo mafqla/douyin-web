@@ -1,11 +1,13 @@
 import { Plugin, Util, Events, type IPluginOptions } from 'xgplayer'
+import { playerSettingStore } from '@/stores/player-setting'
 import { videosCtrolStore } from '@/stores/videos-control'
 import './index.scss'
 
 const { POSITIONS } = Plugin
 
 class automaticContinuous extends Plugin {
-  private store: ReturnType<typeof videosCtrolStore> | null = null
+  private store: ReturnType<typeof playerSettingStore> | null = null
+  private videoControl: ReturnType<typeof videosCtrolStore> | null = null
 
   static get pluginName() {
     return 'automaticContinuous'
@@ -25,7 +27,8 @@ class automaticContinuous extends Plugin {
   }
 
   afterCreate() {
-    this.store = videosCtrolStore()
+    this.store = playerSettingStore()
+    this.videoControl = videosCtrolStore()
     this.updateBtn()
     const eventName = Util.checkTouchSupport() ? 'touchend' : 'click'
     this.bind(eventName, this.toggleAuto)
@@ -34,7 +37,7 @@ class automaticContinuous extends Plugin {
 
   private handleVideoEnded = () => {
     if (this.store?.isAutoContinuous) {
-      this.store.handleNext()
+      this.videoControl?.handleNext()
     }
   }
 
@@ -48,7 +51,9 @@ class automaticContinuous extends Plugin {
 
   updateBtn() {
     const switchButton = this.find('.xgplayer-autoplay-setting .xg-switch')
-    if (this.store?.isAutoContinuous) {
+    // 直接从 store 获取最新值，确保状态同步
+    const isChecked = playerSettingStore().isAutoContinuous
+    if (isChecked) {
       switchButton?.classList.add('xg-switch-checked')
     } else {
       switchButton?.classList.remove('xg-switch-checked')
@@ -62,13 +67,13 @@ class automaticContinuous extends Plugin {
   }
 
   render() {
-    const isChecked = this.store?.isAutoContinuous ?? true
+    // 直接调用 store 获取最新状态，因为 render() 在 afterCreate() 之前执行
+    const isChecked = playerSettingStore().isAutoContinuous
     return `<xg-icon class="xgplayer-autoplay-setting automatic-continuous" data-state="normal">
     <div class="xgplayer-icon" data-e2e="video-player-auto-play" data-e2e-state="video-player-auto-playing">
         <div class="xgplayer-setting-label">
-            <button aria-checked="true" class="xg-switch${
-              isChecked ? ' xg-switch-checked' : ''
-            }"  aria-labelledby="xg-switch-pip" type="button">
+            <button aria-checked="true" class="xg-switch${isChecked ? ' xg-switch-checked' : ''
+      }"  aria-labelledby="xg-switch-pip" type="button">
                <span class="xg-switch-inner"></span>
             </button>
         <span class="xgplayer-setting-title">连播</span>

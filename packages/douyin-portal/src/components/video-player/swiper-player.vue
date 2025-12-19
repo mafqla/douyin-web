@@ -10,6 +10,7 @@ import {
   VideoAction
 } from '@/components/video-components'
 import { videosCtrolStore } from '@/stores/videos-control'
+import { playerSettingStore } from '@/stores/player-setting'
 import BasePlayer from './base-player.vue'
 import ImageGalleryPlayer from './ImageGalleryPlyer.vue'
 
@@ -51,6 +52,7 @@ const imgGallery = computed(() => {
 })
 
 const control = videosCtrolStore()
+const playerSettings = playerSettingStore()
 
 // 计算视频容器宽度
 const calcWidth = () => {
@@ -138,14 +140,14 @@ const thumbnail = computed(() => {
           :thumbnail="thumbnail"
         >
           <video-info
-            v-if="props.isShowInfo && !control.isImmersive"
+            v-if="props.isShowInfo && !playerSettings.isImmersive"
             :username="props.awemeInfo.author.nickname"
             :uploadTime="props.awemeInfo.create_time"
             :description="props.awemeInfo.desc"
             :text-extra="props.awemeInfo?.text_extra ?? []"
           />
           <video-action
-            v-if="!control.isImmersive"
+            v-if="!playerSettings.isImmersive"
             :aweme_id="props.awemeInfo.aweme_id"
             :user_id="props.awemeInfo.author.sec_uid"
             :avatar="props.awemeInfo.author.avatar_thumb.url_list[0] ?? ''"
@@ -172,14 +174,14 @@ const thumbnail = computed(() => {
           :musicInfo="props.awemeInfo.image_album_music_info"
         >
           <video-info
-            v-if="props.isShowInfo && !control.isImmersive"
+            v-if="props.isShowInfo && !playerSettings.isImmersive"
             :username="props.awemeInfo.author.nickname"
             :uploadTime="props.awemeInfo.create_time"
             :description="props.awemeInfo.desc"
             :text-extra="props.awemeInfo?.text_extra ?? []"
           />
           <video-action
-            v-if="!control.isImmersive"
+            v-if="!playerSettings.isImmersive"
             :aweme_id="props.awemeInfo.aweme_id"
             :user_id="props.awemeInfo.author.sec_uid"
             :avatar="props.awemeInfo.author.avatar_thumb.url_list[0] ?? ''"

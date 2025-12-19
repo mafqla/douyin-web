@@ -1,4 +1,5 @@
 import { Plugin, Sniffer, Util } from 'xgplayer'
+import { playerSettingStore } from '@/stores/player-setting'
 import './index.scss'
 import type { IPluginOptions } from 'xgplayer/es/plugin/plugin'
 
@@ -20,6 +21,8 @@ export default class PlaybackPlugin extends Plugin {
   isActive: boolean
   activeEvent: string
   curValue: number | null | string
+  private store: ReturnType<typeof playerSettingStore> | null = null
+
   static get pluginName() {
     return 'playbackPlugin'
   }
@@ -40,7 +43,9 @@ export default class PlaybackPlugin extends Plugin {
     super(args)
     this.isActive = false
     this.activeEvent = ''
-    this.curValue = null
+    // 从 store 读取保存的倍率
+    const store = playerSettingStore()
+    this.curValue = store.playbackRate || 1.0
     this.onItemClick = this.onItemClick.bind(this)
     this.renderItemList()
   }
@@ -48,6 +53,18 @@ export default class PlaybackPlugin extends Plugin {
   afterCreate() {
     const { config } = this
     IS_MOBILE = IS_MOBILE || this.domEventType === 'touch'
+
+    // 初始化 store
+    this.store = playerSettingStore()
+
+    // 从 store 恢复倍率设置并应用到播放器
+    const savedRate = this.store.playbackRate
+    if (savedRate && savedRate !== 1.0) {
+      this.curValue = savedRate
+      this.player.playbackRate = savedRate
+      this.renderItemList()
+      this.changeCurrentText()
+    }
 
     if (IS_MOBILE && config.listType === LIST_TYPES.DEFAULT) {
       config.listType = LIST_TYPES.SIDE
@@ -134,21 +151,31 @@ export default class PlaybackPlugin extends Plugin {
     this.emitUserAction(e, 'change_rate', { props })
     this.curValue = rate
     this.player.playbackRate = rate
+    // 保存到 store
+    this.store?.setPlaybackRate(rate)
     this.changeCurrentText()
   }
 
   changeCurrentText() {
-    const curSelected = this.root.querySelector('.selected') as HTMLElement
-    if (!curSelected) return
-    let rate = Number(curSelected.getAttribute('data-id'))
-    this.curValue = rate
+    // 优先使用 curValue，如果没有则从 DOM 读取
+    let rate = this.curValue as number
+    if (!rate) {
+      const curSelected = this.root.querySelector('.selected') as HTMLElement
+      if (!curSelected) return
+      rate = Number(curSelected.getAttribute('data-id'))
+      this.curValue = rate
+    }
+
     const playbackRatioElement = this.root.querySelector(
       '.xgplayer-setting-playbackRatio'
     )
     if (playbackRatioElement) {
-      //rate 整数添加 .0
-      const formattedRate = rate % 1 === 0 ? rate.toFixed(1) : rate
-      playbackRatioElement.textContent = `${formattedRate}x`
+      if (rate === 1.0) {
+        playbackRatioElement.textContent = '倍速'
+      } else {
+        const formattedRate = rate % 1 === 0 ? rate.toFixed(1) : rate
+        playbackRatioElement.textContent = `${formattedRate}x`
+      }
     }
   }
 
@@ -174,9 +201,8 @@ export default class PlaybackPlugin extends Plugin {
           const formattedRate =
             item.rate % 1 === 0 ? item.rate.toFixed(1) : item.rate
           return `
-        <div class="xgplayer-playratio-item ${
-          item.selected ? 'selected' : ''
-        }" data-id="${item.rate}">
+        <div class="xgplayer-playratio-item ${item.selected ? 'selected' : ''
+            }" data-id="${item.rate}">
           ${formattedRate}x
         </div>
       `
@@ -197,11 +223,17 @@ export default class PlaybackPlugin extends Plugin {
   }
 
   render() {
+    // 从 store 读取保存的倍率
+    const store = playerSettingStore()
+    const savedRate = store.playbackRate || 1.0
+    const displayText =
+      savedRate === 1.0
+        ? '倍速'
+        : `${savedRate % 1 === 0 ? savedRate.toFixed(1) : savedRate}x`
+
     return `
       <xg-icon class="xgplayer-playback-setting" data-state="normal">
-        <div class="xgplayer-setting-playbackRatio">${
-          this.curValue || '倍速'
-        }</div>
+        <div class="xgplayer-setting-playbackRatio">${displayText}</div>
         <div class="xgplayer-slider xgplayer-box-douyin">
           <div class="xgplayer-setting-content">
             <div class="xgplayer-playratio-wrap">

@@ -1,11 +1,11 @@
 import { Plugin, Util, type IPluginOptions } from 'xgplayer'
-import { videosCtrolStore } from '@/stores/videos-control'
+import { playerSettingStore } from '@/stores/player-setting'
 import './index.scss'
 
 const { POSITIONS } = Plugin
 
 class immersiveSwitch extends Plugin {
-  private store: ReturnType<typeof videosCtrolStore> | null = null
+  private store: ReturnType<typeof playerSettingStore> | null = null
 
   static get pluginName() {
     return 'immersiveSwitch'
@@ -25,7 +25,7 @@ class immersiveSwitch extends Plugin {
   }
 
   afterCreate() {
-    this.store = videosCtrolStore()
+    this.store = playerSettingStore()
     this.updateButtonClass()
     const eventName = Util.checkTouchSupport() ? 'touchend' : 'click'
     this.bind(eventName, this.toggleImmersive)
@@ -43,7 +43,9 @@ class immersiveSwitch extends Plugin {
     const switchButton = this.find(
       '.xgplayer-immersive-switch-setting .xg-switch'
     )
-    if (this.store?.isImmersive) {
+    // 直接从 store 获取最新值，确保状态同步
+    const isChecked = playerSettingStore().isImmersive
+    if (isChecked) {
       switchButton?.classList.add('xg-switch-checked')
     } else {
       switchButton?.classList.remove('xg-switch-checked')
@@ -56,13 +58,13 @@ class immersiveSwitch extends Plugin {
   }
 
   render() {
-    const isChecked = this.store?.isImmersive ?? false
+    // 直接调用 store 获取最新状态，因为 render() 在 afterCreate() 之前执行
+    const isChecked = playerSettingStore().isImmersive
     return `<xg-icon class="xgplayer-immersive-switch-setting immersive-switch" data-state="normal">
     <div class="xgplayer-icon">
       <div class="xgplayer-setting-label">
-        <button aria-checked="true" class="xg-switch${
-          isChecked ? ' xg-switch-checked' : ''
-        }"  
+        <button aria-checked="true" class="xg-switch${isChecked ? ' xg-switch-checked' : ''
+      }"  
         aria-labelledby="xg-switch-pip" type="button">
           <span class="xg-switch-inner"></span>
         </button>

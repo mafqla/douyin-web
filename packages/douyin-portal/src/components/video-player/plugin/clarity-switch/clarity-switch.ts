@@ -161,16 +161,16 @@ class ClaritySwitch extends Plugin {
    */
   async detectNetworkSpeed(): Promise<number> {
     const now = Date.now()
-    
+
     // 如果距离上次测试时间不够，使用缓存的速度
     if (this.networkSpeed > 0 && now - this.lastSpeedTestTime < this.speedTestInterval) {
       return this.networkSpeed
     }
 
     // 尝试使用 Network Information API
-    const connection = (navigator as any).connection || 
-                       (navigator as any).mozConnection || 
-                       (navigator as any).webkitConnection
+    const connection = (navigator as any).connection ||
+      (navigator as any).mozConnection ||
+      (navigator as any).webkitConnection
 
     if (connection) {
       // downlink 是以 Mbps 为单位的有效带宽估计
@@ -224,7 +224,7 @@ class ClaritySwitch extends Plugin {
   async detectNetworkAndApply() {
     const speed = await this.detectNetworkSpeed()
     const recommendedClarity = this.getRecommendedClarity(speed)
-    
+
     console.log(`[ClaritySwitch] 智能模式 - 网络速度: ${speed} Mbps, 推荐清晰度: ${recommendedClarity}`)
 
     // 查找推荐清晰度，如果没有则降级
@@ -259,7 +259,7 @@ class ClaritySwitch extends Plugin {
     const clarityOption = this.clarityList.find(
       (item) => item.value === this.currentValue
     )
-    
+
     // 智能模式下，从当前播放的清晰度获取
     let urls: string[] = []
     if (this.currentValue === 'auto') {
@@ -328,7 +328,7 @@ class ClaritySwitch extends Plugin {
     player.once('loadedmetadata', () => {
       player.currentTime = currentTime
       if (wasPlaying) {
-        player.play().catch(() => {})
+        player.play().catch(() => { })
       }
     })
   }
@@ -450,7 +450,7 @@ class ClaritySwitch extends Plugin {
     player.once('loadedmetadata', () => {
       player.currentTime = currentTime
       if (wasPlaying) {
-        player.play().catch(() => {})
+        player.play().catch(() => { })
       }
     })
   }
@@ -522,8 +522,13 @@ class ClaritySwitch extends Plugin {
   }
 
   render() {
+    // 直接从 store 读取保存的清晰度设置，因为 render() 在 afterCreate() 之前执行
+    const store = playerSettingStore()
+    const savedClarity = store.clarity
+    const displayText = savedClarity ? (CLARITY_LABELS[savedClarity] || savedClarity) : (this.config.defaultClarity || '智能')
+
     return `<xg-icon class="xgplayer-clarity-switch" data-state="normal">
-      <div class="clarity-btn-text">${this.config.defaultClarity || '智能'}</div>
+      <div class="clarity-btn-text">${displayText}</div>
       <div class="xgplayer-slider clarity-slider">
         <div class="clarity-menu"></div>
       </div>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import BasePlayer from './base-player.vue'
+import ImageGalleryPlugin from './plugin/ImageGallery/ImageGallery'
 
 import type {
   IAwemeImage,
@@ -71,7 +72,9 @@ const playerOptions = computed(() => {
     },
     progress: {
       fragments
-    }
+    },
+    // 只在图集播放器中加载 ImageGalleryPlugin
+    plugins: [ImageGalleryPlugin]
   }
 })
 
