@@ -194,9 +194,9 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
             <DyPopover
               position="topLeft"
               trigger="hover"
-              :z-index="1000"
+              :z-index="100"
               :theme="false"
-              :popover-style="{ left: '-14px' }"
+              :popover-style="{ left: '-24px', boxShadow: 'unset' }"
             >
               <div class="footer-action" title="设置">
                 <div
@@ -305,17 +305,18 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
   }
 
   &__footer {
-    bottom: 0;
-    position: fixed;
-    z-index: 2;
-    background: var(--color-bg-b0);
-    display: flex;
-    flex-direction: row;
+    box-shadow: none;
+    width: var(--navigation-width);
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 8px;
-    padding: 12px 8px;
-    width: $sidebar-width-min;
+    padding: 12px 0;
+    display: flex;
+    z-index: 2;
+    background-color: var(--color-bg-b0);
+    position: fixed;
+    bottom: 0;
   }
 }
 
@@ -461,14 +462,18 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
 }
 
 .footer-action {
+  width: 32px;
+  height: 32px;
   color: var(--color-text-t3);
-  border-radius: 8px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
+  border-radius: 12px;
+  flex-direction: column;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  position: relative;
 
   &:hover {
     background: var(--color-fill-hover);
@@ -586,25 +591,18 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
   }
 
   .sidebar__footer {
-    width: $sidebar-width !important;
-    justify-content: flex-start;
-    padding: 12px 16px;
+    width: var(--navigation-expend-width);
+    height: 60px;
+    gap: 8px;
+    justify-content: unset;
+    align-items: unset;
+    flex-direction: row;
+    padding: 14px 0 14px 24px;
   }
 
   .footer-action {
     width: 40px;
     height: 40px;
-  }
-}
-
-@media (max-width: 1240px) {
-  .footer-action {
-    width: 52px;
-    height: 52px;
-    justify-content: center;
-    align-items: center;
-    margin: 6px 10px;
-    padding: 0;
   }
 }
 
