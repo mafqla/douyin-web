@@ -10,22 +10,26 @@ const route = useRoute()
 const activeIndex = ref()
 
 const menuItems = [
-  { index: '1', title: '首页', path: '/discover', icon: '0' },
+  { index: '1', title: '精选', path: '/discover', icon: '0' },
   { index: '2', title: '推荐', path: '/', icon: '-48' },
-  { index: '3', title: '关注', path: '/follow', icon: '-96' },
-  { index: '4', title: '朋友', path: '/friend', icon: '-144' },
-  { index: '5', title: '我的', path: '/user/self', icon: '-720' },
-  { index: '6', title: '直播', path: '/live', icon: '-192' },
-  { index: '7', title: '放映厅', path: '/vs', icon: '-240' },
-  { index: '8', title: '知识', path: '/channel/300203', icon: '-384' },
-  { index: '9', title: '热点', path: '/hot', icon: '-288' },
-  { index: '10', title: '游戏', path: '/channel/300205', icon: '-480' },
-  { index: '11', title: '娱乐', path: '/channel/300201', icon: '-336' },
-  { index: '12', title: '二次元', path: '/channel/300206', icon: '-480' },
-  { index: '13', title: '音乐', path: '/channel/300209', icon: '-432' },
-  { index: '14', title: '美食', path: '/channel/300204', icon: '-528' },
-  { index: '15', title: '体育', path: '/channel/300207', icon: '-576' },
-  { index: '16', title: '时尚', path: '/channel/300208', icon: '-624' }
+  { index: '3', title: 'AI抖音', path: '/', icon: '-96' },
+  
+  { index: '4', title: '关注', path: '/follow', icon: '-144' },
+  { index: '5', title: '朋友', path: '/friend', icon: '-192' },
+  { index: '6', title: '我的', path: '/user/self', icon: '-816' },
+  { index: '7', title: '直播', path: '/live', icon: '-240' },
+  { index: '8', title: '放映厅', path: '/vs', icon: '-288' },
+  { index: '9', title: '短剧', path: '/vs', icon: '-960' },
+
+  { index: '10', title: '热点', path: '/hot', icon: '-384' },
+  { index: '11', title: '娱乐', path: '/channel/300201', icon: '-432' },
+  { index: '12', title: '知识', path: '/channel/300203', icon: '-480' },
+  { index: '13', title: '二次元', path: '/channel/300206', icon: '-528' },
+  { index: '14', title: '游戏', path: '/channel/300205', icon: '-576' },
+  { index: '15', title: '美食', path: '/channel/300204', icon: '-624' },
+  { index: '16', title: '体育', path: '/channel/300207', icon: '-672' },
+  { index: '17', title: '时尚', path: '/channel/300208', icon: '-720' },
+  { index: '18', title: '音乐', path: '/channel/300209', icon: '-768' }
 ]
 
 const handleSelect = (index: any) => {
@@ -49,7 +53,6 @@ const handleSelect = (index: any) => {
 
 const calculateBackgroundPosition = (index: string) => {
   const offsetX = activeIndex.value === index ? -24 : 0
-  //计算新的x坐标值
   const newX = parseInt(menuItems[Number(index) - 1].icon) + offsetX
   return `${newX}px 0px`
 }
@@ -104,7 +107,7 @@ watchEffect(() => {
                       'background-position': calculateBackgroundPosition(
                         item.index
                       ),
-                      'background-size': '864px auto'
+                      'background-size': '1152px auto'
                     }"
                     v-show="theme === 'dark'"
                   ></div>
@@ -114,7 +117,7 @@ watchEffect(() => {
                       'background-position': calculateBackgroundPosition(
                         item.index
                       ),
-                      'background-size': '864px auto'
+                      'background-size': '1152px auto'
                     }"
                     v-show="theme === 'light'"
                   ></div>
@@ -124,7 +127,8 @@ watchEffect(() => {
                   </div>
                 </div>
               </div>
-              <div class="horizontal-line" v-if="item.index === '5'"></div>
+              <div class="horizontal-line" v-if="item.index === '3'"></div>
+              <div class="horizontal-line" v-if="item.index === '6'"></div>
             </template>
           </div>
 
@@ -327,11 +331,11 @@ watchEffect(() => {
             }
 
             .icon.light {
-              background-image: url(@/assets/nav_light-new.png);
+              background-image: url(@/assets/nav_light-new1.png);
             }
 
             .icon.dark {
-              background-image: url(@/assets/nav_dark-new.png);
+              background-image: url(@/assets/nav_dark-new1.png);
             }
 
             .title-container {
@@ -342,8 +346,7 @@ watchEffect(() => {
               position: relative;
 
               .title {
-                color: var(--color-text-t3);
-                font-family: PingFang SC, DFPKingGothicGB-Medium, sans-serif;
+                color: var(--color-text-t2);
                 font-size: 12px;
                 font-weight: 500;
                 font-weight: 400;
@@ -416,25 +419,25 @@ watchEffect(() => {
   }
 
   .aside-bottom-icon {
-    background-size: 864px;
+    background-size: 1152px;
     height: 24px;
     opacity: 0.5;
     width: 24px;
-    background-position: -1632px center;
+    background-position: -864px center;
 
     &.light {
-      background-image: url(@/assets/nav_light-new.png);
+      background-image: url(@/assets/nav_light-new1.png);
 
       &.setting {
-        background-position: -1680px center;
+        background-position: -912px center;
       }
     }
 
     &.dark {
-      background-image: url(@/assets/nav_dark-new.png);
+      background-image: url(@/assets/nav_dark-new1.png);
 
       &.setting {
-        background-position: -1680px center;
+        background-position: -912px center;
       }
     }
   }
@@ -489,8 +492,8 @@ watchEffect(() => {
               word-break: keep-all !important;
 
               .title {
-                font-size: 14px !important;
-                line-height: 24px !important;
+                font-size: 16px !important;
+                line-height: 26px !important;
                 transform: scale(1);
               }
             }
