@@ -266,7 +266,7 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
   }
 
   &__header {
-    height: 68px;
+    height: 72px;
     width: 100%;
     position: relative;
     user-select: none;
@@ -299,7 +299,7 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
 
   &__content {
     z-index: 20;
-    height: calc(100vh - var(--header-height) - 64px);
+    height: calc(100vh - var(--header-height) - 122px);
     position: relative;
     overflow: hidden;
   }
@@ -323,8 +323,7 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
 .douyin-navigation {
   background-position: 0 100%;
   background-size: cover;
-  bottom: 0;
-  height: calc(100% - 68px);
+  height: calc(100vh - var(--header-height) - 136px - 20px);
   outline: none;
   width: $sidebar-width-min;
   z-index: 20;
@@ -340,10 +339,6 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
 
   &::-webkit-scrollbar {
     display: none;
-  }
-
-  :deep(.el-menu) {
-    all: unset;
   }
 }
 
@@ -404,7 +399,7 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
     display: flex;
     align-self: center;
     line-height: 1;
-    margin-top: 4px;
+    margin-top: 0;
     position: relative;
   }
 
@@ -456,7 +451,7 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
   .nav-menu__divider {
     border-bottom: 1px solid var(--color-line-l3);
     height: 1px;
-    margin: 12px 24px 10px;
+    margin: 8px 18px 0px;
     width: 112px;
   }
 }
@@ -554,7 +549,6 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
 
   .douyin-navigation {
     width: $sidebar-width !important;
-    bottom: 2px;
   }
 
   .nav-menu {
@@ -601,8 +595,10 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
   }
 
   .footer-action {
-    width: 40px;
-    height: 40px;
+    flex-direction: row;
+    justify-self: start;
+    margin: 0;
+    padding: 4px;
   }
 }
 

@@ -306,6 +306,12 @@
         --color-tab-text-active: rgba(35, 28, 31, 1);
         --global-bg-img: url(https://p-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/test.png);
         --global-bg-img-thin: url(https://p-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/test.png);
+        --btn-title-color: rgba(22, 24, 35, .75);
+        --input-text-color: rgba(22, 24, 35, .6);
+        --input-bg-color: rgba(22, 24, 35, .05);
+        --input-border-color: rgba(22, 24, 35, .06);
+        --input-border-color-2: rgba(22, 24, 35, .2);
+        --btn-title-color-hover: #fff;
 }
 
 :root[dark] {
@@ -477,5 +483,13 @@
         --color-tab-text-active: rgba(249, 249, 249, 1);
         --global-bg-img: url(https://p-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/test.png);
         --global-bg-img-thin: url(https://p-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/test.png);
+
+        --btn-title-color: color: rgba(22, 24, 35, .75);
+        --input-text-color: rgba(255, 255, 255, .75);
+        --input-bg-color: rgba(255, 255, 255, .15);
+        --input-border-color: rgba(255, 255, 255, .16);
+        --input-border-color-2: rgba(255, 255, 255, 0.16);
+        --btn-title-color-hover: #000;
+
 
 }

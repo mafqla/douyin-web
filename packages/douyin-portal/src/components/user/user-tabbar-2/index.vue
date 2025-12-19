@@ -17,7 +17,7 @@ const parentElement = ref<HTMLElement | null>(null)
 const sidebarWidth = ref<HTMLElement | null>(null)
 onMounted(() => {
   parentElement.value = document.querySelector('.user-content')
-  sidebarWidth.value = document.querySelector('.aside')
+  sidebarWidth.value = document.querySelector('.sidebar')
   // console.log(parentElement.value)
 })
 

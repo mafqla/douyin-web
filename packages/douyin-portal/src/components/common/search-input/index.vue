@@ -105,10 +105,13 @@ const handleSearch = () => {
           ></rect>
         </svg>
       </div>
+      <!-- <div class="input-placeholder">
+        <div class="input-placeholder-text">搜索你感兴趣的内容</div>
+      </div> -->
       <input
         type="text"
-        class="header-search-input"
         placeholder="搜索你感兴趣的内容"
+        class="header-search-input"
         v-model="searchQuery"
         @input="handleInput"
         @keyup.enter="handleSearch"
@@ -129,12 +132,8 @@ const handleSearch = () => {
 
 <style lang="scss" scoped>
 .search-input {
+  border: 1px solid;
   border-radius: 12px;
-  // background-color: var(--color-bg-b0);
-  // border: 2px solid var(--input-border);
-  // border: 1px solid transparent;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.15);
   align-items: center;
   box-sizing: border-box;
   display: flex;
@@ -145,6 +144,9 @@ const handleSearch = () => {
   width: 100%;
   z-index: 100;
   position: relative;
+  background: var(--input-bg-color);
+  border: 1px solid var(--input-border-color);
+  max-width: 600px;
 
   .header-search-form {
     align-items: center;
@@ -159,7 +161,7 @@ const handleSearch = () => {
   .center-border {
     width: 1px;
     height: 16px;
-    border-left: 1px solid rgba(255, 255, 255, 0.16);
+    border-left: 1px solid var(--input-border-color-2);
     position: relative;
     right: -4px;
   }
@@ -175,8 +177,7 @@ const handleSearch = () => {
   }
   button {
     align-items: center;
-    background-color: transparent;
-    // background-color: #e4e4e6;
+    background: 0 0;
     border: none;
     border-bottom-right-radius: 12px;
     border-top-right-radius: 12px;
@@ -194,17 +195,44 @@ const handleSearch = () => {
     .icon-search {
       width: 18px;
       height: 18px;
+      color: var(--btn-title-color);
     }
 
     .btn-title {
-      color: var(--color-text-t1);
+      color: var(--btn-title-color);
+      // color: var(--color-text-t1);
       margin-left: 3px;
       font-size: 16px;
       font-weight: 500;
+      line-height: 24px;
       user-select: none;
     }
   }
+  .input-placeholder {
+    height: 100%;
+    z-index: 50;
+    max-width: calc(100% - 32px);
+    align-items: center;
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 12px;
+    overflow: hidden;
 
+    .input-placeholder-text {
+      color: var(--input-text-color);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      // font-size: 14px;
+      // font-weight: 400;
+      line-height: 22px;
+      overflow: hidden;
+
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
   .header-search-input {
     display: flex;
     flex-direction: row;
@@ -225,13 +253,13 @@ const handleSearch = () => {
     opacity: 1;
     font-size: 16px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--input-text-color);
 
     &::placeholder {
       // color: rgba(47, 48, 53, 0.4);
       // color: var(--color-text-t4);
 
-      // color: var(--color-text-t4);
+      color: var(--input-text-color);
     }
   }
 
@@ -246,23 +274,15 @@ const handleSearch = () => {
       position: relative;
 
       .icon-search {
-        color: var(--color-const-text-white);
+        color: var(--btn-title-color-hover);
       }
       .btn-title {
-        color: var(--color-const-text-white);
+        color: var(--btn-title-color-hover);
       }
     }
   }
 }
 
-html[dark] .search-input {
-  &:hover {
-    .btn-title,
-    .icon-search {
-      color: #000 !important;
-    }
-  }
-}
 .main.user {
   // .search {
   //   border: 2px solid hsla(0, 0%, 100%, 0.3) !important;
@@ -296,39 +316,39 @@ html[dark] .search-input {
   //   }
   // }
 
-  .header.scrolled {
-    .search-input {
-      background-color: var(--color-bg-b0) !important;
-      border: 2px solid var(--input-border) !important;
-      .header-search-input {
-        &::placeholder {
-          color: var(--color-text-t4) !important ;
-        }
-      }
+  // .header.scrolled {
+  //   .search-input {
+  //     background-color: var(--color-bg-b0) !important;
+  //     border: 2px solid var(--input-border) !important;
+  //     .header-search-input {
+  //       &::placeholder {
+  //         color: var(--color-text-t4) !important ;
+  //       }
+  //     }
 
-      button {
-        background-color: transparent;
-        .icon-search {
-          color: var(--color-text-t1) !important;
-        }
-        .btn-title {
-          color: var(--color-text-t1) !important;
-        }
-      }
+  //     button {
+  //       background-color: transparent;
+  //       .icon-search {
+  //         color: var(--color-text-t1) !important;
+  //       }
+  //       .btn-title {
+  //         color: var(--color-text-t1) !important;
+  //       }
+  //     }
 
-      &:hover {
-        button {
-          background-color: var(--color-text-t0) !important;
+  //     &:hover {
+  //       button {
+  //         background-color: var(--color-text-t0) !important;
 
-          .icon-search {
-            color: var(--color-const-text-white) !important;
-          }
-          .btn-title {
-            color: var(--color-const-text-white) !important;
-          }
-        }
-      }
-    }
-  }
+  //         .icon-search {
+  //           color: var(--color-const-text-white) !important;
+  //         }
+  //         .btn-title {
+  //           color: var(--color-const-text-white) !important;
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 }
 </style>
