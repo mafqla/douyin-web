@@ -19,10 +19,12 @@ export const useKeyboardNavigation = () => {
     if (event.key === 'ArrowUp' || event.key === 'w') {
       // 向上切换
       event.preventDefault()
+      event.stopPropagation()
       videosCtrolStore().handlePrev()
     } else if (event.key === 'ArrowDown' || event.key === 's') {
       // 向下切换
       event.preventDefault()
+      event.stopPropagation()
       if (!videosCtrolStore().stopScroll) {
         videosCtrolStore().handleNext()
       }
@@ -53,10 +55,11 @@ export const useKeyboardNavigation = () => {
   }
 
   onMounted(() => {
-    window.addEventListener('keydown', handleKeyDown)
+    // 使用捕获阶段监听，确保在播放器处理之前捕获到事件
+    window.addEventListener('keydown', handleKeyDown, true)
   })
 
   onBeforeUnmount(() => {
-    window.removeEventListener('keydown', handleKeyDown)
+    window.removeEventListener('keydown', handleKeyDown, true)
   })
 }

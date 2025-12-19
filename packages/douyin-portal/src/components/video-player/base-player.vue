@@ -105,7 +105,9 @@ const playerOptions = ref<IPlayerOptions>({
   closePauseVideoFocus: true,
   closePlayerVideoBlur: true,
   closeVideoDblclick: true,
-  keyShortcut: false,
+  keyShortcut: {
+    seekStep: 0 // 禁用左右方向键快进/后退
+  },
   allowSeekPlayed: true,
   allowPlayAfterEnded: true,
   allowSeekAfterEnded: true,

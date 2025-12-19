@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { } from 'vue'
+import {} from 'vue'
 import useTheme from '@/hooks/useTheme'
-
 
 const { theme, switchTheme } = useTheme()
 const themeMode = computed(() => {
@@ -14,12 +13,11 @@ const showKeyboard = () => {
 }
 const hideKeyboard = () => {
   isShowKeyboard.value = false
-
 }
 </script>
 <template>
-  <div class="coop-panel" style="top: 660px;">
-    <div class="coop-panel-item ">
+  <div class="coop-panel">
+    <div class="coop-panel-item">
       <a class="panel-link" target="_blank">
         <div class="xxbkuAal">
           <div class="icon-container">
@@ -27,13 +25,20 @@ const hideKeyboard = () => {
             深浅模式
           </div>
           <div class="mode-options">
-            <div class="mode-icon-container" :class="{ 'active': themeMode === 'light' }" @click="switchTheme('light')">
-
+            <div
+              class="mode-icon-container"
+              :class="{ active: themeMode === 'light' }"
+              @click="switchTheme('light')"
+            >
               <svg-icon icon="light-mode" class="icon" />
             </div>
           </div>
           <div class="mode-options">
-            <div class="mode-icon-container" :class="{ 'active': themeMode === 'dark' }" @click="switchTheme('dark')">
+            <div
+              class="mode-icon-container"
+              :class="{ active: themeMode === 'dark' }"
+              @click="switchTheme('dark')"
+            >
               <svg-icon icon="dark-mode" class="icon" />
             </div>
           </div>
@@ -41,32 +46,33 @@ const hideKeyboard = () => {
       </a>
     </div>
     <div class="coop-panel-item">
-      <a class="panel-link " target="_blank">
+      <a class="panel-link" target="_blank">
         <div class="icon-container">
           <svg-icon icon="setting-general" class="icon" />
           通用设置
         </div>
         <svg-icon icon="chevron-right" class="icon" />
       </a>
-      <div class="general-panel" style="top: -12px;">
+      <div class="general-panel" style="top: -12px">
         <div class="general-panel-content">
-          <div class="coop-panel-item ">
-            <a class="panel-link " target="_blank">
+          <div class="coop-panel-item">
+            <a class="panel-link" target="_blank">
               <div class="icon-container">
                 <svg-icon icon="setting-privacy" class="icon" />
                 隐私设置
               </div>
             </a>
           </div>
-          <div class="coop-panel-item ">
-            <a class="panel-link " target="_blank">
+          <div class="coop-panel-item">
+            <a class="panel-link" target="_blank">
               <div class="icon-container">
                 <svg-icon icon="setting-notification" class="icon" />
                 通知设置
               </div>
             </a>
           </div>
-          <div class="coop-panel-item "><a class="panel-link " target="_blank">
+          <div class="coop-panel-item">
+            <a class="panel-link" target="_blank">
               <div class="icon-container">
                 <svg-icon icon="setting-default" class="icon" />
                 默认页面
@@ -75,10 +81,9 @@ const hideKeyboard = () => {
           </div>
         </div>
       </div>
-
     </div>
-    <div class="coop-panel-item ">
-      <a class="panel-link " target="_blank" @click="showKeyboard">
+    <div class="coop-panel-item">
+      <a class="panel-link" target="_blank" @click="showKeyboard">
         <div class="icon-container">
           <svg-icon icon="setting-keyboard" class="icon" />
           键盘快捷键
@@ -89,14 +94,16 @@ const hideKeyboard = () => {
         </dy-dialog>
       </a>
     </div>
-    <div class="coop-panel-item "><a class="panel-link " target="_blank">
+    <div class="coop-panel-item">
+      <a class="panel-link" target="_blank">
         <div class="icon-container">
           <svg-icon icon="faq" class="icon" />
           常见问题
         </div>
       </a>
     </div>
-    <div class="coop-panel-item "><a class="panel-link " target="_blank">
+    <div class="coop-panel-item">
+      <a class="panel-link" target="_blank">
         <div class="icon-container">
           <svg-icon icon="setting-feedback" class="icon" />
           意见反馈
@@ -108,19 +115,16 @@ const hideKeyboard = () => {
 
 <style lang="scss" scoped>
 .coop-panel {
-  z-index: 999;
   user-select: none;
   color: var(--color-text-t3);
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  position: fixed;
-  left: var(--navigation-width);
+  min-width: 204px;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 24px;
   background: var(--color-bg-b1-white);
   border-radius: 12px;
   padding: 12px 0px;
-  min-width: 204px;
 
   .general-panel-content {
     color: var(--color-text-t3);
@@ -131,7 +135,7 @@ const hideKeyboard = () => {
     padding: 12px 0px;
 
     &::before {
-      content: "";
+      content: '';
       width: 6px;
       height: 100%;
       opacity: 0;
@@ -141,8 +145,6 @@ const hideKeyboard = () => {
     }
   }
 }
-
-
 
 .coop-panel-item {
   position: relative;
@@ -156,14 +158,12 @@ const hideKeyboard = () => {
     left: calc(100% + 4px);
     width: 204px;
     display: none;
-
   }
 
   &:hover .general-panel {
     display: block;
   }
 }
-
 
 .panel-link {
   position: relative;
@@ -195,8 +195,6 @@ const hideKeyboard = () => {
     margin-right: auto;
   }
 }
-
-
 
 .icon-container {
   align-items: center;

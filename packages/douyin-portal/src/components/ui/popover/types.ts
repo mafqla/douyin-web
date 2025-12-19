@@ -19,7 +19,7 @@ export type PopoverPosition =
 export type PopoverTrigger = 'hover' | 'focus' | 'click' | 'custom'
 
 // 主题
-export type PopoverTheme = 'light' | 'dark'
+export type PopoverTheme = 'light' | 'dark' | 'transparent'
 
 export interface PopoverProps {
   /** 弹出层内容 */
@@ -47,8 +47,10 @@ export interface PopoverProps {
   /** 弹出层 z-index */
   zIndex?: number
   /** 弹出层样式 */
-  style?: CSSProperties
+  popoverStyle?: CSSProperties
   /** 弹出层类名 */
+  popoverClass?: string
+  /** 内容区域类名 */
   contentClassName?: string
   /** 是否在关闭时销毁内容 */
   destroyOnClose?: boolean

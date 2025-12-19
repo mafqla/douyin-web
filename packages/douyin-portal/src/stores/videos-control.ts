@@ -18,6 +18,8 @@ export const videosCtrolStore = defineStore('control', () => {
   const videosNum = ref(0)
   //是否停止滚动
   const stopScroll = ref(false)
+  // 刷新版本号，用于触发列表清空和重新获取
+  const refreshVersion = ref(0)
   //计算translateY的值,根据传入的索引和initTranslateY的值
   const computeTranslateY = (index: number) => {
     return -index * initTranslateY.value
@@ -70,9 +72,8 @@ export const videosCtrolStore = defineStore('control', () => {
 
   // 刷新推荐列表（触发重新加载）
   const refreshRecommend = () => {
-    reset()
-    // 触发 refresh_index 变化以重新获取数据
-    refresh_index.value = 1
+    // 增加刷新版本号，触发列表清空和重新获取
+    refreshVersion.value++
   }
 
   return {
@@ -87,6 +88,7 @@ export const videosCtrolStore = defineStore('control', () => {
     activeVideoIndex,
     activeVideoPlayState,
     stopScroll,
+    refreshVersion,
     handlePrev,
     handleNext,
     reset,

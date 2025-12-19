@@ -5,6 +5,7 @@ import { computed, toRef, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { menuRoutes } from '@/router/routes'
 import CoopPanel from './coop-panel.vue'
+import { DyPopover } from '@/components/ui/popover'
 
 // 菜单项类型
 interface MenuItem {
@@ -43,7 +44,11 @@ const activeMenuId = computed(() => {
   const matchedIndex = navMenuList.value.findIndex((menu) => {
     const firstSegment = `/${currentPath.split('/')[1]}`
     const twoSegments = `/${currentPath.split('/').slice(1, 3).join('/')}`
-    return menu.path === currentPath || menu.path === firstSegment || menu.path === twoSegments
+    return (
+      menu.path === currentPath ||
+      menu.path === firstSegment ||
+      menu.path === twoSegments
+    )
   })
   return matchedIndex >= 0 ? String(matchedIndex + 1) : ''
 })
@@ -63,7 +68,8 @@ const shouldShowDivider = (index: number): boolean => {
 
 // 处理菜单点击
 const handleMenuClick = (menu: MenuItem) => {
-  const targetPath = menu.path === '/user/self' ? `${menu.path}?showTab=like` : menu.path
+  const targetPath =
+    menu.path === '/user/self' ? `${menu.path}?showTab=like` : menu.path
   router.push(targetPath)
 }
 
@@ -100,13 +106,20 @@ const handleMenuMouseLeave = () => {
 
 // 判断是否显示刷新按钮
 const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
-  return menu.path === '/' && isRecommendPage.value && hoveredMenuPath.value === menu.path
+  return (
+    menu.path === '/' &&
+    isRecommendPage.value &&
+    hoveredMenuPath.value === menu.path
+  )
 }
 </script>
 
 <template>
   <div class="sidebar">
-    <div class="sidebar__container" :style="isSearchPage ? { background: 'unset' } : {}">
+    <div
+      class="sidebar__container"
+      :style="isSearchPage ? { background: 'unset' } : {}"
+    >
       <div class="sidebar__header">
         <div class="sidebar__logo">
           <a href="/" class="sidebar__logo-link"></a>
@@ -143,57 +156,91 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
                   ></div>
                   <div class="nav-menu__title-wrapper">
                     <span class="nav-menu__title">{{ menu.title }}</span>
-                    <!-- 推荐页刷新按钮 -->
-                    <div
-                      v-if="shouldShowRefreshBtn(menu)"
-                      class="nav-menu__refresh-btn"
-                      :class="{ 'nav-menu__refresh-btn--refreshing': isRefreshing }"
-                      @click="handleRefreshClick"
-                      title="刷新推荐"
+                  </div>
+                  <!-- 推荐页刷新按钮 -->
+                  <div
+                    class="nav-menu__refresh-btn"
+                    :class="{
+                      'nav-menu__refresh-btn--refreshing': isRefreshing
+                    }"
+                    v-if="shouldShowRefreshBtn(menu)"
+                    @click="handleRefreshClick"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="none"
+                      class="RVV0407m"
+                      viewBox="0 0 24 24"
                     >
-                      <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-                        <path
-                          d="M24.932 16.444c0-4.687-3.89-8.444-8.634-8.444a8.679 8.679 0 0 0-7.207 3.79v-1.558a.99.99 0 0 0-1.98 0v4.038c0 .547.444.99.99.99h4.038a.99.99 0 0 0 0-1.98h-1.646c1.137-1.963 3.304-3.3 5.804-3.3 3.7 0 6.655 2.918 6.655 6.464 0 3.547-2.956 6.465-6.655 6.465-2.963 0-5.459-1.88-6.326-4.453a.99.99 0 0 0-1.876.633c1.138 3.38 4.39 5.8 8.202 5.8 4.746 0 8.635-3.758 8.635-8.445z"
-                          fill="currentColor"
-                        ></path>
-                      </svg>
-                    </div>
+                      <path
+                        d="M17.745 8a7 7 0 1 0 .746 6.625 1 1 0 1 1 1.854.75A9.003 9.003 0 0 1 3 12a9 9 0 0 1 16-5.657V5a1 1 0 1 1 2 0v4a1 1 0 0 1-1 1h-4a1 1 0 1 1 0-2h1.745z"
+                        fill="currentColor"
+                        fill-opacity="1"
+                      ></path>
+                    </svg>
                   </div>
                 </div>
               </div>
-              <div class="nav-menu__divider" v-if="shouldShowDivider(index)"></div>
+              <div
+                class="nav-menu__divider"
+                v-if="shouldShowDivider(index)"
+              ></div>
             </template>
           </div>
 
           <div class="sidebar__footer">
-            <el-popover :show-arrow="false" placement="right-start">
-              <template #reference>
-                <div class="footer-action">
-                  <div
-                    class="footer-action__icon footer-action__icon--setting footer-action__icon--light"
-                    v-if="currentTheme === 'light'"
-                  ></div>
-                  <div
-                    class="footer-action__icon footer-action__icon--setting footer-action__icon--dark"
-                    v-if="currentTheme === 'dark'"
-                  ></div>
-                  <div class="footer-action__label"><span>设置</span></div>
-                </div>
-              </template>
-              <template #default>
+            <DyPopover
+              position="topLeft"
+              trigger="hover"
+              :z-index="1000"
+              :theme="false"
+              :popover-style="{ left: '-14px' }"
+            >
+              <div class="footer-action" title="设置">
+                <div
+                  class="footer-action__icon footer-action__icon--setting footer-action__icon--light"
+                  v-if="currentTheme === 'light'"
+                ></div>
+                <div
+                  class="footer-action__icon footer-action__icon--setting footer-action__icon--dark"
+                  v-if="currentTheme === 'dark'"
+                ></div>
+              </div>
+              <template #content>
                 <coop-panel />
               </template>
-            </el-popover>
-            <div class="footer-action">
+            </DyPopover>
+            <div class="footer-action" title="业务合作">
               <div
-                class="footer-action__icon footer-action__icon--light"
+                class="footer-action__icon footer-action__icon--coop footer-action__icon--light"
                 v-if="currentTheme === 'light'"
               ></div>
               <div
-                class="footer-action__icon footer-action__icon--dark"
+                class="footer-action__icon footer-action__icon--coop footer-action__icon--dark"
                 v-if="currentTheme === 'dark'"
               ></div>
-              <div class="footer-action__label"><span>业务合作</span></div>
+            </div>
+            <div class="footer-action" title="帮助">
+              <div class="footer-action__icon footer-action__icon--help">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="1em"
+                  height="1em"
+                  focusable="false"
+                  id="douyin-sidebar-new"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M11.9999 4.75C7.99575 4.75 4.74976 7.99599 4.74976 12.0001C4.74976 16.0043 7.99575 19.2502 11.9999 19.2502C16.004 19.2502 19.25 16.0043 19.25 12.0001C19.25 10.5774 18.841 9.2525 18.1344 8.13394C16.8488 6.0989 14.5816 4.75 11.9999 4.75ZM3.24976 12.0001C3.24976 7.16756 7.16732 3.25 11.9999 3.25C15.1176 3.25 17.8537 4.88105 19.4025 7.33284C20.2561 8.68408 20.75 10.2856 20.75 12.0001C20.75 16.8327 16.8324 20.7502 11.9999 20.7502C7.16732 20.7502 3.24976 16.8327 3.24976 12.0001ZM8.25 10C8.25 7.92894 9.92894 6.25 12 6.25C14.0711 6.25 15.75 7.92894 15.75 10C15.75 11.8142 14.4617 13.3275 12.75 13.675V14.5H11.25V13C11.25 12.5858 11.5858 12.25 12 12.25C13.2426 12.25 14.25 11.2426 14.25 10C14.25 8.75736 13.2426 7.75 12 7.75C10.7574 7.75 9.75 8.75736 9.75 10H8.25ZM13.25 16.5625C13.25 17.2528 12.6903 17.8125 12 17.8125C11.3097 17.8125 10.75 17.2528 10.75 16.5625C10.75 15.8722 11.3097 15.3125 12 15.3125C12.6903 15.3125 13.25 15.8722 13.25 16.5625Z"
+                    fill="currentColor"
+                  ></path>
+                </svg>
+              </div>
             </div>
           </div>
         </div>
@@ -262,15 +309,13 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
     position: fixed;
     z-index: 2;
     background: var(--color-bg-b0);
-
-    &::before {
-      background-color: var(--color-line-l3);
-      content: ' ';
-      height: 1px;
-      left: 8px;
-      position: absolute;
-      width: calc(100% - 16px);
-    }
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 8px;
+    width: $sidebar-width-min;
   }
 }
 
@@ -306,7 +351,7 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
   flex-direction: column;
   user-select: none;
 
-  &__item {
+  .nav-menu__item {
     align-items: center;
     cursor: pointer;
     display: flex;
@@ -329,7 +374,7 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
     }
   }
 
-  &__item-inner {
+  .nav-menu__item-inner {
     align-items: center;
     display: flex;
     flex-direction: column;
@@ -340,7 +385,7 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
     position: relative;
   }
 
-  &__icon {
+  .nav-menu__icon {
     height: 24px;
     width: 24px;
     opacity: 0.5;
@@ -354,7 +399,7 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
     }
   }
 
-  &__title-wrapper {
+  .nav-menu__title-wrapper {
     display: flex;
     align-self: center;
     line-height: 1;
@@ -362,7 +407,7 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
     position: relative;
   }
 
-  &__title {
+  .nav-menu__title {
     color: var(--color-text-t2);
     font-size: 12px;
     font-weight: 400;
@@ -371,25 +416,26 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
     max-width: 70px;
   }
 
-  &__refresh-btn {
-    width: 18px;
-    height: 18px;
+  .nav-menu__refresh-btn {
+    width: 16px;
+    height: 16px;
     padding: 0;
-    margin-left: 4px;
     border: none;
     background: transparent;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-text-t2);
-    opacity: 0.6;
     transition: opacity 0.2s, transform 0.2s;
     flex-shrink: 0;
+    margin: 0 4px 0 auto;
 
     svg {
       width: 100%;
       height: 100%;
+      path {
+        fill: var(--color-text-t0);
+      }
     }
 
     &:hover {
@@ -406,7 +452,7 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
     }
   }
 
-  &__divider {
+  .nav-menu__divider {
     border-bottom: 1px solid var(--color-line-l3);
     height: 1px;
     margin: 12px 24px 10px;
@@ -416,24 +462,27 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
 
 .footer-action {
   color: var(--color-text-t3);
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
-  flex-direction: column;
-  position: relative;
-  width: 70px;
-  margin: 12px 0;
-  padding: 8px 0 8px 8px;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
 
   &:hover {
     background: var(--color-fill-hover);
 
     .footer-action__icon {
       opacity: 1;
+
+      svg {
+        opacity: 1;
+      }
     }
   }
 
-  &__icon {
+  .footer-action__icon {
     background-size: 1152px;
     height: 24px;
     opacity: 0.5;
@@ -451,17 +500,24 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
     &--setting {
       background-position: -912px center;
     }
-  }
 
-  &__label {
-    align-items: center;
-    display: flex;
-    flex-grow: 1;
+    &--coop {
+      background-position: -864px center;
+    }
 
-    span {
-      font-size: 12px;
-      font-weight: 400;
-      line-height: 20px;
+    &--help {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+
+      svg {
+        width: 100%;
+        height: 100%;
+        color: var(--color-text-t1);
+      }
     }
   }
 }
@@ -470,11 +526,11 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
   .sidebar {
     flex-basis: $sidebar-width;
 
-    &__container {
+    .sidebar__container {
       width: $sidebar-width;
     }
 
-    &__logo {
+    .sidebar__logo {
       flex-basis: $sidebar-width !important;
 
       &-link {
@@ -486,7 +542,7 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
       }
     }
 
-    &__content {
+    .sidebar__content {
       height: calc(100vh - var(--header-height) - 88px);
     }
   }
@@ -529,23 +585,15 @@ const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
     }
   }
 
+  .sidebar__footer {
+    width: $sidebar-width !important;
+    justify-content: flex-start;
+    padding: 12px 16px;
+  }
+
   .footer-action {
-    align-items: center !important;
-    flex-direction: row !important;
-    height: 38px;
-    width: 128px !important;
-    padding: 8px 0 8px 16px !important;
-    margin: 4px 16px !important;
-
-    &__icon {
-      margin-right: 12px;
-    }
-
-    &__label span {
-      margin-right: 4px;
-      font-size: 14px;
-      line-height: 22px;
-    }
+    width: 40px;
+    height: 40px;
   }
 }
 

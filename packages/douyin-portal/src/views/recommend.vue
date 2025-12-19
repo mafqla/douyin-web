@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import SwiperControl from '@/components/swiper/swiper-control.vue'
 import SwiperVideo from '@/components/swiper/swiper-video.vue'
 import { videosCtrolStore } from '@/stores/videos-control'
@@ -11,37 +11,59 @@ const loading = ref(true)
 const list = ref<IAwemeInfo[]>([])
 const control = videosCtrolStore()
 const message = ref('')
+
+// 获取数据（追加模式）
 const getData = async (count: number, refresh_index: number) => {
   try {
     const { aweme_list, has_more } = await apis.getRecommendFeed(
       count,
       refresh_index
     )
-    // console.log(aweme_list)
-
     loading.value = false
-
     list.value.push(...aweme_list)
     control.videosNum = list.value.length
-    if (!has_more) {
-    }
   } catch (err) {}
 }
 
+// 刷新数据（清空并重新获取）
+const refreshData = async () => {
+  list.value = []
+  loading.value = true
+  control.reset()
+  await getData(control.count, control.refresh_index)
+}
+
+// 监听刷新版本号变化
+watch(
+  () => control.refreshVersion,
+  () => {
+    refreshData()
+  }
+)
+
+// 监听 refresh_index 变化，加载更多数据
+watch(
+  () => control.refresh_index,
+  (newVal, oldVal) => {
+    // 只在 refresh_index 增加时加载更多（排除刷新时的重置）
+    if (newVal > 1) {
+      getData(control.count, newVal)
+    }
+  }
+)
+
 onMounted(() => {
-  //设置body为possition:fixed
   document.body.style.position = 'fixed'
   control.reset()
+  // 初始加载
+  getData(control.count, control.refresh_index)
 })
-//组件销毁时，去除body的possition:fixed
+
 onBeforeUnmount(() => {
   document.body.style.position = ''
 })
-//获取路由地址
+
 const router = useRouter()
-watchEffect(() => {
-  getData(control.count, control.refresh_index)
-})
 </script>
 <template>
   <div class="recommend">

@@ -38,11 +38,15 @@ const props = withDefaults(
     /** 弹出层 z-index */
     zIndex?: number
     /** 弹出层类名 */
+    popoverClass?: string
+    /** 弹出层自定义样式 */
+    popoverStyle?: Record<string, string | number>
+    /** 内容区域类名 */
     contentClassName?: string
     /** 关闭时销毁内容 */
     destroyOnClose?: boolean
-    /** 主题 */
-    theme?: PopoverTheme
+    /** 主题，设为 false 禁用默认主题样式 */
+    theme?: PopoverTheme | false
     /** 是否自动调整位置防止溢出 */
     autoAdjustOverflow?: boolean
   }>(),
@@ -57,6 +61,7 @@ const props = withDefaults(
     mouseLeaveDelay: 100,
     clickToHide: true,
     zIndex: 1050,
+    popoverClass: '',
     contentClassName: '',
     destroyOnClose: false,
     theme: 'dark',
@@ -260,20 +265,21 @@ const handleClickOutside = (e: MouseEvent) => {
 }
 
 // 弹出层类名
-const popoverClass = computed(() => [
+const popoverClassList = computed(() => [
   'dy-popover',
   `dy-popover--${actualPosition.value}`,
-  `dy-popover--${props.theme}`,
-  props.contentClassName,
+  props.theme && `dy-popover--${props.theme}`,
+  props.popoverClass,
   {
     'dy-popover--with-arrow': props.showArrow
   }
 ])
 
 // 弹出层样式
-const popoverStyle = computed(() => ({
+const popoverStyleObj = computed(() => ({
   '--popover-spacing': `${props.spacing}px`,
-  '--popover-z-index': props.zIndex
+  '--popover-z-index': props.zIndex,
+  ...props.popoverStyle
 }))
 
 // 是否渲染内容
@@ -328,13 +334,13 @@ defineExpose({
       v-if="shouldRender"
       v-show="isVisible"
       ref="popoverRef"
-      :class="popoverClass"
-      :style="popoverStyle"
+      :class="popoverClassList"
+      :style="popoverStyleObj"
       @mouseenter="handlePopoverMouseEnter"
       @mouseleave="handlePopoverMouseLeave"
     >
       <div v-if="showArrow" class="dy-popover__arrow" />
-      <div class="dy-popover__content">
+      <div class="dy-popover__content" :class="contentClassName">
         <slot name="content">{{ content }}</slot>
       </div>
     </div>
@@ -385,6 +391,16 @@ defineExpose({
     backdrop-filter: blur(8px);
     color: rgba(0, 0, 0, 0.85);
     border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  &--transparent {
+    background-color: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    
+    .dy-popover__content {
+      padding: 0;
+    }
   }
 
   &__content {
