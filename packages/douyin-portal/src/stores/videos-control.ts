@@ -68,6 +68,13 @@ export const videosCtrolStore = defineStore('control', () => {
     stopScroll.value = false
   }
 
+  // 刷新推荐列表（触发重新加载）
+  const refreshRecommend = () => {
+    reset()
+    // 触发 refresh_index 变化以重新获取数据
+    refresh_index.value = 1
+  }
+
   return {
     isShowComment,
     isShowRelated,
@@ -82,6 +89,7 @@ export const videosCtrolStore = defineStore('control', () => {
     stopScroll,
     handlePrev,
     handleNext,
-    reset
+    reset,
+    refreshRecommend
   }
 })

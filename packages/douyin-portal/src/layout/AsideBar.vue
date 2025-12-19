@@ -1,163 +1,199 @@
 <script lang="ts" setup>
-import useTheme from '@/hooks/useTheme'
 import { settingStore } from '@/stores/setting'
-import { computed, ref, toRef, watchEffect } from 'vue'
+import { videosCtrolStore } from '@/stores/videos-control'
+import { computed, toRef, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { menuRoutes } from '@/router/routes'
 import CoopPanel from './coop-panel.vue'
 
+// 菜单项类型
+interface MenuItem {
+  id: string
+  title: string
+  path: string
+  iconOffset: string
+  groupId?: number
+}
+
 const router = useRouter()
-const route = useRoute()
-const activeIndex = ref()
+const currentRoute = useRoute()
+const currentTheme = toRef(settingStore(), 'theme')
+const videosControl = videosCtrolStore()
 
-const menuItems = [
-  { index: '1', title: '精选', path: '/discover', icon: '0' },
-  { index: '2', title: '推荐', path: '/', icon: '-48' },
-  { index: '3', title: 'AI抖音', path: '/', icon: '-96' },
-  
-  { index: '4', title: '关注', path: '/follow', icon: '-144' },
-  { index: '5', title: '朋友', path: '/friend', icon: '-192' },
-  { index: '6', title: '我的', path: '/user/self', icon: '-816' },
-  { index: '7', title: '直播', path: '/live', icon: '-240' },
-  { index: '8', title: '放映厅', path: '/vs', icon: '-288' },
-  { index: '9', title: '短剧', path: '/vs', icon: '-960' },
+// 刷新按钮状态
+const isRefreshing = ref(false)
+const hoveredMenuPath = ref<string | null>(null)
 
-  { index: '10', title: '热点', path: '/hot', icon: '-384' },
-  { index: '11', title: '娱乐', path: '/channel/300201', icon: '-432' },
-  { index: '12', title: '知识', path: '/channel/300203', icon: '-480' },
-  { index: '13', title: '二次元', path: '/channel/300206', icon: '-528' },
-  { index: '14', title: '游戏', path: '/channel/300205', icon: '-576' },
-  { index: '15', title: '美食', path: '/channel/300204', icon: '-624' },
-  { index: '16', title: '体育', path: '/channel/300207', icon: '-672' },
-  { index: '17', title: '时尚', path: '/channel/300208', icon: '-720' },
-  { index: '18', title: '音乐', path: '/channel/300209', icon: '-768' }
-]
+// 从路由配置生成菜单列表
+const navMenuList = computed<MenuItem[]>(() => {
+  return menuRoutes
+    .filter((route) => !route.meta?.hidden)
+    .map((route, idx) => ({
+      id: String(idx + 1),
+      title: route.meta?.title || '',
+      path: route.path as string,
+      iconOffset: route.meta?.icon || '0',
+      groupId: route.meta?.group
+    }))
+})
 
-const handleSelect = (index: any) => {
-  // activeIndex.value = index
-  // console.log(menuItems[index - 1].path)
-  // router.push(menuItems[index - 1].path)
-
-  const menuItem = menuItems.find((item) => item.index === index)
-  if (menuItem) {
-    activeIndex.value = index
-    let newPath = menuItem.path
-
-    // 如果选择的菜单项为 'user/self'，添加查询参数 showTab=like
-    if (newPath === '/user/self') {
-      newPath += '?showTab=like'
-    }
-
-    router.push(newPath)
-  }
-}
-
-const calculateBackgroundPosition = (index: string) => {
-  const offsetX = activeIndex.value === index ? -24 : 0
-  const newX = parseInt(menuItems[Number(index) - 1].icon) + offsetX
-  return `${newX}px 0px`
-}
-
-const activeMenu = computed(() => {
-  const { path } = route
-  const index = Object.values(menuItems).findIndex((item) => {
-    // console.log(item.path, `/${path.split('/').splice(1, 2).join('/')}`)
-    return (
-      item.path === `/${path.split('/')[1]}` ||
-      item.path === `/${path.split('/').splice(1, 2).join('/')}`
-    )
+// 当前激活的菜单ID
+const activeMenuId = computed(() => {
+  const currentPath = currentRoute.path
+  const matchedIndex = navMenuList.value.findIndex((menu) => {
+    const firstSegment = `/${currentPath.split('/')[1]}`
+    const twoSegments = `/${currentPath.split('/').slice(1, 3).join('/')}`
+    return menu.path === currentPath || menu.path === firstSegment || menu.path === twoSegments
   })
-  activeIndex.value = (index + 1).toString()
-  return (index + 1).toString()
+  return matchedIndex >= 0 ? String(matchedIndex + 1) : ''
 })
 
-const theme = toRef(settingStore(), 'theme')
-const isSearchRoute = ref(false)
-watchEffect(() => {
-  isSearchRoute.value = router.currentRoute.value.path.includes('search')
-})
+// 是否在搜索页面
+const isSearchPage = computed(() => currentRoute.path.includes('search'))
+
+// 是否在推荐页面
+const isRecommendPage = computed(() => currentRoute.path === '/')
+
+// 判断是否显示分组分隔线
+const shouldShowDivider = (index: number): boolean => {
+  const currentItem = navMenuList.value[index]
+  const nextItem = navMenuList.value[index + 1]
+  return !!nextItem && currentItem.groupId !== nextItem.groupId
+}
+
+// 处理菜单点击
+const handleMenuClick = (menu: MenuItem) => {
+  const targetPath = menu.path === '/user/self' ? `${menu.path}?showTab=like` : menu.path
+  router.push(targetPath)
+}
+
+// 计算图标背景位置
+const getIconPosition = (menu: MenuItem): string => {
+  const activeOffset = activeMenuId.value === menu.id ? -24 : 0
+  const positionX = parseInt(menu.iconOffset) + activeOffset
+  return `${positionX}px 0px`
+}
+
+// 处理刷新按钮点击
+const handleRefreshClick = (event: Event) => {
+  event.stopPropagation()
+  if (isRefreshing.value) return
+
+  isRefreshing.value = true
+  videosControl.refreshRecommend()
+
+  // 1.5秒后恢复按钮状态
+  setTimeout(() => {
+    isRefreshing.value = false
+  }, 1500)
+}
+
+// 处理菜单项鼠标进入
+const handleMenuMouseEnter = (path: string) => {
+  hoveredMenuPath.value = path
+}
+
+// 处理菜单项鼠标离开
+const handleMenuMouseLeave = () => {
+  hoveredMenuPath.value = null
+}
+
+// 判断是否显示刷新按钮
+const shouldShowRefreshBtn = (menu: MenuItem): boolean => {
+  return menu.path === '/' && isRecommendPage.value && hoveredMenuPath.value === menu.path
+}
 </script>
 
 <template>
-  <div class="aside">
-    <!--todo 打开用户作品列表-->
-    <div
-      class="aside-bar"
-      :style="isSearchRoute ? { background: 'unset' } : {}"
-    >
-      <div class="aside-top">
-        <div class="aside-logo">
-          <a href="/" class="aside-logo-a"></a>
+  <div class="sidebar">
+    <div class="sidebar__container" :style="isSearchPage ? { background: 'unset' } : {}">
+      <div class="sidebar__header">
+        <div class="sidebar__logo">
+          <a href="/" class="sidebar__logo-link"></a>
         </div>
       </div>
 
-      <div class="aside-content">
+      <div class="sidebar__content">
         <div class="douyin-navigation">
-          <div class="menu-container" :default-active="activeMenu">
-            <template v-for="item in menuItems" :key="item.index">
+          <div class="nav-menu">
+            <template v-for="(menu, index) in navMenuList" :key="menu.path">
               <div
-                class="menu-item"
-                :index="item.index"
-                @click="handleSelect(item.index)"
-                :class="{ active: activeIndex === item.index }"
+                class="nav-menu__item"
+                :class="{ 'nav-menu__item--active': activeMenuId === menu.id }"
+                @click="handleMenuClick(menu)"
+                @mouseenter="handleMenuMouseEnter(menu.path)"
+                @mouseleave="handleMenuMouseLeave"
               >
-                <div class="item-container">
+                <div class="nav-menu__item-inner">
                   <div
-                    class="icon dark"
+                    class="nav-menu__icon nav-menu__icon--dark"
                     :style="{
-                      'background-position': calculateBackgroundPosition(
-                        item.index
-                      ),
+                      'background-position': getIconPosition(menu),
                       'background-size': '1152px auto'
                     }"
-                    v-show="theme === 'dark'"
+                    v-show="currentTheme === 'dark'"
                   ></div>
                   <div
-                    class="icon light"
+                    class="nav-menu__icon nav-menu__icon--light"
                     :style="{
-                      'background-position': calculateBackgroundPosition(
-                        item.index
-                      ),
+                      'background-position': getIconPosition(menu),
                       'background-size': '1152px auto'
                     }"
-                    v-show="theme === 'light'"
+                    v-show="currentTheme === 'light'"
                   ></div>
-
-                  <div class="title-container">
-                    <span class="title">{{ item.title }}</span>
+                  <div class="nav-menu__title-wrapper">
+                    <span class="nav-menu__title">{{ menu.title }}</span>
+                    <!-- 推荐页刷新按钮 -->
+                    <div
+                      v-if="shouldShowRefreshBtn(menu)"
+                      class="nav-menu__refresh-btn"
+                      :class="{ 'nav-menu__refresh-btn--refreshing': isRefreshing }"
+                      @click="handleRefreshClick"
+                      title="刷新推荐"
+                    >
+                      <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+                        <path
+                          d="M24.932 16.444c0-4.687-3.89-8.444-8.634-8.444a8.679 8.679 0 0 0-7.207 3.79v-1.558a.99.99 0 0 0-1.98 0v4.038c0 .547.444.99.99.99h4.038a.99.99 0 0 0 0-1.98h-1.646c1.137-1.963 3.304-3.3 5.804-3.3 3.7 0 6.655 2.918 6.655 6.464 0 3.547-2.956 6.465-6.655 6.465-2.963 0-5.459-1.88-6.326-4.453a.99.99 0 0 0-1.876.633c1.138 3.38 4.39 5.8 8.202 5.8 4.746 0 8.635-3.758 8.635-8.445z"
+                          fill="currentColor"
+                        ></path>
+                      </svg>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="horizontal-line" v-if="item.index === '3'"></div>
-              <div class="horizontal-line" v-if="item.index === '6'"></div>
+              <div class="nav-menu__divider" v-if="shouldShowDivider(index)"></div>
             </template>
           </div>
 
-          <div class="aside-bottom">
+          <div class="sidebar__footer">
             <el-popover :show-arrow="false" placement="right-start">
               <template #reference>
-                <div class="aside-bottom-item">
+                <div class="footer-action">
                   <div
-                    class="aside-bottom-icon setting light"
-                    v-if="theme === 'light'"
+                    class="footer-action__icon footer-action__icon--setting footer-action__icon--light"
+                    v-if="currentTheme === 'light'"
                   ></div>
                   <div
-                    class="aside-bottom-icon setting dark"
-                    v-if="theme === 'dark'"
+                    class="footer-action__icon footer-action__icon--setting footer-action__icon--dark"
+                    v-if="currentTheme === 'dark'"
                   ></div>
-                  <div class="aside-bottom-title"><span>设置</span></div>
+                  <div class="footer-action__label"><span>设置</span></div>
                 </div>
               </template>
               <template #default>
                 <coop-panel />
               </template>
             </el-popover>
-            <div class="aside-bottom-item">
+            <div class="footer-action">
               <div
-                class="aside-bottom-icon light"
-                v-if="theme === 'light'"
+                class="footer-action__icon footer-action__icon--light"
+                v-if="currentTheme === 'light'"
               ></div>
-              <div class="aside-bottom-icon dark" v-if="theme === 'dark'"></div>
-              <div class="aside-bottom-title"><span>业务合作</span></div>
+              <div
+                class="footer-action__icon footer-action__icon--dark"
+                v-if="currentTheme === 'dark'"
+              ></div>
+              <div class="footer-action__label"><span>业务合作</span></div>
             </div>
           </div>
         </div>
@@ -167,239 +203,218 @@ watchEffect(() => {
 </template>
 
 <style lang="scss" scoped>
-.aside {
+.sidebar {
   flex-basis: $sidebar-width-min;
   flex-shrink: 0;
   position: relative;
   background: var(--color-bg-b0);
   z-index: 200;
 
-  .aside-bar {
+  &__container {
     width: $sidebar-width-min;
     background: no-repeat url(@/assets/test.png) var(--color-bg-b0);
     height: 100vh;
     position: fixed;
     z-index: 100;
+  }
 
-    &.open-user-post {
-      left: -100vw;
+  &__header {
+    height: 68px;
+    width: 100%;
+    position: relative;
+    user-select: none;
+  }
+
+  &__logo {
+    background: transparent !important;
+    align-items: center;
+    display: flex;
+    flex-basis: $sidebar-width-min;
+    flex-shrink: 0;
+    height: 165%;
+    justify-content: center;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    z-index: 2;
+
+    &-link {
+      -webkit-app-region: no-drag;
+      background: var(--logo-small-url) no-repeat;
+      height: 34px;
+      opacity: 1;
+      transition: opacity 0.3s;
+      width: 30px;
     }
+  }
 
-    .aside-top {
-      // height: 60px;
-      height: 68px;
-      width: 100%;
-      position: relative;
-      user-select: none;
+  &__content {
+    z-index: 20;
+    height: calc(100vh - var(--header-height) - 64px);
+    position: relative;
+    overflow: hidden;
+  }
 
-      .aside-logo {
-        // background: linear-gradient(
-        //   180deg,
-        //   #eff0f3 80%,
-        //   rgba(241, 242, 245, 0)
-        // );
-        background: transparent !important;
-        // background-image: url(@/assets/icons/douyin.svg);
-        // background-repeat: no-repeat;
-        // display: flex;
-        // flex-basis: 72px;
-        // justify-content: center;
-        // left: 50%;
-        // position: absolute;
-        // top: 50%;
-        // transform: translate(-24%, -28%);
-        // width: 100%;
-        // height: 60px;
-        // z-index: 2;
+  &__footer {
+    bottom: 0;
+    position: fixed;
+    z-index: 2;
+    background: var(--color-bg-b0);
 
-        align-items: center;
-        background: #f2f2f4;
-        display: flex;
-        flex-basis: $sidebar-width-min;
-        flex-shrink: 0;
-        height: 165%;
-        justify-content: center;
-        left: 50%;
-        position: absolute;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        width: 100%;
-        z-index: 2;
-
-        .aside-logo-a {
-          -webkit-app-region: no-drag;
-          // background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMzQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTExLjY0IDEzLjQzNHYtMS4zMWMtLjQ1NS0uMDU1LS45MS0uMDkyLTEuMzg0LS4wOTJDNC42MDkgMTIuMDMyIDAgMTYuNjIgMCAyMi4yODJjMCAzLjQ2IDEuNzMgNi41MzcgNC4zNzIgOC4zOTRhMTAuMTc3IDEwLjE3NyAwIDAgMS0yLjc1LTYuOTczYy4wMTctNS41OSA0LjQ4LTEwLjE0MSAxMC4wMTgtMTAuMjY5WiIgZmlsbD0iIzAwRkFGMCIvPjxwYXRoIGQ9Ik0xMS44NzcgMjguMzQ1YTQuNjc1IDQuNjc1IDAgMCAwIDQuNjY0LTQuNDk3VjEuNTQ1aDQuMDhhNy4yMjYgNy4yMjYgMCAwIDEtLjEyNy0xLjQyaC01LjU3NXYyMi4zMDNhNC42NzUgNC42NzUgMCAwIDEtNC42NjMgNC40OTdjLS43ODMgMC0xLjUzLS4yLTIuMTY4LS41NDZhNC42NDQgNC42NDQgMCAwIDAgMy43OSAxLjk2NlpNMjguMjUyIDkuMTJWNy44OGE3LjY4MyA3LjY4MyAwIDAgMS00LjIyNi0xLjI1NiA3LjkxNiA3LjkxNiAwIDAgMCA0LjIyNiAyLjQ5NFoiIGZpbGw9IiMwMEZBRjAiLz48cGF0aCBkPSJNMjQuMDQ2IDYuNjI1YTcuNzIgNy43MiAwIDAgMS0xLjkxMy01LjA4aC0xLjQ5NGE3LjgzNSA3LjgzNSAwIDAgMCAzLjQwNyA1LjA4Wk0xMC4yNTYgMTcuNTg1YTQuNjc5IDQuNjc5IDAgMCAwLTQuNjgyIDQuNjc5YzAgMS44MDIgMS4wMiAzLjM1IDIuNTE0IDQuMTMzYTQuNzA3IDQuNzA3IDAgMCAxLS44OTMtMi43MzEgNC42NzkgNC42NzkgMCAwIDEgNC42ODItNC42OGMuNDc0IDAgLjk0Ny4wNzMgMS4zODQuMjE5di01LjY4Yy0uNDU1LS4wNTUtLjkxLS4wOTEtMS4zODQtLjA5MWgtLjIzN3Y0LjM3YTQuMzI1IDQuMzI1IDAgMCAwLTEuMzg0LS4yMloiIGZpbGw9IiNGRjAwNTAiLz48cGF0aCBkPSJNMjguMjUzIDkuMTJ2NC4zMzJjLTIuODk2IDAtNS41NTYtLjkyOC03Ljc0Mi0yLjQ5NHYxMS4zMDZjMCA1LjY0NC00LjU5IDEwLjI1LTEwLjI1NiAxMC4yNS0yLjE4NiAwLTQuMjA4LS42OTEtNS44NjUtMS44NTcgMS44NzYgMi4wMDMgNC41MzUgMy4yNzcgNy41MDUgMy4yNzcgNS42NDcgMCAxMC4yNTYtNC41ODcgMTAuMjU2LTEwLjI1VjEyLjM3OGExMy4yNjggMTMuMjY4IDAgMCAwIDcuNzQxIDIuNDk0di01LjU3YTkuNjEzIDkuNjEzIDAgMCAxLTEuNjM5LS4xODNaIiBmaWxsPSIjRkYwMDUwIi8+PHBhdGggZD0iTTIwLjUxIDIyLjI2NVYxMC45NTlhMTMuMjY4IDEzLjI2OCAwIDAgMCA3Ljc0MiAyLjQ5NFY5LjEyYTcuODUgNy44NSAwIDAgMS00LjIyNi0yLjQ5NCA3LjY2IDcuNjYgMCAwIDEtMy4zODgtNS4wOGgtNC4wOHYyMi4zMDNhNC42NzUgNC42NzUgMCAwIDEtNC42NjQgNC40OTcgNC42MjUgNC42MjUgMCAwIDEtMy43OS0xLjk0OCA0LjY3OCA0LjY3OCAwIDAgMS0yLjUxMy00LjEzMyA0LjY3OSA0LjY3OSAwIDAgMSA0LjY4Mi00LjY4Yy40NzMgMCAuOTQ3LjA3NCAxLjM4NC4yMnYtNC4zN2MtNS41MzguMTI3LTEwIDQuNjc5LTEwIDEwLjIzMiAwIDIuNjk0IDEuMDM4IDUuMTUyIDIuNzUgNi45NzNhMTAuMjEgMTAuMjEgMCAwIDAgNS44NjYgMS44NTdjNS42MjguMDE4IDEwLjIzNy00LjU4OCAxMC4yMzctMTAuMjMyWiIgZmlsbD0iIzExMSIvPjwvc3ZnPg==)
-          //   no-repeat;
-          background: var(--logo-small-url) no-repeat;
-          height: 34px;
-          opacity: 1;
-          transition: opacity 0.3s;
-          width: 30px;
-        }
-
-        // .icon {
-        //   height: 34px;
-        //   opacity: 1;
-        //   width: 91px;
-        // }
-      }
-    }
-
-    .aside-content {
-      z-index: 20;
-      height: calc(100vh - var(--header-height) - 64px);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .douyin-navigation {
-      background-position: 0 100%;
-      background-size: cover;
-      bottom: 0;
-      height: calc(100% - 68px);
-      outline: none;
-      width: $sidebar-width-min;
-      z-index: 20;
-      background: transparent !important;
-
-      // bottom: 8px;
-      overflow-x: hidden;
-      overflow-y: scroll;
-      -ms-overflow-style: none;
-      overflow: -moz-scrollbars-none;
-      overscroll-behavior: contain;
-      scrollbar-color: transparent transparent !important;
-      position: fixed;
-      scrollbar-width: none !important;
-
-      &::-webkit-scrollbar {
-        display: none;
-      }
-
-      :deep(.el-menu) {
-        all: unset;
-      }
-
-      .menu-container {
-        display: flex;
-        flex-direction: column;
-        // align-items: center;
-        user-select: none;
-
-        :deep(.menu-item:hover) {
-          background-color: unset;
-        }
-
-        .menu-item {
-          align-items: center;
-          cursor: pointer;
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-start;
-          margin: 8px 10px 0;
-
-          &.active,
-          &:hover {
-            // background: rgba(37, 38, 50, 0.08);
-            background: var(--color-fill-hover);
-            border-radius: 12px;
-
-            span {
-              color: var(--color-text-t0) !important;
-            }
-
-            .icon {
-              opacity: 1 !important;
-            }
-          }
-
-          .item-container {
-            align-items: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            height: 100%;
-            // justify-content: flex-start;
-            padding: 6px 8px;
-            width: 100%;
-            position: relative;
-
-            .icon {
-              height: 24px;
-              width: 24px;
-              opacity: 0.5;
-            }
-
-            .icon.light {
-              background-image: url(@/assets/nav_light-new1.png);
-            }
-
-            .icon.dark {
-              background-image: url(@/assets/nav_dark-new1.png);
-            }
-
-            .title-container {
-              display: flex;
-              align-self: center;
-              line-height: 1;
-              margin-top: 4px;
-              position: relative;
-
-              .title {
-                color: var(--color-text-t2);
-                font-size: 12px;
-                font-weight: 500;
-                font-weight: 400;
-                line-height: 20px;
-                margin-top: -4px;
-                max-width: 70px;
-              }
-            }
-          }
-        }
-
-        // 选中的样式
-        .menu-item.is-active {
-          color: var(--color-text-t0);
-
-          .icon {
-            opacity: 1;
-          }
-
-          span {
-            opacity: 1;
-            color: var(--color-text-t0) !important;
-          }
-        }
-      }
-
-      .aside-bottom {
-        // width: $sidebar-width;
-        // height: 540px;
-        // display: block;
-        // position: absolute;
-        // bottom: -400px;
-        // z-index: 1;
-
-        bottom: 0;
-        position: fixed;
-        z-index: 2;
-        background: var(--color-bg-b0);
-
-        &::before {
-          background-color: var(--color-line-l3);
-          content: ' ';
-          height: 1px;
-          left: 8px;
-          position: absolute;
-          width: calc(100% - 16px);
-        }
-      }
+    &::before {
+      background-color: var(--color-line-l3);
+      content: ' ';
+      height: 1px;
+      left: 8px;
+      position: absolute;
+      width: calc(100% - 16px);
     }
   }
 }
 
-.aside-bottom-item {
+.douyin-navigation {
+  background-position: 0 100%;
+  background-size: cover;
+  bottom: 0;
+  height: calc(100% - 68px);
+  outline: none;
+  width: $sidebar-width-min;
+  z-index: 20;
+  background: transparent !important;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  overflow: -moz-scrollbars-none;
+  overscroll-behavior: contain;
+  scrollbar-color: transparent transparent !important;
+  position: fixed;
+  scrollbar-width: none !important;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  :deep(.el-menu) {
+    all: unset;
+  }
+}
+
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+
+  &__item {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin: 8px 10px 0;
+
+    &--active,
+    &:hover {
+      background: var(--color-fill-hover);
+      border-radius: 12px;
+
+      span {
+        color: var(--color-text-t0) !important;
+      }
+
+      .nav-menu__icon {
+        opacity: 1 !important;
+      }
+    }
+  }
+
+  &__item-inner {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    padding: 6px 8px;
+    width: 100%;
+    position: relative;
+  }
+
+  &__icon {
+    height: 24px;
+    width: 24px;
+    opacity: 0.5;
+
+    &--light {
+      background-image: url(@/assets/nav_light-new1.png);
+    }
+
+    &--dark {
+      background-image: url(@/assets/nav_dark-new1.png);
+    }
+  }
+
+  &__title-wrapper {
+    display: flex;
+    align-self: center;
+    line-height: 1;
+    margin-top: 4px;
+    position: relative;
+  }
+
+  &__title {
+    color: var(--color-text-t2);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
+    margin-top: -4px;
+    max-width: 70px;
+  }
+
+  &__refresh-btn {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    margin-left: 4px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-t2);
+    opacity: 0.6;
+    transition: opacity 0.2s, transform 0.2s;
+    flex-shrink: 0;
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &:active {
+      transform: scale(0.9);
+    }
+
+    &--refreshing {
+      animation: spin 1s linear infinite;
+      opacity: 1;
+    }
+  }
+
+  &__divider {
+    border-bottom: 1px solid var(--color-line-l3);
+    height: 1px;
+    margin: 12px 24px 10px;
+    width: 112px;
+  }
+}
+
+.footer-action {
   color: var(--color-text-t3);
   border-radius: 12px;
   cursor: pointer;
@@ -407,159 +422,150 @@ watchEffect(() => {
   flex-direction: column;
   position: relative;
   width: 70px;
-  margin: 12px 0px;
-  padding: 8px 0px 8px 8px;
+  margin: 12px 0;
+  padding: 8px 0 8px 8px;
 
   &:hover {
     background: var(--color-fill-hover);
 
-    .aside-bottom-icon {
+    .footer-action__icon {
       opacity: 1;
     }
   }
 
-  .aside-bottom-icon {
+  &__icon {
     background-size: 1152px;
     height: 24px;
     opacity: 0.5;
     width: 24px;
     background-position: -864px center;
 
-    &.light {
+    &--light {
       background-image: url(@/assets/nav_light-new1.png);
-
-      &.setting {
-        background-position: -912px center;
-      }
     }
 
-    &.dark {
+    &--dark {
       background-image: url(@/assets/nav_dark-new1.png);
+    }
 
-      &.setting {
-        background-position: -912px center;
-      }
+    &--setting {
+      background-position: -912px center;
     }
   }
-}
 
-.aside-bottom-title {
-  align-items: center;
-  display: flex;
-  flex-grow: 1;
+  &__label {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
 
-  span {
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 20px;
+    span {
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 20px;
+    }
   }
 }
 
 @media (min-width: 1240px) {
-  .aside {
+  .sidebar {
     flex-basis: $sidebar-width;
 
-    .aside-bar {
+    &__container {
       width: $sidebar-width;
-      // .douyin-navigation {
-      //   width: $sidebar-width;
-      // }
+    }
 
-      .douyin-navigation {
-        width: $sidebar-width !important;
-        bottom: 2px;
+    &__logo {
+      flex-basis: $sidebar-width !important;
 
-        .menu-item {
-          height: 40px !important;
-          margin: 2px 16px 0 !important;
-          align-items: flex-end !important;
-          flex-direction: row !important;
-
-          .item-container {
-            padding: 8px 16px !important;
-            display: flex !important;
-            flex-direction: row !important;
-            justify-content: flex-start !important;
-
-            .icon {
-              margin-right: 12px;
-            }
-
-            .title-container {
-              align-self: flex-start;
-              margin-top: 0 !important;
-              position: relative !important;
-              word-break: keep-all !important;
-
-              .title {
-                font-size: 16px !important;
-                line-height: 26px !important;
-                transform: scale(1);
-              }
-            }
-          }
-        }
-
-        .horizontal-line {
-          // border-bottom: 1px solid rgba(22, 24, 35, 0.6);
-          border-bottom: 1px solid var(--color-line-l3);
-          height: 1px;
-          margin: 12px 24px 10px;
-          width: 112px;
-        }
+      &-link {
+        background: var(--logo-url) no-repeat !important;
+        background-size: 72px 28px !important;
+        height: 28px !important;
+        opacity: 1 !important;
+        width: 91px !important;
       }
+    }
 
-      .aside-bottom-item {
-        align-items: center !important;
-        flex-direction: row !important;
-        height: 38px;
-        width: 128px !important;
-        padding: 8px 0px 8px 16px !important;
-        margin: 4px 16px !important;
-      }
-
-      .aside-bottom-icon {
-        margin-right: 12px;
-      }
+    &__content {
+      height: calc(100vh - var(--header-height) - 88px);
     }
   }
 
-  .aside-logo {
-    background: #f2f2f4;
-    height: 165%;
-    flex-basis: $sidebar-width !important;
+  .douyin-navigation {
+    width: $sidebar-width !important;
+    bottom: 2px;
+  }
 
-    .aside-logo-a {
-      background-size: 72px 28px !important;
-      height: 28px !important;
-      opacity: 1 !important;
-      width: 91px !important;
-      // background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzIiIGhlaWdodD0iMjkiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEwLjEyIDExLjg2di0xLjA3NGE5LjQ1NSA5LjQ1NSAwIDAgMC0xLjEzNi0uMDc1Yy00LjYzMSAwLTguNDEgMy43NjItOC40MSA4LjQwNiAwIDIuODM3IDEuNDE4IDUuMzYgMy41ODUgNi44ODNhOC4zNDcgOC4zNDcgMCAwIDEtMi4yNTYtNS43MThjLjAxNS00LjU4NCAzLjY3NS04LjMxNyA4LjIxNy04LjQyMVoiIGZpbGw9IiMwMEZBRjAiLz48cGF0aCBkPSJNMTAuMzE0IDI0LjA5YTMuODM0IDMuODM0IDAgMCAwIDMuODI0LTMuNjg5VjIuMTExaDMuMzQ3QTUuOTI3IDUuOTI3IDAgMCAxIDE3LjM4Ljk0NkgxMi44MXYxOC4yOWEzLjgzNCAzLjgzNCAwIDAgMS0zLjgyNSAzLjY4OSAzLjczOCAzLjczOCAwIDAgMS0xLjc3Ny0uNDQ4IDMuODA4IDMuODA4IDAgMCAwIDMuMTA3IDEuNjEzWk0yMy43NDMgOC4zMjJWNy4zMDdhNi4zMDEgNi4zMDEgMCAwIDEtMy40NjYtMS4wMyA2LjQ5MiA2LjQ5MiAwIDAgMCAzLjQ2NiAyLjA0NVoiIGZpbGw9IiMwMEZBRjAiLz48cGF0aCBkPSJNMjAuMjkzIDYuMjc3YTYuMzMyIDYuMzMyIDAgMCAxLTEuNTY5LTQuMTY1SDE3LjVhNi40MjYgNi40MjYgMCAwIDAgMi43OTMgNC4xNjVaTTguOTg0IDE1LjI2NWEzLjgzNyAzLjgzNyAwIDAgMC0zLjg0IDMuODM3IDMuODIgMy44MiAwIDAgMCAyLjA2MiAzLjM5IDMuODYgMy44NiAwIDAgMS0uNzMyLTIuMjQgMy44MzcgMy44MzcgMCAwIDEgMy44NC0zLjgzN2MuMzg4IDAgLjc3Ni4wNiAxLjEzNS4xNzl2LTQuNjU5YTkuNDU1IDkuNDU1IDAgMCAwLTEuMTM1LS4wNzRoLS4xOTV2My41ODNhMy41NDUgMy41NDUgMCAwIDAtMS4xMzUtLjE3OVoiIGZpbGw9IiNGRTJDNTUiLz48cGF0aCBkPSJNMjMuNzQ0IDguMzIydjMuNTU0Yy0yLjM3NSAwLTQuNTU3LS43NjItNi4zNS0yLjA0NnY5LjI3MmMwIDQuNjMtMy43NjQgOC40MDctOC40MSA4LjQwN2E4LjMzOSA4LjMzOSAwIDAgMS00LjgxLTEuNTIzYzEuNTM4IDEuNjQyIDMuNzIgMi42ODcgNi4xNTQgMi42ODcgNC42MzIgMCA4LjQxMS0zLjc2MiA4LjQxMS04LjQwNnYtOS4yNzJhMTAuODgyIDEwLjg4MiAwIDAgMCA2LjM1IDIuMDQ1VjguNDcxYTcuODg2IDcuODg2IDAgMCAxLTEuMzQ1LS4xNDlaIiBmaWxsPSIjRkUyQzU1Ii8+PHBhdGggZD0iTTE3LjM5NCAxOS4xMDNWOS44M2ExMC44ODIgMTAuODgyIDAgMCAwIDYuMzUgMi4wNDZWOC4zMjJhNi40MzcgNi40MzcgMCAwIDEtMy40NjctMi4wNDUgNi4yODIgNi4yODIgMCAwIDEtMi43NzktNC4xNjZoLTMuMzQ2VjIwLjRhMy44MzQgMy44MzQgMCAwIDEtMy44MjQgMy42ODkgMy43OTMgMy43OTMgMCAwIDEtMy4xMDgtMS41OTggMy44MzYgMy44MzYgMCAwIDEtMi4wNjEtMy4zOSAzLjgzNyAzLjgzNyAwIDAgMSAzLjgzOS0zLjgzN2MuMzg4IDAgLjc3Ny4wNiAxLjEzNS4xOFYxMS44NmMtNC41NDEuMTA0LTguMjAxIDMuODM3LTguMjAxIDguMzkxIDAgMi4yMS44NTEgNC4yMjYgMi4yNTUgNS43MmE4LjM3NCA4LjM3NCAwIDAgMCA0LjgxMSAxLjUyMmM0LjYxNi4wMTUgOC4zOTYtMy43NjMgOC4zOTYtOC4zOTFaIiBmaWxsPSIjMTExIi8+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00Ny4yNzYgNS44NDlINDUuMTJ2MTEuMzM4bC03LjE1LjYxOHYyLjI4N2w3LjE1LS42djUuMDkyaDIuMTU2di01LjI5M2wyLjIwNS0uMnYtMi4yODhsLTIuMjA2LjJWNS44NVptLTEyLjMgMGgtMi4xNzJ2My4xOUgzMC4yOHYyLjE3aDIuNTIzdjQuNDI1bC0yLjUyMy4zNjd2Mi4yODhsMi41MjMtLjM2N3YzLjc5YzAgLjMtLjI1MS41NTEtLjU1Mi41NTFoLTEuODJ2Mi4xNzFoMi43MjJhMS44MjUgMS44MjUgMCAwIDAgMS44MjEtMS44MnYtNS4wMWwyLjIwNi0uMzMzdi0yLjI4OGwtMi4yMDYuMzM0di00LjA5MWgyLjIwNlY5LjA1NWgtMi4yMDZWNS44NDlabTMuODk1IDEuNjA0TDQ0IDguMzd2Mi4yODhsLTUuMTMtLjkwMlY3LjQ1M1pNNDQgMTMuMTI5bC01LjEzLS45MTh2Mi4zMDRsNS4xMy45MTl2LTIuMzA1Wm0yMy40MzktMi43MjEtLjMzNCAxLjc3aDQuMjQzdjIuMTJINTIuMTg1di0yLjEyaDQuMzQ0bC0uMjg0LTEuNzdoMi4zMDVsLjI2OCAxLjc3aDUuOThsLjM1Mi0xLjc3aDIuMjg5Wm0zLjMwOC0zLjA1N2gtNy4yNjhsLS4zNjctMS41MDJoLTIuODI0bC4zNjggMS41MDJoLTcuODd2Mi4xMDRoMTcuOTYxVjcuMzUxWm0tMTUuMDAzIDguNTAxSDY3Ljc5YzEuMDE5IDAgMS44Mi44MTkgMS44MiAxLjgydjQuOTZjMCAxLjAwMi0uODE4IDEuODItMS44MiAxLjgySDU1Ljc0NGExLjgyNSAxLjgyNSAwIDAgMS0xLjgyMS0xLjgydi00Ljk2YzAtMS4wMDIuODE4LTEuODIgMS44Mi0xLjgyWm0xMS4yOTQgMS45N0g1Ni41MTJjLS4zIDAtLjU1MS4yMzQtLjUzNC41NTJ2Ljg4NWgxMS42MTF2LS44ODVjMC0uMy0uMjUtLjU1MS0uNTUxLS41NTFabS0xMC41MjYgNC42NzZoMTAuNTI2Yy4zIDAgLjUzNS0uMjUuNTM1LS41NXYtLjkwM0g1NS45NnYuOTAyYzAgLjMuMjUuNTUxLjU1MS41NTFaIiBmaWxsPSIjMTExIi8+PC9zdmc+)
-      //   no-repeat !important;
+  .nav-menu {
+    &__item {
+      height: 40px !important;
+      margin: 2px 16px 0 !important;
+      align-items: flex-end !important;
+      flex-direction: row !important;
+    }
 
-      background: var(--logo-url) no-repeat !important;
+    &__item-inner {
+      padding: 8px 16px !important;
+      display: flex !important;
+      flex-direction: row !important;
+      justify-content: flex-start !important;
+    }
+
+    &__icon {
+      margin-right: 12px;
+    }
+
+    &__title-wrapper {
+      align-self: flex-start;
+      margin-top: 0 !important;
+      position: relative !important;
+      word-break: keep-all !important;
+    }
+
+    &__title {
+      font-size: 16px !important;
+      line-height: 26px !important;
+      transform: scale(1);
     }
   }
 
-  .aside-bottom-title span {
-    margin-right: 4px;
-    font-size: 14px;
-    line-height: 22px;
-  }
+  .footer-action {
+    align-items: center !important;
+    flex-direction: row !important;
+    height: 38px;
+    width: 128px !important;
+    padding: 8px 0 8px 16px !important;
+    margin: 4px 16px !important;
 
-  .aside-content {
-    height: calc(100vh - var(--header-height) - 88px);
+    &__icon {
+      margin-right: 12px;
+    }
+
+    &__label span {
+      margin-right: 4px;
+      font-size: 14px;
+      line-height: 22px;
+    }
   }
 }
 
 @media (max-width: 1240px) {
-  .aside-bottom-item {
+  .footer-action {
     width: 52px;
     height: 52px;
     justify-content: center;
     align-items: center;
     margin: 6px 10px;
     padding: 0;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>
