@@ -22,6 +22,7 @@ import type {
   SearchResponse,
   searchSuggestResponse
 } from './tyeps/request_response/searchResponse'
+import type { ISearchSugRes } from './tyeps/request_response/searchSugRes'
 import type { IUserCollectFloderDetail } from './tyeps/request_response/userCollectFloderDetailRes'
 import type { IUserCollectsListRes } from './tyeps/request_response/userCollectsListRes'
 import type { IUserCollectMusicRes } from './tyeps/request_response/userCollectMusicRes'
@@ -89,6 +90,19 @@ export default {
       params: {
         query,
         from_group_id
+      }
+    })
+  },
+
+  /**
+   * @description 搜索建议（根据关键词获取搜索建议列表）
+   * @param {string} keyword 搜索关键词
+   * @returns {Promise<ISearchSugRes>} 搜索建议响应
+   */
+  getSearchSug: (keyword: string): Promise<ISearchSugRes> => {
+    return request.get(urls.search_sug, {
+      params: {
+        keyword
       }
     })
   },

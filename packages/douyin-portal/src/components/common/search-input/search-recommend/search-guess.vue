@@ -1,9 +1,19 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import apis from '@/api/apis'
 import type { Word } from '@/api/tyeps/request_response/searchResponse'
-//猜你你想搜
+import { useCurrentVideoStore } from '@/stores/current-video'
+
+const currentVideoStore = useCurrentVideoStore()
+
+// 猜你想搜列表
 const guessList = ref<Word[]>([])
+
+/**
+ * @description 获取猜你想搜列表
+ * @param query 搜索关键词（可选）
+ * @param from_group_id 视频group_id（可选）
+ */
 const getGuessList = async (query?: string, from_group_id?: string) => {
   const res = await apis.searchSuggest(query, from_group_id)
   if (res && Array.isArray(res.data)) {
@@ -15,18 +25,28 @@ const getGuessList = async (query?: string, from_group_id?: string) => {
     })
   }
 }
-onMounted(() => {
-  getGuessList('')
+
+/**
+ * 刷新猜你想搜列表（供父组件调用）
+ */
+const refresh = () => {
+  const groupId = currentVideoStore.currentGroupId || ''
+  const suggestWord = currentVideoStore.searchSuggestWord?.word || ''
+  getGuessList(suggestWord, groupId)
+}
+
+defineExpose({
+  refresh
 })
 const goToSearch = (keyword: string) => {
   const searchUrl = `${window.location.origin}/search/${keyword}`
   window.open(searchUrl, '_blank')
 }
-//实现换一换
+// 实现换一换
 const refreshing = ref(false)
 const refreshGuess = () => {
   refreshing.value = true
-  getGuessList('', '7353191583438622003')
+  refresh()
   setTimeout(() => {
     refreshing.value = false
   }, 200)

@@ -11,8 +11,11 @@ import {
 } from '@/components/video-components'
 import { videosCtrolStore } from '@/stores/videos-control'
 import { playerSettingStore } from '@/stores/player-setting'
+import { useCurrentVideoStore } from '@/stores/current-video'
 import BasePlayer from './base-player.vue'
 import ImageGalleryPlayer from './ImageGalleryPlyer.vue'
+
+const currentVideoStore = useCurrentVideoStore()
 
 interface SwiperPlayerProps {
   awemeInfo: IAwemeInfo
@@ -33,6 +36,27 @@ const { isPlay } = toRefs(props)
 const playerOptions = {
   ignores: ['playbackrate']
 }
+
+// 监听当前播放的视频，同步到全局store
+watch(
+  () => props.awemeInfo,
+  (newVideo) => {
+    if (newVideo && isPlay.value) {
+      // swiper播放器使用detail_inbox_rex场景
+      currentVideoStore.setScene('detail_inbox_rex')
+      currentVideoStore.setCurrentVideo(newVideo)
+    }
+  },
+  { immediate: true }
+)
+
+// 监听播放状态变化
+watch(isPlay, (playing) => {
+  if (playing && props.awemeInfo) {
+    currentVideoStore.setScene('detail_inbox_rex')
+    currentVideoStore.setCurrentVideo(props.awemeInfo)
+  }
+})
 const awemeUrl = computed(() => {
   if (
     props.awemeInfo?.is_live_photo === 1 &&

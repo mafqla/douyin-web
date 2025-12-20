@@ -1,200 +1,75 @@
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { computed, toRefs } from 'vue'
+import type { ISugItem } from '@/api/tyeps/request_response/searchSugRes'
 
-const props = defineProps({
-  searchText: {
-    type: String,
-    default: ''
-  }
+const props = defineProps<{
+  /** 搜索关键词 */
+  searchText: string
+  /** 搜索建议列表 */
+  sugList: ISugItem[]
+}>()
+
+const { searchText, sugList } = toRefs(props)
+
+/** 格式化后的搜索结果列表 */
+const resultList = computed(() => {
+  return sugList.value.map((item, index) => ({
+    id: String(index),
+    /** 搜索建议内容 */
+    searchResultText: item.content,
+    /** 热门标签图标 */
+    tagIcon: item.extra_info?.tag_icon?.uri || '',
+    /** 图标描述（如"热"） */
+    iconDesc: item.extra_info?.icon_desc || '',
+    /** 高亮位置 */
+    highlightPos: item.pos || [],
+    /** 词条记录 */
+    wordRecord: item.word_record
+  }))
 })
-const { searchText } = toRefs(props)
-const resultList = ref([
-  {
-    id: '0',
-    searchResultText: '十三十三',
-    userInfo: {
-      userName: '',
-      userNum: '',
-      userLogoSrc: '',
-      userTagSrc: ''
-    }
-  },
-  {
-    id: '1',
-    searchResultText: '三生三世十里桃花',
-    userInfo: {
-      userName: '',
-      userNum: '',
-      userLogoSrc: '',
-      userTagSrc: ''
-    }
-  },
-  {
-    id: '2',
-    searchResultText: '三生三世',
-    userInfo: {
-      userName: '',
-      userNum: '',
-      userLogoSrc: '',
-      userTagSrc: ''
-    }
-  },
-  {
-    id: '3',
-    searchResultText: '生生世世',
-    userInfo: {
-      userName: '',
-      userNum: '',
-      userLogoSrc: '',
-      userTagSrc: ''
-    }
-  },
-  {
-    id: '4',
-    searchResultText: '',
-    userInfo: {
-      userName: '四羊',
-      userNum: 'ssssyyyy0316',
-      userLogoSrc:
-        'https://p3.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-avt-0015_f19624fcb7a81cfaa8b2e88cfd88f83f.jpeg?from=3782654143',
-      userTagSrc: ''
-    }
-  },
-  {
-    id: '5',
-    searchResultText: '',
-    userInfo: {
-      userName: '四羊',
-      userNum: 'ssssyyyy0316',
-      userLogoSrc:
-        'https://p11.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-avt-0015_dfa79449697ce45b9347dbcca365f010.jpeg?from=3782654143',
-      userTagSrc:
-        'data:image/png;base64,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'
-    }
-  },
-  {
-    id: '6',
-    searchResultText: 'ssssssss_y',
-    userInfo: {
-      userName: '',
-      userNum: '',
-      userLogoSrc: '',
-      userTagSrc: ''
-    }
-  },
-  {
-    id: '7',
-    searchResultText: 'ssss古立特',
-    userInfo: {
-      userName: '',
-      userNum: '',
-      userLogoSrc: '',
-      userTagSrc: ''
-    }
-  },
-  {
-    id: '8',
-    searchResultText: '松宝',
-    userInfo: {
-      userName: '',
-      userNum: '',
-      userLogoSrc: '',
-      userTagSrc: ''
-    }
-  },
-  {
-    id: '9',
-    searchResultText: 'ssss',
-    userInfo: {
-      userName: '',
-      userNum: '',
-      userLogoSrc: '',
-      userTagSrc: ''
-    }
-  }
-])
 
-const searchKeyword = ref(searchText)
+/**
+ * @description 高亮搜索关键词
+ * @param text 原始文本
+ * @returns 带高亮标签的HTML字符串
+ */
 const highlightedText = (text: string) => {
-  if (!searchKeyword.value) {
-    return ''
+  if (!searchText.value) {
+    return text
   }
 
   // 使用正则表达式进行全局搜索和替换，将匹配的关键字用 <span> 包裹以实现高亮
-  const regex = new RegExp(searchKeyword.value, 'gi')
-  const uniqueMatches = new Set<string>()
-
+  const regex = new RegExp(searchText.value, 'gi')
   return text.replace(regex, (match: string) => {
-    if (!uniqueMatches.has(match)) {
-      uniqueMatches.add(match)
-      return `<span class="selected">${match}</span>`
-    }
-    return match
+    return `<span class="selected">${match}</span>`
   })
 }
 </script>
 <template>
   <div class="search-result">
     <div class="search-result-content">
-      <template v-for="(item, index) in resultList">
-        <div
-          :index="index"
-          class="search-result-box"
-          :class="{
-            'search-result-user': item.searchResultText === ''
-          }"
-        >
+      <template v-for="item in resultList" :key="item.id">
+        <div class="search-result-box">
+          <!-- 搜索建议文本 -->
           <span
             class="search-result-text"
-            v-if="item.searchResultText !== ''"
-            v-html="
-              highlightedText(item.searchResultText || item.userInfo.userNum)
-            "
-          >
-          </span>
-          <div class="user-logo" v-if="item.searchResultText === ''">
-            <div class="user-logo-box">
-              <img
-                class="user-logo-img"
-                :src="item.userInfo.userLogoSrc"
-                alt="用户头像"
-              />
-              <img
-                class="user-logo-tag"
-                :src="item.userInfo.userTagSrc"
-                alt="用户标签"
-                v-if="item.userInfo.userTagSrc !== ''"
-              />
-            </div>
-            <div class="user-info">
-              <div class="user-info-author">
-                <span class="search-result-text">{{
-                  item.userInfo.userName
-                }}</span>
-              </div>
-              <div class="user-info-num">
-                抖音号：
-                <span
-                  v-html="
-                    highlightedText(
-                      item.searchResultText || item.userInfo.userNum
-                    )
-                  "
-                ></span>
-              </div>
-            </div>
-          </div>
+            v-html="highlightedText(item.searchResultText)"
+          ></span>
+          <!-- 热门标签 -->
+          <img
+            v-if="item.tagIcon"
+            class="tag-icon"
+            :src="item.tagIcon"
+            :alt="item.iconDesc"
+          />
+          <!-- 右侧箭头图标 -->
           <div class="icon">
-            <span class="user-text" v-if="item.searchResultText === ''"
-              >个人主页</span
-            >
             <svg
               width="24"
               height="24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               class="U0Pto7FV"
-              v-if="item.searchResultText !== ''"
             >
               <rect
                 x="6"
@@ -226,6 +101,10 @@ const highlightedText = (text: string) => {
           </div>
         </div>
       </template>
+      <!-- 无结果提示 -->
+      <div v-if="resultList.length === 0" class="no-result">
+        暂无搜索建议
+      </div>
     </div>
   </div>
 </template>
@@ -379,6 +258,18 @@ const highlightedText = (text: string) => {
       // color: rgba(22, 24, 35, 1);
       font-size: 12px;
       line-height: 20px;
+    }
+    .tag-icon {
+      width: 16px;
+      height: 16px;
+      margin-left: 4px;
+      flex-shrink: 0;
+    }
+    .no-result {
+      padding: 20px;
+      text-align: center;
+      color: var(--color-text-t2);
+      font-size: 14px;
     }
   }
 }

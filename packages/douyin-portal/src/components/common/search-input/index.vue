@@ -1,14 +1,60 @@
 <script setup lang="ts">
-import { onMounted, ref, watchEffect } from 'vue'
+import { onMounted, onUnmounted, ref, watchEffect, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import apis from '@/api/apis'
+import type { ISugItem } from '@/api/tyeps/request_response/searchSugRes'
+import { useCurrentVideoStore } from '@/stores/current-video'
+
+const currentVideoStore = useCurrentVideoStore()
+
 const isInputClicked = ref(false)
 const isResult = ref(false)
 const searchQuery = ref('')
+// 搜索建议列表
+const sugList = ref<ISugItem[]>([])
+
+/**
+ * 是否显示视频相关的搜索推荐词placeholder
+ * 根据当前视频的suggest_words中是否存在scene="detail_inbox_rex"来决定
+ */
+const showVideoSuggestPlaceholder = computed(() => {
+  return !!currentVideoStore.searchSuggestWord
+})
+
+/**
+ * 搜索框placeholder文本
+ */
+const placeholderText = computed(() => {
+  if (showVideoSuggestPlaceholder.value && currentVideoStore.searchSuggestWord) {
+    return currentVideoStore.searchSuggestWord.word
+  }
+  return '搜索你感兴趣的内容'
+})
 
 // 清空搜索框
 const clearSearch = () => {
   searchQuery.value = ''
 }
+/**
+ * @description 获取搜索建议
+ * @param keyword 搜索关键词
+ */
+const fetchSearchSug = async (keyword: string) => {
+  if (!keyword.trim()) {
+    sugList.value = []
+    return
+  }
+  try {
+    const res = await apis.getSearchSug(keyword)
+    if (res.status_code === 0) {
+      sugList.value = res.sug_list || []
+    }
+  } catch (error) {
+    console.error('获取搜索建议失败:', error)
+    sugList.value = []
+  }
+}
+
 // 监听输入事件，如果用户开始输入，则隐藏
 const handleInput = () => {
   if (searchQuery.value.length > 100) {
@@ -17,16 +63,24 @@ const handleInput = () => {
   if (searchQuery.value !== '') {
     isResult.value = true
     isInputClicked.value = false
+    // 获取搜索建议
+    fetchSearchSug(searchQuery.value)
   } else if (searchQuery.value === '') {
     isInputClicked.value = true
     isResult.value = false
+    sugList.value = []
   }
 }
+// search-recommend 组件引用
+const searchRecommendRef = ref()
+
 const handleFocus = () => {
   if (searchQuery.value !== '') {
     isResult.value = true
   } else {
     isInputClicked.value = true
+    // 刷新猜你想搜列表（调用searchSuggest接口）
+    searchRecommendRef.value?.refreshGuessList()
   }
 }
 
@@ -51,17 +105,22 @@ const handleClick = () => {
   input.value.focus()
   handleFocus()
 }
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-})
-
 const search = ref()
 const handleClickOutside = (event: Event) => {
+  if (!search.value || !input.value) return
   if (!search.value.contains(event.target)) {
     input.value.blur()
     handleBlur()
   }
 }
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 
 const router = useRouter()
 /**
@@ -105,12 +164,13 @@ const handleSearch = () => {
           ></rect>
         </svg>
       </div>
-      <!-- <div class="input-placeholder">
-        <div class="input-placeholder-text">搜索你感兴趣的内容</div>
-      </div> -->
+      <!-- 视频相关推荐词placeholder -->
+      <div class="input-placeholder" v-if="showVideoSuggestPlaceholder && searchQuery === ''">
+        <div class="input-placeholder-text">{{ placeholderText }}</div>
+      </div>
       <input
         type="text"
-        placeholder="搜索你感兴趣的内容"
+        :placeholder="showVideoSuggestPlaceholder ? '' : '搜索你感兴趣的内容'"
         class="header-search-input"
         v-model="searchQuery"
         @input="handleInput"
@@ -125,8 +185,8 @@ const handleSearch = () => {
       <svg-icon class="icon-search" icon="search" />
       <span class="btn-title">搜索</span>
     </button>
-    <search-recommend v-show="isInputClicked" @click="handleClick" />
-    <search-result v-show="isResult" :searchText="searchQuery" />
+    <search-recommend ref="searchRecommendRef" v-show="isInputClicked" @click="handleClick" />
+    <search-result v-show="isResult" :searchText="searchQuery" :sugList="sugList" />
   </div>
 </template>
 

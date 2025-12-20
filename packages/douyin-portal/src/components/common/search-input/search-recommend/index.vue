@@ -1,5 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+
+const searchGuessRef = ref()
+
+/**
+ * 刷新猜你想搜列表
+ */
+const refreshGuessList = () => {
+  searchGuessRef.value?.refresh()
+}
+
+defineExpose({
+  refreshGuessList
+})
 </script>
 <template>
   <div class="search-recommend">
@@ -9,7 +22,7 @@ import { ref } from 'vue'
         style="height: unset"
       >
         <search-history />
-        <search-guess />
+        <search-guess ref="searchGuessRef" />
         <search-hot />
       </div>
     </div>

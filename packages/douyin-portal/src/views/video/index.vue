@@ -6,6 +6,7 @@ import ImageGalleryPlayer from '@/components/video-player/ImageGalleryPlyer.vue'
 import PageFooter from '@/layout/page-footer.vue'
 import { playerSettingStore } from '@/stores/player-setting'
 import { settingStore } from '@/stores/setting'
+import { useCurrentVideoStore } from '@/stores/current-video'
 import { toRef } from 'vue'
 import { useRoute } from 'vue-router'
 import RelatedComment from './components/related-comment.vue'
@@ -13,10 +14,9 @@ import RelatedVideo from './components/related-video.vue'
 import VideoDetailInfo from './components/video-detail-info.vue'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 
+const currentVideoStore = useCurrentVideoStore()
+
 const playerOptions = {
-  volume: 0.5,
-  autoplayMuted: true,
-  keyShortcut: 'on',
   cssFullscreen: true,
   ignores: ['playbackrate']
 } as any
@@ -42,6 +42,9 @@ const getVideoDetail = async (awemeId: string) => {
   try {
     const res = await apis.getVideoDetail(awemeId)
     videoDetail.value = res.aweme_detail
+    // 设置当前视频到全局store，video页面使用comment_top_rec场景
+    currentVideoStore.setScene('comment_top_rec')
+    currentVideoStore.setCurrentVideo(res.aweme_detail)
     loading.value = false
   } catch (error) {
     console.log(error)
@@ -55,7 +58,7 @@ const awemeUrl = computed(() => {
     videoDetail.value?.is_live_photo === 1 &&
     videoDetail.value?.images?.[0]?.video
   ) {
-    return videoDetail.value.images[0].video.play_addr.url_list
+    return videoDetail.value?.images[0]?.video.play_addr?.url_list
   }
   return videoDetail.value?.video.play_addr.url_list ?? []
 })
