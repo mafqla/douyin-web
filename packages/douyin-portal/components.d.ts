@@ -68,6 +68,7 @@ declare module '@vue/runtime-core' {
     HoverDropdown: typeof import('./src/components/common/hover-dropdown/index.vue')['default']
     ImageGallery: typeof import('./src/components/ImageGallery.vue')['default']
     ImageGalleryPlyer: typeof import('./src/components/video-player/ImageGalleryPlyer.vue')['default']
+    ImagePreview: typeof import('./src/components/common/image-preview/index.vue')['default']
     ImgModal: typeof import('./src/components/common/img-modal.vue')['default']
     ListFooter: typeof import('./src/components/common/list-footer.vue')['default']
     LivePreviewPlayer: typeof import('./src/components/video-player/live-preview-player.vue')['default']

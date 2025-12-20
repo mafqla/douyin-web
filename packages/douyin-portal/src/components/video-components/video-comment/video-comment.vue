@@ -2,8 +2,9 @@
 import apis from '@/api/apis'
 import type { IComments } from '@/api/tyeps/request_response/commentListRes'
 import dyInput from '@/components/common/dy-input/index.vue'
+import ImagePreview from '@/components/common/image-preview/index.vue'
 import { vInfiniteScroll } from '@vueuse/components'
-import { ref } from 'vue'
+import { computed, provide, ref } from 'vue'
 import CommentItem from './comment-item.vue'
 
 const commentCount = ref(0)
@@ -62,6 +63,48 @@ const getCommentList = async () => {
     isLoadingMore.value = false
   }
 }
+
+// 图片预览相关
+const isOpenPreview = ref(false)
+const previewIndex = ref(0)
+
+// 收集所有评论的图片
+const allImages = computed(() => {
+  const images: { url: string; alt?: string; cid: string }[] = []
+  const collectImages = (comments: IComments[]) => {
+    comments.forEach((comment) => {
+      if (comment.image_list) {
+        comment.image_list.forEach((item) => {
+          const url =
+            item.origin_url?.url_list?.[1] ??
+            item.origin_url?.url_list?.[0] ??
+            item.medium_url?.url_list?.[2]
+          if (url) images.push({ url, alt: 'comment_img', cid: comment.cid })
+        })
+      }
+      if (comment.sticker?.animate_url?.url_list?.[0]) {
+        images.push({
+          url: comment.sticker.animate_url.url_list[0],
+          alt: 'sticker',
+          cid: comment.cid
+        })
+      }
+    })
+  }
+  collectImages(commentList.value)
+  return images
+})
+
+const openPreview = (cid: string, indexInComment: number) => {
+  // 找到该评论第一张图片在 allImages 中的位置
+  const startIndex = allImages.value.findIndex((img) => img.cid === cid)
+  if (startIndex !== -1) {
+    previewIndex.value = startIndex + indexInComment
+    isOpenPreview.value = true
+  }
+}
+
+provide('imagePreview', { openPreview })
 </script>
 <template>
   <div class="video-comment" ref="target">
@@ -93,6 +136,13 @@ const getCommentList = async () => {
     <div class="video-comment-footer">
       <dy-input />
     </div>
+
+    <ImagePreview
+      :open="isOpenPreview"
+      :images="allImages"
+      :initial-index="previewIndex"
+      @close="isOpenPreview = false"
+    />
   </div>
 </template>
 

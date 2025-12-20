@@ -6,13 +6,15 @@ import commentExpand from './comment-expand.vue'
 import { useCount } from '@/hooks'
 import { handleCommentParser } from '@/utils/commentParser'
 import formatTime from '@/utils/date-format'
-import { computed, ref, watchEffect } from 'vue'
+import { computed, inject, ref, watchEffect } from 'vue'
 
 const props = defineProps<IComments & { author_id: string | number }>()
 
-const isOpenAvatar = ref(false)
-const openAvatar = () => {
-  isOpenAvatar.value = true
+// 注入图片预览方法
+const imagePreview = inject<{ openPreview: (cid: string, index: number) => void }>('imagePreview')
+
+const openPreview = (index: number) => {
+  imagePreview?.openPreview(props.cid, index)
 }
 //回复用户
 //输入框的值
@@ -141,8 +143,8 @@ const onCollapse = () => {
             >
             </span>
             <div class="comment-img-list" v-if="props.image_list">
-              <div class="img-box" v-for="item in props.image_list">
-                <div class="img-inner" :key="item.medium_url.uri">
+              <div class="img-box" v-for="(item, index) in props.image_list" :key="item.medium_url.uri">
+                <div class="img-inner">
                   <img
                     :src="
                       item.medium_url.url_list[1] ??
@@ -150,30 +152,9 @@ const onCollapse = () => {
                       item.origin_url.url_list[2]
                     "
                     alt="comment_img"
-                    @click="openAvatar"
+                    @click="openPreview(index)"
                   />
                 </div>
-                <modal
-                  :open="isOpenAvatar"
-                  :isShowClose="true"
-                  @close="isOpenAvatar = false"
-                >
-                  <img
-                    class="comment-img-modal"
-                    style="
-                      transform: scale(1);
-                      max-width: 70%;
-                      max-height: 90%;
-                      border-radius: 4px;
-                    "
-                    :src="
-                      item.origin_url.url_list[1] ??
-                      item.origin_url.url_list[0] ??
-                      item.medium_url.url_list[2]
-                    "
-                    alt="comment_img-modal"
-                  />
-                </modal>
               </div>
             </div>
             <div class="comment-sticker comment-img-list" v-if="props.sticker">
@@ -182,26 +163,9 @@ const onCollapse = () => {
                   <img
                     :src="props.sticker.animate_url.url_list[0]"
                     alt="comment_sticker"
-                    @click="openAvatar"
+                    @click="openPreview(props.image_list?.length ?? 0)"
                   />
                 </div>
-                <modal
-                  :open="isOpenAvatar"
-                  :isShowClose="true"
-                  @close="isOpenAvatar = false"
-                >
-                  <img
-                    class="comment-img-modal"
-                    style="
-                      transform: scale(1);
-                      max-width: 70%;
-                      max-height: 90%;
-                      border-radius: 4px;
-                    "
-                    :src="props.sticker.animate_url.url_list[0]"
-                    alt="comment_sticker-modal"
-                  />
-                </modal>
               </div>
             </div>
             <div class="comment-author-digged" v-if="props.is_author_digged">
@@ -482,12 +446,6 @@ const onCollapse = () => {
                 justify-content: flex-start;
                 border-radius: 8px;
               }
-            }
-
-            .comment-img-modal {
-              max-width: 70%;
-              max-height: 90%;
-              border-radius: 4px;
             }
           }
         }
