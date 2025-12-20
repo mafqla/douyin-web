@@ -233,9 +233,18 @@ setTimeout(() => {
 }, 3000)
 
 // 监听窗口大小变化
-window.addEventListener('resize', () => {
+const handleResize = () => {
   // currentHeight.value = window.innerHeight
   currentWidth.value = window.innerWidth
+}
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
+  discoverStore().$reset()
 })
 
 //监听窗口大小变化
@@ -315,11 +324,6 @@ function actualIndex(loopIndex: number) {
   }
   return loopIndex
 }
-
-onBeforeUnmount(() => {
-  discoverStore().$reset()
-})
-//组件卸载前清除数据
 
 const router = useRouter()
 const route = useRoute()

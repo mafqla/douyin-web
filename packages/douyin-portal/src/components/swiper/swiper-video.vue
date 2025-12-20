@@ -243,6 +243,13 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  // 清理 shrinkTimer 定时器
+  if (shrinkTimer) {
+    clearTimeout(shrinkTimer)
+    shrinkTimer = null
+  }
+  // 清理所有事件监听器
+  videoHeight.value?.removeEventListener('wheel', handleWheel)
   videoHeight.value?.removeEventListener('click', handleClick, true)
   document.removeEventListener('pointermove', handlePointerMove)
   document.removeEventListener('pointerup', handlePointerUp)

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
+import { ref, watchEffect, onMounted, onBeforeUnmount } from 'vue'
 import AsideBar from '@/layout/AsideBar.vue'
 import HeaderNav from '@/layout/HeaderNav.vue'
 import { useRouter } from 'vue-router'
@@ -11,26 +11,34 @@ const router = useRouter()
 const isUserRoute = ref(false)
 const isSearchRoute = ref(false)
 const isVideoRoute = ref(false)
-// 滚动监听
-window.addEventListener(
-  'scroll',
-  function () {
-    // console.log(window.scrollY)
-    if (window.scrollY > 60) {
-      backgroundColor.value = false
-      isScrolled.value = true
-    } else {
-      backgroundColor.value = true
-      isScrolled.value = false
-    }
 
-    if (isSearchRoute.value) {
-      backgroundColor.value = false
-      // isScrolled.value = false
-    }
-  },
-  true
-)
+// 滚动监听处理函数
+const handleScroll = () => {
+  // console.log(window.scrollY)
+  if (window.scrollY > 60) {
+    backgroundColor.value = false
+    isScrolled.value = true
+  } else {
+    backgroundColor.value = true
+    isScrolled.value = false
+  }
+
+  if (isSearchRoute.value) {
+    backgroundColor.value = false
+    // isScrolled.value = false
+  }
+}
+
+// 组件挂载时添加滚动监听
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll, true)
+})
+
+// 组件卸载时移除滚动监听
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScroll, true)
+})
+
 //获取路由地址
 
 watchEffect(() => {

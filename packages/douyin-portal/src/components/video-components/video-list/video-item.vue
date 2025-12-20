@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
 import miniPlayer from '@/components/video-player/mini-player.vue'
 import { useRouter } from 'vue-router'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
@@ -40,6 +40,23 @@ const dianzan = computed(() => {
 const isVideoVisible = ref(false)
 let hoverTimer: ReturnType<typeof setTimeout> | null = null
 let leaveTimer: ReturnType<typeof setTimeout> | null = null
+
+// 清理所有定时器
+const clearAllTimers = () => {
+  if (hoverTimer) {
+    clearTimeout(hoverTimer)
+    hoverTimer = null
+  }
+  if (leaveTimer) {
+    clearTimeout(leaveTimer)
+    leaveTimer = null
+  }
+}
+
+// 组件卸载时清理定时器
+onBeforeUnmount(() => {
+  clearAllTimers()
+})
 
 const showVideo = () => {
   // 选择模式下禁用 hover 播放

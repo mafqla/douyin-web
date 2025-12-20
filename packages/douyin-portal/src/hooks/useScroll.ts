@@ -8,22 +8,28 @@ export const useElScrollbarScroll = (
   wait = 0
 ) => {
   const debouncedCallback = useDebounceFn(callback, wait)
+  let scrollContent: Element | null = null
+  let scrollHandler: ((event: Event) => void) | null = null
 
   onMounted(() => {
     const scrollbar = scrollbarRef.value
     console.log('scrollbar', scrollbar)
     if (scrollbar) {
-      const scrollContent = scrollbar.$el.querySelector('.el-scrollbar__wrap')
+      scrollContent = scrollbar.$el.querySelector('.el-scrollbar__wrap')
       if (scrollContent) {
-        scrollContent.addEventListener(
-          'scroll',
-          (event: { target: HTMLElement }) => {
-            const target = event.target as HTMLElement
-            console.log('target.scrollTop', target.scrollTop) 
-            debouncedCallback(target.scrollTop)
-          }
-        )
+        scrollHandler = (event: Event) => {
+          const target = event.target as HTMLElement
+          console.log('target.scrollTop', target.scrollTop)
+          debouncedCallback(target.scrollTop)
+        }
+        scrollContent.addEventListener('scroll', scrollHandler)
       }
+    }
+  })
+
+  onUnmounted(() => {
+    if (scrollContent && scrollHandler) {
+      scrollContent.removeEventListener('scroll', scrollHandler)
     }
   })
 }
@@ -38,19 +44,27 @@ export const useElScroll = (
   wait = 0
 ) => {
   const debouncedCallback = useDebounceFn(callback, wait)
+  let listener: ((event: Event) => void) | null = null
 
   onMounted(() => {
     const scrollbar = scrollbarRef.value
     console.log('scrollbar', scrollbar)
     if (scrollbar) {
-      const listener = (event: Event) => {
+      listener = (event: Event) => {
         console.log('event', event)
         const target = event.target as HTMLElement
         debouncedCallback(target.scrollTop)
         console.log('target.scrollTop', target.scrollTop)
       }
-      
+
       scrollbar.addEventListener('scroll', listener)
+    }
+  })
+
+  onUnmounted(() => {
+    const scrollbar = scrollbarRef.value
+    if (scrollbar && listener) {
+      scrollbar.removeEventListener('scroll', listener)
     }
   })
 }
