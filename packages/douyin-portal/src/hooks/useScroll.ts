@@ -1,38 +1,6 @@
-import type { ElScrollbar } from 'element-plus'
 import { onMounted, watchEffect, type Ref, onUnmounted } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 
-export const useElScrollbarScroll = (
-  scrollbarRef: Ref<InstanceType<typeof ElScrollbar> | null>,
-  callback: (scrollTop: number) => void,
-  wait = 0
-) => {
-  const debouncedCallback = useDebounceFn(callback, wait)
-  let scrollContent: Element | null = null
-  let scrollHandler: ((event: Event) => void) | null = null
-
-  onMounted(() => {
-    const scrollbar = scrollbarRef.value
-    console.log('scrollbar', scrollbar)
-    if (scrollbar) {
-      scrollContent = scrollbar.$el.querySelector('.el-scrollbar__wrap')
-      if (scrollContent) {
-        scrollHandler = (event: Event) => {
-          const target = event.target as HTMLElement
-          console.log('target.scrollTop', target.scrollTop)
-          debouncedCallback(target.scrollTop)
-        }
-        scrollContent.addEventListener('scroll', scrollHandler)
-      }
-    }
-  })
-
-  onUnmounted(() => {
-    if (scrollContent && scrollHandler) {
-      scrollContent.removeEventListener('scroll', scrollHandler)
-    }
-  })
-}
 /**
  * @description: 监听页面滚动
  * @param scrollbarRef 

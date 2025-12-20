@@ -3,7 +3,6 @@ import { ref } from 'vue'
 import TitleBox from './title-box.vue'
 import DiscoverVideo from './discover-video.vue'
 import { useElementSize } from '@vueuse/core'
-import { ElSkeleton } from 'element-plus'
 import { discoverStore } from '@/stores/discover'
 
 const props = defineProps({
@@ -35,7 +34,7 @@ setTimeout(() => {
       height: `${height}px`
     }"
   >
-    <el-skeleton
+    <dy-skeleton
       animated
       :loading="props.isLoading"
       class="discover-item-skeleton"
@@ -47,8 +46,8 @@ setTimeout(() => {
           </div>
 
           <div class="skeleton-bottom">
-            <el-skeleton-item variant="h3" style="width: 40%" />
-            <el-skeleton-item variant="h3" style="width: 100%" />
+            <dy-skeleton-item variant="h3" style="width: 40%" />
+            <dy-skeleton-item variant="h3" style="width: 100%" />
           </div>
         </div>
       </template>
@@ -72,7 +71,7 @@ setTimeout(() => {
           </div>
         </a>
       </template>
-    </el-skeleton>
+    </dy-skeleton>
   </div>
 </template>
 

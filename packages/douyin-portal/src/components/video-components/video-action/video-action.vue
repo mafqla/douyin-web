@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
-import { ElAvatar } from 'element-plus'
 import { attention } from '@/service/attention'
 import { useCount } from '@/hooks/useCount'
 import SwiperControlModal from '@/components/swiper/swiper-control-modal.vue'
@@ -154,7 +153,7 @@ onUnmounted(() => {
       <div class="video-action-item" v-if="isShowAvatar">
         <div class="avatar-content">
           <div class="video-action-avatar">
-            <ElAvatar size="small" :src="props.avatar" />
+            <dy-avatar size="small" :src="props.avatar" />
           </div>
           <div class="video-action-avatar-follow" @click="handleAttention">
             <svg-icon class="icon" icon="avfollow" v-show="!isAttent" />

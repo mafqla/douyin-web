@@ -2,7 +2,6 @@
 import { ref, computed } from 'vue'
 import TitleBox from './title-box.vue'
 import DiscoverVideo from './discover-video.vue'
-import { ElSkeleton } from 'element-plus'
 
 const props = defineProps({
   video_id: {
@@ -65,7 +64,7 @@ const videoLink = computed(() => {
 </script>
 <template>
   <div class="waterfall-item">
-    <el-skeleton animated :loading="isLoading" class="discover-item-skeleton">
+    <dy-skeleton animated :loading="isLoading" class="discover-item-skeleton">
       <template #template>
         <div class="skeleton-content">
           <div class="skeleton-logo">
@@ -73,8 +72,8 @@ const videoLink = computed(() => {
           </div>
 
           <div class="skeleton-bottom">
-            <el-skeleton-item variant="h3" style="width: 40%" />
-            <el-skeleton-item variant="h3" style="width: 100%" />
+            <dy-skeleton-item variant="h3" style="width: 40%" />
+            <dy-skeleton-item variant="h3" style="width: 100%" />
           </div>
         </div>
       </template>
@@ -96,7 +95,7 @@ const videoLink = computed(() => {
           </div>
         </a>
       </template>
-    </el-skeleton>
+    </dy-skeleton>
   </div>
 </template>
 

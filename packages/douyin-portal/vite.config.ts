@@ -12,6 +12,8 @@ import path from 'path'
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
+  const isProd = mode === 'prod'
+
   return {
     server: {
       host: '127.0.0.1',
@@ -74,10 +76,50 @@ export default defineConfig(({ command, mode }) => {
       outDir: 'dist',
       assetsDir: 'assets',
       sourcemap: false,
-      minify: 'esbuild'
+      minify: 'esbuild',
+      // 启用 CSS 代码分割
+      cssCodeSplit: true,
+      // chunk 大小警告阈值
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          // 静态资源分类打包
+          chunkFileNames: 'assets/js/[name]-[hash].js',
+          entryFileNames: 'assets/js/[name]-[hash].js',
+          assetFileNames: (assetInfo) => {
+            const info = assetInfo.name || ''
+            if (/\.(png|jpe?g|gif|svg|webp|ico)$/.test(info)) {
+              return 'assets/images/[name]-[hash][extname]'
+            }
+            if (/\.(woff2?|eot|ttf|otf)$/.test(info)) {
+              return 'assets/fonts/[name]-[hash][extname]'
+            }
+            if (/\.css$/.test(info)) {
+              return 'assets/css/[name]-[hash][extname]'
+            }
+            return 'assets/[name]-[hash][extname]'
+          },
+          // 分包策略
+          manualChunks: {
+            // Vue 核心
+            'vue-vendor': ['vue', 'vue-router', 'pinia'],
+            // Element Plus 单独打包
+            'element-plus': ['element-plus'],
+            // 工具库
+            'utils-vendor': ['axios', '@vueuse/core', 'qs'],
+            // 播放器单独打包（体积较大）
+            'xgplayer': ['xgplayer']
+          }
+        }
+      },
+      // 压缩选项
+      target: 'es2015',
+      // 关闭 brotli 压缩大小报告，提升构建速度
+      reportCompressedSize: false
     },
     esbuild: {
-      // drop: ['console', 'debugger'],
+      // 生产环境移除 console 和 debugger
+      drop: isProd ? ['console', 'debugger'] : [],
       format: 'esm'
     }
   }

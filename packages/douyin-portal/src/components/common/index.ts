@@ -5,6 +5,8 @@ import EllipsisExpand from './ellipsis-expand.vue'
 import SearchInput from './search-input/index.vue'
 import downloadBtn from './download-btn.vue'
 import HoverDropdown from './hover-dropdown/index.vue'
+import DySkeleton from './dy-skeleton/index.vue'
+import DySkeletonItem from './dy-skeleton/dy-skeleton-item.vue'
 
 export {
   ListFooter,
@@ -13,5 +15,7 @@ export {
   EllipsisExpand,
   SearchInput,
   downloadBtn,
-  HoverDropdown
+  HoverDropdown,
+  DySkeleton,
+  DySkeletonItem
 }
