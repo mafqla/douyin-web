@@ -2,19 +2,23 @@
 import apis from '@/api/apis'
 import { Loading } from '@/components/common'
 import BasePlayer from '@/components/video-player/base-player.vue'
-import ImageGalleryPlayer from '@/components/video-player/ImageGalleryPlyer.vue'
 import PageFooter from '@/layout/page-footer.vue'
 import { playerSettingStore } from '@/stores/player-setting'
 import { settingStore } from '@/stores/setting'
 import { useCurrentVideoStore } from '@/stores/current-video'
+import { useSidebarStore } from '@/stores/sidebar'
+import SwiperControl from '@/components/swiper/swiper-control.vue'
 import { toRef } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, onBeforeRouteLeave } from 'vue-router'
 import RelatedComment from './components/related-comment.vue'
 import RelatedVideo from './components/related-video.vue'
 import VideoDetailInfo from './components/video-detail-info.vue'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
+import { getAwemeLink } from '@/utils/aweme-link'
 
 const currentVideoStore = useCurrentVideoStore()
+const playerSetting = playerSettingStore()
+const sidebarStore = useSidebarStore()
 
 const playerOptions = {
   cssFullscreen: true,
@@ -23,59 +27,134 @@ const playerOptions = {
 
 const isShowSwitchControl = toRef(settingStore(), 'isShowSwitchControl')
 
-//获取当前请求参数
 const route = useRoute()
-const awemeId = route.params.id as string
-/**
- * todo
- * 调用接口获取视频信息
- * 1.点赞接口
- * 2. 收藏接口
- * 3. 分享接口
- * 4. 相关推荐视频接口
- */
+const router = useRouter()
 
 const loading = ref(true)
 const videoDetail = ref<IAwemeInfo>()
 provide('videoDetail', videoDetail)
+
+// 推荐视频列表
+const relatedList = computed(() => sidebarStore.relatedVideoList)
+
+// 当前视频在推荐列表中的索引（排除第一个当前视频）
+const nextVideoIndex = computed(() => {
+  // 推荐列表第一个是当前视频，所以下一个视频从索引1开始
+  return relatedList.value.length > 1 ? 1 : -1
+})
+
+// 是否可以向上切换（历史记录中有视频）
+const canGoPrev = computed(() => sidebarStore.canGoPrevVideo)
+// 是否可以向下切换（推荐列表中有下一个视频）
+const canGoNext = computed(() => nextVideoIndex.value > 0)
+
 const getVideoDetail = async (awemeId: string) => {
   try {
+    loading.value = true
     const res = await apis.getVideoDetail(awemeId)
-    videoDetail.value = res.aweme_detail
-    // 设置当前视频到全局store，video页面使用comment_top_rec场景
+    const detail = res.aweme_detail
+    
+    // 如果是图集类型（aweme_type === 68 且不是实况照片），跳转到note页面
+    if (detail?.aweme_type === 68 && detail?.is_live_photo !== 1) {
+      router.replace(`/note/${awemeId}`)
+      return
+    }
+    
+    videoDetail.value = detail
     currentVideoStore.setScene('comment_top_rec')
-    currentVideoStore.setCurrentVideo(res.aweme_detail)
+    currentVideoStore.setCurrentVideo(detail)
     loading.value = false
   } catch (error) {
     console.log(error)
   }
 }
+
+// 切换到上一个视频（从历史记录中取）
+const switchToPrevVideo = () => {
+  if (!canGoPrev.value) return
+  const prevItem = sidebarStore.popVideoHistory()
+  if (prevItem) {
+    router.push(getAwemeLink(prevItem))
+  }
+}
+
+// 切换到下一个视频（从推荐列表中取，并记录当前视频到历史）
+const switchToNextVideo = () => {
+  if (!canGoNext.value || !videoDetail.value) return
+  // 将当前视频加入历史记录
+  sidebarStore.pushVideoHistory(videoDetail.value)
+  // 取推荐列表中的下一个视频（索引1）
+  const nextItem = relatedList.value[nextVideoIndex.value]
+  if (nextItem) {
+    router.push(getAwemeLink(nextItem))
+  }
+}
+
+// 视频播放结束处理
+const onEnded = () => {
+  // 如果开启了自动连播，则自动切换到下一个视频
+  if (playerSetting.isAutoContinuous && canGoNext.value) {
+    switchToNextVideo()
+  }
+}
+
+// 键盘事件处理
+const handleKeydown = (e: KeyboardEvent) => {
+  // 上箭头 - 上一个视频
+  if (e.key === 'ArrowUp') {
+    e.preventDefault()
+    if (canGoPrev.value) {
+      switchToPrevVideo()
+    }
+  }
+  // 下箭头 - 下一个视频
+  if (e.key === 'ArrowDown') {
+    e.preventDefault()
+    if (canGoNext.value) {
+      switchToNextVideo()
+    }
+  }
+}
+
+// 监听路由参数变化，重新获取视频详情
+watch(
+  () => route.params.id,
+  (newId) => {
+    if (newId) {
+      getVideoDetail(newId as string)
+    }
+  }
+)
+
 onMounted(() => {
-  getVideoDetail(awemeId)
+  getVideoDetail(route.params.id as string)
+  window.addEventListener('keydown', handleKeydown)
 })
-const awemeUrl = computed(() => {
+
+// 只有真正离开 video 页面时才清空历史记录
+onBeforeRouteLeave((to) => {
+  // 如果跳转到其他 video 页面，不清空
+  if (to.path.startsWith('/video/')) {
+    return
+  }
+  // 离开 video 页面，清空历史记录
+  sidebarStore.setRelatedVideoList([])
+  sidebarStore.clearVideoHistory()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+  useTitle('抖音-记录美好生活')
+})
+
+const awemeUrl = computed<string | string[]>(() => {
   if (
     videoDetail.value?.is_live_photo === 1 &&
     videoDetail.value?.images?.[0]?.video
   ) {
-    return videoDetail.value?.images[0]?.video.play_addr?.url_list
+    return videoDetail.value?.images[0]?.video.play_addr?.url_list ?? []
   }
   return videoDetail.value?.video.play_addr.url_list ?? []
-})
-
-const isImageGallery = computed(
-  () =>
-    videoDetail.value?.aweme_type === 68 &&
-    videoDetail.value?.is_live_photo !== 1
-)
-
-const imgGallery = computed(() => {
-  if (!isImageGallery.value) return []
-  return videoDetail.value?.images || []
-})
-
-const musicUrl = computed(() => {
-  return videoDetail.value?.music.play_url.url_list ?? []
 })
 
 const metaTitle = computed(() => {
@@ -84,17 +163,6 @@ const metaTitle = computed(() => {
     : window.location.href
 })
 useTitle(metaTitle)
-onUnmounted(() => {
-  useTitle('抖音-记录美好生活')
-})
-
-const awemeIdList = ref<string[]>([])
-const router = useRouter()
-const onEnded = () => {
-  // console.log('p', awemeIdList.value)
-  // router.push(awemeIdList.value[0])
-  // 如果自动设置为自动连播，则自动重播
-}
 </script>
 <template>
   <Loading
@@ -107,27 +175,23 @@ const onEnded = () => {
       <div class="video-detail">
         <div class="left-content">
           <div class="video-detail-container">
-            <ImageGalleryPlayer
-              v-if="isImageGallery"
-              :music_url="musicUrl"
-              :imgGallery="imgGallery"
-              :showAutoContinuous="false"
-              :showImmersiveSwitch="false"
-              :arrow-style="'bottom'"
-              class="related-video"
-            />
             <BasePlayer
-              v-else
               :url="awemeUrl"
               :bit-rates="videoDetail?.video.bit_rate"
               :options="playerOptions"
+              :isPlay="true"
               class="related-video"
               @ended="onEnded"
             >
               <template v-slot:switch>
-                <swiper-control-modal
+                <SwiperControl
                   class="swiper-control"
                   v-show="isShowSwitchControl"
+                  :customControl="true"
+                  :disablePrev="!canGoPrev"
+                  :disableNext="!canGoNext"
+                  @prev="switchToPrevVideo"
+                  @next="switchToNextVideo"
                   style="justify-content: center; height: auto; bottom: 50%"
                 />
               </template>
@@ -141,8 +205,8 @@ const onEnded = () => {
           <related-video
             :author="videoDetail?.author"
             :aweme-id="videoDetail?.aweme_id"
+            :current-aweme="videoDetail"
             class="left-content-recommend"
-            v-model="awemeIdList"
           />
           <related-comment
             :aweme_id="videoDetail?.aweme_id"
@@ -156,6 +220,7 @@ const onEnded = () => {
           <related-video
             :author="videoDetail?.author"
             :aweme-id="videoDetail?.aweme_id"
+            :current-aweme="videoDetail"
           />
         </div>
       </div>

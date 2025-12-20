@@ -5,14 +5,20 @@ import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 import Loading from '@/components/common/loading.vue'
 import { useCount } from '@/hooks'
 import { formatMillisecondsToTime } from '@/utils/date-format'
-import { } from 'vue'
+import { getAwemeLink } from '@/utils/aweme-link'
+import { useSidebarStore } from '@/stores/sidebar'
 import RelatedVideoItem from './related-video-item.vue'
 
 interface Props {
   author: IAuthor
   awemeId: string
+  // 当前播放的视频信息（显示在第一个）
+  currentAweme?: IAwemeInfo
 }
 const props = defineProps<Props>()
+
+const sidebarStore = useSidebarStore()
+
 const loading = ref(true)
 const followers = useCount(props.author.follower_count)
 const likes = useCount(props.author.total_favorited)
@@ -25,9 +31,19 @@ const params = reactive({
   filterGids: '',
   refresh_index: '1'
 })
-const awemeIds = defineModel()
 
-const getVideoRelated = async () => {
+// 同步视频列表到 store（包含当前视频）
+watch(
+  [() => awemeList.value, () => props.currentAweme],
+  ([newList, currentAweme]) => {
+    // 将当前视频和相关推荐合并后同步到 store
+    const fullList = currentAweme ? [currentAweme, ...newList] : newList
+    sidebarStore.setRelatedVideoList(fullList)
+  },
+  { immediate: true }
+)
+
+const getVideoRelated = async (isLoadMore = false) => {
   loading.value = true
   try {
     const res = await apis.getVideoRelated(
@@ -37,9 +53,8 @@ const getVideoRelated = async () => {
       params.refresh_index
     )
     // 如果是第一次请求，则添加到列表，否则追加到列表
-    if (params.refresh_index === '1') {
+    if (!isLoadMore) {
       awemeList.value = res.aweme_list
-      awemeIds.value = res.aweme_list.map((item) => item.aweme_id)
     } else {
       awemeList.value = [...awemeList.value, ...res.aweme_list]
     }
@@ -48,6 +63,28 @@ const getVideoRelated = async () => {
     console.log(error)
   }
 }
+
+// 监听 awemeId 变化，重新请求相关视频（但不重置已有列表）
+watch(
+  () => props.awemeId,
+  (newId, oldId) => {
+    // 检查新视频是否已在列表中
+    const isInList = sidebarStore.relatedVideoList.some(item => item.aweme_id === newId)
+    if (isInList) {
+      // 如果在列表中，只更新 params.aweme_id，不重新请求
+      params.aweme_id = newId
+    } else {
+      // 如果不在列表中，重置并重新请求
+      params.aweme_id = newId
+      params.refresh_index = '1'
+      params.filterGids = ''
+      awemeList.value = []
+      getVideoRelated()
+    }
+  }
+)
+
+// 初始加载
 getVideoRelated()
 
 // 检测页面宽度，小于50%时展示加载更多按钮
@@ -78,7 +115,7 @@ const updateParamsForNextRequest = () => {
 const handleLoadMoreClick = () => {
   if (params.refresh_index < '2') {
     updateParamsForNextRequest()
-    getVideoRelated()
+    getVideoRelated(true)
   }
 }
 </script>
@@ -123,7 +160,7 @@ const handleLoadMoreClick = () => {
           v-for="item in awemeList"
           :key="item.aweme_id"
           :videoTitle="item.desc"
-          :videoLink="`/video/${item.aweme_id}`"
+          :videoLink="getAwemeLink(item)"
           :thumbnailSrc="item.video.cover.url_list[0]"
           :videoDuration="formatMillisecondsToTime(item.video.duration)"
           :likeCount="useCount(item.statistics.digg_count)"

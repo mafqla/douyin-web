@@ -27,6 +27,9 @@ export const useSidebarStore = defineStore('sidebar', () => {
   const relatedVideoList = shallowRef<IAwemeInfo[]>([])
   const collectionVideoList = shallowRef<IAwemeInfo[]>([])
 
+  // 视频切换历史记录栈（用于向上切换返回）
+  const videoHistoryStack = shallowRef<IAwemeInfo[]>([])
+
   // 未看视频 id 列表（用于显示未看角标）
   const notSeenItemIds = ref<Set<string>>(new Set())
 
@@ -102,6 +105,24 @@ export const useSidebarStore = defineStore('sidebar', () => {
     collectionVideoList.value = []
   }
 
+  // 视频历史记录操作
+  const pushVideoHistory = (video: IAwemeInfo) => {
+    videoHistoryStack.value = [...videoHistoryStack.value, video]
+  }
+
+  const popVideoHistory = (): IAwemeInfo | undefined => {
+    const newStack = [...videoHistoryStack.value]
+    const video = newStack.pop()
+    videoHistoryStack.value = newStack
+    return video
+  }
+
+  const clearVideoHistory = () => {
+    videoHistoryStack.value = []
+  }
+
+  const canGoPrevVideo = computed(() => videoHistoryStack.value.length > 0)
+
   // 设置未看视频 id 列表
   const setNotSeenItemIds = (ids: string[]) => {
     notSeenItemIds.value = new Set(ids)
@@ -127,6 +148,8 @@ export const useSidebarStore = defineStore('sidebar', () => {
     collectionVideoList,
     currentVideoList,
     notSeenItemIds,
+    videoHistoryStack,
+    canGoPrevVideo,
     setFolder,
     clearFolder,
     setMix,
@@ -137,6 +160,9 @@ export const useSidebarStore = defineStore('sidebar', () => {
     setRelatedVideoList,
     setCollectionVideoList,
     clearVideoLists,
+    pushVideoHistory,
+    popVideoHistory,
+    clearVideoHistory,
     setNotSeenItemIds,
     clearNotSeenItemIds,
     isNotSeen
