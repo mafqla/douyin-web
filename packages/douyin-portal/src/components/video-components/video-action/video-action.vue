@@ -145,8 +145,9 @@ onUnmounted(() => {
     class="video-action"
     :style="{ transform: `scale(${scale})`, transformOrigin: 'right bottom' }"
   >
-    <slot />
+    
     <div class="video-action-content">
+      <slot />
       <!-- Swiper 控制按钮 -->
       <SwiperControlModal v-if="showSwiperControl" />
 

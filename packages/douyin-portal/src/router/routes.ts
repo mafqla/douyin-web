@@ -134,6 +134,11 @@ export const otherRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/video/index.vue')
     },
     {
+        path: '/note/:id',
+        name: 'note',
+        component: () => import('@/views/note/index.vue')
+    },
+    {
         path: '/search/:keyword',
         name: 'search',
         component: () => import('@/views/search/index.vue')

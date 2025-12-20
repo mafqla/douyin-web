@@ -78,6 +78,8 @@ const getNext: () => Promise<void> = async (): Promise<void> => {
             :video_title="slotProp.item.aweme.desc"
             :video_isFellow="slotProp.item.aweme.author?.follow_status"
             :video_url="slotProp.item.aweme.video?.play_addr?.url_list ?? ''"
+            :aweme_type="slotProp.item.aweme.aweme_type"
+            :is_live_photo="slotProp.item.aweme.is_live_photo"
             :isLoading="loading"
           />
         </template>

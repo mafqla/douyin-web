@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import TitleBox from './title-box.vue'
 import DiscoverVideo from './discover-video.vue'
 import { ElSkeleton } from 'element-plus'
@@ -41,20 +41,26 @@ const props = defineProps({
     type: Number,
     default: 0
   },
-
+  // 视频类型，68为图集
+  aweme_type: {
+    type: Number,
+    default: 0
+  },
+  // 是否为实况照片
+  is_live_photo: {
+    type: Number,
+    default: 0
+  },
   isLoading: {
     type: Boolean,
     default: false
   }
+})
 
-  // imageWidth: {
-  //   type: Number,
-  //   required: true
-  // },
-  // imageHeight: {
-  //   type: Number,
-  //   required: true
-  // }
+// 根据类型生成链接
+const videoLink = computed(() => {
+  const isImageGallery = props.aweme_type === 68 && props.is_live_photo !== 1
+  return isImageGallery ? `/note/${props.video_id}` : `/video/${props.video_id}`
 })
 </script>
 <template>
@@ -73,7 +79,7 @@ const props = defineProps({
         </div>
       </template>
       <template #default>
-        <a :href="`/video/${video_id}`" class="waterfall-videoCardContainer">
+        <a :href="videoLink" class="waterfall-videoCardContainer">
           <div class="item-content">
             <discover-video
               :img="props.video_img"

@@ -5,7 +5,7 @@ import type { ISegment } from '@/api/tyeps/common/aweme'
 
 interface IProps {
   description: string
-  seoDescription: string
+  seoDescription?: string
   textExtra: ISegment[]
 }
 defineProps<IProps>()

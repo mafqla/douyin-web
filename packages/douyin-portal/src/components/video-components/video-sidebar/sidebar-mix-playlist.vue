@@ -11,6 +11,7 @@ import RelatedVideoItem from '@/views/video/components/related-video-item.vue'
 import { useCount } from '@/hooks/useCount'
 import { useSidebarStore } from '@/stores/sidebar'
 import { videosCtrolStore } from '@/stores/videos-control'
+import { getAwemeLink } from '@/utils/aweme-link'
 
 const route = useRoute()
 const router = useRouter()
@@ -153,7 +154,7 @@ onMounted(() => {
             v-for="{ item, index, isPlaying } in combinedList"
             :key="item.aweme_id"
             :videoTitle="item.desc"
-            :videoLink="`/video/${item.aweme_id}`"
+            :videoLink="getAwemeLink(item)"
             :thumbnailSrc="item.video?.cover?.url_list?.[0]"
             :videoDuration="formatMillisecondsToTime(item.video?.duration || 0)"
             :likeCount="useCount(item.statistics?.digg_count || 0)"
