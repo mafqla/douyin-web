@@ -153,6 +153,7 @@ onUnmounted(() => {
             :isShowAvatar="false"
             :showSwiperControl="false"
             :disableScale="true"
+            :music="noteDetail.music"
             @toggleComments="handleToggleComments"
           >
             <!-- 上下切换按钮 -->

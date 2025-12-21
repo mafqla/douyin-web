@@ -212,6 +212,19 @@ export interface IShareInfo {
   share_quote?: string // 可选属性，如果存在引用的话
   // 分享描述信息，可能包含话题标签
   share_desc_info: string
+  // 分享二维码
+  share_qrcode_url?: {
+    height: number
+    width: number
+    uri: string
+    url_list: string[]
+  }
+  // 分享标题（自己）
+  share_title_myself?: string
+  // 分享标题（他人）
+  share_title_other?: string
+  // 微博分享描述
+  share_weibo_desc?: string
 }
 
 interface ImpressionData {

@@ -38,7 +38,7 @@ const { scrollToItem } = useGridScrollToItem({
 })
 
 const count = ref(20)
-const cursor = ref('')
+const cursor = ref(0)
 const getUserCollectVideoList = async () => {
   if (!hasMore.value) return
   isLoadingMore.value = true

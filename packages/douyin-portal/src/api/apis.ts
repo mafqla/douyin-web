@@ -36,6 +36,8 @@ import type { IVideoDetailRes } from './tyeps/request_response/videoDetailRes'
 import type { IVideoRecordRes } from './tyeps/request_response/videoRecordRes'
 import type { IVsRecordRes } from './tyeps/request_response/vsRecord'
 import type { IWatchLaterListRes } from './tyeps/request_response/watchLaterListRes'
+import type { IImRelationRes } from './tyeps/request_response/imRelationRes'
+import type { IImRelationParams } from './tyeps/request_params/imRelationParams'
 
 import urls from './urls'
 import type { IuserLocatePostParams } from './tyeps/request_params/userLocatePostParams'
@@ -294,12 +296,12 @@ export default {
   /**
    * @description 获取用户收藏的视频列表
    * @param {Number} count 数量
-   * @param {String} cursor 分页游标
+   * @param {Number} cursor 分页游标
    * @return {Promise<IUserCollectVideo>} 用户收藏的视频列表
    */
   getUserCollectVideo: (
     count: number,
-    cursor: string
+    cursor: number
   ): Promise<IUserCollectVideo> => {
     return request.get(urls.user_collect_video, {
       params: {
@@ -476,6 +478,22 @@ export default {
         offset,
         list_type: 0,
         operate_type: 0
+      }
+    })
+  },
+  /**
+   * @description 获取IM关系列表（分享好友列表）
+   * @param {IImRelationParams} params 请求参数
+   * @return {Promise<IImRelationRes>} IM关系列表
+   */
+  getImRelationList: (
+    params: IImRelationParams = {}
+  ): Promise<IImRelationRes> => {
+    return request.get(urls.im_relation_list, {
+      params: {
+        count: params.count ?? 50,
+        max_time: params.max_time ?? Date.now(),
+        min_time: params.min_time ?? 1550248238
       }
     })
   }

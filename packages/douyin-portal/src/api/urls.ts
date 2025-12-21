@@ -63,6 +63,8 @@ export default {
   //用户访客记录
   user_visited_list: '/aweme/v1/web/view/user/visited/list/',
   //稍后再看列表
-  watch_later_list: '/aweme/v1/web/watchlater/list/'
+  watch_later_list: '/aweme/v1/web/watchlater/list/',
+  // IM关系列表（分享好友列表）
+  im_relation_list: '/aweme/v1/web/im/spotlight/relation/'
   // ----------------- 测试dy-url -----------------
 }

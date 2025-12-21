@@ -30,7 +30,7 @@ const existingCursor = ref('')
 const selectedVideoIds = ref<Set<string>>(new Set())
 
 const count = 20
-const cursor = ref('')
+const cursor = ref(0)
 
 // 当前收藏夹已有视频的 ID 集合
 const existingVideoIds = computed(() => {
@@ -125,7 +125,7 @@ watch(
       document.body.style.overflow = 'hidden'
       // 重置状态并加载数据
       folderVideoList.value = []
-      cursor.value = ''
+      cursor.value = 0
       hasMore.value = true
       loading.value = true
       isLoadingMore.value = false

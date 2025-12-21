@@ -184,6 +184,10 @@ const thumbnail = computed(() => {
             :follow_status="props.awemeInfo.author.follow_status"
             :isShowAvatar="props.isShowAvatar"
             :showSwiperControl="props.showSwiperControl"
+            :music="props.awemeInfo.music"
+            :bit-rates="props.awemeInfo.video.bit_rate"
+            :share-info="props.awemeInfo.share_info"
+            :video-desc="props.awemeInfo.desc"
             @toggleComments="toggleComments(props.awemeInfo.aweme_id)"
           >
           </video-action>
@@ -218,6 +222,10 @@ const thumbnail = computed(() => {
             :follow_status="props.awemeInfo.author.follow_status"
             :isShowAvatar="props.isShowAvatar"
             :showSwiperControl="props.showSwiperControl"
+            :music="props.awemeInfo.music"
+            :bit-rates="props.awemeInfo.video?.bit_rate || []"
+            :share-info="props.awemeInfo.share_info"
+            :video-desc="props.awemeInfo.desc"
             @toggleComments="toggleComments(props.awemeInfo.aweme_id)"
           >
           </video-action>

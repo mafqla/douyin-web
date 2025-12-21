@@ -188,6 +188,24 @@ watch(
 
 <style lang="scss" scoped>
 .video-sidebar {
+  // 强制使用 dark 主题变量
+  --color-primary: #fe2c55;
+  --color-secondary-default: rgba(255, 255, 255, 0.08);
+  --color-secondary-hover: rgba(255, 255, 255, 0.12);
+  --color-bg-b0: rgba(37, 38, 50, 1);
+  --color-bg-b1: rgba(37, 38, 50, 1);
+  --color-bg-b2: rgba(51, 52, 63, 1);
+  --color-bg-b1-white: rgba(37, 38, 50, 1);
+  --color-text-t0: rgba(255, 255, 255, 1);
+  --color-text-t1: rgba(255, 255, 255, 0.9);
+  --color-text-t2: rgba(255, 255, 255, 0.75);
+  --color-text-t3: rgba(255, 255, 255, 0.5);
+  --color-text-t4: rgba(255, 255, 255, 0.34);
+  --color-line-l1: rgba(255, 255, 255, 0.2);
+  --color-line-l2: rgba(255, 255, 255, 0.16);
+  --color-line-l3: rgba(255, 255, 255, 0.04);
+  --color-fill-hover: rgba(255, 255, 255, 0.08);
+
   width: 336px;
   background-color: rgba(0, 0, 0, 0.7);
   height: 100%;
