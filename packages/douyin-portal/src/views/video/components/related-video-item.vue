@@ -125,17 +125,19 @@ const handleClick = (e: Event) => {
     max-height: 100%;
     color: rgb(22, 23, 34);
     position: relative;
+    z-index: 1;
   }
   .thumbnail-image-filter {
     filter: blur(12px);
+    width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scale(1);
+    transform: scale(1.2);
     transition: all 0.3s ease-in 0s;
-    max-width: 100%;
-    max-height: 100%;
     position: absolute;
-    z-index: -1;
+    top: 0;
+    left: 0;
+    z-index: 0;
   }
 
   .thumbnail-container {

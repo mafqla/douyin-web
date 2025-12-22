@@ -92,7 +92,9 @@ const currentIndex = computed(() => {
 
 const canGoPrev = computed(() => currentIndex.value > 0)
 const canGoNext = computed(() => {
-  return currentIndex.value >= 0 && currentIndex.value < relatedList.value.length - 1
+  return (
+    currentIndex.value >= 0 && currentIndex.value < relatedList.value.length - 1
+  )
 })
 
 const handlePrev = () => {
@@ -152,7 +154,6 @@ onUnmounted(() => {
             :follow_status="noteDetail.author?.follow_status"
             :isShowAvatar="false"
             :showSwiperControl="false"
-            :disableScale="true"
             :music="noteDetail.music"
             @toggleComments="handleToggleComments"
           >
@@ -278,7 +279,7 @@ onUnmounted(() => {
   height: 100%;
 
   .note-player {
-    height: calc(100vh - 80px);
+    height: calc(100vh - 80px) !important;
     min-height: 300px;
     border-radius: 16px;
     position: relative;
@@ -288,7 +289,7 @@ onUnmounted(() => {
 
 .note-sidebar {
   padding-right: 8px;
-  overflow: scroll;
+  // overflow: scroll;
 }
 
 .user-info {
@@ -374,6 +375,16 @@ onUnmounted(() => {
     position: relative;
     overflow: hidden;
   }
+
+  :deep(.text) {
+    font-size: 14px !important;
+    line-height: 22px !important;
+
+    .tag span {
+      font-size: 14px !important;
+      line-height: 22px !important;
+    }
+  }
 }
 
 .publish-info {
@@ -391,7 +402,7 @@ onUnmounted(() => {
 
 .note-sidebar-content {
   margin-top: 16px;
-  height: calc(-288px + 100vh);
+  height: calc(-226px + 100vh);
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -514,6 +525,29 @@ onUnmounted(() => {
 @media (min-width: 1240px) {
   .note-page {
     padding: 0 24px 0 0;
+  }
+}
+
+// 覆盖 related-video-item 的响应式字体样式
+.sidebar-related-video {
+  :deep(.list-item-container .interaction-section) {
+    .video-title {
+      font-size: 14px !important;
+    }
+    .video-meta {
+      .like-content {
+        .like-icon {
+          width: 20px !important;
+          height: 20px !important;
+        }
+        .like-count {
+          font-size: 12px !important;
+        }
+      }
+      .profile-info .user-name {
+        font-size: 12px !important;
+      }
+    }
   }
 }
 </style>

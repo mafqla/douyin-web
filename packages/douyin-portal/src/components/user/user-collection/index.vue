@@ -510,7 +510,7 @@ const handleTabChange = (tab: string) => {
     line-height: 20px;
     display: inline-block;
     position: relative;
-    background: rgba(255, 255, 255, 0.16);
+    background-color: var(--color-fill-hover-alpha10);
     border-radius: 6px;
     padding: 3px 12px;
 

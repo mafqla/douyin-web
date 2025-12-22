@@ -6,16 +6,53 @@ import commentExpand from './comment-expand.vue'
 import { useCount } from '@/hooks'
 import { handleCommentParser } from '@/utils/commentParser'
 import formatTime from '@/utils/date-format'
-import { computed, inject, ref, watchEffect } from 'vue'
+import { computed, inject, ref, watchEffect, watch, provide, onMounted, onUnmounted, type Ref } from 'vue'
 
-const props = defineProps<IComments & { author_id: string | number }>()
+const props = defineProps<IComments & { author_id: string | number; isSubComment?: boolean }>()
 
 // 注入图片预览方法
-const imagePreview = inject<{ openPreview: (cid: string, index: number) => void }>('imagePreview')
+const imagePreview = inject<{ openPreview: (cid: string, index: number) => void }>('imagePreview', { openPreview: () => {} })
+
+// 注入设置回复用户方法
+const setReplyTo = inject<(uid: number | string, username: string, comment?: string, cid?: string, parentCid?: string, sec_uid?: string) => void>('setReplyTo', () => {})
+
+// 注入是否显示内联输入框的配置（默认不显示，只在 video/note 页面显示）
+const showInlineInput = inject<boolean>('showInlineInput', false)
+
+// 注入新回复数据
+const replyToAdd = inject<Ref<{ parentCid: string; reply: IComments } | null>>('replyToAdd', ref(null))
+
+// 注入提交评论方法
+const submitCommentToParent = inject<(data: { text: string; images: File[]; replyTo: any }) => void>('submitComment', () => {})
 
 const openPreview = (index: number) => {
-  imagePreview?.openPreview(props.cid, index)
+  imagePreview.openPreview(props.cid, index)
 }
+
+// 响应式时间显示，自动更新
+const timeKey = ref(0)
+let timeUpdateTimer: ReturnType<typeof setInterval> | null = null
+
+const displayTime = computed(() => {
+  // timeKey 用于触发重新计算
+  timeKey.value
+  return formatTime(props.create_time ?? '')
+})
+
+onMounted(() => {
+  // 每30秒更新一次时间显示
+  timeUpdateTimer = setInterval(() => {
+    timeKey.value++
+  }, 30000)
+})
+
+onUnmounted(() => {
+  if (timeUpdateTimer) {
+    clearInterval(timeUpdateTimer)
+    timeUpdateTimer = null
+  }
+})
+
 //回复用户
 //输入框的值
 const comment = ref('')
@@ -26,11 +63,39 @@ const isOpenInput = ref(false)
 const replyText = computed(() => {
   return isOpenInput.value ? '回复中' : '回复'
 })
-const replyUser = (uid: Number, username: String) => {
-  console.log('replyUser', uid, username)
+
+// 判断当前评论是否是子评论
+const isSubCommentFlag = computed(() => props.isSubComment || !!props.reply_to_userid)
+
+// 获取父评论的 cid（如果是子评论，需要从外部传入）
+const parentCommentCid = inject<string>('parentCommentCid', '')
+
+const replyUser = (uid: Number, username: String, comment?: String, sec_uid?: String) => {
+  // 调用父组件的回复方法（设置底部输入框的回复状态）
+  // 如果是子评论，传递 parentCid（一级评论的 cid）
+  const parentCid = props.isSubComment ? parentCommentCid : undefined
+  setReplyTo(uid as number, username as string, comment as string, props.cid, parentCid, sec_uid as string)
+  // 只有在允许显示内联输入框时才展开
+  if (showInlineInput) {
+    isOpenInput.value = !isOpenInput.value
+  }
 }
-const handleSubmit = (data: string) => {
-  console.log('handleSubmit', data)
+const handleSubmit = (data: { text: string; images: File[]; replyTo: any }) => {
+  // 构造完整的回复信息
+  const replyData = {
+    ...data,
+    replyTo: {
+      uid: props.user.uid,
+      username: props.user.nickname,
+      comment: props.text,
+      cid: props.cid,
+      parentCid: props.isSubComment ? parentCommentCid : undefined,
+      sec_uid: props.user.sec_uid
+    }
+  }
+  // 调用父组件的提交方法
+  submitCommentToParent(replyData)
+  isOpenInput.value = false
 }
 
 const cursor = ref(0)
@@ -41,6 +106,22 @@ const isOpenExpand = ref(props.is_folded)
 const noMore = ref(false)
 //子评论列表
 const replyCommentList = ref<IComments[]>([])
+
+// 监听新回复，添加到子评论列表（只有一级评论需要监听）
+watch(() => replyToAdd?.value, (newReply) => {
+  if (!props.isSubComment && newReply && newReply.parentCid === props.cid) {
+    // 如果是回复当前评论，添加到子评论列表第一位
+    replyCommentList.value.unshift(newReply.reply)
+    // 自动展开子评论
+    isOpenExpand.value = true
+  }
+}, { deep: true })
+
+// 提供当前评论的 cid 给子评论使用（只有一级评论需要提供）
+if (!props.isSubComment) {
+  provide('parentCommentCid', props.cid)
+}
+
 //获取回复评论列表
 const getReplyCommentList = async () => {
   try {
@@ -175,7 +256,7 @@ const onCollapse = () => {
         </div>
         <div class="comment-item-content-time">
           <span class="comment-item-content-time-text">
-            {{ formatTime(props.create_time ?? '') }}
+            {{ displayTime }}
             ·
             {{ props.ip_label }}
           </span>
@@ -200,7 +281,7 @@ const onCollapse = () => {
 
             <div
               class="comment-item-content-footer-reply"
-              @click="isOpenInput = !isOpenInput"
+              @click="replyUser(props.user.uid, props.user.nickname, props.text, props.user.sec_uid)"
             >
               <div class="footer-reply-content">
                 <svg-icon icon="small-reply" class="icon" />
@@ -208,22 +289,28 @@ const onCollapse = () => {
               </div>
             </div>
           </div>
-          <div class="reply-input" v-if="isOpenInput">
-            <dy-input @update:value="comment = $event" @submit="handleSubmit" />
+          <div class="reply-input" v-if="showInlineInput && isOpenInput">
+            <dy-input 
+              :reply-to="{ uid: props.user.uid, username: props.user.nickname, comment: props.text }"
+              @update:value="comment = $event" 
+              @submit="handleSubmit"
+              @cancel-reply="isOpenInput = false"
+            />
           </div>
         </div>
       </div>
 
-      <div class="comment-item-reply" v-if="isOpenExpand">
+      <div class="comment-item-reply" v-if="!props.isSubComment && isOpenExpand">
         <comment-item
           v-for="it in replyCommentList"
           :key="it.cid"
           v-bind="it"
           :author_id="props.author_id"
+          :is-sub-comment="true"
         />
       </div>
       <comment-expand
-        v-if="props.reply_comment_total"
+        v-if="!props.isSubComment && props.reply_comment_total"
         :comment-count="useCount(props.reply_comment_total ?? 0)"
         :isExpanded="isOpenExpand"
         :noMore

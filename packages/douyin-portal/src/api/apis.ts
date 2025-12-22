@@ -38,6 +38,7 @@ import type { IVsRecordRes } from './tyeps/request_response/vsRecord'
 import type { IWatchLaterListRes } from './tyeps/request_response/watchLaterListRes'
 import type { IImRelationRes } from './tyeps/request_response/imRelationRes'
 import type { IImRelationParams } from './tyeps/request_params/imRelationParams'
+import type { IAtListRes, IAtListParams } from './tyeps/request_response/atListRes'
 
 import urls from './urls'
 import type { IuserLocatePostParams } from './tyeps/request_params/userLocatePostParams'
@@ -494,6 +495,22 @@ export default {
         count: params.count ?? 50,
         max_time: params.max_time ?? Date.now(),
         min_time: params.min_time ?? 1550248238
+      }
+    })
+  },
+
+  /**
+   * @description 获取@用户列表
+   * @param {IAtListParams} params 请求参数
+   * @return {Promise<IAtListRes>} @用户列表
+   */
+  getAtList: (params: IAtListParams = {}): Promise<IAtListRes> => {
+    return request.get(urls.at_list, {
+      params: {
+        cursor: params.cursor ?? 0,
+        scene: params.scene ?? 2,
+        group_id: params.group_id ?? '',
+        count: params.count ?? 20
       }
     })
   }

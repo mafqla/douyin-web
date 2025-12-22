@@ -5,12 +5,178 @@ import DyAvatar from '@/components/common/dy-avatar.vue'
 import DyInput from '@/components/common/dy-input/index.vue'
 import Loading from '@/components/common/loading.vue'
 import SearchSuggestion from '@/components/common/search-suggestion.vue'
+import ImagePreview from '@/components/common/image-preview/index.vue'
+import { userStore } from '@/stores/user'
 
 const props = defineProps({
   aweme_id: String,
   author_id: String,
   relatedText: String
 })
+
+// 回复用户信息
+const replyTo = ref<{ 
+  uid: number | string; 
+  username: string; 
+  comment?: string;
+  cid?: string;
+  parentCid?: string;
+  sec_uid?: string;
+} | null>(null)
+
+// 设置回复用户
+const setReplyTo = (uid: number | string, username: string, comment?: string, cid?: string, parentCid?: string, sec_uid?: string) => {
+  replyTo.value = { uid, username, comment, cid, parentCid, sec_uid }
+}
+
+// 取消回复
+const cancelReply = () => {
+  replyTo.value = null
+}
+
+// 提供给子组件
+provide('setReplyTo', setReplyTo)
+provide('showInlineInput', true)
+
+// 生成唯一ID
+const generateCid = () => {
+  return `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+}
+
+// 获取当前用户信息
+const getCurrentUser = () => {
+  const store = userStore()
+  const user = store.userInfo?.user
+  if (user) {
+    return user
+  }
+  return {
+    uid: 'guest_user',
+    sec_uid: '',
+    nickname: '游客',
+    avatar_thumb: {
+      url_list: ['https://p3-pc.douyinpic.com/aweme/100x100/aweme-avatar/default_avatar.jpeg'],
+      uri: '',
+      width: 100,
+      height: 100
+    },
+    signature: '',
+    unique_id: '',
+    short_id: ''
+  }
+}
+
+// 当前用户头像
+const currentUserAvatar = computed(() => {
+  const user = getCurrentUser()
+  return user.avatar_thumb?.url_list?.[0] || 'https://p3-pc.douyinpic.com/aweme/100x100/aweme-avatar/default_avatar.jpeg'
+})
+
+// 当前用户主页链接
+const currentUserLink = computed(() => {
+  const user = getCurrentUser()
+  return user.sec_uid ? `/user/${user.sec_uid}` : ''
+})
+
+// 将图片文件转换为图片列表格式
+const convertImagesToImageList = (images: File[]): any[] | undefined => {
+  if (!images || images.length === 0) return undefined
+  
+  return images.map(file => {
+    const url = URL.createObjectURL(file)
+    return {
+      origin_url: { url_list: [url], uri: '', width: 0, height: 0 },
+      medium_url: { url_list: [url], uri: '', width: 0, height: 0 },
+      crop_url: { url_list: [url], uri: '', width: 0, height: 0 },
+      thumb_url: { url_list: [url], uri: '', width: 0, height: 0 },
+      download_url: { url_list: [url], uri: '', width: 0, height: 0 }
+    }
+  })
+}
+
+// 提交评论
+const submitComment = (data: { text: string; images: File[]; replyTo: any }) => {
+  if (!data.text.trim() && (!data.images || data.images.length === 0)) return
+
+  const currentUser = getCurrentUser()
+  const isReply = !!data.replyTo
+  
+  const newComment: IComments = {
+    cid: generateCid(),
+    text: data.text,
+    aweme_id: props.aweme_id ?? '',
+    create_time: Math.floor(Date.now() / 1000),
+    digg_count: 0,
+    status: 1,
+    user: currentUser as any,
+    reply_id: isReply ? (data.replyTo?.parentCid || data.replyTo?.cid || '0') : '0',
+    user_digged: 0,
+    reply_comment: null,
+    text_extra: [],
+    reply_comment_total: 0,
+    reply_to_reply_id: data.replyTo?.parentCid ? data.replyTo.cid : '0',
+    reply_to_username: data.replyTo?.parentCid ? data.replyTo?.username : undefined,
+    reply_to_userid: data.replyTo?.parentCid ? String(data.replyTo?.uid) : undefined,
+    reply_to_user_sec_id: data.replyTo?.parentCid ? data.replyTo?.sec_uid : undefined,
+    is_author_digged: false,
+    user_buried: false,
+    is_hot: false,
+    image_list: convertImagesToImageList(data.images),
+    ip_label: '本地',
+    can_share: true,
+    is_folded: false
+  }
+
+  if (!isReply) {
+    commentList.value.unshift(newComment)
+  } else {
+    const parentCid = data.replyTo?.parentCid || data.replyTo?.cid
+    const parentComment = commentList.value.find(c => c.cid === parentCid)
+    if (parentComment) {
+      parentComment.reply_comment_total = (parentComment.reply_comment_total || 0) + 1
+    }
+    replyToAdd.value = { parentCid, reply: newComment }
+  }
+
+  replyTo.value = null
+}
+
+// 用于传递新回复给子组件
+const replyToAdd = ref<{ parentCid: string; reply: IComments } | null>(null)
+provide('replyToAdd', replyToAdd)
+
+// 提供提交评论方法给子组件（用于内联输入框）
+provide('submitComment', submitComment)
+
+// 图片预览相关
+const isOpenPreview = ref(false)
+const previewIndex = ref(0)
+
+const allImages = computed(() => {
+  const images: { url: string; alt?: string; cid: string }[] = []
+  commentList.value.forEach((comment) => {
+    if (comment.image_list) {
+      comment.image_list.forEach((item) => {
+        const url = item.origin_url?.url_list?.[1] ?? item.origin_url?.url_list?.[0] ?? item.medium_url?.url_list?.[2]
+        if (url) images.push({ url, alt: 'comment_img', cid: comment.cid })
+      })
+    }
+    if (comment.sticker?.animate_url?.url_list?.[0]) {
+      images.push({ url: comment.sticker.animate_url.url_list[0], alt: 'sticker', cid: comment.cid })
+    }
+  })
+  return images
+})
+
+const openPreview = (cid: string, indexInComment: number) => {
+  const startIndex = allImages.value.findIndex((img) => img.cid === cid)
+  if (startIndex !== -1) {
+    previewIndex.value = startIndex + indexInComment
+    isOpenPreview.value = true
+  }
+}
+
+provide('imagePreview', { openPreview })
 
 const commentList = ref<IComments[]>([])
 const isLoadingMore = ref(true)
@@ -63,11 +229,14 @@ useInfiniteScroll(
 
         <div class="search-input-content">
           <dy-avatar
-            userLink="//www.douyin.com/user/MS4wLjABAAAAqy1OO-UP9J2LJ1xSg_lsryKCicbLFLGzBgTRRT4W14Y"
-            src="//p3-pc-sign.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813c001_fddf54d2b1544d0aa4f0987fefc73f65.jpeg?x-expires=1712570400&x-signature=sHygsuEx4uBSOb8ErbKxTlqV8b8%3D&from=2480802190"
+            :userLink="currentUserLink"
+            :src="currentUserAvatar"
             size="small"
           />
-          <dy-input />
+          <dy-input 
+            :group-id="props.aweme_id"
+            @submit="submitComment"
+          />
         </div>
 
         <div class="search-trend-container" v-if="relatedText != ''">
@@ -90,6 +259,13 @@ useInfiniteScroll(
         <list-footer v-if="!hasMore" />
       </div>
     </div>
+
+    <ImagePreview
+      :open="isOpenPreview"
+      :images="allImages"
+      :initial-index="previewIndex"
+      @close="isOpenPreview = false"
+    />
   </div>
 </template>
 

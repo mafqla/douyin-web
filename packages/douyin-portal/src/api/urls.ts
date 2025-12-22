@@ -65,6 +65,8 @@ export default {
   //稍后再看列表
   watch_later_list: '/aweme/v1/web/watchlater/list/',
   // IM关系列表（分享好友列表）
-  im_relation_list: '/aweme/v1/web/im/spotlight/relation/'
+  im_relation_list: '/aweme/v1/web/im/spotlight/relation/',
+  // @用户列表
+  at_list: '/aweme/v1/web/familiar/atlist/'
   // ----------------- 测试dy-url -----------------
 }

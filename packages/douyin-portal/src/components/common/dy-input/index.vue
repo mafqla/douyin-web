@@ -1,14 +1,51 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
+import { ref, watchEffect, watch, computed } from 'vue'
 import atBox from './at-box.vue'
 import emojiBox from './emoji-box.vue'
 
-defineProps({
+const props = defineProps({
   placeholder: {
     type: String,
     default: '留下你的精彩评论吧'
+  },
+  replyTo: {
+    type: Object as () => { uid: number | string; username: string; comment?: string } | null,
+    default: null
+  },
+  groupId: {
+    type: String,
+    default: ''
   }
 })
+
+// 图片相关
+const imageList = ref<{ file: File; url: string }[]>([])
+const imageInputRef = ref<HTMLInputElement | null>(null)
+
+const onImageClick = () => {
+  imageInputRef.value?.click()
+}
+
+const handleImageSelect = (e: Event) => {
+  const target = e.target as HTMLInputElement
+  const files = target.files
+  if (files && files.length > 0) {
+    // 最多支持1张图片
+    if (imageList.value.length >= 1) {
+      return
+    }
+    const file = files[0]
+    const url = URL.createObjectURL(file)
+    imageList.value.push({ file, url })
+  }
+  // 清空 input 以便重复选择同一文件
+  target.value = ''
+}
+
+const removeImage = (index: number) => {
+  URL.revokeObjectURL(imageList.value[index].url)
+  imageList.value.splice(index, 1)
+}
 
 const textareaRef = ref('')
 const richtextRef = ref<HTMLElement | null>(null)
@@ -16,22 +53,35 @@ const loading = ref(false)
 //超出的字数
 const overLimit = ref(0)
 // 定义 emits
-const emits = defineEmits(['update:value', 'submit'])
+const emits = defineEmits(['update:value', 'submit', 'cancelReply'])
 
 // 更新 value 的方法
 const updateValue = (newValue: string) => {
   textareaRef.value = newValue
   emits('update:value', newValue)
 }
-async function submitComment() {
-  // 如果输入为空，直接返回
-  if (!textareaRef.value.trim()) return
 
-  // 提交内容
-  emits('submit', textareaRef.value)
+// 取消回复
+const cancelReply = () => {
+  emits('cancelReply')
+}
+
+async function submitComment() {
+  // 如果输入为空且没有图片，直接返回
+  if (!textareaRef.value.trim() && imageList.value.length === 0) return
+
+  // 提交内容，包含图片
+  emits('submit', {
+    text: textareaRef.value,
+    images: imageList.value.map(img => img.file),
+    replyTo: props.replyTo
+  })
 
   // 清空输入框的内容
   textareaRef.value = ''
+  // 清空图片
+  imageList.value.forEach(img => URL.revokeObjectURL(img.url))
+  imageList.value = []
 
   // 清空富文本的内容
   if (richtextRef.value) {
@@ -190,6 +240,11 @@ const handleSelectEmoji = (emoji: any) => {
   isShowEmoji.value = false // 关闭表情符号面板
 }
 
+// 计算是否可以提交（有文字或有图片）
+const canSubmit = computed(() => {
+  return textareaRef.value.trim() !== '' || imageList.value.length > 0
+})
+
 watchEffect(() => {
   // console.log('textarea', textareaRef.value)
   // console.log('range', savedRange.value)
@@ -208,62 +263,95 @@ watchEffect(() => {
 })
 </script>
 <template>
-  <div class="dy-input">
-    <div class="comment-input-left">
-      <div class="richtext-container">
-        <div class="DraftEditor-root">
-          <div
-            class="public-DraftEditorPlaceholder-inner"
-            v-if="textareaRef === ''"
-          >
-            <span>{{ placeholder }}</span>
-          </div>
-          <div class="DraftEditor-editorContainer">
+  <div class="dy-input" :class="{ 'has-images': imageList.length > 0 }">
+    <!-- 回复提示栏 - 只在有 replyTo 时显示 -->
+    <div class="reply-hint" v-if="replyTo">
+      <span class="reply-text">回复@{{ replyTo.username }}: {{ replyTo.comment }}</span>
+      <span class="reply-close" @click="cancelReply">
+        <svg-icon icon="close" class="close-icon" />
+      </span>
+    </div>
+    
+    <div class="input-main">
+      <div class="comment-input-left">
+        <div class="richtext-container">
+          <div class="DraftEditor-root">
             <div
-              class="public-DraftEditor-content"
-              contenteditable="true"
-              spellcheck="false"
-              role="combobox"
-              style="
-                outline: none;
-                user-select: text;
-                white-space: pre-wrap;
-                overflow-wrap: break-word;
-              "
-              ref="richtextRef"
-              @input="onTextareaInput"
-              @focus="restoreSelection"
-            ></div>
+              class="public-DraftEditorPlaceholder-inner"
+              v-if="textareaRef === ''"
+            >
+              <span>{{ placeholder }}</span>
+            </div>
+            <div class="DraftEditor-editorContainer">
+              <div
+                class="public-DraftEditor-content"
+                contenteditable="true"
+                spellcheck="false"
+                role="combobox"
+                style="
+                  outline: none;
+                  user-select: text;
+                  white-space: pre-wrap;
+                  overflow-wrap: break-word;
+                "
+                ref="richtextRef"
+                @input="onTextareaInput"
+                @focus="restoreSelection"
+              ></div>
+            </div>
           </div>
         </div>
-
-        <at-box
-          v-if="isShowAt"
-          @user-selected="handleUserSelected"
-          @close="isShowAt = false"
-        />
+      </div>
+      
+      <div class="comment-input-right-ct">
+        <div class="comment-input-right-ct-content">
+          <p class="over-limit" v-if="overLimit">-{{ overLimit }}</p>
+          <span @click="onImageClick">
+            <svg-icon icon="image" class="icon" />
+          </span>
+          <input
+            type="file"
+            ref="imageInputRef"
+            accept="image/*"
+            style="display: none"
+            @change="handleImageSelect"
+          />
+          <span :class="{ 'at-icon': isShowAt }" @click="onAtClick">
+            <svg-icon icon="at" class="icon" />
+          </span>
+          <span :class="{ 'emoji-icon': isShowEmoji }" @click="onEmojiClick">
+            <svg-icon icon="emoji" class="icon" />
+          </span>
+          <span
+            class="submit"
+            :class="{ 'is-loading': loading }"
+            @click="submitComment"
+            v-if="canSubmit"
+          >
+            <svg-icon icon="submit" class="submit-icon" />
+          </span>
+        </div>
       </div>
     </div>
-    <div class="comment-input-right-ct">
-      <div class="comment-input-right-ct-content">
-        <p class="over-limit" v-if="overLimit">-{{ overLimit }}</p>
-        <span :class="{ 'at-icon': isShowAt }" @click="onAtClick">
-          <svg-icon icon="at" class="icon" />
-        </span>
-        <span :class="{ 'emoji-icon': isShowEmoji }" @click="onEmojiClick">
-          <svg-icon icon="emoji" class="icon" />
-        </span>
-        <span
-          class="submit"
-          :class="{ 'is-loading': loading }"
-          @click="submitComment"
-          v-if="textareaRef !== ''"
-        >
-          <svg-icon icon="submit" class="submit-icon" />
+    
+    <!-- 图片预览区域 - 在输入框下方 -->
+    <div class="image-preview-list" v-if="imageList.length > 0">
+      <div class="image-preview-item" v-for="(img, index) in imageList" :key="index">
+        <img :src="img.url" alt="preview" />
+        <span class="image-remove" @click="removeImage(index)">
+          <svg-icon icon="close" class="remove-icon" />
         </span>
       </div>
     </div>
 
+    <!-- at-box 和 emoji-box 显示在输入框上方 -->
+    <at-box
+      v-if="isShowAt"
+      :group-id="groupId"
+      @user-selected="handleUserSelected"
+      @close="isShowAt = false"
+    />
+    
     <emoji-box
       v-if="isShowEmoji"
       @select-emoji="handleSelectEmoji"
@@ -275,27 +363,109 @@ watchEffect(() => {
 <style lang="scss" scoped>
 .dy-input {
   width: 100%;
-  height: 100%;
   min-height: 44px;
   background-color: var(--color-bg-b3);
-  // border: 1px solid var(--color-bg-b3);
   background: var(--container-bg);
   border-radius: 12px;
-  justify-content: center;
-  align-items: center;
   display: flex;
+  flex-direction: column;
   position: relative;
 
   &:hover {
     outline: 1px solid rgba(255, 255, 255, 0.5);
   }
 
+  .reply-hint {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px 12px 0 0;
+    font-size: 12px;
+    color: var(--color-text-t2);
+
+    .reply-text {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .reply-close {
+      cursor: pointer;
+      margin-left: 8px;
+      opacity: 0.6;
+      
+      &:hover {
+        opacity: 1;
+      }
+
+      .close-icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  .input-main {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
   .comment-input-left {
-    height: 100%;
     width: 0;
     flex: 1;
     padding-left: 12px;
-    overflow: hidden;
+  }
+
+  .image-preview-list {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 12px 8px;
+
+    .image-preview-item {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .image-remove {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        width: 18px;
+        height: 18px;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        
+        &:hover {
+          background: rgba(0, 0, 0, 0.8);
+        }
+
+        .remove-icon {
+          width: 12px;
+          height: 12px;
+          color: #fff;
+        }
+      }
+    }
   }
 
   .public-DraftEditorPlaceholder-inner {
@@ -330,7 +500,6 @@ watchEffect(() => {
   .DraftEditor-root,
   .public-DraftEditor-content {
     height: inherit;
-    // text-align: left;
     text-align: initial;
   }
 
@@ -370,9 +539,6 @@ watchEffect(() => {
   }
 
   .comment-input-right-ct {
-    // flex: 0 1;
-    // flex-basis: 110px !important;
-    // flex-basis: 152px;
     flex: 0 152px;
     margin-right: 4px;
     position: static;

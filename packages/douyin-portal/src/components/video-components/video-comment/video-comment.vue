@@ -5,7 +5,11 @@ import dyInput from '@/components/common/dy-input/index.vue'
 import ImagePreview from '@/components/common/image-preview/index.vue'
 import { vInfiniteScroll } from '@vueuse/components'
 import { computed, provide, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { userStore } from '@/stores/user'
 import CommentItem from './comment-item.vue'
+
+const route = useRoute()
 
 const commentCount = ref(0)
 const textarea = ref('')
@@ -13,21 +17,170 @@ const loading = ref(false)
 const props = defineProps({
   id: String,
   author_id: Number,
-  relatedText: String
+  relatedText: String,
+  // 是否显示内联输入框，默认 false，只在 video/note 页面手动设置为 true
+  showInlineInput: {
+    type: Boolean,
+    default: false
+  }
 })
-// const store = commentStore()
+
+// 回复用户信息
+const replyTo = ref<{ 
+  uid: number | string; 
+  username: string; 
+  comment?: string;
+  cid?: string;  // 被回复评论的cid
+  parentCid?: string;  // 父评论的cid（如果是回复子评论）
+  sec_uid?: string;  // 被回复用户的sec_uid
+} | null>(null)
+
+// 设置回复用户
+const setReplyTo = (uid: number | string, username: string, comment?: string, cid?: string, parentCid?: string, sec_uid?: string) => {
+  replyTo.value = { uid, username, comment, cid, parentCid, sec_uid }
+}
+
+// 取消回复
+const cancelReply = () => {
+  replyTo.value = null
+}
+
+// 提供给子组件
+provide('setReplyTo', setReplyTo)
+// 提供是否显示内联输入框的配置
+provide('showInlineInput', props.showInlineInput)
+
+// 生成唯一ID
+const generateCid = () => {
+  return `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+}
+
+// 获取当前用户信息
+const getCurrentUser = () => {
+  const store = userStore()
+  const user = store.userInfo?.user
+  if (user) {
+    return user
+  }
+  // 如果没有登录，返回默认用户信息
+  return {
+    uid: 'guest_user',
+    sec_uid: '',
+    nickname: '游客',
+    avatar_thumb: {
+      url_list: ['https://p3-pc.douyinpic.com/aweme/100x100/aweme-avatar/default_avatar.jpeg'],
+      uri: '',
+      width: 100,
+      height: 100
+    },
+    signature: '',
+    unique_id: '',
+    short_id: ''
+  }
+}
+
+// 将图片文件转换为图片列表格式
+const convertImagesToImageList = (images: File[]) => {
+  if (!images || images.length === 0) return undefined
+  
+  return images.map(file => {
+    const url = URL.createObjectURL(file)
+    return {
+      origin_url: {
+        url_list: [url],
+        uri: '',
+        width: 0,
+        height: 0
+      },
+      medium_url: {
+        url_list: [url],
+        uri: '',
+        width: 0,
+        height: 0
+      }
+    }
+  })
+}
 
 const list = ref([]) as any
-async function submitComment() {
-  //清空输入框
-  textarea.value = ''
-  if (!textarea.value) return
+async function submitComment(data: { text: string; images: File[]; replyTo: { uid: number | string; username: string; comment?: string; cid?: string; parentCid?: string; sec_uid?: string } | null }) {
+  console.log('提交评论:', data)
+  
+  // 如果没有文字和图片，不提交
+  if (!data.text.trim() && (!data.images || data.images.length === 0)) {
+    return
+  }
 
   loading.value = true
-  textarea.value = ''
-  commentCount.value = list.value.length
-  console.log(list.value)
+  
+  // 构造新评论数据
+  const currentUser = getCurrentUser()
+  const isReply = !!data.replyTo
+  
+  const newComment: IComments = {
+    cid: generateCid(),
+    text: data.text,
+    aweme_id: props.id ?? '',
+    create_time: Math.floor(Date.now() / 1000),
+    digg_count: 0,
+    status: 1,
+    user: currentUser as any,
+    reply_id: isReply ? (data.replyTo?.parentCid || data.replyTo?.cid || '0') : '0',
+    user_digged: 0,
+    reply_comment: null,
+    text_extra: [],
+    reply_comment_total: 0,
+    // 只有回复子评论时才设置 reply_to 相关字段（显示 "用户名 ▸ 被回复用户名"）
+    // 回复一级评论时不设置（只显示评论者用户名）
+    reply_to_reply_id: data.replyTo?.parentCid ? data.replyTo.cid : '0',
+    reply_to_username: data.replyTo?.parentCid ? data.replyTo?.username : undefined,
+    reply_to_userid: data.replyTo?.parentCid ? String(data.replyTo?.uid) : undefined,
+    reply_to_user_sec_id: data.replyTo?.parentCid ? data.replyTo?.sec_uid : undefined,
+    is_author_digged: false,
+    user_buried: false,
+    is_hot: false,
+    image_list: convertImagesToImageList(data.images),
+    ip_label: '本地',
+    can_share: true,
+    is_folded: false
+  }
+
+  if (!isReply) {
+    // 直接评论：添加到列表第一个位置
+    commentList.value.unshift(newComment)
+  } else {
+    // 回复评论：通过事件通知 comment-item 添加到子评论列表
+    const parentCid = data.replyTo?.parentCid || data.replyTo?.cid
+    addReplyToComment(parentCid!, newComment)
+  }
+  
+  // 更新总数
+  total.value += 1
+  
+  // 清除回复状态
+  replyTo.value = null
+  loading.value = false
+  
+  // TODO: 调用接口发送评论
 }
+
+// 添加回复到对应的评论
+const addReplyToComment = (parentCid: string, reply: IComments) => {
+  // 查找父评论并添加回复
+  const parentComment = commentList.value.find(c => c.cid === parentCid)
+  if (parentComment) {
+    // 增加回复计数
+    parentComment.reply_comment_total = (parentComment.reply_comment_total || 0) + 1
+  }
+  // 通知子组件添加回复
+  replyToAdd.value = { parentCid, reply }
+}
+
+// 用于传递新回复给子组件
+const replyToAdd = ref<{ parentCid: string; reply: IComments } | null>(null)
+
+// 提供给子组件
+provide('replyToAdd', replyToAdd)
 const commentList = ref<IComments[]>([])
 const isLoadingMore = ref(true)
 const hasMore = ref(true)
@@ -134,7 +287,12 @@ provide('imagePreview', { openPreview })
       <list-footer v-if="!hasMore" :text="hotsoon_text" />
     </div>
     <div class="video-comment-footer">
-      <dy-input />
+      <dy-input 
+        :reply-to="replyTo"
+        :group-id="props.id"
+        @submit="submitComment"
+        @cancel-reply="cancelReply"
+      />
     </div>
 
     <ImagePreview

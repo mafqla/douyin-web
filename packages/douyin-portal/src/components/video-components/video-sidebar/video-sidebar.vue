@@ -151,10 +151,7 @@ watch(
             class="video-tabs-content-item collection"
             v-show="activeName === 'collection'"
           >
-            <SidebarMixPlaylist
-              :mix="mix"
-              :aweme_id="props.aweme_id ?? ''"
-            />
+            <SidebarMixPlaylist :mix="mix" :aweme_id="props.aweme_id ?? ''" />
           </div>
           <!-- 相关推荐 -->
           <div
@@ -365,6 +362,10 @@ watch(
   .video-tabs-top {
     height: calc(2.32143vw + 12.5714px) !important;
   }
+
+  .video-tabs-content {
+    height: calc(100% + -2.32143vw - 12.5714px) !important;
+  }
 }
 
 @media screen and (min-width: 2560px) {
@@ -379,6 +380,9 @@ watch(
 
   .video-tabs-top {
     height: 72px !important;
+  }
+  .video-tabs-content {
+    height: calc(100% + -72px) !important;
   }
 }
 </style>

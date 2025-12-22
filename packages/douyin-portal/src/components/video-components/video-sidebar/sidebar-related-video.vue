@@ -30,7 +30,9 @@ watch(
   awemeList,
   (newList) => {
     // 将当前视频和相关推荐合并后同步到 store
-    const fullList = props.currentAweme ? [props.currentAweme, ...newList] : newList
+    const fullList = props.currentAweme
+      ? [props.currentAweme, ...newList]
+      : newList
     sidebarStore.setRelatedVideoList(fullList)
   },
   { immediate: true }
@@ -63,7 +65,7 @@ const getVideoRelated = async (isLoadMore = false) => {
   } else {
     loading.value = true
   }
-  
+
   try {
     const res = await apis.getVideoRelated(
       params.aweme_id,
@@ -72,19 +74,19 @@ const getVideoRelated = async (isLoadMore = false) => {
       params.refresh_index
     )
     const newList = res.aweme_list || []
-    
+
     if (isLoadMore) {
       awemeList.value = [...awemeList.value, ...newList]
     } else {
       awemeList.value = newList
     }
-    
+
     // 更新分页参数
     if (newList.length > 0) {
       params.refresh_index = String(Number(params.refresh_index) + 1)
       params.filterGids = awemeList.value.map((item) => item.aweme_id).join(',')
     }
-    
+
     // 判断是否还有更多 (has_more 可能是 1/0 或 true/false)
     hasMore.value = Boolean(res.has_more) && newList.length > 0
   } catch (error) {
@@ -124,10 +126,7 @@ onMounted(() => {
 <template>
   <div class="sidebar-related-video">
     <Loading :show="loading">
-      <ul
-        class="related-list"
-        v-infinite-scroll="[loadMore, { distance: 10 }]"
-      >
+      <ul class="related-list" v-infinite-scroll="[loadMore, { distance: 10 }]">
         <RelatedVideoItem
           v-for="{ item, isPlaying } in combinedList"
           :key="item.aweme_id"
@@ -159,6 +158,6 @@ onMounted(() => {
   margin: 0;
   height: 100%;
   overflow-y: auto;
-  scrollbar-width: thin;
+  scrollbar-width: none;
 }
 </style>

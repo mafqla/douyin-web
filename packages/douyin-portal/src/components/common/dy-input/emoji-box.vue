@@ -38,7 +38,7 @@ onUnmounted(() => {
 })
 </script>
 <template>
-  <div class="emoji">
+  <div class="emoji" @wheel.stop @touchmove.stop>
     <div class="emoji-content">
       <div class="emoji-list">
         <span
@@ -59,11 +59,11 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .emoji {
-  width: 414px;
-  height: 295px;
+  width: 100%;
+  max-height: 295px;
   box-shadow: var(--shadow-1);
   background-color: var(--color-bg-b1-white);
-  z-index: 3;
+  z-index: 50;
   border-radius: 12px;
   outline: none;
   flex-direction: column;
@@ -71,8 +71,9 @@ onUnmounted(() => {
   overflow: hidden;
 
   position: absolute;
-  bottom: -300px;
-  right: -1px;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 8px;
 
   scrollbar-color: #363741 var(--color-bg-b1-white);
 }
