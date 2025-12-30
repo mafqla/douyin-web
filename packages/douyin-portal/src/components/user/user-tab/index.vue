@@ -1,6 +1,12 @@
 <script setup lang="ts">
-import {} from 'vue'
+import { useAttrs } from 'vue'
 import tabsItem from './tabs-item.vue'
+
+defineOptions({
+  inheritAttrs: false
+})
+
+const attrs = useAttrs()
 
 const props = defineProps<{
   tabs: string[]
@@ -63,7 +69,7 @@ const handleTabChange = (tab: string) => {
 </script>
 
 <template>
-  <div class="user-tabbar" :class="{ scroll: isScroll }" :style="paddingStyle">
+  <div class="user-tabbar" :class="{ scroll: isScroll }" :style="paddingStyle" v-bind="attrs">
     <div class="tabbar-content">
       <div class="tabs-top">
         <div class="tabs-list">

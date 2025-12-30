@@ -50,12 +50,20 @@ import type { IUserMixDetailRes } from './tyeps/request_response/userMixDetailRe
 export default {
   /**
    * @description 获取首页视频流
+   * @param {number} count 数量
+   * @param {number} refresh_index 刷新索引
+   * @param {string} tag_id 分类标签ID（可选）
    */
-  homeFeed: (count: number, refresh_index: number): Promise<IhomeFeedRes> => {
+  homeFeed: (
+    count: number,
+    refresh_index: number,
+    tag_id?: string
+  ): Promise<IhomeFeedRes> => {
     return request.get(urls.home_feed, {
       params: {
         count,
-        refresh_index
+        refresh_index,
+        ...(tag_id && { tag_id })
       }
     })
   },

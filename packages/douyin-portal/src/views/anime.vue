@@ -61,20 +61,18 @@ onUnmounted(() => {
       >
         <template #item="{ item, itemHeight }">
           <waterfall-item
-            :video_id="Number(item.aweme_id)"
-            :video_img="item.video?.cover.url_list[0] ?? ''"
-            :video_uploadtime="item.create_time"
-            :video_time="item.video?.duration"
-            :video_like="item.statistics?.digg_count"
-            :video_author="item.author?.nickname"
-            :video_title="item.desc"
-            :video_isFellow="item.author?.follow_status"
-            :video_url="item.video?.play_addr.url_list[2]"
-            :aweme_type="item.aweme_type"
-            :is_live_photo="item.is_live_photo"
-            :itemHeight="itemHeight"
-            :imageWidth="item.video?.cover.width"
-            :imageHeight="item.video?.cover.height"
+            :videoId="String(item.aweme_id)"
+            :videoImg="item.video?.cover.url_list[0] ?? ''"
+            :videoUploadtime="item.create_time"
+            :videoTime="item.video?.duration"
+            :videoLike="item.statistics?.digg_count"
+            :videoAuthor="item.author?.nickname"
+            :videoTitle="item.desc"
+            :videoIsFellow="item.author?.follow_status"
+            :videoUrl="item.video?.play_addr.url_list[2]"
+            :awemeType="item.aweme_type"
+            :isLivePhoto="item.is_live_photo"
+            :authorId="item.author?.uid || ''"
             :isLoading="loading"
           />
         </template>

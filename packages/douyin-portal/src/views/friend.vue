@@ -21,12 +21,12 @@ const getData = async () => {
   try {
     const res = await apis.homeFeed(count.value, refresh_index.value)
 
-    res.cards.forEach((item: any) => {
-      //json格式化每个item 的子项
-      return parseJsonStrings(item)
-    })
-    console.log(res.cards)
-    list.value.push(...res.cards)
+    // res.aweme_list.forEach((item: any) => {
+    //   //json格式化每个item 的子项
+    //   return parseJsonStrings(item)
+    // })
+    console.log(res.aweme_list)
+    list.value.push(...res.aweme_list)
     refresh_index.value++
     isOver.value = !Boolean(res.has_more)
     loading.value = false
@@ -69,17 +69,18 @@ const getNext: () => Promise<void> = async (): Promise<void> => {
         <template v-slot:default="slotProp">
           <!-- <hot-item /> -->
           <waterfall-item
-            :video_id="slotProp.item.aweme.aweme_id"
-            :video_img="slotProp.item.aweme.video?.cover.url_list[0]"
-            :video_uploadtime="slotProp.item.aweme.create_time"
-            :video_time="slotProp.item.aweme.video?.duration"
-            :video_like="slotProp.item.aweme.statistics?.digg_count"
-            :video_author="slotProp.item.aweme.author?.nickname"
-            :video_title="slotProp.item.aweme.desc"
-            :video_isFellow="slotProp.item.aweme.author?.follow_status"
-            :video_url="slotProp.item.aweme.video?.play_addr?.url_list ?? ''"
-            :aweme_type="slotProp.item.aweme.aweme_type"
-            :is_live_photo="slotProp.item.aweme.is_live_photo"
+            :videoId="slotProp.item.aweme.aweme_id"
+            :videoImg="slotProp.item.aweme.video?.cover.url_list[0]"
+            :videoUploadtime="slotProp.item.aweme.create_time"
+            :videoTime="slotProp.item.aweme.video?.duration"
+            :videoLike="slotProp.item.aweme.statistics?.digg_count"
+            :videoAuthor="slotProp.item.aweme.author?.nickname"
+            :videoTitle="slotProp.item.aweme.desc"
+            :videoIsFellow="slotProp.item.aweme.author?.follow_status"
+            :videoUrl="slotProp.item.aweme.video?.play_addr?.url_list ?? []"
+            :awemeType="slotProp.item.aweme.aweme_type"
+            :isLivePhoto="slotProp.item.aweme.is_live_photo"
+            :authorId="slotProp.item.aweme.author?.uid || ''"
             :isLoading="loading"
           />
         </template>

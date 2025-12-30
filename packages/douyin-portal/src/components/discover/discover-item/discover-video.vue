@@ -4,22 +4,29 @@ import miniPlayer from '@/components/video-player/mini-player.vue'
 import { useCount } from '@/hooks'
 import { formatMillisecondsToTime } from '@/utils/date-format'
 
-const props = defineProps({
-  img: String,
-  videoTime: {
-    type: Number,
-    default: 0
-  },
-  like: {
-    type: Number,
-    default: 0
-  },
-  videoUrl: {
-    type: [String, Array],
-    default: ''
-  },
-  itemWidth: Number,
-  itemHeight: Number
+interface DiscoverVideoProps {
+  img?: string
+  videoTime?: number
+  like?: number
+  videoUrl?: string | string[]
+  itemWidth?: number
+  itemHeight?: number
+  // 直播相关
+  isLive?: boolean
+  liveStreamUrl?: string
+  liveViewCount?: string | number
+  anchorAvatar?: string
+}
+
+const props = withDefaults(defineProps<DiscoverVideoProps>(), {
+  img: '',
+  videoTime: 0,
+  like: 0,
+  videoUrl: '',
+  isLive: false,
+  liveStreamUrl: '',
+  liveViewCount: '',
+  anchorAvatar: ''
 })
 
 const isVideoVisible = ref(false)
@@ -45,15 +52,19 @@ img.onload = function () {
   let height = img.height
   widthImg.value = width
   heightImg.value = height
-  // console.log(width, height)
 }
-img.src = props.img as string
+if (props.img) {
+  img.src = props.img
+}
 
 const paddingTop = computed(() => {
-  return (heightImg.value / widthImg.value) * 100
+  // 直播卡片使用固定的 4:3 宽高比，避免高度不一致
+  if (props.isLive) {
+    return 75 // 4:3 比例
+  }
+  // return (heightImg.value / widthImg.value) * 100
+  return 75
 })
-
-const newWidth = Math.round(props.itemWidth as any)
 
 const video_time = computed(() => {
   return formatMillisecondsToTime(props.videoTime)
@@ -65,10 +76,26 @@ const isShowImg = ref(true)
 const onError = () => {
   isShowImg.value = false
 }
+
+// 直播流状态
+const isLiveStreamError = ref(false)
+const livePlayerKey = ref(0)
+
+// 直播流加载错误处理
+const onLiveStreamError = () => {
+  isLiveStreamError.value = true
+}
+
+// 刷新直播流
+const refreshLiveStream = () => {
+  isLiveStreamError.value = false
+  livePlayerKey.value++
+}
 </script>
 <template>
   <div
     class="item-video videoImage"
+    :class="{ 'is-live': isLive }"
     :style="{ paddingTop: `${paddingTop}%` }"
     @mouseenter="showVideo"
     @mouseleave="hideVideo"
@@ -83,26 +110,87 @@ const onError = () => {
           fetchpriority="high"
           decoding="async"
           loading="lazy"
-          :width="newWidth"
-          :height="Math.round(props.itemHeight as any)"
           @error="onError"
-          v-if="isShowImg"
+          v-if="isShowImg && !isLive"
         />
-        <svg-icon class="icon" icon="loading-logo" v-if="!isShowImg" />
+        <svg-icon
+          class="icon"
+          icon="loading-logo"
+          v-if="!isShowImg && !isLive"
+        />
+        <!-- 直播封面图（流错误时显示） -->
+        <img
+          :src="img_url"
+          alt="live-cover"
+          class="live-cover"
+          v-if="isLive && (isLiveStreamError || !liveStreamUrl)"
+        />
+        <!-- 直播流播放 -->
         <miniPlayer
-          v-if="isVideoVisible"
+          v-if="isLive && liveStreamUrl && !isLiveStreamError"
+          :key="livePlayerKey"
+          class="video-player live-player"
+          :url="liveStreamUrl"
+          @error="onLiveStreamError"
+        />
+        <!-- 直播流错误提示 -->
+        <div
+          class="live-stream-error"
+          v-if="isLive && (isLiveStreamError || !liveStreamUrl)"
+        >
+          <div class="error-text">不支持的音频/视频格式</div>
+          <div class="error-action" @click.stop="refreshLiveStream">
+            请试试<span class="refresh-link">刷新</span>
+          </div>
+        </div>
+        <!-- 普通视频 hover 播放 -->
+        <miniPlayer
+          v-else-if="isVideoVisible && !isLive"
           class="video-player"
           :url="videoUrl"
           :volume="volume"
         />
+        <!-- 普通视频的点击层 -->
         <div
           class="overlay"
-          v-if="isVideoVisible"
+          v-if="isVideoVisible && !isLive"
           @click="$emit('openModal')"
         ></div>
       </div>
 
-      <div class="item-video-info" v-if="!isVideoVisible">
+      <!-- 直播信息覆盖层 -->
+      <div class="live-overlay" v-if="isLive">
+        <!-- 直播中标签 -->
+        <div class="live-tag">
+          <span class="live-dot"></span>
+          <span>直播中</span>
+        </div>
+        <!-- 主播头像 -->
+        <div class="anchor-avatar" v-if="anchorAvatar">
+          <img :src="anchorAvatar" alt="" />
+        </div>
+        <!-- 观看人数 -->
+        <div class="live-view-count" v-if="liveViewCount">
+          <svg
+            width="12"
+            height="14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M8.81 3.615c0 1.485-1.24 2.692-2.777 2.71h-.066C4.43 6.306 3.189 5.1 3.189 3.614v-.904C3.19 1.214 4.45 0 6 0c1.552 0 2.81 1.214 2.81 2.711v.904zM1.163 8.594c1.167-.557 3.512-.864 4.837-.864 1.327 0 3.676.307 4.846.868.679.38 1.155 1.23 1.155 2.225v.572c0 .738-.39 1.357-.928 1.556-1.284.366-3.698.563-5.071.563-1.375 0-3.79-.201-5.078-.565C.391 12.748 0 12.13 0 11.393v-.572c0-.997.478-1.85 1.162-2.227z"
+              fill="#fff"
+              fill-opacity=".9"
+            ></path>
+          </svg>
+          <span>{{ liveViewCount }}</span>
+        </div>
+      </div>
+
+      <!-- 普通视频信息 -->
+      <div class="item-video-info" v-if="!isVideoVisible && !isLive">
         <div class="item-video-block"></div>
         <div class="item-video-info-content">
           <div class="info-content-blank"></div>
@@ -278,6 +366,63 @@ const onError = () => {
       z-index: 1;
     }
 
+    // 直播播放器样式
+    .live-player {
+      :deep(video) {
+        object-fit: cover;
+      }
+      // 隐藏播放器控件
+      :deep(.xgplayer-controls) {
+        display: none !important;
+      }
+    }
+
+    // 直播封面图
+    .live-cover {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-radius: 12px;
+    }
+
+    // 直播流错误提示
+    .live-stream-error {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #fff;
+      pointer-events: auto;
+
+      .error-text {
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
+
+      .error-action {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.8);
+
+        .refresh-link {
+          color: #fe2c55;
+          cursor: pointer;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+
     .overlay {
       position: absolute;
       top: 0;
@@ -285,8 +430,108 @@ const onError = () => {
       width: 100%;
       height: 100%;
       background-color: transparent;
-      // z-index: 1;
+      z-index: 2;
     }
+  }
+}
+
+// 直播卡片样式
+.item-video.is-live {
+  .item-video-content {
+    background: #000;
+  }
+}
+
+// 直播信息覆盖层
+.live-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+
+  // 直播中标签
+  .live-tag {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    gap: 4px;
+    color: rgb(255, 255, 255);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    background: linear-gradient(
+      131.17deg,
+      rgb(255, 23, 100) 0%,
+      rgb(237, 52, 149) 94.15%
+    );
+    border-radius: 6px;
+    padding: 4px;
+    text-align: center;
+    vertical-align: middle;
+    font-family: 'PingFang SC';
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 100%;
+    white-space: nowrap;
+    flex: 1 1 0%;
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      background: #fff;
+      border-radius: 50%;
+      animation: live-pulse 1.5s ease-in-out infinite;
+    }
+  }
+
+  // 主播头像
+  .anchor-avatar {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  // 观看人数
+  .live-view-count {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
+}
+
+@keyframes live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
   }
 }
 

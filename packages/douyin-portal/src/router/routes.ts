@@ -17,7 +17,7 @@ export const menuRoutes: MenuRoute[] = [
     {
         path: '/discover',
         name: 'discover',
-        component: () => import('@/views/discover.vue'),
+        component: () => import('@/views/discover/index.vue'),
         meta: { title: '精选', icon: '0', group: 1 }
     },
     {

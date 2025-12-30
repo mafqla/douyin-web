@@ -1,50 +1,78 @@
 <script setup lang="ts">
-import {} from 'vue'
+import { computed, ref } from 'vue'
 import formatTime from '@/utils/date-format'
 
-const props = defineProps({
-  title: String,
-  author: String,
-  fellow: Number,
-  comment: Number,
-  collect: Number,
-  time: {
-    type: [String, Number],
-    default: 0
-  }
+interface TitleBoxProps {
+  title?: string
+  author?: string
+  authorId?: string
+  fellow?: number
+  comment?: number
+  collect?: number
+  time?: string | number
+  isLive?: boolean
+}
+
+const props = withDefaults(defineProps<TitleBoxProps>(), {
+  title: '',
+  author: '',
+  authorId: '',
+  fellow: 0,
+  comment: 0,
+  collect: 0,
+  time: 0,
+  isLive: false
 })
+
+const isShowMore = ref(false)
 
 const video_uploadtime = computed(() => {
   return formatTime(props.time)
 })
+
+// 处理更多按钮点击
+const handleMoreClick = (e: MouseEvent) => {
+  e.preventDefault()
+  e.stopPropagation()
+  isShowMore.value = !isShowMore.value
+}
 </script>
 <template>
   <div class="item-title-box">
     <div class="item-title-content">
       <div class="item-title-content-title">{{ props.title }}</div>
       <div class="item-title-author">
-        <span class="item-title-bottom"
-          ><span class="item-title-author-f">@</span
-          ><span class="item-title-author-name">{{ props.author }}</span>
+        <a
+          v-if="props.authorId"
+          :href="`/user/${props.authorId}`"
+          class="item-title-bottom"
+          @click.stop
+        >
+          <span class="item-title-author-f">@</span>
+          <span class="item-title-author-name">{{ props.author }}</span>
+        </a>
+        <span v-else class="item-title-bottom">
+          <span class="item-title-author-f">@</span>
+          <span class="item-title-author-name">{{ props.author }}</span>
         </span>
-        <span class="item-title-tag fellow" v-if="fellow">
+        <span class="item-title-tag fellow" v-if="props.fellow">
           <span class="item-title-tag-name">你的关注</span>
         </span>
-        <!-- <span class="item-title-tag comment">
+        <span class="item-title-tag comment" v-if="props.comment">
           <span class="item-title-tag-name">评论</span>
         </span>
-        <span class="item-title-tag collect">
+        <span class="item-title-tag collect" v-if="props.collect">
           <span class="item-title-tag-name">收藏</span>
-        </span>  -->
-
-        <span class="item-title-time"> · {{ video_uploadtime }}</span>
-        <div class="more">
+        </span>
+        <span class="item-title-time" v-if="!props.isLive">
+          · {{ video_uploadtime }}
+        </span>
+        <div class="more" @click="handleMoreClick">
           <svg
             width="22"
             height="22"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            class=""
             viewBox="0 0 22 23"
           >
             <path
@@ -95,8 +123,11 @@ const video_uploadtime = computed(() => {
       white-space: nowrap;
       // text-wrap: nowrap;
       width: 100%;
-
       color: var(--color-text-t3);
+
+      &:hover {
+        color: var(--color-text-t1);
+      }
       .item-title-bottom {
         backface-visibility: hidden;
         display: inline-block;
@@ -148,22 +179,37 @@ const video_uploadtime = computed(() => {
       }
 
       .item-title-time {
-        color: var(--color-text-t3);
         font-size: 12px;
         font-weight: 400;
         line-height: 23px;
         margin-left: 5px;
+        flex-shrink: 0;
       }
 
       .more {
-        display: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         position: absolute;
         right: 0;
+        opacity: 0;
+        transition: opacity 0.2s;
+        cursor: pointer;
+        padding: 2px;
+        border-radius: 4px;
+
+        &:hover {
+          background: var(--color-bg-b2);
+        }
 
         path {
           fill: var(--color-text-t3);
         }
       }
+    }
+
+    &:hover .more {
+      opacity: 1;
     }
   }
 }

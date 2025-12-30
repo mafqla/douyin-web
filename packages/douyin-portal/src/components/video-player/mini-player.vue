@@ -8,6 +8,10 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits<{
+  error: []
+}>()
+
 const playerOptions = {
   autoplayMuted: videosCtrolStore().isMuted,
   ignores: [
@@ -28,6 +32,11 @@ const volumeChange = () => {
   // console.log('音量改变')
   videosCtrolStore().isMuted = false
 }
+
+// 播放器错误
+const onError = () => {
+  emit('error')
+}
 </script>
 
 <template>
@@ -39,6 +48,7 @@ const volumeChange = () => {
       :loop="true"
       class="mini-video"
       @volumechange="volumeChange"
+      @error="onError"
       :mode="'bottom'"
       :marginControls="false"
     />
