@@ -10,13 +10,16 @@
     "portal": "pnpm --filter \"douyin-portal\" dev",
     "admin": "pnpm --filter \"douyin-admin\" dev",
     "creator": "pnpm --filter \"douyin-creator\" dev",
+    "api-docs": "pnpm --filter \"douyin-api-docs\" dev",
     "build:portal-dev": "pnpm --filter \"douyin-portal\" build:dev",
     "build:portal": "pnpm --filter \"douyin-portal\" build:prod",
     "build:creator": "pnpm --filter \"douyin-creator\" build",
     "build:admin": "pnpm --filter \"douyin-admin\" build",
+    "build:api-docs": "pnpm --filter \"douyin-api-docs\" build",
     "preview:portal": "pnpm --filter \"douyin-portal\" preview",
     "preview:creator": "pnpm --filter \"douyin-creator\" preview",
-    "preview:admin": "pnpm --filter \"douyin-admin\" preview"
+    "preview:admin": "pnpm --filter \"douyin-admin\" preview",
+    "preview:api-docs": "pnpm --filter \"douyin-api-docs\" preview"
   },
   "keywords": [],
   "author": "yalis",
