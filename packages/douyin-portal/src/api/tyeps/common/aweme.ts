@@ -43,6 +43,39 @@ export interface IImageAlbumMusicInfo {
   volume: number
 }
 
+// 共创者信息
+export interface ICoCreator {
+  avatar_thumb: {
+    height: number
+    uri: string
+    url_list: string[]
+    width: number
+  }
+  custom_verify: string
+  enterprise_verify_reason: string
+  extra: string
+  follow_status: number
+  follower_count: number
+  follower_status: number
+  index: number
+  invite_status: number
+  nickname: string
+  role_id: number
+  role_title: string
+  sec_uid: string
+  uid: string
+}
+
+// 共创信息
+export interface ICooperationInfo {
+  accepted_nums: number
+  co_creator_nums: number
+  co_creators: ICoCreator[] | null
+  cursor: number
+  extra: string
+  tag: string
+}
+
 export interface IAwemeInfo {
   aweme_id: string // 视频ID
   desc: string // 视频描述
@@ -58,6 +91,8 @@ export interface IAwemeInfo {
   // 是否置顶，这里为0可能表示未置顶
   is_top: 0 | 1 // 使用联合类型，表示它可以是0或1
   share_info: IShareInfo // 分享信息
+  // 共创信息
+  cooperation_info?: ICooperationInfo
   // 直播
   cell_room: {
     rawdata: string // 原始 JSON 字符串，解析后为 ILiveStreamInfo

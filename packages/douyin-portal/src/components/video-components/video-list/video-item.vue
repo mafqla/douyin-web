@@ -16,6 +16,8 @@ const props = defineProps<{
   showProgress?: boolean
   // 观看进度（毫秒）
   playProgress?: number
+  // 是否显示"刚刚看过"标记
+  isJustWatched?: boolean
 }>()
 
 // 计算观看进度百分比
@@ -159,8 +161,16 @@ const handlePlayerClick = () => {
           class="video-click-overlay"
           @click="handlePlayerClick"
         ></div>
+        <!-- 共创标签 (左上角) -->
+        <div
+          class="co-creation-tag"
+          v-if="aweme.cooperation_info?.co_creators?.length && !isVideoVisible"
+        >
+          <span>共创</span>
+        </div>
         <div class="video-item-tag">
           <div class="tag-content">
+            <!-- 图集标签 -->
             <div
               class="video-item-tag-icon"
               v-if="aweme.aweme_type === 68 && !isVideoVisible"
@@ -234,6 +244,31 @@ const handlePlayerClick = () => {
           </svg>
           <span>{{ dianzan }}</span>
         </span>
+
+        <!-- 刚刚看过遮罩 -->
+        <div
+          v-if="isJustWatched && !isVideoVisible"
+          class="just-watched-overlay"
+        >
+          <div class="just-watched-content">
+            <div class="play-icon">
+              <svg
+                width="32"
+                height="32"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M16 0C7.163 0 0 7.163 0 16c0 8.836 7.163 16 16 16 8.836 0 16-7.164 16-16 0-8.837-7.164-16-16-16zm-1.944 9.594c-1.062-.725-2.502.036-2.502 1.322v10.168c0 1.286 1.44 2.046 2.502 1.321l7.06-4.82a1.92 1.92 0 0 0 0-3.171l-7.06-4.82z"
+                  fill="currentColor"
+                ></path>
+              </svg>
+            </div>
+            <span class="just-watched-text">刚刚看过</span>
+          </div>
+        </div>
       </div>
       <p class="video-title">{{ aweme.desc }}</p>
     </a>
@@ -291,7 +326,6 @@ const handlePlayerClick = () => {
 
       &:hover {
         border-radius: 12px 12px 0 0;
-        overflow: visible;
       }
 
       .video-item-img {
@@ -436,6 +470,29 @@ const handlePlayerClick = () => {
         position: absolute;
         width: 100%;
       }
+
+      // 共创标签 (左上角)
+      .co-creation-tag {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 6px;
+        padding: 0 6px;
+        height: 20px;
+        font-size: 12px;
+        color: #fff;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+
+        span {
+          line-height: 20px;
+        }
+      }
       .author-card-user-video-like {
         align-items: center;
         bottom: 4px;
@@ -452,6 +509,49 @@ const handlePlayerClick = () => {
         span {
           display: inline-block;
           margin-left: 5px;
+        }
+      }
+
+      // 刚刚看过遮罩
+      .just-watched-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+        border-radius: 4px;
+        overflow: hidden;
+
+        .just-watched-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          color: #fff;
+
+          .play-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+
+            svg {
+              color: #fff;
+            }
+          }
+
+          .just-watched-text {
+            font-size: 14px;
+            line-height: 22px;
+            font-weight: 500;
+          }
         }
       }
     }

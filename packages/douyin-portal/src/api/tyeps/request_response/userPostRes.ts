@@ -13,8 +13,8 @@ export interface IUserPostRes {
   forward_has_more?: number
   // 视频列表
   aweme_list: IAwemeInfo[]
-  // 时间列表
-  time_list: []
+  // 时间列表（用于日期筛选，格式如 "2025·12"）
+  time_list: string[]
   // 请求项游标
   request_item_cursor: number
   post_serial: number

@@ -324,13 +324,13 @@ export default {
    * @param {String} sec_user_id 用户id
    * @param {Number} count 数量
    * @param {String} cursor 分页游标
-   * @return {Promise<IMixInfo>} 用户合集列表
+   * @return {Promise<IMixListRes>} 用户合集列表
    */
   getUserMix: (
     sec_user_id: string,
     count: number,
     cursor: string
-  ): Promise<IMixInfo> => {
+  ): Promise<IMixListRes> => {
     return request.get(urls.user_mix, {
       params: {
         sec_user_id,
