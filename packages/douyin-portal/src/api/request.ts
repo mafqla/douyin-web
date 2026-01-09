@@ -29,17 +29,17 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   (response) => {
     if (response.status === 200) {
-      if (response.data.status_code !== 0 || 200) {
-        // Message.error(response.data.msg)
-      }
-      return response.data
+      const data = response.data || {}
+      // 确保列表字段有默认值，防止 undefined 导致的错误
+      if (data.aweme_list === undefined) data.aweme_list = []
+      if (data.data === undefined && Array.isArray(response.data)) data.data = response.data
+      return data
     }
+    return response.data || {}
   },
 
   async (err) => {
     console.log(err)
-    // if (err.response.status === 401) {
-    // }
     return Promise.reject(err)
   }
 )

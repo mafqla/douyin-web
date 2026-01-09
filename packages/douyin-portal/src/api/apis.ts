@@ -39,6 +39,8 @@ import type { IWatchLaterListRes } from './tyeps/request_response/watchLaterList
 import type { IImRelationRes } from './tyeps/request_response/imRelationRes'
 import type { IImRelationParams } from './tyeps/request_params/imRelationParams'
 import type { IAtListRes, IAtListParams } from './tyeps/request_response/atListRes'
+import type { ISeriesListRes } from './tyeps/request_response/seriesListRes'
+import type { IPrivateAwemeRes } from './tyeps/request_response/privateAwemeRes'
 
 import urls from './urls'
 import type { IuserLocatePostParams } from './tyeps/request_params/userLocatePostParams'
@@ -329,13 +331,15 @@ export default {
   getUserMix: (
     sec_user_id: string,
     count: number,
-    cursor: string
+    cursor: string,
+    list_scene: number
   ): Promise<IMixListRes> => {
     return request.get(urls.user_mix, {
       params: {
         sec_user_id,
         count,
-        cursor
+        cursor,
+        list_scene
       }
     })
   },
@@ -519,6 +523,48 @@ export default {
         scene: params.scene ?? 2,
         group_id: params.group_id ?? '',
         count: params.count ?? 20
+      }
+    })
+  },
+
+  /**
+   * @description 获取用户短剧列表
+   * @param {String} sec_user_id 用户ID
+   * @param {Number} count 数量
+   * @param {Number} cursor 游标
+   * @return {Promise<ISeriesListRes>} 短剧列表
+   */
+  getUserSeriesList: (
+    sec_user_id: string,
+    count: number = 20,
+    cursor: number = 0
+  ): Promise<ISeriesListRes> => {
+    return request.get(urls.series_list, {
+      params: {
+        sec_user_id,
+        count,
+        cursor
+      }
+    })
+  },
+
+  /**
+   * @description 获取用户私密作品列表
+   * @param {Number} count 数量
+   * @param {String} max_cursor 向下分页游标
+   * @param {String} min_cursor 向上分页游标
+   * @return {Promise<IPrivateAwemeRes>} 私密作品列表
+   */
+  getPrivateAweme: (
+    count: number = 18,
+    max_cursor: string = '0',
+    min_cursor: string = '0'
+  ): Promise<IPrivateAwemeRes> => {
+    return request.get(urls.private_aweme, {
+      params: {
+        count,
+        max_cursor,
+        min_cursor
       }
     })
   }

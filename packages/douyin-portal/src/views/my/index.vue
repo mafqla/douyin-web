@@ -13,6 +13,8 @@ import {
 } from '@/components/user'
 import DyButton from '@/components/ui/button/button.vue'
 
+// user-post 组件 ref
+const userPostRef = ref<InstanceType<typeof UserPost> | null>(null)
 // user-like 组件 ref
 const userLikeRef = ref<InstanceType<typeof UserLike> | null>(null)
 // user-collection 组件 ref
@@ -73,6 +75,58 @@ const handleTabChange = (tab: string) => {
 watchEffect(() => {
   activeTab.value = route.query.showTab || 'posts'
 })
+
+// ========== 统一批量管理按钮逻辑 ==========
+// 是否显示批量管理按钮
+const showBatchButton = computed(() => {
+  if (activeTab.value === 'posts') return true
+  if (activeTab.value === 'like') return true
+  if (activeTab.value === 'favorite_collection') return userCollectionRef.value?.supportBatchMode
+  if (activeTab.value === 'watch_later') return true
+  return false
+})
+
+// 当前是否处于批量管理模式
+const currentIsBatchMode = computed(() => {
+  if (activeTab.value === 'posts') {
+    const postRef = userPostRef.value
+    if (!postRef) return false
+    if (postRef.activeSubTab === 'video') return postRef.isBatchMode
+    if (postRef.activeSubTab === 'mix') return postRef.postMixRef?.isBatchMode || false
+    if (postRef.activeSubTab === 'private_post') return postRef.postPrivateRef?.isBatchMode || false
+    return false
+  }
+  if (activeTab.value === 'like') return userLikeRef.value?.isBatchMode || false
+  if (activeTab.value === 'favorite_collection') return userCollectionRef.value?.isBatchMode || false
+  if (activeTab.value === 'watch_later') return userWatchLaterRef.value?.isBatchMode || false
+  return false
+})
+
+// 批量管理按钮文本
+const batchButtonText = computed(() => {
+  return currentIsBatchMode.value ? '退出管理' : '批量管理'
+})
+
+// 切换批量管理模式
+const handleBatchToggle = () => {
+  if (activeTab.value === 'posts') {
+    const postRef = userPostRef.value
+    if (!postRef) return
+    if (postRef.activeSubTab === 'video') {
+      postRef.toggleBatchMode()
+    } else if (postRef.activeSubTab === 'mix') {
+      postRef.postMixRef?.toggleBatchMode()
+    } else if (postRef.activeSubTab === 'private_post') {
+      postRef.postPrivateRef?.toggleBatchMode()
+    }
+  } else if (activeTab.value === 'like') {
+    userLikeRef.value?.toggleBatchMode()
+  } else if (activeTab.value === 'favorite_collection') {
+    userCollectionRef.value?.toggleBatchMode()
+  } else if (activeTab.value === 'watch_later') {
+    userWatchLaterRef.value?.toggleBatchMode()
+  }
+}
 </script>
 <template>
   <loading
@@ -193,43 +247,23 @@ watchEffect(() => {
               </div>
             </template>
             <template v-slot:tabs-item-left>
-              <!-- 批量管理按钮（喜欢标签页） -->
+              <!-- 统一的批量管理按钮 -->
               <dy-button
-                v-if="activeTab === 'like'"
+                v-if="showBatchButton"
                 type="secondary"
                 theme="light"
                 size="default"
                 style="width: 76px; height: 26px; border-radius: 8px"
-                @click="userLikeRef?.toggleBatchMode()"
+                @click="handleBatchToggle"
               >
-                {{ userLikeRef?.isBatchMode ? '退出管理' : '批量管理' }}
-              </dy-button>
-              <!-- 批量管理按钮（收藏标签页，仅支持收藏夹、视频、合集） -->
-              <dy-button
-                v-if="activeTab === 'favorite_collection' && userCollectionRef?.supportBatchMode"
-                type="secondary"
-                theme="light"
-                size="default"
-                style="width: 76px; height: 26px; border-radius: 8px"
-                @click="userCollectionRef?.toggleBatchMode()"
-              >
-                {{ userCollectionRef?.isBatchMode ? '退出管理' : '批量管理' }}
-              </dy-button>
-              <!-- 批量管理按钮（稍后再看标签页） -->
-              <dy-button
-                v-if="activeTab === 'watch_later'"
-                type="secondary"
-                theme="light"
-                size="default"
-                style="width: 76px; height: 26px; border-radius: 8px"
-                @click="userWatchLaterRef?.toggleBatchMode()"
-              >
-                {{ userWatchLaterRef?.isBatchMode ? '退出管理' : '批量管理' }}
+                {{ batchButtonText }}
               </dy-button>
             </template>
             <template v-slot:taba-content>
               <user-post
+                ref="userPostRef"
                 :user_id="store.userInfo.user.sec_uid"
+                :isSelf="true"
                 v-if="activeTab === 'posts'"
               />
               <user-like

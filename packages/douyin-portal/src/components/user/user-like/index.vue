@@ -465,6 +465,14 @@ defineExpose({
             </dy-button>
           </template>
         </user-error>
+        <!-- 列表为空提示 -->
+        <user-error
+          v-if="!isSearching && likeList.length === 0 && !loading && showLikeList"
+          icon="empty-list-user"
+          title="暂无喜欢的内容"
+          desc="你还没有喜欢过任何视频"
+          class="no-show"
+        />
       </div>
 
       <!-- Modal Player 全屏播放器 -->

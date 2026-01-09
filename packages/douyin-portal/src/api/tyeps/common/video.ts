@@ -10,16 +10,36 @@ export interface IVideo {
   play_addr_lowbr: PlayAddrLowbr // 低比特率视频播放地址信息
   bit_rate: BitRate[] // 视频的比特率信息
   duration: number // 视频时长
-  download_suffix_logo_addr: DownloadSuffixLogoAddr // 下载时视频后缀的logo地址信息
-  has_download_suffix_logo_addr: boolean // 是否有下载后缀logo地址
-  play_addr_265: PlayAddrTwoFiftyFive // H.265编码的视频播放地址信息
+  download_suffix_logo_addr?: DownloadSuffixLogoAddr // 下载时视频后缀的logo地址信息（可选）
+  has_download_suffix_logo_addr?: boolean // 是否有下载后缀logo地址（可选）
+  play_addr_265?: PlayAddrTwoFiftyFive // H.265编码的视频播放地址信息（可选）
+  play_addr_h264?: PlayAddr // H.264编码的视频播放地址信息（可选）
   video_model: string // 视频模型，具体含义未知
-  tags: any[] // 标签信息，具体含义未知
+  tags: any[] | null // 标签信息，具体含义未知
   big_thumbs: IBigThumbs[] // 视频每帧缩略图
   meta: string // 视频元数据，包含亮度、对比度等信息
   gaussian_cover: GaussianCover // 高斯模糊封面信息
   bit_rate_audio: any // 音频比特率信息，具体含义未知
-  user_digged: number // 用户点赞数
+  user_digged?: number // 用户点赞数（可选）
+  // 新增字段
+  animated_cover?: AnimatedCover // 动画封面（可选）
+  audio?: Record<string, unknown> // 音频信息（可选）
+  cdn_url_expired?: number // CDN URL 过期时间（可选）
+  format?: string // 视频格式，如 "mp4"（可选）
+  has_watermark?: boolean // 是否有水印（可选）
+  horizontal_type?: number // 水平类型（可选）
+  is_bytevc1?: number // 是否 ByteVC1 编码（可选）
+  is_callback?: boolean // 是否回调（可选）
+  is_h265?: number // 是否 H265 编码（可选）
+  is_source_HDR?: number // 是否源 HDR（可选）
+  need_set_token?: boolean // 是否需要设置 token（可选）
+  use_static_cover?: boolean // 是否使用静态封面（可选）
+}
+
+// 动画封面
+interface AnimatedCover {
+  uri: string
+  url_list: string[]
 }
 
 interface IBigThumbs {

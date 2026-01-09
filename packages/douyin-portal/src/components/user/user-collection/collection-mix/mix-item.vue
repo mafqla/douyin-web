@@ -10,11 +10,16 @@ const props = defineProps<{
   selectable?: boolean
   // 是否选中（批量管理模式）
   checked?: boolean
+  // 是否是自己的页面（显示更多操作）
+  isSelf?: boolean
 }>()
 
 const emit = defineEmits<{
   select: [mix: IMixInfo]
   uncollect: [mix: IMixInfo]
+  edit: [mix: IMixInfo]
+  manage: [mix: IMixInfo]
+  add: [mix: IMixInfo]
 }>()
 
 // 获取封面图片
@@ -61,6 +66,27 @@ const handleUncollect = (event: Event) => {
   event.preventDefault()
   event.stopPropagation()
   emit('uncollect', props.mix)
+}
+
+// 修改合集
+const handleEdit = (event: Event) => {
+  event.preventDefault()
+  event.stopPropagation()
+  emit('edit', props.mix)
+}
+
+// 作品管理
+const handleManage = (event: Event) => {
+  event.preventDefault()
+  event.stopPropagation()
+  emit('manage', props.mix)
+}
+
+// 添加作品
+const handleAdd = (event: Event) => {
+  event.preventDefault()
+  event.stopPropagation()
+  emit('add', props.mix)
 }
 </script>
 
@@ -115,9 +141,9 @@ const handleUncollect = (event: Event) => {
         </p>
       </div>
 
-      <!-- 更多操作（非批量模式显示） -->
-      <!-- <div v-if="!selectable" class="mix-more">
-        <HoverDropdown placement="auto" content-class="more-menu">
+      <!-- 更多操作（自己的页面显示） -->
+      <div v-if="isSelf && !selectable" class="mix-more">
+        <HoverDropdown placement="bottom-end" content-class="more-menu">
           <template #trigger>
             <div class="mix-more-btn">
               <svg
@@ -129,17 +155,18 @@ const handleUncollect = (event: Event) => {
               >
                 <path
                   d="M16.5 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zM10.5 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zM5 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0z"
-                  fill="#fff"
-                  fill-opacity=".5"
+                  fill="currentColor"
                 ></path>
               </svg>
             </div>
           </template>
           <template #content>
-            <div class="more-menu-item" @click="handleUncollect">取消收藏</div>
+            <div class="more-menu-item" @click="handleEdit">修改合集</div>
+            <div class="more-menu-item" @click="handleManage">作品管理</div>
+            <div class="more-menu-item" @click="handleAdd">添加作品</div>
           </template>
         </HoverDropdown>
-      </div> -->
+      </div>
     </div>
   </div>
 </template>
@@ -291,10 +318,12 @@ const handleUncollect = (event: Event) => {
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
-    transition: background-color 0.2s;
+    color: var(--color-text-t3);
+    transition: all 0.2s;
 
     &:hover {
-      background-color: var(--color-bg-b2);
+      background-color: var(--color-bg-b3);
+      color: var(--color-text-t1);
     }
   }
 }
@@ -311,7 +340,7 @@ const handleUncollect = (event: Event) => {
     text-align: center;
     cursor: pointer;
     background-color: var(--color-bg-b1);
-    color: var(--color-text-t3);
+    color: var(--color-text-t2);
     border-radius: 8px;
     font-size: 14px;
     line-height: 38px;

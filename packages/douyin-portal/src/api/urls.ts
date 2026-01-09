@@ -67,6 +67,10 @@ export default {
   // IM关系列表（分享好友列表）
   im_relation_list: '/aweme/v1/web/im/spotlight/relation/',
   // @用户列表
-  at_list: '/aweme/v1/web/familiar/atlist/'
+  at_list: '/aweme/v1/web/familiar/atlist/',
+  // 短剧列表
+  series_list: '/aweme/v1/web/series/list/',
+  // 私密作品列表
+  private_aweme: '/aweme/v1/web/private/aweme/'
   // ----------------- 测试dy-url -----------------
 }

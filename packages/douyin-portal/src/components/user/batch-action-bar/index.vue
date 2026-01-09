@@ -227,6 +227,9 @@ const handleMoveTo = () => {
         <span class="action-text">{{ moveToText }}</span>
       </div>
 
+      <!-- 额外操作按钮插槽（放在删除按钮旁边） -->
+      <slot name="actions"></slot>
+
       <!-- 右侧插槽（用于放置搜索栏等） -->
       <div v-if="$slots.right" class="bar-right">
         <slot name="right"></slot>

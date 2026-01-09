@@ -18,6 +18,8 @@ const props = defineProps<{
   playProgress?: number
   // 是否显示"刚刚看过"标记
   isJustWatched?: boolean
+  // 是否显示播放数而非点赞数
+  showPlayCount?: boolean
 }>()
 
 // 计算观看进度百分比
@@ -37,6 +39,16 @@ const dianzan = computed(() => {
     return (props.aweme.statistics.digg_count / 10000).toFixed(1) + '万'
   } else {
     return props.aweme.statistics.digg_count
+  }
+})
+
+// 播放数转换
+const playCount = computed(() => {
+  const count = props.aweme.statistics?.play_count ?? 0
+  if (count > 10000) {
+    return (count / 10000).toFixed(1) + '万'
+  } else {
+    return count
   }
 })
 const isVideoVisible = ref(false)
@@ -228,7 +240,25 @@ const handlePlayerClick = () => {
           </div>
         </div>
         <span class="author-card-user-video-like" v-if="!isVideoVisible">
+          <!-- 播放数图标 -->
           <svg
+            v-if="showPlayCount"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="17"
+          >
+            <path
+              d="M15.143 9.18076L7.26011 3.66272C6.59733 3.19877 5.68665 3.67293 5.68665 4.48195V15.518C5.68665 16.3271 6.59733 16.8012 7.26011 16.3373L15.143 10.8192C15.7117 10.4211 15.7117 9.57886 15.143 9.18076Z"
+              stroke="#fff"
+              stroke-width="2.15"
+              stroke-linejoin="round"
+            ></path>
+          </svg>
+          <!-- 点赞图标 -->
+          <svg
+            v-else
             width="18"
             height="17"
             fill="none"
@@ -242,7 +272,7 @@ const handlePlayerClick = () => {
               fill="#fff"
             ></path>
           </svg>
-          <span>{{ dianzan }}</span>
+          <span>{{ showPlayCount ? playCount : dianzan }}</span>
         </span>
 
         <!-- 刚刚看过遮罩 -->
