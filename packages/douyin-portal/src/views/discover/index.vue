@@ -215,6 +215,7 @@ const scrollTabs = (direction: 'left' | 'right') => {
         <template v-slot:taba-content>
           <div class="discover-tab-content" @scroll="handleScroll">
             <discover-list
+              :key="activeTab"
               ref="discoverListRef"
               :tagId="currentTagId"
               @loaded="handleLoaded"

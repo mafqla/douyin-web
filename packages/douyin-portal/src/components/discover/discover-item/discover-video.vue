@@ -13,7 +13,7 @@ interface DiscoverVideoProps {
   itemHeight?: number
   // 直播相关
   isLive?: boolean
-  liveStreamUrl?: string
+  liveStreamUrls?: string[]
   liveViewCount?: string | number
   anchorAvatar?: string
 }
@@ -24,7 +24,7 @@ const props = withDefaults(defineProps<DiscoverVideoProps>(), {
   like: 0,
   videoUrl: '',
   isLive: false,
-  liveStreamUrl: '',
+  liveStreamUrls: () => [],
   liveViewCount: '',
   anchorAvatar: ''
 })
@@ -44,27 +44,6 @@ const hideVideo = () => {
     isVideoVisible.value = false
   }, 200)
 }
-const heightImg = ref(0)
-const widthImg = ref(0)
-let img = new Image()
-img.onload = function () {
-  let width = img.width
-  let height = img.height
-  widthImg.value = width
-  heightImg.value = height
-}
-if (props.img) {
-  img.src = props.img
-}
-
-const paddingTop = computed(() => {
-  // 直播卡片使用固定的 4:3 宽高比，避免高度不一致
-  if (props.isLive) {
-    return 75 // 4:3 比例
-  }
-  // return (heightImg.value / widthImg.value) * 100
-  return 75
-})
 
 const video_time = computed(() => {
   return formatMillisecondsToTime(props.videoTime)
@@ -81,6 +60,9 @@ const onError = () => {
 const isLiveStreamError = ref(false)
 const livePlayerKey = ref(0)
 
+// 是否有可用的直播流
+const hasLiveStream = computed(() => props.liveStreamUrls && props.liveStreamUrls.length > 0)
+
 // 直播流加载错误处理
 const onLiveStreamError = () => {
   isLiveStreamError.value = true
@@ -96,7 +78,6 @@ const refreshLiveStream = () => {
   <div
     class="item-video videoImage"
     :class="{ 'is-live': isLive }"
-    :style="{ paddingTop: `${paddingTop}%` }"
     @mouseenter="showVideo"
     @mouseleave="hideVideo"
   >
@@ -123,20 +104,20 @@ const refreshLiveStream = () => {
           :src="img_url"
           alt="live-cover"
           class="live-cover"
-          v-if="isLive && (isLiveStreamError || !liveStreamUrl)"
+          v-if="isLive && (isLiveStreamError || !hasLiveStream)"
         />
         <!-- 直播流播放 -->
         <miniPlayer
-          v-if="isLive && liveStreamUrl && !isLiveStreamError"
+          v-if="isLive && hasLiveStream && !isLiveStreamError"
           :key="livePlayerKey"
           class="video-player live-player"
-          :url="liveStreamUrl"
+          :url="liveStreamUrls"
           @error="onLiveStreamError"
         />
         <!-- 直播流错误提示 -->
         <div
           class="live-stream-error"
-          v-if="isLive && (isLiveStreamError || !liveStreamUrl)"
+          v-if="isLive && (isLiveStreamError || !hasLiveStream)"
         >
           <div class="error-text">不支持的音频/视频格式</div>
           <div class="error-action" @click.stop="refreshLiveStream">
@@ -222,10 +203,12 @@ const refreshLiveStream = () => {
 
 <style lang="scss" scoped>
 .item-video {
-  height: 0px;
-  padding-top: 75%;
+  // 使用 aspect-ratio 替代 padding-top，更可靠的宽高比控制
+  aspect-ratio: 4 / 3;
   position: relative;
   width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
 
   .item-video-content {
     align-items: center;
@@ -233,10 +216,9 @@ const refreshLiveStream = () => {
     cursor: pointer;
     display: flex;
     justify-content: center;
-    left: 0px;
     position: absolute;
+    left: 0px;
     top: 0px;
-
     width: 100%;
     height: 100%;
 

@@ -29,31 +29,51 @@ const coverUrl = computed(() => {
 
 // 格式化播放量
 const playCount = computed(() => {
-  return useCount(props.mix.statis?.play_vv || 0)
+  const vv = props.mix.statis?.play_vv || 0
+  return useCount(vv)
 })
 
 // 更新集数信息
 const episodeInfo = computed(() => {
   const statis = props.mix.statis
-  if (!statis) return ''
-  return `更新至 ${statis.updated_to_episode} 集`
+  if (!statis || !statis.updated_to_episode) return ''
+  return `更新至${statis.updated_to_episode}集`
 })
 
-// 上次观看信息
+// 上次观看信息（用 updated_to_episode - has_updated_episode 计算）
 const lastWatchInfo = computed(() => {
   const statis = props.mix.statis
-  if (!statis || !statis.current_episode) return ''
-  return `（上次看到 ${statis.current_episode} 集）`
+  if (!statis || !statis.has_updated_episode || statis.has_updated_episode <= 0) return ''
+  const lastWatchEpisode = statis.updated_to_episode - statis.has_updated_episode
+  if (lastWatchEpisode <= 0) return ''
+  return `（上次看到${lastWatchEpisode}集）`
 })
 
 // 是否有更新标签
 const hasUpdate = computed(() => {
   const statis = props.mix.statis
   if (!statis) return false
+  // 优先使用 has_updated_episode 字段
+  if (statis.has_updated_episode && statis.has_updated_episode > 0) {
+    return true
+  }
+  // 兼容旧逻辑
   return (
     statis.current_episode > 0 &&
     statis.updated_to_episode > statis.current_episode
   )
+})
+
+// 更新集数
+const updateCount = computed(() => {
+  const statis = props.mix.statis
+  if (!statis) return 0
+  // 优先使用 has_updated_episode 字段
+  if (statis.has_updated_episode && statis.has_updated_episode > 0) {
+    return statis.has_updated_episode
+  }
+  // 兼容旧逻辑
+  return statis.updated_to_episode - statis.current_episode
 })
 
 // 点击选择合集
@@ -119,25 +139,18 @@ const handleAdd = (event: Event) => {
       <!-- 封面区域 -->
       <div class="mix-cover">
         <img v-lazy="coverUrl" :alt="mix.mix_name" class="mix-cover-img" />
-        <!-- 更新标签 -->
-        <span v-if="hasUpdate" class="update-tag"
-          >更新{{
-            mix.statis.updated_to_episode - mix.statis.current_episode
-          }}集</span
-        >
       </div>
 
       <!-- 信息区域 -->
       <div class="mix-info">
         <div class="mix-top">
           <p class="mix-title" :title="mix.mix_name">{{ mix.mix_name }}</p>
+          <!-- 更新标签 -->
+          <span v-if="hasUpdate" class="update-tag">更新{{ updateCount }}集</span>
         </div>
         <p class="mix-stats">{{ playCount }} 播放</p>
-        <p class="mix-episode">
-          {{ episodeInfo }}
-          <span v-if="lastWatchInfo" class="last-watch">{{
-            lastWatchInfo
-          }}</span>
+        <p class="mix-episode" v-if="episodeInfo">
+          {{ episodeInfo }}<span v-if="lastWatchInfo" class="last-watch">{{ lastWatchInfo }}</span>
         </p>
       </div>
 
@@ -253,18 +266,6 @@ const handleAdd = (event: Event) => {
     height: 100%;
     object-fit: cover;
   }
-
-  .update-tag {
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    background: linear-gradient(135deg, #ff2c55 0%, #ff0050 100%);
-    color: #fff;
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    line-height: 14px;
-  }
 }
 
 .mix-info {
@@ -277,8 +278,20 @@ const handleAdd = (event: Event) => {
 
   .mix-top {
     width: 100%;
-    height: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin-bottom: 20px;
+    
+    .update-tag {
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #ff2c55 0%, #ff0050 100%);
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      line-height: 14px;
+    }
   }
   .mix-title {
     color: var(--color-text-t1);
@@ -288,7 +301,6 @@ const handleAdd = (event: Event) => {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    margin-bottom: 2px;
   }
 
   .mix-stats {

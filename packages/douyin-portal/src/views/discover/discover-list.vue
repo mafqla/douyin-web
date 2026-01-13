@@ -44,6 +44,13 @@ const { shouldRenderContent, isNearBottom, updateScrollState } = useVirtualGrid(
   loadMoreThreshold: 1500
 })
 
+// 判断是否应该渲染内容（前 5 个始终渲染，解决大屏首项跨行高度计算问题）
+const shouldRender = (index: number): boolean => {
+  // 前 5 个元素始终渲染，确保大屏幕下首项跨行布局正常
+  if (index < 5) return true
+  return shouldRenderContent(index)
+}
+
 // 监听接近底部，自动加载更多
 watch(isNearBottom, (nearBottom) => {
   if (nearBottom && !loading.value && hasMore.value) {
@@ -199,7 +206,7 @@ defineExpose({
             class="virtual-item"
           >
             <waterfall-item
-              v-if="shouldRenderContent(index)"
+              v-if="shouldRender(index)"
               :videoId="video.aweme_id"
               :videoImg="video.video?.cover?.url_list?.[0] || ''"
               :videoUrl="video.video?.play_addr?.url_list || []"
@@ -277,9 +284,23 @@ defineExpose({
   // 大屏幕 5 列
   @media (min-width: 1850px) {
     grid-template-columns: repeat(5, minmax(310px, 1fr));
-    & > .virtual-item:first-of-type,
-    & > div:first-of-type {
+    
+    // 第一个 virtual-item 跨 3 列 2 行
+    & > .virtual-item:first-child {
       grid-area: span 2 / span 3;
+    }
+  }
+}
+
+// 大屏幕下第一个元素的视频区域样式（单独处理避免 :deep 问题）
+@media (min-width: 1850px) {
+  .video-grid > .virtual-item:first-child {
+    :deep(.item-video) {
+      aspect-ratio: unset;
+      height: 0;
+      padding-top: calc(50% + 92px + var(--jx-card-gap, 12px));
+      overflow: hidden;
+      border-radius: 12px;
     }
   }
 }
