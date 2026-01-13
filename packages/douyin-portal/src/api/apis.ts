@@ -41,6 +41,10 @@ import type { IImRelationParams } from './tyeps/request_params/imRelationParams'
 import type { IAtListRes, IAtListParams } from './tyeps/request_response/atListRes'
 import type { ISeriesListRes } from './tyeps/request_response/seriesListRes'
 import type { IPrivateAwemeRes } from './tyeps/request_response/privateAwemeRes'
+import type { IFollowFeedRes } from './tyeps/request_response/followFeedRes'
+import type { IFollowFeedParams } from './tyeps/request_params/followFeedParams'
+import type { IFollowingListRes } from './tyeps/request_response/followingListRes'
+import type { IFollowLiveFeedRes } from './tyeps/request_response/followLiveFeedRes'
 
 import urls from './urls'
 import type { IuserLocatePostParams } from './tyeps/request_params/userLocatePostParams'
@@ -224,9 +228,9 @@ export default {
 
   /**
    * @description 获取用户关注列表
-   * @return {Promise<IUserPostRes>} 用户关注列表
+   * @return {Promise<IFollowingListRes>} 用户关注列表
    */
-  getFollowingList: (params: IFollowingParams): Promise<IUserPostRes> => {
+  getFollowingList: (params: IFollowingParams): Promise<IFollowingListRes> => {
     return request.get(urls.user_follow, {
       params
     })
@@ -565,6 +569,30 @@ export default {
         count,
         max_cursor,
         min_cursor
+      }
+    })
+  },
+
+  /**
+   * @description 获取关注视频流
+   * @param {IFollowFeedParams} params 请求参数
+   * @return {Promise<IFollowFeedRes>} 关注视频流
+   */
+  getFollowFeed: (params: IFollowFeedParams): Promise<IFollowFeedRes> => {
+    return request.get(urls.follow_feed, {
+      params
+    })
+  },
+
+  /**
+   * @description 获取关注直播列表
+   * @param {string} scene 场景 aweme_pc_follow_top
+   * @return {Promise<IFollowLiveFeedRes>} 关注直播列表
+   */
+  getFollowLiveFeed: (scene: string = 'aweme_pc_follow_top'): Promise<IFollowLiveFeedRes> => {
+    return request.get(urls.follow_live_feed, {
+      params: {
+        scene
       }
     })
   }

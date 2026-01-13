@@ -1,4 +1,4 @@
-
+export * from './followFeedRes'
 
 /**
  * @description 基础响应结构

@@ -71,6 +71,10 @@ export default {
   // 短剧列表
   series_list: '/aweme/v1/web/series/list/',
   // 私密作品列表
-  private_aweme: '/aweme/v1/web/private/aweme/'
+  private_aweme: '/aweme/v1/web/private/aweme/',
+  // 关注视频流
+  follow_feed: '/aweme/v1/web/follow/feed/',
+  // 关注直播列表
+  follow_live_feed: '/webcast/web/feed/follow/'
   // ----------------- 测试dy-url -----------------
 }
