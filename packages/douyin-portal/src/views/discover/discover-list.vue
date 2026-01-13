@@ -37,12 +37,16 @@ const skeletonCount = 12
 const gridRef = ref<HTMLElement | null>(null)
 
 // 虚拟列表
-const { shouldRenderContent, isNearBottom, updateScrollState } = useVirtualGrid(videoList, gridRef, {
-  renderWindowSize: 40,
-  bufferSize: 16,
-  scrollContainer: '.discover-tab-content',
-  loadMoreThreshold: 1500
-})
+const { shouldRenderContent, isNearBottom, updateScrollState } = useVirtualGrid(
+  videoList,
+  gridRef,
+  {
+    renderWindowSize: 40,
+    bufferSize: 16,
+    scrollContainer: '.discover-tab-content',
+    loadMoreThreshold: 1500
+  }
+)
 
 // 判断是否应该渲染内容（前 5 个始终渲染，解决大屏首项跨行高度计算问题）
 const shouldRender = (index: number): boolean => {
@@ -145,13 +149,16 @@ const handleModalClose = async (currentAwemeId: string) => {
   await nextTick()
   // 滚动到当前视频位置
   setTimeout(() => {
-    const element = document.querySelector(`[data-aweme-id="${currentAwemeId}"]`)
+    const element = document.querySelector(
+      `[data-aweme-id="${currentAwemeId}"]`
+    )
     const container = document.querySelector('.discover-tab-content')
     if (element && container) {
       // 计算元素相对于滚动容器的位置
       const elementRect = element.getBoundingClientRect()
       const containerRect = container.getBoundingClientRect()
-      const offsetTop = elementRect.top - containerRect.top + container.scrollTop
+      const offsetTop =
+        elementRect.top - containerRect.top + container.scrollTop
       // 滚动到元素位置，使其居中
       container.scrollTo({
         top: offsetTop - container.clientHeight / 2 + elementRect.height / 2,
@@ -284,7 +291,7 @@ defineExpose({
   // 大屏幕 5 列
   @media (min-width: 1850px) {
     grid-template-columns: repeat(5, minmax(310px, 1fr));
-    
+
     // 第一个 virtual-item 跨 3 列 2 行
     & > .virtual-item:first-child {
       grid-area: span 2 / span 3;
@@ -311,5 +318,4 @@ defineExpose({
   justify-content: center;
   padding: 20px 0;
 }
-
 </style>

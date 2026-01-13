@@ -41,8 +41,7 @@ const showPermissionDialog = ref(false)
 // 是否全选
 const isAllSelected = computed(() => {
   return (
-    mixList.value.length > 0 &&
-    selectedIds.value.size === mixList.value.length
+    mixList.value.length > 0 && selectedIds.value.size === mixList.value.length
   )
 })
 
@@ -96,7 +95,12 @@ const handlePermission = () => {
 
 // 确认权限设置
 const confirmPermission = (permission: string) => {
-  console.log('设置权限:', permission, '合集 ID:', Array.from(selectedIds.value))
+  console.log(
+    '设置权限:',
+    permission,
+    '合集 ID:',
+    Array.from(selectedIds.value)
+  )
   showPermissionDialog.value = false
 }
 
@@ -115,7 +119,12 @@ const getMixList = async () => {
   loadingMore.value = true
 
   try {
-    const res = await apis.getUserMix(props.user_id, 20, cursor.value, list_scene.value)
+    const res = await apis.getUserMix(
+      props.user_id,
+      20,
+      cursor.value,
+      list_scene.value
+    )
     const newMixList = res.mix_infos || []
     mixList.value = mixList.value.concat(newMixList)
     cursor.value = res.cursor || ''
