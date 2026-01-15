@@ -77,7 +77,13 @@ const getFollowingList = async (isLoadMore = false) => {
 }
 
 // 检查过滤后的列表是否不足30个，如果不足则继续加载
-const checkAndLoadMore = async () => {
+const MAX_LOAD_MORE_RETRIES = 5 // 最大重试次数，避免无限请求
+const checkAndLoadMore = async (retryCount = 0) => {
+  // 超过最大重试次数，停止加载
+  if (retryCount >= MAX_LOAD_MORE_RETRIES) {
+    return
+  }
+
   // 过滤掉直播用户后的数量
   const liveUserIds = new Set(
     liveList.value.map((item) => item.room?.owner?.id_str)
@@ -93,8 +99,8 @@ const checkAndLoadMore = async () => {
     !followingLoadingMore.value
   ) {
     await getFollowingList(true)
-    // 递归检查
-    await checkAndLoadMore()
+    // 递归检查，传入重试次数
+    await checkAndLoadMore(retryCount + 1)
   }
 }
 
@@ -262,11 +268,53 @@ const handleModalClose = async () => {
   showModalPlayer.value = false
   sidebarStore.clearNotSeenItemIds()
   selectedUserId.value = ''
+  // 重置用户视频加载状态
+  userVideoMaxCursor.value = '0'
+  userVideoHasMore.value = true
+  userVideoLoading.value = false
 }
+
+// 用户视频加载状态
+const userVideoMaxCursor = ref('0')
+const userVideoHasMore = ref(true)
+const userVideoLoading = ref(false)
 
 // 加载更多用户视频
 const handleLoadMoreUserVideos = async () => {
-  // 如果需要可以实现加载更多逻辑
+  if (userVideoLoading.value || !userVideoHasMore.value || !selectedUserId.value) {
+    return
+  }
+
+  // 找到当前选中的用户
+  const currentUser = followingList.value.find(
+    (user) => user.uid === selectedUserId.value
+  )
+  if (!currentUser) return
+
+  userVideoLoading.value = true
+  try {
+    const res = await apis.getUserPost({
+      sec_user_id: currentUser.sec_uid,
+      max_cursor: userVideoMaxCursor.value,
+      count: 20,
+      locate_query: false
+    })
+
+    if (res?.aweme_list && res.aweme_list.length > 0) {
+      // 追加到 store 中的视频列表
+      const currentList = sidebarStore.worksVideoList
+      sidebarStore.setWorksVideoList([...currentList, ...res.aweme_list])
+      // 更新游标
+      userVideoMaxCursor.value = res.max_cursor || '0'
+      userVideoHasMore.value = res.has_more ?? res.aweme_list.length >= 20
+    } else {
+      userVideoHasMore.value = false
+    }
+  } catch (err) {
+    console.error('加载更多用户视频失败:', err)
+  } finally {
+    userVideoLoading.value = false
+  }
 }
 
 // 鼠标悬停直播用户
@@ -409,6 +457,11 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   document.body.style.position = ''
   stopLiveRefresh()
+  // 清理直播预览隐藏定时器
+  if (hidePreviewTimer) {
+    clearTimeout(hidePreviewTimer)
+    hidePreviewTimer = null
+  }
 })
 </script>
 
@@ -567,6 +620,7 @@ onBeforeUnmount(() => {
     <div
       class="live-preview-popup"
       v-if="showLivePreview && selectedLiveItem"
+      :style="{ left: sidebarCollapsed ? '72px' : '208px' }"
       @mouseenter="onPreviewEnter"
       @mouseleave="onPreviewLeave"
     >
@@ -954,7 +1008,6 @@ onBeforeUnmount(() => {
 // 直播小窗预览
 .live-preview-popup {
   position: absolute;
-  left: 208px;
   top: 40px;
   width: 160px;
   height: 284px;
@@ -963,6 +1016,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   z-index: 100;
+  transition: left 0.3s ease;
 
   :deep(.live-preview-player) {
     border-radius: 8px;
