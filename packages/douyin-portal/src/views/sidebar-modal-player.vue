@@ -27,18 +27,18 @@ const sidebarStore = useSidebarStore()
 // 从路由参数获取 modal_id
 const modalId = computed(() => route.query.modal_id as string)
 
-// 当前用于切换的列表类型（由 activeTab 决定，但排除 comment 和 collection）
-const activeListType = computed<'folder' | 'works' | 'related' | 'props'>(() => {
+// 当前用于切换的列表类型（由 activeTab 决定，但排除 comment）
+const activeListType = computed<'folder' | 'works' | 'related' | 'collection' | 'props'>(() => {
   const tab = sidebarStore.activeTab
-  if (tab === 'folder' || tab === 'works' || tab === 'related') {
+  if (tab === 'folder' || tab === 'works' || tab === 'related' || tab === 'collection') {
     return tab
   }
-  // comment 和 collection 不是视频列表，使用 props 列表
+  // comment 不是视频列表，使用 props 列表
   return 'props'
 })
 
 // 根据列表类型获取对应的列表
-const getListByType = (type: 'folder' | 'works' | 'related' | 'props') => {
+const getListByType = (type: 'folder' | 'works' | 'related' | 'collection' | 'props') => {
   switch (type) {
     case 'folder':
       return sidebarStore.folderVideoList
@@ -46,6 +46,8 @@ const getListByType = (type: 'folder' | 'works' | 'related' | 'props') => {
       return sidebarStore.worksVideoList
     case 'related':
       return sidebarStore.relatedVideoList
+    case 'collection':
+      return sidebarStore.collectionVideoList
     default:
       return props.videoList
   }
@@ -63,11 +65,12 @@ const currentIndexInActiveList = computed(() => {
 
 // 在所有列表中查找当前视频
 const findVideoInAllLists = (awemeId: string): IAwemeInfo | undefined => {
-  // 按优先级查找：当前活动列表 -> 收藏夹 -> 作品 -> 相关推荐 -> props
+  // 按优先级查找：当前活动列表 -> 收藏夹 -> 作品 -> 合集 -> 相关推荐 -> props
   const lists = [
     activeVideoList.value,
     sidebarStore.folderVideoList,
     sidebarStore.worksVideoList,
+    sidebarStore.collectionVideoList,
     sidebarStore.relatedVideoList,
     props.videoList
   ]
@@ -248,11 +251,17 @@ const handleWheel = (event: WheelEvent) => {
 
 // 保存打开 modal 前的滚动位置
 let savedScrollY = 0
+// 保存打开 modal 前的侧边栏状态
+let savedIsShowSidebar = false
 
 // 组件挂载时
 onMounted(() => {
   // 保存当前滚动位置
   savedScrollY = window.scrollY
+
+  // 保存并设置侧边栏状态（显示侧边栏）
+  savedIsShowSidebar = control.isShowSidebar
+  control.isShowSidebar = true
 
   // 设置 body 为 position:fixed 防止背景滚动，同时保持视觉位置
   document.body.style.position = 'fixed'
@@ -281,6 +290,9 @@ onBeforeUnmount(() => {
 
   // 恢复滚动位置
   window.scrollTo(0, savedScrollY)
+
+  // 恢复侧边栏状态
+  control.isShowSidebar = savedIsShowSidebar
 
   // 移除事件监听
   document.removeEventListener('keydown', handleKeydown)
@@ -346,6 +358,7 @@ const handleClose = () => {
   overflow: hidden;
   z-index: 2000;
   background-color: #000;
+  animation: modal-fade-in 0.25s ease-out;
 
   .close-btn {
     position: fixed;
@@ -392,6 +405,17 @@ const handleClose = () => {
       height: 100%;
       width: 100%;
     }
+  }
+}
+
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 </style>

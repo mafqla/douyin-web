@@ -46,17 +46,6 @@ watch(
   { immediate: true }
 )
 
-// 当有合集信息时，默认切换到合集 tab
-watch(
-  mix,
-  (newMix) => {
-    if (newMix) {
-      activeName.value = 'collection'
-      sidebarStore.setActiveTab('collection')
-    }
-  },
-  { immediate: true }
-)
 
 // 监听 store 中 activeTab 的变化，同步到本地状态
 watch(
@@ -102,6 +91,7 @@ watch(
                 class="video-tabs-title"
                 :class="{ active: activeName === 'collection' }"
                 @click="handleClick('collection')"
+                v-if="mix"
               >
                 <span class="video-tabs-title-text">合集</span>
               </div>
@@ -151,7 +141,10 @@ watch(
             class="video-tabs-content-item collection"
             v-show="activeName === 'collection'"
           >
-            <SidebarMixPlaylist :mix="mix" :aweme_id="props.aweme_id ?? ''" />
+            <SidebarMixPlaylist
+              :mix="mix"
+              :aweme_id="props.aweme_id ?? ''"
+            />
           </div>
           <!-- 相关推荐 -->
           <div

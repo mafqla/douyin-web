@@ -12,10 +12,12 @@ import {
 import { videosCtrolStore } from '@/stores/videos-control'
 import { playerSettingStore } from '@/stores/player-setting'
 import { useCurrentVideoStore } from '@/stores/current-video'
+import { useSidebarStore } from '@/stores/sidebar'
 import BasePlayer from './base-player.vue'
 import ImageGalleryPlayer from './ImageGalleryPlyer.vue'
 
 const currentVideoStore = useCurrentVideoStore()
+const sidebarStore = useSidebarStore()
 
 interface SwiperPlayerProps {
   awemeInfo: IAwemeInfo
@@ -75,12 +77,30 @@ const imgGallery = computed(() => {
   return props.awemeInfo.images || []
 })
 
+// 计算当前视频作者的认证类型
+// 优先使用视频自带的 verification_type，如果没有且作者与 store 中的用户一致，则使用 store 中的值
+const authorVerificationType = computed(() => {
+  // 如果视频自带认证类型，直接使用
+  if (props.awemeInfo.author.verification_type !== undefined) {
+    return props.awemeInfo.author.verification_type
+  }
+  // 如果 store 中有认证类型，且作者 sec_uid 与 store 中的一致，则使用 store 中的值
+  if (
+    sidebarStore.currentUserVerificationType !== undefined &&
+    sidebarStore.currentUserSecUid &&
+    props.awemeInfo.author.sec_uid === sidebarStore.currentUserSecUid
+  ) {
+    return sidebarStore.currentUserVerificationType
+  }
+  return undefined
+})
+
 const control = videosCtrolStore()
 const playerSettings = playerSettingStore()
 
 // 计算视频容器宽度
 const calcWidth = () => {
-  if (control.isShowComment) {
+  if (!control.isShowSidebar) {
     return '100%'
   } else {
     const screenWidth = document.body.clientWidth
@@ -94,33 +114,37 @@ const calcWidth = () => {
 let currentWidth = ref(calcWidth())
 
 watch(
-  () => control.isShowComment,
+  () => control.isShowSidebar,
   () => {
     currentWidth.value = calcWidth()
   },
   { immediate: true }
 )
-//打开评论
+//打开评论（显示侧边栏并切换到评论 tab）
 const openComments = () => {
-  //隐藏按钮
-  control.isShowComment = false
+  control.isShowSidebar = true
+  control.isShowComment = true
+  sidebarStore.setActiveTab('comment')
 }
 
-//关闭评论
+//关闭评论（隐藏侧边栏）
 const closeComments = () => {
-  //显示按钮
-  control.isShowComment = true
+  control.isShowSidebar = false
+  control.isShowComment = false
 }
 
 //切换评论区的显示状态
 const toggleComments = (id: any) => {
-  control.isShowComment = !control.isShowComment
-  if (!control.isShowComment) {
-    //如果评论区关闭，就执行打开评论操作
+  if (!control.isShowSidebar) {
+    // 侧边栏未打开，打开并显示评论
     openComments()
-  } else {
-    //否则执行关闭评论操作
+  } else if (control.isShowComment) {
+    // 侧边栏已打开且是评论 tab，则关闭
     closeComments()
+  } else {
+    // 侧边栏已打开但不是评论 tab，切换到评论 tab
+    control.isShowComment = true
+    sidebarStore.setActiveTab('comment')
   }
 }
 
@@ -169,6 +193,7 @@ const thumbnail = computed(() => {
             :uploadTime="props.awemeInfo.create_time"
             :description="props.awemeInfo.desc"
             :text-extra="props.awemeInfo?.text_extra ?? []"
+            :verification-type="authorVerificationType"
           />
           <video-action
             v-if="!playerSettings.isImmersive"
@@ -207,6 +232,7 @@ const thumbnail = computed(() => {
             :uploadTime="props.awemeInfo.create_time"
             :description="props.awemeInfo.desc"
             :text-extra="props.awemeInfo?.text_extra ?? []"
+            :verification-type="authorVerificationType"
           />
           <video-action
             v-if="!playerSettings.isImmersive"
@@ -245,7 +271,7 @@ const thumbnail = computed(() => {
         props.awemeInfo.suggest_words?.suggest_words[0]?.words[0]?.word ?? ''
       "
       @closeComments="closeComments"
-      v-if="!control.isShowComment"
+      v-if="control.isShowSidebar"
     />
     <div class="video-blur">
       <img

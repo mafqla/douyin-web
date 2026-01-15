@@ -190,6 +190,14 @@ onUnmounted(() => {
             >
               {{ noteDetail.author.nickname }}
             </router-link>
+            <span
+              v-if="noteDetail.author.verification_type === 1"
+              class="verify-badge red"
+            ></span>
+            <span
+              v-else-if="noteDetail.author.verification_type === 2"
+              class="verify-badge yellow"
+            ></span>
             <div class="user-stats">
               <span
                 >粉丝 <strong>{{ followers }}</strong></span
@@ -313,12 +321,14 @@ onUnmounted(() => {
     flex: 1;
     margin-left: 12px;
     min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
 
     .nickname {
       font-size: 16px;
       font-weight: 500;
       color: var(--color-text-t1);
-      display: block;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -328,7 +338,26 @@ onUnmounted(() => {
       }
     }
 
+    .verify-badge {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      margin-left: 4px;
+      flex-shrink: 0;
+
+      &.red {
+        background: url('https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/ies/douyin_web/media/douyin-pc-icons-color@ic_verify_red_filled.4ec9a1314e2180d3.svg')
+          no-repeat center / contain;
+      }
+
+      &.yellow {
+        background: url('https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/ies/douyin_web/media/douyin-pc-icons-color@ic_verify_yellow_outlined.4a5e14eb950c5d79.svg')
+          no-repeat center / contain;
+      }
+    }
+
     .user-stats {
+      width: 100%;
       font-size: 12px;
       color: var(--color-text-t3);
       margin-top: 4px;

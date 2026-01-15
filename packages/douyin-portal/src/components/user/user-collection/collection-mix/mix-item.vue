@@ -40,40 +40,39 @@ const episodeInfo = computed(() => {
   return `更新至${statis.updated_to_episode}集`
 })
 
-// 上次观看信息（用 updated_to_episode - has_updated_episode 计算）
+// 上次观看信息
 const lastWatchInfo = computed(() => {
-  const statis = props.mix.statis
-  if (!statis || !statis.has_updated_episode || statis.has_updated_episode <= 0) return ''
-  const lastWatchEpisode = statis.updated_to_episode - statis.has_updated_episode
-  if (lastWatchEpisode <= 0) return ''
-  return `（上次看到${lastWatchEpisode}集）`
+  // 优先使用 watched_episode 字段
+  if (props.mix.watched_episode && props.mix.watched_episode > 0) {
+    return `（上次看到${props.mix.watched_episode}集）`
+  }
+  return ''
 })
 
 // 是否有更新标签
 const hasUpdate = computed(() => {
   const statis = props.mix.statis
+  const watchedEpisode = props.mix.watched_episode || 0
   if (!statis) return false
   // 优先使用 has_updated_episode 字段
   if (statis.has_updated_episode && statis.has_updated_episode > 0) {
     return true
   }
-  // 兼容旧逻辑
-  return (
-    statis.current_episode > 0 &&
-    statis.updated_to_episode > statis.current_episode
-  )
+  // 使用 watched_episode 判断是否有更新
+  return watchedEpisode > 0 && statis.updated_to_episode > watchedEpisode
 })
 
 // 更新集数
 const updateCount = computed(() => {
   const statis = props.mix.statis
+  const watchedEpisode = props.mix.watched_episode || 0
   if (!statis) return 0
   // 优先使用 has_updated_episode 字段
   if (statis.has_updated_episode && statis.has_updated_episode > 0) {
     return statis.has_updated_episode
   }
-  // 兼容旧逻辑
-  return statis.updated_to_episode - statis.current_episode
+  // 使用 watched_episode 计算更新集数
+  return statis.updated_to_episode - watchedEpisode
 })
 
 // 点击选择合集
@@ -315,7 +314,7 @@ const handleAdd = (event: Event) => {
     line-height: 20px;
 
     .last-watch {
-      color: var(--color-text-t4);
+      color: var(--color-text-t3);
     }
   }
 }

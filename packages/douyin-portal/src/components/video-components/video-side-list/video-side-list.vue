@@ -28,10 +28,15 @@ const props = defineProps({
 const userInfo = ref<IUser>({} as IUser)
 const scrollContainerRef = ref<HTMLElement | null>(null)
 
+// 是否已关注
+const isFollow = computed(() => Boolean(userInfo.value.follow_status))
+
 // 请求用户信息
 const getUserInfo = async (user_id: string) => {
   const { user } = await apis.getUserOtherInfo(props.user_sec_id)
   userInfo.value = user
+  // 设置用户认证类型到 store（同时传递 sec_uid）
+  sidebarStore.setCurrentUserVerificationType(user.verification_type, props.user_sec_id)
 }
 
 const isLoadingMore = ref(false)
@@ -267,7 +272,16 @@ const getMixList = async (
   count: number,
   cursor: string
 ) => {
-  const res = await apis.getUserMix(sec_user_id, count, cursor)
+  try {
+    const res = await apis.getUserMix(sec_user_id, count, cursor, 1)
+    if (res?.mix_infos && res.mix_infos.length > 0) {
+      sidebarStore.setUserMixList(res.mix_infos)
+    } else {
+      sidebarStore.clearUserMixList()
+    }
+  } catch (error) {
+    sidebarStore.clearUserMixList()
+  }
 }
 
 const observer = ref<IntersectionObserver | null>(null)
@@ -317,7 +331,9 @@ onUnmounted(() => {
         </a>
       </div>
       <div class="side-list-header-btn">
-        <button class="btn">关注</button>
+        <button class="btn" :class="{ followed: isFollow }">
+          {{ isFollow ? '已关注' : '关注' }}
+        </button>
       </div>
     </div>
     <div class="side-list-content">
@@ -439,6 +455,15 @@ onUnmounted(() => {
 
         &:hover {
           background-color: rgba(210, 27, 70, 1);
+        }
+
+        &.followed {
+          background-color: rgba(255, 255, 255, 0.12);
+          color: rgba(255, 255, 255, 0.9);
+
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.18);
+          }
         }
       }
     }

@@ -134,6 +134,14 @@ const handleLoadMoreClick = () => {
       <div class="info-content">
         <div class="username">
           <span class="username-text">{{ props.author.nickname }}</span>
+          <span
+            v-if="props.author.verification_type === 1"
+            class="verify-badge red"
+          ></span>
+          <span
+            v-else-if="props.author.verification_type === 2"
+            class="verify-badge yellow"
+          ></span>
         </div>
         <p class="stats-container">
           <span class="stats-label">粉丝</span>
@@ -249,6 +257,24 @@ const handleLoadMoreClick = () => {
       font-size: 14px;
       font-weight: 400;
       line-height: 22px;
+    }
+
+    .verify-badge {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      margin-left: 4px;
+      flex-shrink: 0;
+
+      &.red {
+        background: url('https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/ies/douyin_web/media/douyin-pc-icons-color@ic_verify_red_filled.4ec9a1314e2180d3.svg')
+          no-repeat center / contain;
+      }
+
+      &.yellow {
+        background: url('https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/ies/douyin_web/media/douyin-pc-icons-color@ic_verify_yellow_outlined.4a5e14eb950c5d79.svg')
+          no-repeat center / contain;
+      }
     }
   }
 

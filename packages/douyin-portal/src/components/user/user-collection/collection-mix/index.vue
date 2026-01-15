@@ -69,18 +69,20 @@ const currentVideoList = shallowRef<IAwemeInfo[]>([])
 // 打开 modal-player
 const openModalPlayer = async (mix: IMixInfo) => {
   try {
-    // 获取合集详情
-    const detailRes = await apis.getMixDetail(mix.mix_id)
-    if (!detailRes.mix_info) {
-      console.error('获取合集详情失败')
-      return
-    }
+    const totalEpisode = mix.statis?.updated_to_episode || 0
+    // 使用 watched_episode 获取上次观看到的集数
+    const watchedEpisode = mix.watched_episode || totalEpisode
+    // 使用 watched_item 获取上次观看的视频 ID
+    const watchedItem = mix.watched_item
+    
+    // 计算起始 cursor（集数从1开始，cursor从0开始，所以要减1）
+    const startCursor = Math.max(0, watchedEpisode - 1)
 
     // 获取合集视频列表
     const videosRes = await apis.getUserMixDetail({
       mix_id: mix.mix_id,
-      cursor: 0,
-      count: 20
+      cursor: startCursor,
+      count: 10
     })
 
     if (!videosRes.aweme_list?.length) {
@@ -88,15 +90,26 @@ const openModalPlayer = async (mix: IMixInfo) => {
       return
     }
 
-    const awemeId = videosRes.aweme_list[0].aweme_id
+    // 优先使用 watched_item 找到上次观看的视频
+    let targetVideo = watchedItem 
+      ? videosRes.aweme_list.find(v => v.aweme_id === watchedItem)
+      : null
+    
+    // 如果没找到，使用列表中的第一个
+    if (!targetVideo) {
+      targetVideo = videosRes.aweme_list[0]
+    }
+
+    // 使用目标视频的 aweme_id 作为 modal_id
+    const awemeId = watchedItem || targetVideo.aweme_id
     currentVideoList.value = videosRes.aweme_list
 
-    // 设置合集信息到 store
-    sidebarStore.setMix(detailRes.mix_info)
+    // 先设置视频列表，再设置合集信息（确保 SidebarMixPlaylist 挂载时列表已存在）
     sidebarStore.setCollectionVideoList(videosRes.aweme_list)
+    sidebarStore.setMix(mix as any)
 
     // 打开侧边栏
-    controlStore.isShowComment = false
+    controlStore.isShowSidebar = true
 
     // 显示 modal player
     showModalPlayer.value = true

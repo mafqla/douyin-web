@@ -167,7 +167,7 @@ const openModalPlayer = async (mix: IMixInfo) => {
 
     sidebarStore.setMix(detailRes.mix_info)
     sidebarStore.setCollectionVideoList(videosRes.aweme_list)
-    controlStore.isShowComment = false
+    controlStore.isShowSidebar = true
 
     showModalPlayer.value = true
     router.push({

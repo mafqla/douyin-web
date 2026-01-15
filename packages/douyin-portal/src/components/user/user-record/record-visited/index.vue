@@ -199,8 +199,8 @@ const openModalPlayer = async (user: IVisitedUser) => {
   // 设置 store，切换到 ta 的作品 tab
   sidebarStore.setActiveTab('works')
 
-  // 打开侧边栏（isShowComment 为 false 时显示侧边栏）
-  controlStore.isShowComment = false
+  // 打开侧边栏
+  controlStore.isShowSidebar = true
 
   // 显示 modal player
   showModalPlayer.value = true

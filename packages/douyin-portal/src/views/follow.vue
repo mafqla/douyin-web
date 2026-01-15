@@ -194,8 +194,22 @@ const selectUser = async (userItem: IFollowingUser) => {
   selectedUserId.value = userItem.uid
   selectedLiveItem.value = null
 
+  // 设置未看视频 ID 列表到 store
+  const notSeenIds = userItem.not_seen_item_id_list_v2
+  if (notSeenIds && notSeenIds.length > 0) {
+    sidebarStore.setNotSeenItemIds(notSeenIds)
+  } else {
+    sidebarStore.clearNotSeenItemIds()
+  }
+
+  // 暂停右侧视频区域的视频
+  control.activeVideoPlayState = false
+
+  // 先打开 modal player（显示 loading 状态）
+  showModalPlayer.value = true
+
   try {
-    // 获取用户视频列表
+    // 异步获取用户视频列表
     const res = await apis.getUserPost({
       sec_user_id: userItem.sec_uid,
       max_cursor: '0',
@@ -204,6 +218,7 @@ const selectUser = async (userItem: IFollowingUser) => {
     })
 
     if (!res?.aweme_list || res.aweme_list.length === 0) {
+      showModalPlayer.value = false
       return
     }
 
@@ -211,7 +226,6 @@ const selectUser = async (userItem: IFollowingUser) => {
     let targetVideoId: string | null = null
 
     // 检查是否有未看的视频
-    const notSeenIds = userItem.not_seen_item_id_list_v2
     if (notSeenIds && notSeenIds.length > 0) {
       // 找到第一个未看的视频
       const notSeenVideo = videoList.find((v) =>
@@ -234,19 +248,11 @@ const selectUser = async (userItem: IFollowingUser) => {
       }
     }
 
-    // 设置未看视频 ID 列表到 store
-    if (notSeenIds && notSeenIds.length > 0) {
-      sidebarStore.setNotSeenItemIds(notSeenIds)
-    } else {
-      sidebarStore.clearNotSeenItemIds()
-    }
-
     // 设置作品视频列表到 store
     sidebarStore.setWorksVideoList(videoList)
     sidebarStore.setActiveTab('works')
 
-    // 打开 modal player
-    showModalPlayer.value = true
+    // 更新路由，触发视频播放
     router.push({
       path: route.path,
       query: {
@@ -256,6 +262,7 @@ const selectUser = async (userItem: IFollowingUser) => {
     })
   } catch (err) {
     console.error('获取用户视频列表失败:', err)
+    showModalPlayer.value = false
   }
 }
 
@@ -272,6 +279,12 @@ const handleModalClose = async () => {
   userVideoMaxCursor.value = '0'
   userVideoHasMore.value = true
   userVideoLoading.value = false
+  // 恢复右侧视频区域的视频播放
+  control.activeVideoPlayState = true
+  // 重置侧边栏 tab 为评论
+  sidebarStore.setActiveTab('comment')
+  // 清除作品视频列表
+  sidebarStore.setWorksVideoList([])
 }
 
 // 用户视频加载状态

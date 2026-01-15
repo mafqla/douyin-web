@@ -2,8 +2,10 @@ import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 
 export const videosCtrolStore = defineStore('control', () => {
-  //是否显示评论
-  const isShowComment = ref(true)
+  //是否显示评论（切换到评论 tab）
+  const isShowComment = ref(false)
+  //是否显示侧边栏
+  const isShowSidebar = ref(false)
   //是否打开相关内容
   const isShowRelated = ref(true)
   const isMuted = ref(true)
@@ -78,6 +80,7 @@ export const videosCtrolStore = defineStore('control', () => {
 
   return {
     isShowComment,
+    isShowSidebar,
     isShowRelated,
     isMuted,
     refresh_index,

@@ -215,18 +215,20 @@ const handleClick = (e: Event) => {
 
     .side-playing {
       align-items: center;
-      background: rgba(0, 0, 0, 0.6);
       bottom: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
       left: 0;
-      opacity: 0.8;
       padding-bottom: 5px;
       position: absolute;
       right: 0;
       top: 0;
       z-index: 2;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      border-radius: 4px;
+      
       .side-playing-content {
         height: 24px;
         position: relative;

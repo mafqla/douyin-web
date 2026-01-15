@@ -96,4 +96,12 @@ export interface IMixInfo {
    * @description 合集类型
    */
   mix_type: number
+  /**
+   * @description 上次观看到的集数
+   */
+  watched_episode?: number
+  /**
+   * @description 上次观看的视频ID
+   */
+  watched_item?: string
 }

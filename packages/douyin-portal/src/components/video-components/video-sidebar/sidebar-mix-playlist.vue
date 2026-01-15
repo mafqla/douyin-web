@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, computed } from 'vue'
+import { ref, watch, onMounted, computed, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import apis from '@/api/apis'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
@@ -26,26 +26,29 @@ interface Props {
 const props = defineProps<Props>()
 
 const loading = ref(true)
+const isLoadingPrev = ref(false)
 const isLoadingMore = ref(false)
+const hasPrev = ref(true)
 const hasMore = ref(true)
-const cursor = ref(0)
+const prevCursor = ref(0)
+const nextCursor = ref(0)
 const awemeList = ref<IAwemeInfo[]>([])
+const scrollContainerRef = ref<HTMLElement | null>(null)
 
 // 合并列表，标记当前播放的视频
 const combinedList = computed(() => {
   return awemeList.value.map((item, index) => ({
     item,
     index,
+    // 从视频的 mix_info.statis.current_episode 获取集数
+    episodeNumber: item.mix_info?.statis?.current_episode || 0,
     isPlaying: item.aweme_id === props.aweme_id
   }))
 })
 
 // 点击视频项切换播放
-const handleItemClick = (item: IAwemeInfo, index: number) => {
+const handleItemClick = (item: IAwemeInfo) => {
   if (item.aweme_id === props.aweme_id) return
-
-  // 更新 store 的索引
-  controlStore.activeVideoIndex = index
 
   // 更新 URL 的 modal_id
   router.replace({
@@ -57,74 +60,168 @@ const handleItemClick = (item: IAwemeInfo, index: number) => {
   })
 }
 
-// 同步视频列表到 store
-watch(
-  awemeList,
-  (newList) => {
-    sidebarStore.setCollectionVideoList(newList)
-  },
-  { immediate: true }
-)
-
-// 获取合集视频列表
-const getMixVideos = async (isLoadMore = false) => {
-  if (!isLoadMore) {
-    loading.value = true
-  } else {
-    isLoadingMore.value = true
+// 滚动到当前播放的视频
+const scrollToCurrentVideo = () => {
+  if (!scrollContainerRef.value) return
+  const currentIndex = awemeList.value.findIndex(
+    (item) => item.aweme_id === props.aweme_id
+  )
+  if (currentIndex >= 0) {
+    const listItems = scrollContainerRef.value.querySelectorAll('.mix-list .list-item')
+    const targetItem = listItems[currentIndex] as HTMLElement
+    if (targetItem) {
+      const container = scrollContainerRef.value
+      const containerHeight = container.clientHeight
+      const itemOffsetTop = targetItem.offsetTop
+      const itemHeight = targetItem.offsetHeight
+      // 滚动到目标位置（居中显示）
+      container.scrollTop = itemOffsetTop - containerHeight / 2 + itemHeight / 2
+    }
   }
+}
 
+// 初始化（使用 store 中的数据，不请求接口）
+const initLoad = () => {
+  // 使用 store 中已有的列表
+  const existingList = sidebarStore.collectionVideoList
+  if (existingList.length > 0) {
+    awemeList.value = existingList
+    
+    // 设置 cursor（基于列表中的集数）
+    const firstEpisode = awemeList.value[0]?.mix_info?.statis?.current_episode || 0
+    prevCursor.value = firstEpisode - 1
+    hasPrev.value = firstEpisode > 1
+    
+    const lastEpisode = awemeList.value[awemeList.value.length - 1]?.mix_info?.statis?.current_episode || 0
+    const totalEpisode = props.mix.statis?.updated_to_episode || 0
+    nextCursor.value = lastEpisode
+    hasMore.value = lastEpisode < totalEpisode
+    
+    // 滚动到当前播放的视频
+    nextTick(async () => {
+      scrollToCurrentVideo()
+      // 如果列表较短且有更早的视频，预加载
+      if (awemeList.value.length < 10 && hasPrev.value) {
+        await loadPrevVideos(false)
+        // 预加载完成后重新滚动到当前视频
+        await nextTick()
+        scrollToCurrentVideo()
+      }
+    })
+  }
+  loading.value = false
+}
+
+// 向上加载更早的视频
+const loadPrevVideos = async (keepScrollPosition = true) => {
+  if (!hasPrev.value || isLoadingPrev.value || prevCursor.value <= 0) return
+
+  isLoadingPrev.value = true
+  try {
+    // 计算新的 cursor
+    const newCursor = Math.max(0, prevCursor.value - 20)
+    const count = prevCursor.value - newCursor
+    
+    if (count <= 0) {
+      hasPrev.value = false
+      isLoadingPrev.value = false
+      return
+    }
+    
+    const res = await apis.getUserMixDetail({
+      mix_id: props.mix.mix_id,
+      cursor: newCursor,
+      count: count
+    })
+    
+    const newList = res.aweme_list || []
+    if (newList.length > 0) {
+      // 记录当前滚动位置
+      const scrollContainer = scrollContainerRef.value
+      const prevScrollHeight = scrollContainer?.scrollHeight || 0
+      
+      // 将新数据插入到列表前面
+      awemeList.value = [...newList, ...awemeList.value]
+      
+      // 同步到 store
+      sidebarStore.setCollectionVideoList(awemeList.value)
+      
+      // 更新 cursor
+      prevCursor.value = newCursor
+      hasPrev.value = newCursor > 0
+      
+      // 保持滚动位置（仅在用户滚动触发时）
+      if (keepScrollPosition) {
+        await nextTick()
+        if (scrollContainer) {
+          const newScrollHeight = scrollContainer.scrollHeight
+          scrollContainer.scrollTop = newScrollHeight - prevScrollHeight
+        }
+      }
+    } else {
+      hasPrev.value = false
+    }
+  } catch (error) {
+    console.error('加载更早的合集视频失败:', error)
+    hasPrev.value = false
+  } finally {
+    isLoadingPrev.value = false
+  }
+}
+
+// 向下加载更多视频
+const loadMoreVideos = async () => {
+  if (!hasMore.value || isLoadingMore.value) return
+
+  isLoadingMore.value = true
   try {
     const res = await apis.getUserMixDetail({
       mix_id: props.mix.mix_id,
-      cursor: cursor.value,
+      cursor: nextCursor.value,
       count: 20
     })
+    
     const newList = res.aweme_list || []
-    if (isLoadMore) {
+    if (newList.length > 0) {
       awemeList.value = [...awemeList.value, ...newList]
+      // 同步到 store
+      sidebarStore.setCollectionVideoList(awemeList.value)
+      nextCursor.value = res.cursor
+      hasMore.value = res.has_more
     } else {
-      awemeList.value = newList
+      hasMore.value = false
     }
-    cursor.value = res.cursor
-    hasMore.value = res.has_more
   } catch (error) {
-    console.error('获取合集视频列表失败:', error)
+    console.error('加载更多合集视频失败:', error)
     hasMore.value = false
   } finally {
-    loading.value = false
     isLoadingMore.value = false
   }
 }
 
-// 加载更多
-const loadMore = () => {
-  if (!isLoadingMore.value && hasMore.value) {
-    getMixVideos(true)
-  }
-}
-
-// 监听滚动加载更多
+// 监听滚动
 const handleScroll = (e: Event) => {
   const target = e.target as HTMLElement
-  if (target.scrollHeight - target.scrollTop - target.clientHeight < 200) {
-    loadMore()
+  // 滚动到顶部附近时加载更早的视频
+  if (target.scrollTop < 100 && hasPrev.value && !isLoadingPrev.value) {
+    loadPrevVideos()
+  }
+  // 滚动到底部附近时加载更多视频
+  if (target.scrollHeight - target.scrollTop - target.clientHeight < 200 && hasMore.value && !isLoadingMore.value) {
+    loadMoreVideos()
   }
 }
 
-// 监听 mix 变化重新加载
+// 监听 store 中的 collectionVideoList 变化
 watch(
-  () => props.mix.mix_id,
-  () => {
-    cursor.value = 0
-    hasMore.value = true
-    getMixVideos()
-  }
+  () => sidebarStore.collectionVideoList,
+  (newList) => {
+    if (newList.length > 0) {
+      initLoad()
+    }
+  },
+  { immediate: true }
 )
-
-onMounted(() => {
-  getMixVideos()
-})
 </script>
 
 <template>
@@ -147,13 +244,20 @@ onMounted(() => {
     </div>
 
     <!-- 视频列表（可滚动） -->
-    <div class="mix-list-wrapper" data-scrollable @scroll="handleScroll">
+    <div
+      ref="scrollContainerRef"
+      class="mix-list-wrapper"
+      data-scrollable
+      @scroll="handleScroll"
+    >
       <Loading :show="loading">
+        <!-- 顶部加载提示 -->
+        <Loading :show="isLoadingPrev" />
         <ul class="mix-list">
           <RelatedVideoItem
-            v-for="{ item, index, isPlaying } in combinedList"
+            v-for="{ item, episodeNumber, isPlaying } in combinedList"
             :key="item.aweme_id"
-            :videoTitle="item.desc"
+            :videoTitle="episodeNumber ? `第${episodeNumber}集：${item.desc}` : item.desc"
             :videoLink="getAwemeLink(item)"
             :thumbnailSrc="item.video?.cover?.url_list?.[0]"
             :videoDuration="formatMillisecondsToTime(item.video?.duration || 0)"
@@ -162,9 +266,10 @@ onMounted(() => {
             :sec_uid="item.author?.sec_uid"
             :isPlaying="isPlaying"
             :disableLink="true"
-            @click="handleItemClick(item, index)"
+            @click="handleItemClick(item)"
           />
         </ul>
+        <!-- 底部加载提示 -->
         <Loading :show="isLoadingMore" />
         <list-footer v-if="!hasMore && awemeList.length > 0" />
       </Loading>

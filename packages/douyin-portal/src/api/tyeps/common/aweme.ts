@@ -3,6 +3,7 @@ import type { IMusic } from './music'
 import type { ISuggestWords } from './suggest_words'
 import type { IVideo } from './video'
 import type { IVideoControl } from './video-control'
+import type { IMixInfo } from './mix'
 
 export interface IAwemeImage {
   uri: string
@@ -176,6 +177,8 @@ export interface IAwemeInfo {
   seo_info: {
     ocr_content: string
   }
+  // 合集信息（视频所属合集）
+  mix_info?: IMixInfo
 }
 
 interface IVideoStatistics {
