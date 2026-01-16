@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect } from 'vue'
-import { attention } from '@/service/attention'
+import { ref, watchEffect } from 'vue'
 import { useCount } from '@/hooks/useCount'
 import SwiperControlModal from '@/components/swiper/swiper-control-modal.vue'
 import MoreActionBox from './more-action-box.vue'
 import SharePanel from './share-panel.vue'
+import CollectionFolderDialog from './collection-folder-dialog.vue'
 import type { IMusic } from '@/api/tyeps/common/music'
 import type { IShareInfo } from '@/api/tyeps/common/aweme'
 import type { BitRate } from '@/api/tyeps/common/video'
@@ -127,12 +127,56 @@ watchEffect(() => {
 const showLikeBox = ref(false)
 //是否显示comment-box
 const showCommentBox = ref(false)
-//是否显示collection-box
-const showCollectionBox = ref(false)
+//是否显示收藏夹面板
+const showCollectionPanel = ref(false)
+// 新建收藏夹弹框是否打开
+const isCreateDialogOpen = ref(false)
 //是否显示more-box
 const showMoreBox = ref(false)
 //是否显示share-box
 const showShareBox = ref(false)
+
+// 收藏面板关闭延迟定时器
+let collectionPanelTimer: ReturnType<typeof setTimeout> | null = null
+
+// 显示收藏面板
+const handleCollectionEnter = () => {
+  if (collectionPanelTimer) {
+    clearTimeout(collectionPanelTimer)
+    collectionPanelTimer = null
+  }
+  showCollectionPanel.value = true
+}
+
+// 延迟关闭收藏面板
+const handleCollectionLeave = () => {
+  // 如果新建弹框打开，不关闭面板
+  if (isCreateDialogOpen.value) return
+  
+  collectionPanelTimer = setTimeout(() => {
+    showCollectionPanel.value = false
+  }, 150)
+}
+
+// 处理新建弹框状态变化
+const handleDialogOpen = (isOpen: boolean) => {
+  isCreateDialogOpen.value = isOpen
+}
+
+// 仅收藏视频
+const handleCollectOnly = () => {
+  showCollectionPanel.value = false
+  // TODO: 调用仅收藏视频的接口
+  console.log('仅收藏视频')
+}
+
+// 收藏夹选择确认
+const handleFolderConfirm = (folderIds: string[]) => {
+  showCollectionPanel.value = false
+  console.log('收藏至收藏夹:', folderIds)
+  // TODO: 调用收藏至收藏夹的接口
+}
+
 // 搜索框是否有焦点
 const isSearchFocused = ref(false)
 // 分享面板关闭延迟定时器
@@ -281,8 +325,8 @@ onUnmounted(() => {
       </div>
       <div
         class="video-action-item"
-        @mouseenter="showCollectionBox = true"
-        @mouseleave="showCollectionBox = false"
+        @mouseenter="handleCollectionEnter"
+        @mouseleave="handleCollectionLeave"
       >
         <svg-icon
           class="icon-collect"
@@ -291,57 +335,19 @@ onUnmounted(() => {
         />
         <span class="num">{{ useCount(collect_count) }}</span>
 
-        <div class="collection-box" v-if="showCollectionBox">
-          <div class="collection-box-content">
-            <div class="collection-box-item">
-              <div class="collection-box-icon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  fill="none"
-                  class="box-icon-all collection-folder-icon"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M3 7a2 2 0 012-2h3.338a2 2 0 01.791.163l2.777 1.195a4 4 0 001.582.326H19a2 2 0 012 2V17a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"
-                    stroke="#fff"
-                    stroke-opacity="0.75"
-                    stroke-width="2"
-                  ></path>
-                  <path
-                    d="M7 14h9M7 10h2"
-                    stroke="#fff"
-                    stroke-opacity="0.8"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                  ></path>
-                </svg>
-              </div>
-              <p class="collection-box-title">收藏至收藏夹</p>
-            </div>
-            <div class="collection-box-item">
-              <div class="collection-box-icon">
-                <svg
-                  width="18"
-                  height="18"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="box-icon-all video-collection"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M11.972 6.014l-.89 2.504-.012.032c-.04.112-.107.302-.196.482A3.259 3.259 0 018.487 10.8a4.344 4.344 0 01-.552.048l-2.74.126 2.284 1.91.025.02c.087.073.234.196.366.335.69.724 1.01 1.726.865 2.717-.027.19-.077.375-.106.484a6.606 6.606 0 00-.008.032l-.745 2.826 2.09-1.455.03-.02c.1-.07.27-.19.452-.286a3.26 3.26 0 013.047 0c.182.096.352.215.453.285l.029.02 2.09 1.456-.745-2.826a4.343 4.343 0 01-.114-.516 3.259 3.259 0 01.865-2.717 4.32 4.32 0 01.367-.334l.025-.021 2.283-1.91-2.74-.126-.034-.001a4.344 4.344 0 01-.518-.047 3.259 3.259 0 01-2.387-1.768c-.089-.18-.156-.37-.196-.482l-.01-.032-.891-2.504zm-1.048-2.91c-.086.13-.183.4-.376.943l-1.351 3.8c-.055.154-.082.23-.115.297-.18.363-.523.617-.922.683a2.867 2.867 0 01-.317.024l-3.995.183c-.532.025-.798.037-.943.08a1.259 1.259 0 00-.66 1.953c.09.122.295.293.703.635l3.247 2.716c.119.099.178.148.227.2.267.28.39.667.334 1.05-.01.07-.03.145-.07.294l-1.084 4.113c-.142.54-.214.81-.216.964-.012.89.876 1.511 1.707 1.194.144-.055.374-.214.833-.534l3.183-2.215c.138-.096.207-.144.274-.18a1.259 1.259 0 011.177 0c.068.037.137.085.274.18l3.184 2.215c.458.32.688.48.832.534a1.259 1.259 0 001.707-1.194c-.002-.154-.073-.424-.216-.965l-1.085-4.112c-.039-.15-.059-.224-.069-.294-.056-.383.068-.77.334-1.05.05-.052.109-.101.227-.2l3.247-2.716c.409-.342.613-.513.703-.635a1.259 1.259 0 00-.66-1.953c-.145-.043-.41-.055-.942-.08L16.1 8.851a2.869 2.869 0 01-.317-.024c-.399-.066-.742-.32-.922-.683-.033-.067-.06-.143-.115-.296l-1.351-3.801c-.193-.542-.29-.814-.376-.943a1.259 1.259 0 00-2.095 0z"
-                    fill="rgba(22, 24, 35, 0.75)"
-                    fill-opacity="0.75"
-                  ></path>
-                </svg>
-              </div>
-              <p class="collection-box-title">仅收藏视频</p>
-            </div>
-          </div>
+        <!-- 收藏夹选择面板 -->
+        <div
+          class="collection-panel-wrapper"
+          v-if="showCollectionPanel"
+          @mouseenter="handleCollectionEnter"
+          @mouseleave="handleCollectionLeave"
+        >
+          <CollectionFolderDialog
+            :show="showCollectionPanel"
+            @confirm="handleFolderConfirm"
+            @collect-only="handleCollectOnly"
+            @dialog-open="handleDialogOpen"
+          />
         </div>
       </div>
       <div
@@ -493,8 +499,8 @@ onUnmounted(() => {
     }
 
     .icon-collect {
-      height: 42px;
-      width: 42px;
+      height: 50px;
+      width: 50px;
       color: #fff;
       opacity: 1;
       margin-left: 5px;
@@ -581,74 +587,10 @@ onUnmounted(() => {
   width: 340px;
 }
 
-.collection-box {
-  background-color: var(--color-bg-b1);
-  border-radius: 4px;
-  bottom: 0;
-  box-shadow: var(--shadow-2);
-  cursor: auto;
-  overflow: hidden;
+.collection-panel-wrapper {
   position: absolute;
+  bottom: 0;
   right: 50px;
-
-  &-content,
-  &-item {
-    align-items: center;
-    display: flex;
-  }
-
-  &-content {
-    gap: 18px;
-    padding: 16px !important;
-  }
-
-  &-item {
-    cursor: pointer;
-    flex-direction: column;
-
-    .collection-box-icon {
-      align-items: center;
-      background-color: var(--color-bg-b2);
-      border-radius: 100%;
-      cursor: pointer;
-      display: flex;
-      height: 48px;
-      justify-content: center;
-      transition: 0.3s;
-      width: 48px;
-
-      .box-icon-all {
-        height: 24px;
-        width: 24px;
-
-        &.collection-folder-icon path {
-          stroke: var(--color-text-1);
-        }
-
-        &.video-collection {
-          height: 24px;
-          width: 24px;
-
-          path {
-            fill: var(--color-text-1);
-          }
-        }
-      }
-    }
-
-    &:hover .collection-box-icon {
-      background: var(--color-bg-b3);
-      transform: scale(1.05);
-    }
-
-    .collection-box-title {
-      color: var(--color-text-t3);
-      font-size: 12px;
-      line-height: 20px;
-      margin-top: 8px;
-      text-align: center;
-      white-space: nowrap;
-    }
-  }
+  z-index: 10;
 }
 </style>
