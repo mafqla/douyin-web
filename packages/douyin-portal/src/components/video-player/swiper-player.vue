@@ -77,22 +77,9 @@ const imgGallery = computed(() => {
   return props.awemeInfo.images || []
 })
 
-// 计算当前视频作者的认证类型
-// 优先使用视频自带的 verification_type，如果没有且作者与 store 中的用户一致，则使用 store 中的值
-const authorVerificationType = computed(() => {
-  // 如果视频自带认证类型，直接使用
-  if (props.awemeInfo.author.verification_type !== undefined) {
-    return props.awemeInfo.author.verification_type
-  }
-  // 如果 store 中有认证类型，且作者 sec_uid 与 store 中的一致，则使用 store 中的值
-  if (
-    sidebarStore.currentUserVerificationType !== undefined &&
-    sidebarStore.currentUserSecUid &&
-    props.awemeInfo.author.sec_uid === sidebarStore.currentUserSecUid
-  ) {
-    return sidebarStore.currentUserVerificationType
-  }
-  return undefined
+// 计算当前视频作者的认证信息
+const authorAccountCertInfo = computed(() => {
+  return props.awemeInfo.author.account_cert_info
 })
 
 const control = videosCtrolStore()
@@ -193,7 +180,7 @@ const thumbnail = computed(() => {
             :uploadTime="props.awemeInfo.create_time"
             :description="props.awemeInfo.desc"
             :text-extra="props.awemeInfo?.text_extra ?? []"
-            :verification-type="authorVerificationType"
+            :account-cert-info="authorAccountCertInfo"
           />
           <video-action
             v-if="!playerSettings.isImmersive"
@@ -232,7 +219,7 @@ const thumbnail = computed(() => {
             :uploadTime="props.awemeInfo.create_time"
             :description="props.awemeInfo.desc"
             :text-extra="props.awemeInfo?.text_extra ?? []"
-            :verification-type="authorVerificationType"
+            :account-cert-info="authorAccountCertInfo"
           />
           <video-action
             v-if="!playerSettings.isImmersive"

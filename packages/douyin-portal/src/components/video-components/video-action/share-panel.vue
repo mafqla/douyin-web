@@ -768,6 +768,8 @@ onMounted(() => {
         line-height: 32px;
         width: 68px;
         height: 32px;
+        border: none;
+        outline: none;
 
         &:hover {
           background: #e91e4d;

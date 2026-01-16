@@ -3,10 +3,11 @@ import apis from '@/api/apis'
 import type { IComments } from '@/api/tyeps/request_response/commentListRes'
 import DyInput from '@/components/common/dy-input/index.vue'
 import commentExpand from './comment-expand.vue'
+import SharePanel from '../video-action/share-panel.vue'
 import { useCount } from '@/hooks'
 import { handleCommentParser } from '@/utils/commentParser'
 import formatTime from '@/utils/date-format'
-import { computed, inject, ref, watchEffect, watch, provide, onMounted, onUnmounted, type Ref } from 'vue'
+import { computed, inject, ref, watchEffect, watch, provide, onMounted, onUnmounted, nextTick, type Ref } from 'vue'
 
 const props = defineProps<IComments & { author_id: string | number; isSubComment?: boolean }>()
 
@@ -24,6 +25,12 @@ const replyToAdd = inject<Ref<{ parentCid: string; reply: IComments } | null>>('
 
 // 注入提交评论方法
 const submitCommentToParent = inject<(data: { text: string; images: File[]; replyTo: any }) => void>('submitComment', () => {})
+
+// 注入取消回复的cid
+const cancelReplyCid = inject<Ref<string>>('cancelReplyCid')
+
+// 注入当前回复状态
+const currentReplyTo = inject<Ref<{ cid?: string } | null>>('currentReplyTo')
 
 const openPreview = (index: number) => {
   imagePreview.openPreview(props.cid, index)
@@ -60,8 +67,18 @@ watchEffect(() => {
   // console.log('textValue', comment.value)
 })
 const isOpenInput = ref(false)
+const isReplying = computed(() => {
+  return currentReplyTo?.value?.cid === props.cid && currentReplyTo?.value !== null
+})
 const replyText = computed(() => {
-  return isOpenInput.value ? '回复中' : '回复'
+  return isReplying.value ? '回复中' : '回复'
+})
+
+// 监听取消回复
+watch(() => cancelReplyCid?.value, (newCid) => {
+  if (newCid && newCid === props.cid) {
+    isOpenInput.value = false
+  }
 })
 
 // 判断当前评论是否是子评论
@@ -70,11 +87,11 @@ const isSubCommentFlag = computed(() => props.isSubComment || !!props.reply_to_u
 // 获取父评论的 cid（如果是子评论，需要从外部传入）
 const parentCommentCid = inject<string>('parentCommentCid', '')
 
-const replyUser = (uid: Number, username: String, comment?: String, sec_uid?: String) => {
+const replyUser = (uid: string, username: string, comment?: string, sec_uid?: string) => {
   // 调用父组件的回复方法（设置底部输入框的回复状态）
   // 如果是子评论，传递 parentCid（一级评论的 cid）
   const parentCid = props.isSubComment ? parentCommentCid : undefined
-  setReplyTo(uid as number, username as string, comment as string, props.cid, parentCid, sec_uid as string)
+  setReplyTo(uid, username, comment, props.cid, parentCid, sec_uid)
   // 只有在允许显示内联输入框时才展开
   if (showInlineInput) {
     isOpenInput.value = !isOpenInput.value
@@ -163,6 +180,74 @@ const onCollapse = () => {
   replyCommentList.value = []
   console.log('onCollapse')
 }
+
+// 分享面板相关
+const showSharePanel = ref(false)
+const shareBtnRef = ref<HTMLElement | null>(null)
+const panelPosition = ref<'bottom' | 'top'>('bottom')
+
+// 计算面板垂直方向位置
+const calculatePanelPosition = () => {
+  const btn = shareBtnRef.value
+  if (!btn) return
+  
+  const btnRect = btn.getBoundingClientRect()
+  const viewportHeight = window.innerHeight
+  const panelHeight = 360 // 面板大约高度
+  
+  // 检查下方空间是否足够
+  const bottomSpace = viewportHeight - btnRect.bottom
+  
+  if (bottomSpace < panelHeight + 20) {
+    panelPosition.value = 'top'
+  } else {
+    panelPosition.value = 'bottom'
+  }
+}
+
+// 生成评论分享链接
+const getCommentShareUrl = () => {
+  const baseUrl = window.location.origin
+  // 构建评论分享链接，包含视频ID和评论ID
+  return `${baseUrl}/video/${props.aweme_id}?comment_id=${props.cid}`
+}
+
+// 生成评论分享标题
+const getCommentShareTitle = () => {
+  const nickname = props.user?.nickname || '用户'
+  const text = props.text || ''
+  // 截取评论前30个字符作为标题
+  const shortText = text.length > 30 ? text.slice(0, 30) + '...' : text
+  return `${nickname}的评论: ${shortText}`
+}
+
+// 打开分享面板
+const openSharePanel = (event: Event) => {
+  event.stopPropagation()
+  showSharePanel.value = !showSharePanel.value
+  if (showSharePanel.value) {
+    nextTick(() => {
+      calculatePanelPosition()
+    })
+  }
+}
+
+// 关闭分享面板
+const closeSharePanel = () => {
+  showSharePanel.value = false
+}
+
+// 处理分享给用户
+const handleShareToUser = (userId: string) => {
+  console.log('分享评论给用户:', userId, '评论ID:', props.cid)
+  closeSharePanel()
+}
+
+// 处理复制链接
+const handleCopyLink = () => {
+  console.log('复制评论链接:', getCommentShareUrl())
+  closeSharePanel()
+}
 </script>
 <template>
   <div class="comment-item">
@@ -173,7 +258,7 @@ const onCollapse = () => {
       class="comment-item-avatar"
     />
     <div class="comment-item-content">
-      <div class="comment-item-index" :class="{ oninput: isOpenInput }">
+      <div class="comment-item-index" :class="{ oninput: isOpenInput, replying: isReplying }">
         <div class="comment-item-info-wrap">
           <div class="comment-item-content-header-name">
             <a
@@ -273,9 +358,30 @@ const onCollapse = () => {
               </p>
             </div>
             <div class="comment-item-content-footer-share">
-              <div class="footer-share-content">
+              <div 
+                ref="shareBtnRef"
+                class="footer-share-content" 
+                :class="{ active: showSharePanel }" 
+                @click="openSharePanel"
+              >
                 <svg-icon icon="small-share" class="icon" />
                 <span>分享</span>
+              </div>
+              <!-- 分享面板 -->
+              <div 
+                v-if="showSharePanel"
+                class="share-panel-wrapper" 
+                :class="[`position-${panelPosition}`]"
+                @click.stop
+              >
+                <div class="share-panel-overlay" @click="closeSharePanel"></div>
+                <SharePanel
+                  :show-bottom-actions="false"
+                  :share-url="getCommentShareUrl()"
+                  :share-title="getCommentShareTitle()"
+                  @share="handleShareToUser"
+                  @copy-link="handleCopyLink"
+                />
               </div>
             </div>
 
@@ -283,7 +389,7 @@ const onCollapse = () => {
               class="comment-item-content-footer-reply"
               @click="replyUser(props.user.uid, props.user.nickname, props.text, props.user.sec_uid)"
             >
-              <div class="footer-reply-content">
+              <div class="footer-reply-content" :class="{ active: isReplying }">
                 <svg-icon icon="small-reply" class="icon" />
                 <span>{{ replyText }}</span>
               </div>
@@ -376,6 +482,10 @@ const onCollapse = () => {
 
       &.oninput {
         background: var(--input-linear);
+      }
+
+      &.replying {
+        background: linear-gradient(270deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.06) 18.23%, rgba(255, 255, 255, 0.06) 51.56%, rgba(255, 255, 255, 0.06) 82.29%, rgba(255, 255, 255, 0) 100%);
       }
 
       .comment-item-info-wrap {
@@ -615,6 +725,14 @@ const onCollapse = () => {
             display: flex;
             justify-content: center;
             margin-right: 10px;
+
+            &:hover {
+              color: var(--color-text-t1);
+
+              .icon {
+                color: var(--color-text-t1);
+              }
+            }
           }
         }
 
@@ -627,16 +745,63 @@ const onCollapse = () => {
             align-items: center;
             cursor: pointer;
             display: flex;
-            // margin-left: 0;
 
             span {
               font-size: 12px;
             }
+
+            &:hover,
+            &.active {
+              color: var(--color-text-t1);
+
+              .icon {
+                color: var(--color-text-t1);
+              }
+            }
           }
+
         }
 
         .footer-share-content {
           margin-left: 10px;
+        }
+
+        .comment-item-content-footer-share {
+          position: static;
+        }
+
+        .share-panel-wrapper {
+          position: absolute;
+          left: 0;
+          right: 0;
+          z-index: 1001;
+          display: flex;
+          justify-content: center;
+
+          &.position-bottom {
+            top: 100%;
+            margin-top: 8px;
+          }
+
+          &.position-top {
+            bottom: 100%;
+            margin-bottom: 8px;
+          }
+
+          .share-panel-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+          }
+   
+          :deep(.share-panel) {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            max-height: 360px;
+            min-height: 200px;
+          }
         }
 
         .icon {
@@ -706,6 +871,29 @@ const onCollapse = () => {
   .comment-expand .comment-expand-btn,
   .comment-expand .comment-content-collapse * {
     font-size: 18px !important;
+  }
+}
+</style>
+
+<style lang="scss">
+// 全局样式 - Teleport 到 body 的分享面板
+.comment-share-panel-wrapper {
+  position: fixed;
+  z-index: 10001;
+
+  .share-panel-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+  }
+
+  .share-panel {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    max-height: 360px;
+    min-height: 200px;
   }
 }
 </style>

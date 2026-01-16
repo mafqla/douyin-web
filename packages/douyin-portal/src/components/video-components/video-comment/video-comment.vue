@@ -40,13 +40,22 @@ const setReplyTo = (uid: number | string, username: string, comment?: string, ci
   replyTo.value = { uid, username, comment, cid, parentCid, sec_uid }
 }
 
+// 用于通知comment-item取消回复状态
+const cancelReplyCid = ref('')
+
 // 取消回复
 const cancelReply = () => {
+  // 先通知取消回复的cid
+  if (replyTo.value?.cid) {
+    cancelReplyCid.value = replyTo.value.cid
+  }
   replyTo.value = null
 }
 
 // 提供给子组件
 provide('setReplyTo', setReplyTo)
+provide('cancelReplyCid', cancelReplyCid)
+provide('currentReplyTo', replyTo)
 // 提供是否显示内联输入框的配置
 provide('showInlineInput', props.showInlineInput)
 
@@ -85,19 +94,18 @@ const convertImagesToImageList = (images: File[]) => {
   
   return images.map(file => {
     const url = URL.createObjectURL(file)
+    const urlInfo = {
+      url_list: [url],
+      uri: '',
+      width: 0,
+      height: 0
+    }
     return {
-      origin_url: {
-        url_list: [url],
-        uri: '',
-        width: 0,
-        height: 0
-      },
-      medium_url: {
-        url_list: [url],
-        uri: '',
-        width: 0,
-        height: 0
-      }
+      origin_url: urlInfo,
+      medium_url: urlInfo,
+      crop_url: urlInfo,
+      thumb_url: urlInfo,
+      download_url: urlInfo
     }
   })
 }
@@ -387,7 +395,6 @@ provide('imagePreview', { openPreview })
   }
 
   .video-comment-list {
-    overflow-x: hidden;
     overflow-y: scroll;
     scrollbar-width: none;
     flex-direction: column;
