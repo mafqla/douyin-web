@@ -28,7 +28,7 @@ const MobilePreview: React.FC<MobilePreviewProps> = ({
   const toggleTab = () => {
     setActiveTab(!activeTab)
   }
-  const formatText = (title: string, desc: string): JSX.Element => {
+  const formatText = (title: string, desc: string): React.JSX.Element => {
     const combinedText = title + ' ' + desc
     const formattedArray = combinedText.split(' ').map((item, index) =>
       item.startsWith('#') ? (

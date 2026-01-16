@@ -9,12 +9,12 @@ import {
 } from '@douyinfe/semi-ui'
 import styles from './style/comment.module.scss'
 import cs from 'classnames'
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Emoji from '@/components/Emoji'
 
 const Comment = () => {
   const [showTextarea, setShowTextarea] = useState(false)
-  const [commentContent, setCommentContent] = useState<JSX.Element | null>(null)
+  const [commentContent, setCommentContent] = useState<React.JSX.Element | null>(null)
   const [commentTextArea, setCommentTextArea] = useState('')
   //是否显示侧边栏，语义化的变量名
   const [visible, setVisible] = useState(false)
