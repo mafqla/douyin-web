@@ -15,6 +15,7 @@ declare module '@vue/runtime-core' {
     Button: typeof import('./src/components/ui/button/button.vue')['default']
     ButtonGroup: typeof import('./src/components/ui/button/button-group.vue')['default']
     ClientBox: typeof import('./src/components/header/client-box/index.vue')['default']
+    CoCreators: typeof import('./src/components/video-components/video-info/co-creators.vue')['default']
     CodeLogin: typeof import('./src/components/auth/login/code-login.vue')['default']
     CollectionFolder: typeof import('./src/components/user/user-collection/collection-folder/index.vue')['default']
     CollectionFolderDialog: typeof import('./src/components/video-components/video-action/collection-folder-dialog.vue')['default']

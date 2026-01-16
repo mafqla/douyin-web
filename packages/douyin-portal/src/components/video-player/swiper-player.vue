@@ -181,6 +181,7 @@ const thumbnail = computed(() => {
             :description="props.awemeInfo.desc"
             :text-extra="props.awemeInfo?.text_extra ?? []"
             :account-cert-info="authorAccountCertInfo"
+            :cooperation-info="props.awemeInfo.cooperation_info"
           />
           <video-action
             v-if="!playerSettings.isImmersive"
@@ -220,6 +221,7 @@ const thumbnail = computed(() => {
             :description="props.awemeInfo.desc"
             :text-extra="props.awemeInfo?.text_extra ?? []"
             :account-cert-info="authorAccountCertInfo"
+            :cooperation-info="props.awemeInfo.cooperation_info"
           />
           <video-action
             v-if="!playerSettings.isImmersive"

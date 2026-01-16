@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import type { ISegment } from '@/api/tyeps/common/aweme'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import type { ISegment, ICooperationInfo } from '@/api/tyeps/common/aweme'
 import formatTime from '@/utils/date-format'
 import { VerifyBadge } from '@/components/common'
+import CoCreators from './co-creators.vue'
 
 const props = defineProps<{
   username: string
@@ -10,11 +11,17 @@ const props = defineProps<{
   description: string
   textExtra: ISegment[]
   accountCertInfo?: string | null
+  cooperationInfo?: ICooperationInfo
 }>()
 
 const videoInfoRef = ref<HTMLElement | null>(null)
 const maxWidth = ref('485px')
 const minWidth = ref('285px')
+
+// 共创者列表
+const coCreators = computed(() => {
+  return props.cooperationInfo?.co_creators || []
+})
 
 const calcMaxWidth = () => {
   if (videoInfoRef.value) {
@@ -55,7 +62,20 @@ onUnmounted(() => {
       <div class="video-info-time">
         <span> · {{ formatTime(props.uploadTime) }}</span>
       </div>
+      <!-- 共创标签 -->
+      <div v-if="coCreators.length > 0" class="co-creation-tag">
+        <span class="co-creation-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+            <path d="M2.19995 12C2.19995 9.23858 4.43853 7 7.19995 7C7.72426 7 8.22792 7.08036 8.7003 7.22873C9.22721 7.39422 9.78851 7.10124 9.954 6.57433C10.1195 6.04742 9.82651 5.48612 9.2996 5.32063C8.63553 5.11206 7.92988 5 7.19995 5C3.33396 5 0.199951 8.13401 0.199951 12C0.199951 15.866 3.33396 19 7.19995 19C7.92988 19 8.63553 18.8879 9.2996 18.6794C9.82651 18.5139 10.1195 17.9526 9.954 17.4257C9.78851 16.8988 9.22721 16.6058 8.7003 16.7713C8.22792 16.9196 7.72426 17 7.19995 17C4.43853 17 2.19995 14.7614 2.19995 12Z" fill="currentColor"></path>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M16.8 5C12.9341 5 9.80005 8.13401 9.80005 12C9.80005 15.866 12.9341 19 16.8 19C20.666 19 23.8 15.866 23.8 12C23.8 8.13401 20.666 5 16.8 5ZM11.8 12C11.8 9.23858 14.0386 7 16.8 7C19.5615 7 21.8 9.23858 21.8 12C21.8 14.7614 19.5615 17 16.8 17C14.0386 17 11.8 14.7614 11.8 12Z" fill="currentColor"></path>
+          </svg>
+        </span>
+        <span class="co-creation-text">{{ coCreators.length }}人共创</span>
+      </div>
     </div>
+
+    <!-- 共创用户列表 -->
+    <CoCreators :creators="coCreators" />
 
     <ellipsis-expand
       style="--lineClamp: 2; --lineHeight: 22px; --maxHeight: 44px"
@@ -113,11 +133,44 @@ onUnmounted(() => {
         font-size: 16px !important;
         line-height: 22px;
       }
+      .co-creation-tag .co-creation-text {
+        font-size: 16px;
+      }
     }
     .video-info-time {
       padding: 0 10px;
       font-size: 14px;
       white-space: nowrap;
+    }
+
+    .co-creation-tag {
+      color: var(--color-const-text-white);
+      align-items: center;
+      font-size: 12px;
+      line-height: 1;
+      display: inline-flex;
+      cursor: pointer;
+      background: linear-gradient(270deg, var(--color-const-bg-white30) 0%, var(--color-const-bg-white12, rgba(255, 255, 255, 0.12)) 100%);
+      border: 0.5px solid var(--color-const-bg-white16, rgba(255, 255, 255, 0.16));
+      border-radius: var(--radius-6);
+      margin-left: 8px;
+      padding: 2px 6px;
+      box-shadow: 0 0 1px var(--color-mask-m3);
+
+      .co-creation-icon {
+        display: inline-flex;
+        align-items: center;
+        margin-right: 2px;
+
+        svg {
+          width: 12px;
+          height: 12px;
+        }
+      }
+
+      .co-creation-text {
+        text-shadow: 0 0 1px var(--color-mask-m3);
+      }
     }
   }
 }
