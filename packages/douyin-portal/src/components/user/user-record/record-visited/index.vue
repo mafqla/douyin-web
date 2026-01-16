@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { ref, shallowRef, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import {
+  ref,
+  shallowRef,
+  computed,
+  onMounted,
+  onBeforeUnmount,
+  watch
+} from 'vue'
 import { useInfiniteScroll, useScroll } from '@vueuse/core'
 import { useRoute, useRouter } from 'vue-router'
 import apis from '@/api/apis'
@@ -36,7 +43,9 @@ const getUserVisitedList = async () => {
   try {
     const res = await apis.getUserVisitedList(20, cursor.value)
     if (res.freq_visit_user_list?.length) {
-      freqVisitUserList.value = freqVisitUserList.value.concat(res.freq_visit_user_list)
+      freqVisitUserList.value = freqVisitUserList.value.concat(
+        res.freq_visit_user_list
+      )
     }
     if (res.visit_user_list?.length) {
       visitUserList.value = visitUserList.value.concat(res.visit_user_list)
@@ -240,7 +249,11 @@ onBeforeUnmount(() => {
         icon="no-show-like"
         title="暂无访客记录"
         desc="还没有人访问过你的主页"
-        v-if="!loading && freqVisitUserList.length === 0 && visitUserList.length === 0"
+        v-if="
+          !loading &&
+          freqVisitUserList.length === 0 &&
+          visitUserList.length === 0
+        "
         class="no-show"
       />
       <template v-else>
@@ -286,7 +299,12 @@ onBeforeUnmount(() => {
         </div>
 
         <Loading :show="isLoadingMore" />
-        <list-footer v-if="!hasMore && (freqVisitUserList.length > 0 || visitUserList.length > 0)" />
+        <list-footer
+          v-if="
+            !hasMore &&
+            (freqVisitUserList.length > 0 || visitUserList.length > 0)
+          "
+        />
       </template>
     </div>
 

@@ -27,16 +27,10 @@ defineProps({
     required: false,
     default: {}
   }
-  
 })
 </script>
 <template>
-  <div
-    class="loading"
-    :class="{ iscenter: center }"
-    v-if="show"
-    :style="style"
-  >
+  <div class="loading" :class="{ iscenter: center }" v-if="show" :style="style">
     <div class="loading-content">
       <div class="loading-content-img"></div>
       <div class="loading-content-text" v-if="isShowText">{{ text }}</div>

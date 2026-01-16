@@ -16,12 +16,7 @@ const groupClass = computed(() => {
 </script>
 
 <template>
-  <div
-    :class="groupClass"
-    :style="style"
-    :aria-label="ariaLabel"
-    role="group"
-  >
+  <div :class="groupClass" :style="style" :aria-label="ariaLabel" role="group">
     <slot />
   </div>
 </template>

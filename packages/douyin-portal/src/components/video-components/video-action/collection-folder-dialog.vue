@@ -26,7 +26,7 @@ const emit = defineEmits<{
   collectOnly: []
   cancel: []
   'update:show': [value: boolean]
-  'dialog-open': [isOpen: boolean]  // 通知父组件弹框状态
+  'dialog-open': [isOpen: boolean] // 通知父组件弹框状态
 }>()
 
 // 收藏夹列表数据
@@ -48,15 +48,20 @@ const fetchFolders = async (isLoadMore = false) => {
 
   loading.value = true
   try {
-    const res = await apis.getUserCollectFloderList(20, isLoadMore ? cursor.value : '0')
-    
-    const newFolders: CollectionFolder[] = (res.collects_list || []).map((item: ICollectsItem) => ({
-      id: item.collects_id_str,
-      name: item.collects_name,
-      cover: item.collects_cover?.url_list?.[0],
-      count: item.total_number,
-      isPrivate: item.status === 0 // status 0 为私密
-    }))
+    const res = await apis.getUserCollectFloderList(
+      20,
+      isLoadMore ? cursor.value : '0'
+    )
+
+    const newFolders: CollectionFolder[] = (res.collects_list || []).map(
+      (item: ICollectsItem) => ({
+        id: item.collects_id_str,
+        name: item.collects_name,
+        cover: item.collects_cover?.url_list?.[0],
+        count: item.total_number,
+        isPrivate: item.status === 0 // status 0 为私密
+      })
+    )
 
     if (isLoadMore) {
       folders.value = [...folders.value, ...newFolders]
@@ -83,22 +88,26 @@ const toggleSelect = (id: string) => {
 }
 
 // 监听面板显示状态
-watch(() => props.show, (newVal) => {
-  if (newVal) {
-    // 面板打开时获取收藏夹列表
-    cursor.value = '0'
-    hasMore.value = true
-    folders.value = []
-    selectedIds.value.clear()
-    fetchFolders()
-  }
-}, { immediate: true })
+watch(
+  () => props.show,
+  (newVal) => {
+    if (newVal) {
+      // 面板打开时获取收藏夹列表
+      cursor.value = '0'
+      hasMore.value = true
+      folders.value = []
+      selectedIds.value.clear()
+      fetchFolders()
+    }
+  },
+  { immediate: true }
+)
 
 // 滚动加载更多
 const handleScroll = (e: Event) => {
   const target = e.target as HTMLElement
   const { scrollTop, scrollHeight, clientHeight } = target
-  
+
   // 距离底部 50px 时加载更多
   if (scrollHeight - scrollTop - clientHeight < 50) {
     fetchFolders(true)
@@ -144,8 +153,17 @@ const handleCreateDialogClose = () => {
     <div class="panel-header">
       <span class="panel-title">选择收藏夹</span>
       <div class="create-btn" @click="handleCreateFolder">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 16 17">
-          <path d="M8 15.167A6.667 6.667 0 1 0 8 1.833a6.667 6.667 0 0 0 0 13.334zM8 11.5a.667.667 0 0 1-.666-.667V9.167H5.667a.667.667 0 0 1 0-1.334h1.667V6.167a.667.667 0 0 1 1.333 0v1.666h1.667a.667.667 0 1 1 0 1.334H8.667v1.666a.667.667 0 0 1-.666.667z" fill="currentColor"></path>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          fill="none"
+          viewBox="0 0 16 17"
+        >
+          <path
+            d="M8 15.167A6.667 6.667 0 1 0 8 1.833a6.667 6.667 0 0 0 0 13.334zM8 11.5a.667.667 0 0 1-.666-.667V9.167H5.667a.667.667 0 0 1 0-1.334h1.667V6.167a.667.667 0 0 1 1.333 0v1.666h1.667a.667.667 0 1 1 0 1.334H8.667v1.666a.667.667 0 0 1-.666.667z"
+            fill="currentColor"
+          ></path>
         </svg>
         <span>新建</span>
       </div>
@@ -155,12 +173,12 @@ const handleCreateDialogClose = () => {
     <div class="folder-list" @scroll="handleScroll">
       <!-- 加载中状态 -->
       <Loading :show="loading && folders.length === 0" />
-      
+
       <!-- 空状态 -->
       <div v-if="!loading && folders.length === 0" class="empty-state">
         <span>暂无收藏夹</span>
       </div>
-      
+
       <!-- 收藏夹列表 -->
       <template v-if="folders.length > 0">
         <div
@@ -175,27 +193,53 @@ const handleCreateDialogClose = () => {
             <img v-if="folder.cover" :src="folder.cover" />
             <div v-else class="cover-placeholder"></div>
           </div>
-          
+
           <!-- 信息区域 -->
           <div class="folder-info">
             <span class="folder-name">{{ folder.name }}</span>
             <!-- 私密图标 -->
-            <svg v-if="folder.isPrivate" class="lock-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em">
-              <path d="M11.2 6.4V5.2C11.2 3.43269 9.76731 2 8 2C6.23269 2 4.8 3.43269 4.8 5.2V6.4C3.91634 6.4 3.2 7.11634 3.2 8V12.4C3.2 13.2837 3.91634 14 4.8 14H11.2C12.0837 14 12.8 13.2837 12.8 12.4V8C12.8 7.11634 12.0837 6.4 11.2 6.4ZM6 5.2C6 4.09543 6.89543 3.2 8 3.2C9.10457 3.2 10 4.09543 10 5.2V6.4H6V5.2Z" fill="currentColor"></path>
+            <svg
+              v-if="folder.isPrivate"
+              class="lock-icon"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              width="1em"
+              height="1em"
+            >
+              <path
+                d="M11.2 6.4V5.2C11.2 3.43269 9.76731 2 8 2C6.23269 2 4.8 3.43269 4.8 5.2V6.4C3.91634 6.4 3.2 7.11634 3.2 8V12.4C3.2 13.2837 3.91634 14 4.8 14H11.2C12.0837 14 12.8 13.2837 12.8 12.4V8C12.8 7.11634 12.0837 6.4 11.2 6.4ZM6 5.2C6 4.09543 6.89543 3.2 8 3.2C9.10457 3.2 10 4.09543 10 5.2V6.4H6V5.2Z"
+                fill="currentColor"
+              ></path>
             </svg>
             <span class="folder-count">{{ folder.count }}</span>
           </div>
 
           <!-- 复选框 -->
           <div class="folder-checkbox">
-            <div class="checkbox-inner" :class="{ checked: selectedIds.has(folder.id) }">
-              <svg v-if="selectedIds.has(folder.id)" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M17.4111 7.30848C18.0692 7.81171 18.1947 8.75312 17.6915 9.41119L11.1915 17.9112C10.909 18.2806 10.4711 18.4981 10.0061 18.5C9.54105 18.5019 9.10143 18.288 8.81592 17.9209L5.31592 13.4209C4.80731 12.767 4.92512 11.8246 5.57904 11.316C6.23296 10.8074 7.17537 10.9252 7.68398 11.5791L9.98988 14.5438L15.3084 7.58884C15.8116 6.93077 16.7531 6.80525 17.4111 7.30848Z" fill="currentColor"></path>
+            <div
+              class="checkbox-inner"
+              :class="{ checked: selectedIds.has(folder.id) }"
+            >
+              <svg
+                v-if="selectedIds.has(folder.id)"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                width="1em"
+                height="1em"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M17.4111 7.30848C18.0692 7.81171 18.1947 8.75312 17.6915 9.41119L11.1915 17.9112C10.909 18.2806 10.4711 18.4981 10.0061 18.5C9.54105 18.5019 9.10143 18.288 8.81592 17.9209L5.31592 13.4209C4.80731 12.767 4.92512 11.8246 5.57904 11.316C6.23296 10.8074 7.17537 10.9252 7.68398 11.5791L9.98988 14.5438L15.3084 7.58884C15.8116 6.93077 16.7531 6.80525 17.4111 7.30848Z"
+                  fill="currentColor"
+                ></path>
               </svg>
             </div>
           </div>
         </div>
-        
+
         <!-- 加载更多 -->
         <Loading v-if="loading && folders.length > 0" :show="true" />
       </template>
@@ -206,8 +250,8 @@ const handleCreateDialogClose = () => {
       <button class="btn-secondary" @click="handleCollectOnly">
         仅收藏视频
       </button>
-      <button 
-        class="btn-primary" 
+      <button
+        class="btn-primary"
         :disabled="!hasSelection"
         @click="handleConfirm"
       >

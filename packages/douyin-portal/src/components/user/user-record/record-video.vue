@@ -67,7 +67,11 @@ const formatDateText = (timestamp: number): string => {
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000)
-  const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  const targetDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  )
 
   if (targetDate.getTime() === today.getTime()) {
     return '今天'

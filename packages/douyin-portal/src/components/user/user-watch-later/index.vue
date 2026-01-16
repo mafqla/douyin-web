@@ -187,8 +187,10 @@ const confirmRemoveWatched = async () => {
     // 筛选出已看完的视频（进度 >= 100%）
     const watchedIds = watchLaterList.value
       .filter((item) => {
-        if (!item.play_progress?.play_progress || !item.video?.duration) return false
-        const percent = (item.play_progress.play_progress / item.video.duration) * 100
+        if (!item.play_progress?.play_progress || !item.video?.duration)
+          return false
+        const percent =
+          (item.play_progress.play_progress / item.video.duration) * 100
         return percent >= 100
       })
       .map((item) => item.aweme_id)
@@ -254,7 +256,11 @@ defineExpose({
         </template>
         <template #right>
           <!-- 非批量模式下显示筛选提示 -->
-          <div v-if="!isBatchMode" class="filter-tip" @click="handleRemoveWatched">
+          <div
+            v-if="!isBatchMode"
+            class="filter-tip"
+            @click="handleRemoveWatched"
+          >
             <svg
               class="tip-icon"
               viewBox="0 0 16 16"

@@ -131,7 +131,10 @@ const handleMouseLeave = (event: MouseEvent) => {
     </span>
 
     <!-- 左侧图标 -->
-    <span v-if="hasIcon && iconPosition === 'left' && !loading" class="dy-btn__icon">
+    <span
+      v-if="hasIcon && iconPosition === 'left' && !loading"
+      class="dy-btn__icon"
+    >
       <slot name="icon">
         <component :is="icon" v-if="icon" />
       </slot>
@@ -143,7 +146,10 @@ const handleMouseLeave = (event: MouseEvent) => {
     </span>
 
     <!-- 右侧图标 -->
-    <span v-if="hasIcon && iconPosition === 'right' && !loading" class="dy-btn__icon">
+    <span
+      v-if="hasIcon && iconPosition === 'right' && !loading"
+      class="dy-btn__icon"
+    >
       <slot name="icon">
         <component :is="icon" v-if="icon" />
       </slot>

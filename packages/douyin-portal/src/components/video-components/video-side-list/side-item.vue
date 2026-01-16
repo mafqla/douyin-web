@@ -14,7 +14,9 @@ const props = defineProps<SideItemProps>()
 const sidebarStore = useSidebarStore()
 
 // 是否显示未看角标
-const showNotSeenTag = computed(() => sidebarStore.isNotSeen(props.item.aweme_id))
+const showNotSeenTag = computed(() =>
+  sidebarStore.isNotSeen(props.item.aweme_id)
+)
 const route = useRoute()
 const router = useRouter()
 
@@ -51,10 +53,7 @@ const handleClick = (e: Event) => {
 
           <div class="user-video-stats-tag">
             <div class="user-video-tag">
-              <span
-                class="tag-title is-not-seen"
-                v-if="showNotSeenTag"
-              >
+              <span class="tag-title is-not-seen" v-if="showNotSeenTag">
                 未看
               </span>
               <span
@@ -228,7 +227,7 @@ const handleClick = (e: Event) => {
       overflow: hidden;
       backdrop-filter: blur(12px);
       border-radius: 4px;
-      
+
       .side-playing-content {
         height: 24px;
         position: relative;

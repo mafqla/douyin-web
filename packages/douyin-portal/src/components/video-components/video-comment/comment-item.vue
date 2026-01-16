@@ -7,24 +7,53 @@ import SharePanel from '../video-action/share-panel.vue'
 import { useCount } from '@/hooks'
 import { handleCommentParser } from '@/utils/commentParser'
 import formatTime from '@/utils/date-format'
-import { computed, inject, ref, watchEffect, watch, provide, onMounted, onUnmounted, nextTick, type Ref } from 'vue'
+import {
+  computed,
+  inject,
+  ref,
+  watchEffect,
+  watch,
+  provide,
+  onMounted,
+  onUnmounted,
+  nextTick,
+  type Ref
+} from 'vue'
 
-const props = defineProps<IComments & { author_id: string | number; isSubComment?: boolean }>()
+const props = defineProps<
+  IComments & { author_id: string | number; isSubComment?: boolean }
+>()
 
 // 注入图片预览方法
-const imagePreview = inject<{ openPreview: (cid: string, index: number) => void }>('imagePreview', { openPreview: () => {} })
+const imagePreview = inject<{
+  openPreview: (cid: string, index: number) => void
+}>('imagePreview', { openPreview: () => {} })
 
 // 注入设置回复用户方法
-const setReplyTo = inject<(uid: number | string, username: string, comment?: string, cid?: string, parentCid?: string, sec_uid?: string) => void>('setReplyTo', () => {})
+const setReplyTo = inject<
+  (
+    uid: number | string,
+    username: string,
+    comment?: string,
+    cid?: string,
+    parentCid?: string,
+    sec_uid?: string
+  ) => void
+>('setReplyTo', () => {})
 
 // 注入是否显示内联输入框的配置（默认不显示，只在 video/note 页面显示）
 const showInlineInput = inject<boolean>('showInlineInput', false)
 
 // 注入新回复数据
-const replyToAdd = inject<Ref<{ parentCid: string; reply: IComments } | null>>('replyToAdd', ref(null))
+const replyToAdd = inject<Ref<{ parentCid: string; reply: IComments } | null>>(
+  'replyToAdd',
+  ref(null)
+)
 
 // 注入提交评论方法
-const submitCommentToParent = inject<(data: { text: string; images: File[]; replyTo: any }) => void>('submitComment', () => {})
+const submitCommentToParent = inject<
+  (data: { text: string; images: File[]; replyTo: any }) => void
+>('submitComment', () => {})
 
 // 注入取消回复的cid
 const cancelReplyCid = inject<Ref<string>>('cancelReplyCid')
@@ -68,26 +97,38 @@ watchEffect(() => {
 })
 const isOpenInput = ref(false)
 const isReplying = computed(() => {
-  return currentReplyTo?.value?.cid === props.cid && currentReplyTo?.value !== null
+  return (
+    currentReplyTo?.value?.cid === props.cid && currentReplyTo?.value !== null
+  )
 })
 const replyText = computed(() => {
   return isReplying.value ? '回复中' : '回复'
 })
 
 // 监听取消回复
-watch(() => cancelReplyCid?.value, (newCid) => {
-  if (newCid && newCid === props.cid) {
-    isOpenInput.value = false
+watch(
+  () => cancelReplyCid?.value,
+  (newCid) => {
+    if (newCid && newCid === props.cid) {
+      isOpenInput.value = false
+    }
   }
-})
+)
 
 // 判断当前评论是否是子评论
-const isSubCommentFlag = computed(() => props.isSubComment || !!props.reply_to_userid)
+const isSubCommentFlag = computed(
+  () => props.isSubComment || !!props.reply_to_userid
+)
 
 // 获取父评论的 cid（如果是子评论，需要从外部传入）
 const parentCommentCid = inject<string>('parentCommentCid', '')
 
-const replyUser = (uid: string, username: string, comment?: string, sec_uid?: string) => {
+const replyUser = (
+  uid: string,
+  username: string,
+  comment?: string,
+  sec_uid?: string
+) => {
   // 调用父组件的回复方法（设置底部输入框的回复状态）
   // 如果是子评论，传递 parentCid（一级评论的 cid）
   const parentCid = props.isSubComment ? parentCommentCid : undefined
@@ -125,14 +166,18 @@ const noMore = ref(false)
 const replyCommentList = ref<IComments[]>([])
 
 // 监听新回复，添加到子评论列表（只有一级评论需要监听）
-watch(() => replyToAdd?.value, (newReply) => {
-  if (!props.isSubComment && newReply && newReply.parentCid === props.cid) {
-    // 如果是回复当前评论，添加到子评论列表第一位
-    replyCommentList.value.unshift(newReply.reply)
-    // 自动展开子评论
-    isOpenExpand.value = true
-  }
-}, { deep: true })
+watch(
+  () => replyToAdd?.value,
+  (newReply) => {
+    if (!props.isSubComment && newReply && newReply.parentCid === props.cid) {
+      // 如果是回复当前评论，添加到子评论列表第一位
+      replyCommentList.value.unshift(newReply.reply)
+      // 自动展开子评论
+      isOpenExpand.value = true
+    }
+  },
+  { deep: true }
+)
 
 // 提供当前评论的 cid 给子评论使用（只有一级评论需要提供）
 if (!props.isSubComment) {
@@ -190,14 +235,14 @@ const panelPosition = ref<'bottom' | 'top'>('bottom')
 const calculatePanelPosition = () => {
   const btn = shareBtnRef.value
   if (!btn) return
-  
+
   const btnRect = btn.getBoundingClientRect()
   const viewportHeight = window.innerHeight
   const panelHeight = 360 // 面板大约高度
-  
+
   // 检查下方空间是否足够
   const bottomSpace = viewportHeight - btnRect.bottom
-  
+
   if (bottomSpace < panelHeight + 20) {
     panelPosition.value = 'top'
   } else {
@@ -258,7 +303,10 @@ const handleCopyLink = () => {
       class="comment-item-avatar"
     />
     <div class="comment-item-content">
-      <div class="comment-item-index" :class="{ oninput: isOpenInput, replying: isReplying }">
+      <div
+        class="comment-item-index"
+        :class="{ oninput: isOpenInput, replying: isReplying }"
+      >
         <div class="comment-item-info-wrap">
           <div class="comment-item-content-header-name">
             <a
@@ -309,7 +357,11 @@ const handleCopyLink = () => {
             >
             </span>
             <div class="comment-img-list" v-if="props.image_list">
-              <div class="img-box" v-for="(item, index) in props.image_list" :key="item.medium_url.uri">
+              <div
+                class="img-box"
+                v-for="(item, index) in props.image_list"
+                :key="item.medium_url.uri"
+              >
                 <div class="img-inner">
                   <img
                     :src="
@@ -358,19 +410,19 @@ const handleCopyLink = () => {
               </p>
             </div>
             <div class="comment-item-content-footer-share">
-              <div 
+              <div
                 ref="shareBtnRef"
-                class="footer-share-content" 
-                :class="{ active: showSharePanel }" 
+                class="footer-share-content"
+                :class="{ active: showSharePanel }"
                 @click="openSharePanel"
               >
                 <svg-icon icon="small-share" class="icon" />
                 <span>分享</span>
               </div>
               <!-- 分享面板 -->
-              <div 
+              <div
                 v-if="showSharePanel"
-                class="share-panel-wrapper" 
+                class="share-panel-wrapper"
                 :class="[`position-${panelPosition}`]"
                 @click.stop
               >
@@ -387,7 +439,14 @@ const handleCopyLink = () => {
 
             <div
               class="comment-item-content-footer-reply"
-              @click="replyUser(props.user.uid, props.user.nickname, props.text, props.user.sec_uid)"
+              @click="
+                replyUser(
+                  props.user.uid,
+                  props.user.nickname,
+                  props.text,
+                  props.user.sec_uid
+                )
+              "
             >
               <div class="footer-reply-content" :class="{ active: isReplying }">
                 <svg-icon icon="small-reply" class="icon" />
@@ -396,9 +455,13 @@ const handleCopyLink = () => {
             </div>
           </div>
           <div class="reply-input" v-if="showInlineInput && isOpenInput">
-            <dy-input 
-              :reply-to="{ uid: props.user.uid, username: props.user.nickname, comment: props.text }"
-              @update:value="comment = $event" 
+            <dy-input
+              :reply-to="{
+                uid: props.user.uid,
+                username: props.user.nickname,
+                comment: props.text
+              }"
+              @update:value="comment = $event"
               @submit="handleSubmit"
               @cancel-reply="isOpenInput = false"
             />
@@ -406,7 +469,10 @@ const handleCopyLink = () => {
         </div>
       </div>
 
-      <div class="comment-item-reply" v-if="!props.isSubComment && isOpenExpand">
+      <div
+        class="comment-item-reply"
+        v-if="!props.isSubComment && isOpenExpand"
+      >
         <comment-item
           v-for="it in replyCommentList"
           :key="it.cid"
@@ -485,7 +551,14 @@ const handleCopyLink = () => {
       }
 
       &.replying {
-        background: linear-gradient(270deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.06) 18.23%, rgba(255, 255, 255, 0.06) 51.56%, rgba(255, 255, 255, 0.06) 82.29%, rgba(255, 255, 255, 0) 100%);
+        background: linear-gradient(
+          270deg,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0.06) 18.23%,
+          rgba(255, 255, 255, 0.06) 51.56%,
+          rgba(255, 255, 255, 0.06) 82.29%,
+          rgba(255, 255, 255, 0) 100%
+        );
       }
 
       .comment-item-info-wrap {
@@ -759,7 +832,6 @@ const handleCopyLink = () => {
               }
             }
           }
-
         }
 
         .footer-share-content {
@@ -796,7 +868,7 @@ const handleCopyLink = () => {
             bottom: 0;
             z-index: -1;
           }
-   
+
           :deep(.share-panel) {
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
             max-height: 360px;

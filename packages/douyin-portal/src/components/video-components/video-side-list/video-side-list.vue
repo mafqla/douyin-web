@@ -4,7 +4,15 @@ import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 import type { IUser } from '@/api/tyeps/common/user'
 import { useCount, useGridScrollToItem } from '@/hooks'
 import { vInfiniteScroll } from '@vueuse/components'
-import { onMounted, onUnmounted, ref, watch, computed, reactive, nextTick } from 'vue'
+import {
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+  computed,
+  reactive,
+  nextTick
+} from 'vue'
 import SideItem from './side-item.vue'
 import { useSidebarStore } from '@/stores/sidebar'
 
@@ -36,7 +44,10 @@ const getUserInfo = async (user_id: string) => {
   const { user } = await apis.getUserOtherInfo(props.user_sec_id)
   userInfo.value = user
   // 设置用户认证类型到 store（同时传递 sec_uid）
-  sidebarStore.setCurrentUserVerificationType(user.verification_type, props.user_sec_id)
+  sidebarStore.setCurrentUserVerificationType(
+    user.verification_type,
+    props.user_sec_id
+  )
 }
 
 const isLoadingMore = ref(false)
@@ -88,11 +99,15 @@ const scrollToCurrentVideo = () => {
     (item) => item.aweme_id === props.aweme_id
   )
   if (currentIndex >= 0) {
-    const targetElement = listContainerRef.value.children[currentIndex] as HTMLElement
+    const targetElement = listContainerRef.value.children[
+      currentIndex
+    ] as HTMLElement
     if (targetElement) {
       const containerRect = scrollContainerRef.value.getBoundingClientRect()
       const targetRect = targetElement.getBoundingClientRect()
-      const scrollTop = scrollContainerRef.value.scrollTop + (targetRect.top - containerRect.top)
+      const scrollTop =
+        scrollContainerRef.value.scrollTop +
+        (targetRect.top - containerRect.top)
       scrollContainerRef.value.scrollTo({ top: scrollTop, behavior: 'instant' })
     }
   }
@@ -173,8 +188,6 @@ const initLoad = async () => {
     isLoadingMore.value = false
   }
 }
-
-
 
 // 获取作品列表（向下加载更多）
 const getUserPostList = async () => {

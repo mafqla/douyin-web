@@ -43,7 +43,9 @@ const isPlaying = computed(
 )
 
 // 当前播放模式
-const currentPlayMode = computed(() => musicPlayer?.playMode.value || 'sequence')
+const currentPlayMode = computed(
+  () => musicPlayer?.playMode.value || 'sequence'
+)
 
 // 监听播放状态变化，控制播放器
 watch(isPlaying, (newVal) => {

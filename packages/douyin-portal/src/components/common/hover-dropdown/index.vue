@@ -101,7 +101,7 @@ const props = withDefaults(
     hideDelay: 100,
     disabled: false,
     contentClass: '',
-    zIndex: 100,
+    zIndex: 100
   }
 )
 
@@ -124,7 +124,7 @@ let hideTimer: ReturnType<typeof setTimeout> | null = null
 
 // 内容样式
 const contentStyle = computed(() => ({
-  zIndex: props.zIndex,
+  zIndex: props.zIndex
 }))
 
 // 清除定时器
@@ -280,7 +280,7 @@ onUnmounted(() => {
 defineExpose({
   show,
   hide,
-  visible,
+  visible
 })
 </script>
 
@@ -399,9 +399,7 @@ defineExpose({
 // 过渡动画
 .hover-dropdown-fade-enter-active,
 .hover-dropdown-fade-leave-active {
-  transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
 .hover-dropdown-fade-enter-from,

@@ -128,49 +128,47 @@ const selectCategory = (value: number) => {
     </div>
     <!-- 筛选面板 -->
     <div v-if="showFilterPanel" class="filter-panel">
-
-        <div class="filter-section">
-          <div class="filter-title">观看进度</div>
-          <div class="filter-options">
-            <span
-              v-for="option in statusOptions"
-              :key="option.value"
-              class="filter-option"
-              :class="{ active: status === option.value }"
-              @click="selectStatus(option.value)"
-            >
-              {{ option.label }}
-            </span>
-          </div>
+      <div class="filter-section">
+        <div class="filter-title">观看进度</div>
+        <div class="filter-options">
+          <span
+            v-for="option in statusOptions"
+            :key="option.value"
+            class="filter-option"
+            :class="{ active: status === option.value }"
+            @click="selectStatus(option.value)"
+          >
+            {{ option.label }}
+          </span>
         </div>
-        <div class="filter-section">
-          <div class="filter-title">视频时长</div>
-          <div class="filter-options">
-            <span
-              v-for="option in directoryOptions"
-              :key="option.value"
-              class="filter-option"
-              :class="{ active: directory === option.value }"
-              @click="selectDirectory(option.value)"
-            >
-              {{ option.label }}
-            </span>
-          </div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-title">视频时长</div>
+        <div class="filter-options">
+          <span
+            v-for="option in directoryOptions"
+            :key="option.value"
+            class="filter-option"
+            :class="{ active: directory === option.value }"
+            @click="selectDirectory(option.value)"
+          >
+            {{ option.label }}
+          </span>
         </div>
-        <div class="filter-section">
-          <div class="filter-title">视频分类</div>
-          <div class="filter-options">
-            <span
-              v-for="option in categoryOptions"
-              :key="option.value"
-              class="filter-option"
-              :class="{ active: category === option.value }"
-              @click="selectCategory(option.value)"
-            >
-              {{ option.label }}
-            </span>
-          </div>
-      
+      </div>
+      <div class="filter-section">
+        <div class="filter-title">视频分类</div>
+        <div class="filter-options">
+          <span
+            v-for="option in categoryOptions"
+            :key="option.value"
+            class="filter-option"
+            :class="{ active: category === option.value }"
+            @click="selectCategory(option.value)"
+          >
+            {{ option.label }}
+          </span>
+        </div>
       </div>
     </div>
   </div>
@@ -217,7 +215,6 @@ const selectCategory = (value: number) => {
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 0 24px 0 var(--color-shadow1);
-
 
   .filter-section {
     margin-bottom: 24px;

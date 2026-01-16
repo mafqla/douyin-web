@@ -74,7 +74,7 @@ const openModalPlayer = async (mix: IMixInfo) => {
     const watchedEpisode = mix.watched_episode || totalEpisode
     // 使用 watched_item 获取上次观看的视频 ID
     const watchedItem = mix.watched_item
-    
+
     // 计算起始 cursor（集数从1开始，cursor从0开始，所以要减1）
     const startCursor = Math.max(0, watchedEpisode - 1)
 
@@ -91,10 +91,10 @@ const openModalPlayer = async (mix: IMixInfo) => {
     }
 
     // 优先使用 watched_item 找到上次观看的视频
-    let targetVideo = watchedItem 
-      ? videosRes.aweme_list.find(v => v.aweme_id === watchedItem)
+    let targetVideo = watchedItem
+      ? videosRes.aweme_list.find((v) => v.aweme_id === watchedItem)
       : null
-    
+
     // 如果没找到，使用列表中的第一个
     if (!targetVideo) {
       targetVideo = videosRes.aweme_list[0]

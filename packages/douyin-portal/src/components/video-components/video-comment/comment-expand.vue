@@ -118,7 +118,7 @@ watchEffect(() => {
   .comment-expand .comment-content-collapse {
     font-size: calc(0.535714vw + 4.28571px) !important;
 
-    .icon{
+    .icon {
       width: calc(0.535714vw + 4.28571px) !important;
       height: calc(0.535714vw + 4.28571px) !important;
     }
@@ -129,7 +129,7 @@ watchEffect(() => {
   .comment-expand .comment-content-collapse * {
     font-size: 18px !important;
 
-    .icon{
+    .icon {
       width: 18px !important;
       height: 18px !important;
     }

@@ -163,12 +163,16 @@ class ClaritySwitch extends Plugin {
     const now = Date.now()
 
     // 如果距离上次测试时间不够，使用缓存的速度
-    if (this.networkSpeed > 0 && now - this.lastSpeedTestTime < this.speedTestInterval) {
+    if (
+      this.networkSpeed > 0 &&
+      now - this.lastSpeedTestTime < this.speedTestInterval
+    ) {
       return this.networkSpeed
     }
 
     // 尝试使用 Network Information API
-    const connection = (navigator as any).connection ||
+    const connection =
+      (navigator as any).connection ||
       (navigator as any).mozConnection ||
       (navigator as any).webkitConnection
 
@@ -188,10 +192,15 @@ class ClaritySwitch extends Plugin {
         '3g': 1.5,
         '4g': 10
       }
-      if (connection.effectiveType && effectiveTypeSpeed[connection.effectiveType]) {
+      if (
+        connection.effectiveType &&
+        effectiveTypeSpeed[connection.effectiveType]
+      ) {
         this.networkSpeed = effectiveTypeSpeed[connection.effectiveType]
         this.lastSpeedTestTime = now
-        console.log(`[ClaritySwitch] 网络速度 (effectiveType): ${this.networkSpeed} Mbps`)
+        console.log(
+          `[ClaritySwitch] 网络速度 (effectiveType): ${this.networkSpeed} Mbps`
+        )
         return this.networkSpeed
       }
     }
@@ -225,18 +234,24 @@ class ClaritySwitch extends Plugin {
     const speed = await this.detectNetworkSpeed()
     const recommendedClarity = this.getRecommendedClarity(speed)
 
-    console.log(`[ClaritySwitch] 智能模式 - 网络速度: ${speed} Mbps, 推荐清晰度: ${recommendedClarity}`)
+    console.log(
+      `[ClaritySwitch] 智能模式 - 网络速度: ${speed} Mbps, 推荐清晰度: ${recommendedClarity}`
+    )
 
     // 查找推荐清晰度，如果没有则降级
     let clarityToApply = recommendedClarity
-    let clarityOption = this.clarityList.find((item) => item.value === clarityToApply)
+    let clarityOption = this.clarityList.find(
+      (item) => item.value === clarityToApply
+    )
 
     // 如果推荐的清晰度不可用，尝试降级
     if (!clarityOption || !clarityOption.url) {
       const priorityIndex = CLARITY_PRIORITY.indexOf(recommendedClarity)
       for (let i = priorityIndex + 1; i < CLARITY_PRIORITY.length; i++) {
         const fallbackClarity = CLARITY_PRIORITY[i]
-        clarityOption = this.clarityList.find((item) => item.value === fallbackClarity)
+        clarityOption = this.clarityList.find(
+          (item) => item.value === fallbackClarity
+        )
         if (clarityOption?.url) {
           clarityToApply = fallbackClarity
           console.log(`[ClaritySwitch] 智能模式 - 降级到: ${clarityToApply}`)
@@ -277,10 +292,15 @@ class ClaritySwitch extends Plugin {
 
     if (urls.length === 0) return
 
-    if (this.currentUrlIndex < urls.length - 1 && this.currentUrlIndex < this.maxRetries - 1) {
+    if (
+      this.currentUrlIndex < urls.length - 1 &&
+      this.currentUrlIndex < this.maxRetries - 1
+    ) {
       this.currentUrlIndex++
       console.log(
-        `[ClaritySwitch] 播放失败，切换到备用链接 ${this.currentUrlIndex + 1}/${urls.length}`
+        `[ClaritySwitch] 播放失败，切换到备用链接 ${this.currentUrlIndex + 1}/${
+          urls.length
+        }`
       )
       this.switchToUrl(urls[this.currentUrlIndex])
     } else {
@@ -303,7 +323,9 @@ class ClaritySwitch extends Plugin {
 
     for (let i = currentIndex + 1; i < CLARITY_PRIORITY.length; i++) {
       const lowerClarity = CLARITY_PRIORITY[i]
-      const clarityOption = this.clarityList.find((item) => item.value === lowerClarity)
+      const clarityOption = this.clarityList.find(
+        (item) => item.value === lowerClarity
+      )
       if (clarityOption?.url) {
         console.log(`[ClaritySwitch] 降级到: ${lowerClarity}`)
         this.currentUrlIndex = 0
@@ -328,7 +350,7 @@ class ClaritySwitch extends Plugin {
     player.once('loadedmetadata', () => {
       player.currentTime = currentTime
       if (wasPlaying) {
-        player.play().catch(() => { })
+        player.play().catch(() => {})
       }
     })
   }
@@ -421,7 +443,9 @@ class ClaritySwitch extends Plugin {
       // 智能模式：检测网络并自动选择
       this.detectNetworkAndApply()
     } else {
-      const clarityOption = this.clarityList.find((item) => item.value === value)
+      const clarityOption = this.clarityList.find(
+        (item) => item.value === value
+      )
       if (clarityOption?.url) {
         this.switchClarity(clarityOption)
       }
@@ -450,7 +474,7 @@ class ClaritySwitch extends Plugin {
     player.once('loadedmetadata', () => {
       player.currentTime = currentTime
       if (wasPlaying) {
-        player.play().catch(() => { })
+        player.play().catch(() => {})
       }
     })
   }
@@ -499,7 +523,9 @@ class ClaritySwitch extends Plugin {
     const itemsHtml = this.clarityList
       .map(
         (item) =>
-          `<div class="clarity-item${item.value === this.currentValue ? ' selected' : ''}" 
+          `<div class="clarity-item${
+            item.value === this.currentValue ? ' selected' : ''
+          }" 
                data-value="${item.value}" 
                data-label="${item.label}">
             ${item.label}
@@ -525,7 +551,9 @@ class ClaritySwitch extends Plugin {
     // 直接从 store 读取保存的清晰度设置，因为 render() 在 afterCreate() 之前执行
     const store = playerSettingStore()
     const savedClarity = store.clarity
-    const displayText = savedClarity ? (CLARITY_LABELS[savedClarity] || savedClarity) : (this.config.defaultClarity || '智能')
+    const displayText = savedClarity
+      ? CLARITY_LABELS[savedClarity] || savedClarity
+      : this.config.defaultClarity || '智能'
 
     return `<xg-icon class="xgplayer-clarity-switch" data-state="normal">
       <div class="clarity-btn-text">${displayText}</div>

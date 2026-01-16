@@ -3,8 +3,8 @@ import { useDebounceFn } from '@vueuse/core'
 
 /**
  * @description: 监听页面滚动
- * @param scrollbarRef 
- * @returns 
+ * @param scrollbarRef
+ * @returns
  */
 export const useElScroll = (
   scrollbarRef: Ref<HTMLElement | null>,
@@ -36,7 +36,6 @@ export const useElScroll = (
     }
   })
 }
-
 
 /**
  * 页面滚动监听 Hook

@@ -1,5 +1,13 @@
 <script setup lang="ts">
-type SkeletonVariant = 'text' | 'h1' | 'h3' | 'p' | 'image' | 'circle' | 'rect' | 'button'
+type SkeletonVariant =
+  | 'text'
+  | 'h1'
+  | 'h3'
+  | 'p'
+  | 'image'
+  | 'circle'
+  | 'rect'
+  | 'button'
 
 defineProps({
   variant: {

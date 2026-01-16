@@ -46,7 +46,6 @@ watch(
   { immediate: true }
 )
 
-
 // 监听 store 中 activeTab 的变化，同步到本地状态
 watch(
   () => sidebarStore.activeTab,
@@ -141,10 +140,7 @@ watch(
             class="video-tabs-content-item collection"
             v-show="activeName === 'collection'"
           >
-            <SidebarMixPlaylist
-              :mix="mix"
-              :aweme_id="props.aweme_id ?? ''"
-            />
+            <SidebarMixPlaylist :mix="mix" :aweme_id="props.aweme_id ?? ''" />
           </div>
           <!-- 相关推荐 -->
           <div

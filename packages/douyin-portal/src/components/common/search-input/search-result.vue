@@ -102,9 +102,7 @@ const highlightedText = (text: string) => {
         </div>
       </template>
       <!-- 无结果提示 -->
-      <div v-if="resultList.length === 0" class="no-result">
-        暂无搜索建议
-      </div>
+      <div v-if="resultList.length === 0" class="no-result">暂无搜索建议</div>
     </div>
   </div>
 </template>

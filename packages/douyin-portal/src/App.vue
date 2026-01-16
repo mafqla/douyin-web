@@ -3,10 +3,10 @@
 </template>
 
 <script setup lang="ts">
-import useTheme from '@/hooks/useTheme';
-import { } from 'vue';
-import apis from './api/apis';
-import { userStore } from './stores/user';
+import useTheme from '@/hooks/useTheme'
+import {} from 'vue'
+import apis from './api/apis'
+import { userStore } from './stores/user'
 useTheme()
 
 const user = userStore()

@@ -26,17 +26,24 @@ const props = defineProps({
 })
 
 // 回复用户信息
-const replyTo = ref<{ 
-  uid: number | string; 
-  username: string; 
-  comment?: string;
-  cid?: string;  // 被回复评论的cid
-  parentCid?: string;  // 父评论的cid（如果是回复子评论）
-  sec_uid?: string;  // 被回复用户的sec_uid
+const replyTo = ref<{
+  uid: number | string
+  username: string
+  comment?: string
+  cid?: string // 被回复评论的cid
+  parentCid?: string // 父评论的cid（如果是回复子评论）
+  sec_uid?: string // 被回复用户的sec_uid
 } | null>(null)
 
 // 设置回复用户
-const setReplyTo = (uid: number | string, username: string, comment?: string, cid?: string, parentCid?: string, sec_uid?: string) => {
+const setReplyTo = (
+  uid: number | string,
+  username: string,
+  comment?: string,
+  cid?: string,
+  parentCid?: string,
+  sec_uid?: string
+) => {
   replyTo.value = { uid, username, comment, cid, parentCid, sec_uid }
 }
 
@@ -77,7 +84,9 @@ const getCurrentUser = () => {
     sec_uid: '',
     nickname: '游客',
     avatar_thumb: {
-      url_list: ['https://p3-pc.douyinpic.com/aweme/100x100/aweme-avatar/default_avatar.jpeg'],
+      url_list: [
+        'https://p3-pc.douyinpic.com/aweme/100x100/aweme-avatar/default_avatar.jpeg'
+      ],
       uri: '',
       width: 100,
       height: 100
@@ -91,8 +100,8 @@ const getCurrentUser = () => {
 // 将图片文件转换为图片列表格式
 const convertImagesToImageList = (images: File[]) => {
   if (!images || images.length === 0) return undefined
-  
-  return images.map(file => {
+
+  return images.map((file) => {
     const url = URL.createObjectURL(file)
     const urlInfo = {
       url_list: [url],
@@ -111,20 +120,31 @@ const convertImagesToImageList = (images: File[]) => {
 }
 
 const list = ref([]) as any
-async function submitComment(data: { text: string; images: File[]; replyTo: { uid: number | string; username: string; comment?: string; cid?: string; parentCid?: string; sec_uid?: string } | null }) {
+async function submitComment(data: {
+  text: string
+  images: File[]
+  replyTo: {
+    uid: number | string
+    username: string
+    comment?: string
+    cid?: string
+    parentCid?: string
+    sec_uid?: string
+  } | null
+}) {
   console.log('提交评论:', data)
-  
+
   // 如果没有文字和图片，不提交
   if (!data.text.trim() && (!data.images || data.images.length === 0)) {
     return
   }
 
   loading.value = true
-  
+
   // 构造新评论数据
   const currentUser = getCurrentUser()
   const isReply = !!data.replyTo
-  
+
   const newComment: IComments = {
     cid: generateCid(),
     text: data.text,
@@ -133,7 +153,9 @@ async function submitComment(data: { text: string; images: File[]; replyTo: { ui
     digg_count: 0,
     status: 1,
     user: currentUser as any,
-    reply_id: isReply ? (data.replyTo?.parentCid || data.replyTo?.cid || '0') : '0',
+    reply_id: isReply
+      ? data.replyTo?.parentCid || data.replyTo?.cid || '0'
+      : '0',
     user_digged: 0,
     reply_comment: null,
     text_extra: [],
@@ -141,9 +163,15 @@ async function submitComment(data: { text: string; images: File[]; replyTo: { ui
     // 只有回复子评论时才设置 reply_to 相关字段（显示 "用户名 ▸ 被回复用户名"）
     // 回复一级评论时不设置（只显示评论者用户名）
     reply_to_reply_id: data.replyTo?.parentCid ? data.replyTo.cid : '0',
-    reply_to_username: data.replyTo?.parentCid ? data.replyTo?.username : undefined,
-    reply_to_userid: data.replyTo?.parentCid ? String(data.replyTo?.uid) : undefined,
-    reply_to_user_sec_id: data.replyTo?.parentCid ? data.replyTo?.sec_uid : undefined,
+    reply_to_username: data.replyTo?.parentCid
+      ? data.replyTo?.username
+      : undefined,
+    reply_to_userid: data.replyTo?.parentCid
+      ? String(data.replyTo?.uid)
+      : undefined,
+    reply_to_user_sec_id: data.replyTo?.parentCid
+      ? data.replyTo?.sec_uid
+      : undefined,
     is_author_digged: false,
     user_buried: false,
     is_hot: false,
@@ -161,24 +189,25 @@ async function submitComment(data: { text: string; images: File[]; replyTo: { ui
     const parentCid = data.replyTo?.parentCid || data.replyTo?.cid
     addReplyToComment(parentCid!, newComment)
   }
-  
+
   // 更新总数
   total.value += 1
-  
+
   // 清除回复状态
   replyTo.value = null
   loading.value = false
-  
+
   // TODO: 调用接口发送评论
 }
 
 // 添加回复到对应的评论
 const addReplyToComment = (parentCid: string, reply: IComments) => {
   // 查找父评论并添加回复
-  const parentComment = commentList.value.find(c => c.cid === parentCid)
+  const parentComment = commentList.value.find((c) => c.cid === parentCid)
   if (parentComment) {
     // 增加回复计数
-    parentComment.reply_comment_total = (parentComment.reply_comment_total || 0) + 1
+    parentComment.reply_comment_total =
+      (parentComment.reply_comment_total || 0) + 1
   }
   // 通知子组件添加回复
   replyToAdd.value = { parentCid, reply }
@@ -295,7 +324,7 @@ provide('imagePreview', { openPreview })
       <list-footer v-if="!hasMore" :text="hotsoon_text" />
     </div>
     <div class="video-comment-footer">
-      <dy-input 
+      <dy-input
         :reply-to="replyTo"
         :group-id="props.id"
         @submit="submitComment"

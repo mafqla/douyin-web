@@ -8,7 +8,7 @@ export const useCount = (count: number): string => {
   if (count === undefined || count === null || isNaN(count)) {
     return '0'
   }
-  
+
   if (count < 10000) {
     return count % 1 === 0 ? count.toString() : count.toFixed(1)
   } else if (count < 100000000) {

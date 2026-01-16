@@ -23,11 +23,7 @@ const props = defineProps<{
       <div class="new-video-content">
         <div class="new-video-img">
           <div class="blank"></div>
-          <img
-            :src="props.item.img"
-            alt="test"
-            class="img"
-          />
+          <img :src="props.item.img" alt="test" class="img" />
         </div>
         <div class="video-time">
           <span>{{ props.item.playTime }}</span>

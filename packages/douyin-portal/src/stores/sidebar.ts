@@ -6,7 +6,12 @@ import type { IMixDetailInfo } from '@/api/tyeps/request_response/mixDetailRes'
 import type { IMixInfo } from '@/api/tyeps/common/mix'
 
 // 侧边栏 tab 类型
-export type SidebarTabType = 'folder' | 'works' | 'comment' | 'collection' | 'related'
+export type SidebarTabType =
+  | 'folder'
+  | 'works'
+  | 'comment'
+  | 'collection'
+  | 'related'
 
 /**
  * 侧边栏状态管理
@@ -161,7 +166,10 @@ export const useSidebarStore = defineStore('sidebar', () => {
   }
 
   // 设置当前用户的认证类型
-  const setCurrentUserVerificationType = (type: number | undefined, secUid?: string) => {
+  const setCurrentUserVerificationType = (
+    type: number | undefined,
+    secUid?: string
+  ) => {
     currentUserVerificationType.value = type
     currentUserSecUid.value = secUid
   }

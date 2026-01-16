@@ -1,4 +1,12 @@
-import { ref, computed, watch, onMounted, onUnmounted, nextTick, type Ref } from 'vue'
+import {
+  ref,
+  computed,
+  watch,
+  onMounted,
+  onUnmounted,
+  nextTick,
+  type Ref
+} from 'vue'
 import { useThrottleFn } from '@vueuse/core'
 
 /**
@@ -114,8 +122,9 @@ export function useVirtualGrid<T>(
       const rect = item.getBoundingClientRect()
 
       // 检查元素是否在可视区域内（含缓冲区）
-      const isVisible = rect.bottom > containerRect.top - loadMoreThreshold &&
-                        rect.top < containerRect.bottom + loadMoreThreshold
+      const isVisible =
+        rect.bottom > containerRect.top - loadMoreThreshold &&
+        rect.top < containerRect.bottom + loadMoreThreshold
 
       if (isVisible) {
         if (firstVisible === -1) firstVisible = i
@@ -128,10 +137,14 @@ export function useVirtualGrid<T>(
 
     // 如果没找到可见元素，返回基于滚动位置的估算
     if (firstVisible === -1) {
-      const estimatedStart = Math.floor(scrollTop.value / estimatedItemHeight) * columnCount.value
+      const estimatedStart =
+        Math.floor(scrollTop.value / estimatedItemHeight) * columnCount.value
       return {
         start: Math.max(0, estimatedStart - bufferSize),
-        end: Math.min(dataList.value.length, estimatedStart + renderWindowSize + bufferSize)
+        end: Math.min(
+          dataList.value.length,
+          estimatedStart + renderWindowSize + bufferSize
+        )
       }
     }
 
@@ -181,7 +194,10 @@ export function useVirtualGrid<T>(
   // 是否接近底部（用于触发加载更多）
   const isNearBottom = computed(() => {
     if (!scrollHeight.value || !viewportHeight.value) return false
-    return scrollHeight.value - (scrollTop.value + viewportHeight.value) < loadMoreThreshold
+    return (
+      scrollHeight.value - (scrollTop.value + viewportHeight.value) <
+      loadMoreThreshold
+    )
   })
 
   // 获取滚动容器元素
@@ -227,7 +243,9 @@ export function useVirtualGrid<T>(
     updateRenderRange()
 
     // 监听滚动
-    scrollContainerEl.addEventListener('scroll', handleScroll, { passive: true })
+    scrollContainerEl.addEventListener('scroll', handleScroll, {
+      passive: true
+    })
   }
 
   // 监听容器尺寸变化
@@ -291,7 +309,10 @@ export function useVirtualGrid<T>(
   )
 
   // 滚动到指定索引
-  const scrollToIndex = (index: number, behavior: ScrollBehavior = 'smooth') => {
+  const scrollToIndex = (
+    index: number,
+    behavior: ScrollBehavior = 'smooth'
+  ) => {
     if (!scrollContainerEl) return
     const row = Math.floor(index / columnCount.value)
     const targetScrollTop = row * rowHeight.value

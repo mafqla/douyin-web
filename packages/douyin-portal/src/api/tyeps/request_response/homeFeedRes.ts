@@ -55,8 +55,7 @@ export interface ICards {
 /**
  * @description 首页视频流中的视频信息
  */
-export interface IHomeFeedAweme
-  extends Omit<IAwemeInfo, 'statistics'> {
+export interface IHomeFeedAweme extends Omit<IAwemeInfo, 'statistics'> {
   /**
    * @description 视频统计数据
    */

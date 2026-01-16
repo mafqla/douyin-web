@@ -7,7 +7,7 @@ import router from './router'
 // import './assets/main.css'
 import '@/assets/styles/main.scss'
 // 使用svg
-import {SvgIcon, Loading} from '@/components/common'
+import { SvgIcon, Loading } from '@/components/common'
 import 'virtual:svg-icons-register'
 //pinia持久化
 import piniaPersist from 'pinia-plugin-persist'

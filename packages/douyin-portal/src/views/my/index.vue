@@ -81,7 +81,8 @@ watchEffect(() => {
 const showBatchButton = computed(() => {
   if (activeTab.value === 'posts') return true
   if (activeTab.value === 'like') return true
-  if (activeTab.value === 'favorite_collection') return userCollectionRef.value?.supportBatchMode
+  if (activeTab.value === 'favorite_collection')
+    return userCollectionRef.value?.supportBatchMode
   if (activeTab.value === 'watch_later') return true
   return false
 })
@@ -92,13 +93,17 @@ const currentIsBatchMode = computed(() => {
     const postRef = userPostRef.value
     if (!postRef) return false
     if (postRef.activeSubTab === 'video') return postRef.isBatchMode
-    if (postRef.activeSubTab === 'mix') return postRef.postMixRef?.isBatchMode || false
-    if (postRef.activeSubTab === 'private_post') return postRef.postPrivateRef?.isBatchMode || false
+    if (postRef.activeSubTab === 'mix')
+      return postRef.postMixRef?.isBatchMode || false
+    if (postRef.activeSubTab === 'private_post')
+      return postRef.postPrivateRef?.isBatchMode || false
     return false
   }
   if (activeTab.value === 'like') return userLikeRef.value?.isBatchMode || false
-  if (activeTab.value === 'favorite_collection') return userCollectionRef.value?.isBatchMode || false
-  if (activeTab.value === 'watch_later') return userWatchLaterRef.value?.isBatchMode || false
+  if (activeTab.value === 'favorite_collection')
+    return userCollectionRef.value?.isBatchMode || false
+  if (activeTab.value === 'watch_later')
+    return userWatchLaterRef.value?.isBatchMode || false
   return false
 })
 

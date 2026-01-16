@@ -101,8 +101,8 @@ const handleBackdropClick = (e: MouseEvent) => {
         </div>
 
         <!-- 左箭头 -->
-        <div 
-          class="nav-btn nav-prev" 
+        <div
+          class="nav-btn nav-prev"
           :class="{ disabled: !canPrev }"
           @click.stop="prev"
         >
@@ -134,8 +134,8 @@ const handleBackdropClick = (e: MouseEvent) => {
         </div>
 
         <!-- 右箭头 -->
-        <div 
-          class="nav-btn nav-next" 
+        <div
+          class="nav-btn nav-next"
           :class="{ disabled: !canNext }"
           @click.stop="next"
         >

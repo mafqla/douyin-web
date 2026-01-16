@@ -6,13 +6,13 @@ import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
  * 其他类型跳转到 /video/:id
  */
 export function getAwemeLink(aweme: IAwemeInfo): string {
-    const isImageGallery = aweme.aweme_type === 68 && aweme.is_live_photo !== 1
-    return isImageGallery ? `/note/${aweme.aweme_id}` : `/video/${aweme.aweme_id}`
+  const isImageGallery = aweme.aweme_type === 68 && aweme.is_live_photo !== 1
+  return isImageGallery ? `/note/${aweme.aweme_id}` : `/video/${aweme.aweme_id}`
 }
 
 /**
  * 根据视频信息判断是否为图集类型
  */
 export function isImageGalleryType(aweme: IAwemeInfo): boolean {
-    return aweme.aweme_type === 68 && aweme.is_live_photo !== 1
+  return aweme.aweme_type === 68 && aweme.is_live_photo !== 1
 }

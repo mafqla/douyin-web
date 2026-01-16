@@ -25,7 +25,10 @@ const showVideoSuggestPlaceholder = computed(() => {
  * 搜索框placeholder文本
  */
 const placeholderText = computed(() => {
-  if (showVideoSuggestPlaceholder.value && currentVideoStore.searchSuggestWord) {
+  if (
+    showVideoSuggestPlaceholder.value &&
+    currentVideoStore.searchSuggestWord
+  ) {
     return currentVideoStore.searchSuggestWord.word
   }
   return '搜索你感兴趣的内容'
@@ -165,7 +168,10 @@ const handleSearch = () => {
         </svg>
       </div>
       <!-- 视频相关推荐词placeholder -->
-      <div class="input-placeholder" v-if="showVideoSuggestPlaceholder && searchQuery === ''">
+      <div
+        class="input-placeholder"
+        v-if="showVideoSuggestPlaceholder && searchQuery === ''"
+      >
         <div class="input-placeholder-text">{{ placeholderText }}</div>
       </div>
       <input
@@ -185,8 +191,16 @@ const handleSearch = () => {
       <svg-icon class="icon-search" icon="search" />
       <span class="btn-title">搜索</span>
     </button>
-    <search-recommend ref="searchRecommendRef" v-show="isInputClicked" @click="handleClick" />
-    <search-result v-show="isResult" :searchText="searchQuery" :sugList="sugList" />
+    <search-recommend
+      ref="searchRecommendRef"
+      v-show="isInputClicked"
+      @click="handleClick"
+    />
+    <search-result
+      v-show="isResult"
+      :searchText="searchQuery"
+      :sugList="sugList"
+    />
   </div>
 </template>
 

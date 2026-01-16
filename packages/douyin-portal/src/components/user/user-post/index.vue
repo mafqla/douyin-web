@@ -529,8 +529,7 @@ const getSubTabTitle = (tab: string) => {
     video: '作品',
     private_post: '私密作品',
     mix: '合集',
-    playlet: '短剧',
-
+    playlet: '短剧'
   }
   return titles[tab]
 }

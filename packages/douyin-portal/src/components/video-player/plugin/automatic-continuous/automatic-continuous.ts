@@ -72,8 +72,9 @@ class automaticContinuous extends Plugin {
     return `<xg-icon class="xgplayer-autoplay-setting automatic-continuous" data-state="normal">
     <div class="xgplayer-icon" data-e2e="video-player-auto-play" data-e2e-state="video-player-auto-playing">
         <div class="xgplayer-setting-label">
-            <button aria-checked="true" class="xg-switch${isChecked ? ' xg-switch-checked' : ''
-      }"  aria-labelledby="xg-switch-pip" type="button">
+            <button aria-checked="true" class="xg-switch${
+              isChecked ? ' xg-switch-checked' : ''
+            }"  aria-labelledby="xg-switch-pip" type="button">
                <span class="xg-switch-inner"></span>
             </button>
         <span class="xgplayer-setting-title">连播</span>

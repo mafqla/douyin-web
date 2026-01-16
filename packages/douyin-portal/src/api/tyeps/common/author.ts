@@ -8,7 +8,7 @@ export interface IAuthor {
   custom_verify: string // 作者的自定义验证信息，可能表示账号认证类型
   room_id: number // 作者关联的直播间ID
   enterprise_verify_reason: string // 企业认证说明，如果是企业认证账号
-   account_cert_info?: string | null // 账号认证信息（JSON字符串，包含 label_style 和 label_text）
+  account_cert_info?: string | null // 账号认证信息（JSON字符串，包含 label_style 和 label_text）
   is_verified?: boolean // 是否已认证
   followers_detail: null // 粉丝详情，具体含义未知
   platform_sync_info: null // 平台同步信息，具体含义未知
@@ -63,4 +63,3 @@ export interface IAvatarInfo {
   width: number // 头像图片的宽度
   height: number // 头像图片的高度
 }
-

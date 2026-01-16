@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed} from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   // 显示的 svg 图标名称（剔除 icon-）
@@ -13,7 +13,7 @@ const symbolId = computed(() => `#icon-${props.icon}`)
 </script>
 <template>
   <svg aria-hidden="true">
-    <use :xlink:href="symbolId"/>
+    <use :xlink:href="symbolId" />
   </svg>
 </template>
 

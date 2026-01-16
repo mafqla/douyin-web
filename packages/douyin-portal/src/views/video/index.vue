@@ -53,13 +53,13 @@ const getVideoDetail = async (awemeId: string) => {
     loading.value = true
     const res = await apis.getVideoDetail(awemeId)
     const detail = res.aweme_detail
-    
+
     // 如果是图集类型（aweme_type === 68 且不是实况照片），跳转到note页面
     if (detail?.aweme_type === 68 && detail?.is_live_photo !== 1) {
       router.replace(`/note/${awemeId}`)
       return
     }
-    
+
     videoDetail.value = detail
     currentVideoStore.setScene('comment_top_rec')
     currentVideoStore.setCurrentVideo(detail)

@@ -37,7 +37,7 @@ const handleClick = (e: Event) => {
         <!-- 普通缩略图 -->
         <component
           :is="disableLink ? 'div' : 'router-link'"
-          :to="disableLink ? undefined : (videoLink ?? '')"
+          :to="disableLink ? undefined : videoLink ?? ''"
           class="video-link"
           rel="noopener noreferrer"
           @click="handleClick"
@@ -68,7 +68,7 @@ const handleClick = (e: Event) => {
         <h3>
           <component
             :is="isPlaying || disableLink ? 'div' : 'router-link'"
-            :to="isPlaying || disableLink ? undefined : (videoLink ?? '')"
+            :to="isPlaying || disableLink ? undefined : videoLink ?? ''"
             class="title-link"
             @click="handleClick"
           >

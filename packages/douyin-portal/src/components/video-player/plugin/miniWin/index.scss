@@ -1,7 +1,6 @@
 .xgplayer-mini-win {
   position: relative;
 
-
   .select svg path {
     fill: #fe2c55;
   }
@@ -21,7 +20,7 @@
   }
 
   .xgplayer-slider::after {
-    content: " ";
+    content: ' ';
     height: 15px;
     width: 28px;
     z-index: 20;

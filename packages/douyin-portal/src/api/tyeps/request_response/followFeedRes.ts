@@ -35,7 +35,8 @@ export interface IFollowFeedData {
 /**
  * @description 关注视频流中的视频信息
  */
-export interface IFollowFeedAweme extends Omit<IAwemeInfo, 'statistics' | 'image_album_music_info'> {
+export interface IFollowFeedAweme
+  extends Omit<IAwemeInfo, 'statistics' | 'image_album_music_info'> {
   /**
    * @description 活动视频类型
    */
@@ -353,7 +354,6 @@ export interface IFollowFeedAweme extends Omit<IAwemeInfo, 'statistics' | 'image
    */
   user_recommend_status?: number
 }
-
 
 /**
  * @description 视频控制

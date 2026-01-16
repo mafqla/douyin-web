@@ -6,12 +6,7 @@ import { DyPopover } from './popover'
 import { Toast, ToastFactory, useToast } from './toast'
 
 // 组件列表
-const components = [
-  DyButton,
-  DyButtonGroup,
-  DySplitButtonGroup,
-  DyPopover
-]
+const components = [DyButton, DyButtonGroup, DySplitButtonGroup, DyPopover]
 
 // 创建安装函数
 const install = (app: App) => {
@@ -37,8 +32,21 @@ export {
 }
 
 // 导出类型
-export type { ButtonProps, ButtonGroupProps, SplitButtonGroupProps, ButtonType, ButtonTheme, ButtonSize, ButtonHtmlType } from './button'
-export type { PopoverPosition, PopoverTrigger, PopoverTheme, PopoverProps } from './popover'
+export type {
+  ButtonProps,
+  ButtonGroupProps,
+  SplitButtonGroupProps,
+  ButtonType,
+  ButtonTheme,
+  ButtonSize,
+  ButtonHtmlType
+} from './button'
+export type {
+  PopoverPosition,
+  PopoverTrigger,
+  PopoverTheme,
+  PopoverProps
+} from './popover'
 export type { ToastOptions, ToastConfig, ToastType, ToastTheme } from './toast'
 
 // 导出工具函数

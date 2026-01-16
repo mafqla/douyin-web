@@ -167,7 +167,7 @@ export interface IUser {
   following_count: number
   // 粉丝数量
   follower_count: number
-  
+
   mplatform_followers_count: number
   // 收藏数量
   favoriting_count: number

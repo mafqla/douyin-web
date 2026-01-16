@@ -67,7 +67,9 @@ const scrollToCurrentVideo = () => {
     (item) => item.aweme_id === props.aweme_id
   )
   if (currentIndex >= 0) {
-    const listItems = scrollContainerRef.value.querySelectorAll('.mix-list .list-item')
+    const listItems = scrollContainerRef.value.querySelectorAll(
+      '.mix-list .list-item'
+    )
     const targetItem = listItems[currentIndex] as HTMLElement
     if (targetItem) {
       const container = scrollContainerRef.value
@@ -86,17 +88,20 @@ const initLoad = () => {
   const existingList = sidebarStore.collectionVideoList
   if (existingList.length > 0) {
     awemeList.value = existingList
-    
+
     // 设置 cursor（基于列表中的集数）
-    const firstEpisode = awemeList.value[0]?.mix_info?.statis?.current_episode || 0
+    const firstEpisode =
+      awemeList.value[0]?.mix_info?.statis?.current_episode || 0
     prevCursor.value = firstEpisode - 1
     hasPrev.value = firstEpisode > 1
-    
-    const lastEpisode = awemeList.value[awemeList.value.length - 1]?.mix_info?.statis?.current_episode || 0
+
+    const lastEpisode =
+      awemeList.value[awemeList.value.length - 1]?.mix_info?.statis
+        ?.current_episode || 0
     const totalEpisode = props.mix.statis?.updated_to_episode || 0
     nextCursor.value = lastEpisode
     hasMore.value = lastEpisode < totalEpisode
-    
+
     // 滚动到当前播放的视频
     nextTick(async () => {
       scrollToCurrentVideo()
@@ -121,35 +126,35 @@ const loadPrevVideos = async (keepScrollPosition = true) => {
     // 计算新的 cursor
     const newCursor = Math.max(0, prevCursor.value - 20)
     const count = prevCursor.value - newCursor
-    
+
     if (count <= 0) {
       hasPrev.value = false
       isLoadingPrev.value = false
       return
     }
-    
+
     const res = await apis.getUserMixDetail({
       mix_id: props.mix.mix_id,
       cursor: newCursor,
       count: count
     })
-    
+
     const newList = res.aweme_list || []
     if (newList.length > 0) {
       // 记录当前滚动位置
       const scrollContainer = scrollContainerRef.value
       const prevScrollHeight = scrollContainer?.scrollHeight || 0
-      
+
       // 将新数据插入到列表前面
       awemeList.value = [...newList, ...awemeList.value]
-      
+
       // 同步到 store
       sidebarStore.setCollectionVideoList(awemeList.value)
-      
+
       // 更新 cursor
       prevCursor.value = newCursor
       hasPrev.value = newCursor > 0
-      
+
       // 保持滚动位置（仅在用户滚动触发时）
       if (keepScrollPosition) {
         await nextTick()
@@ -180,7 +185,7 @@ const loadMoreVideos = async () => {
       cursor: nextCursor.value,
       count: 20
     })
-    
+
     const newList = res.aweme_list || []
     if (newList.length > 0) {
       awemeList.value = [...awemeList.value, ...newList]
@@ -207,7 +212,11 @@ const handleScroll = (e: Event) => {
     loadPrevVideos()
   }
   // 滚动到底部附近时加载更多视频
-  if (target.scrollHeight - target.scrollTop - target.clientHeight < 200 && hasMore.value && !isLoadingMore.value) {
+  if (
+    target.scrollHeight - target.scrollTop - target.clientHeight < 200 &&
+    hasMore.value &&
+    !isLoadingMore.value
+  ) {
     loadMoreVideos()
   }
 }
@@ -257,7 +266,9 @@ watch(
           <RelatedVideoItem
             v-for="{ item, episodeNumber, isPlaying } in combinedList"
             :key="item.aweme_id"
-            :videoTitle="episodeNumber ? `第${episodeNumber}集：${item.desc}` : item.desc"
+            :videoTitle="
+              episodeNumber ? `第${episodeNumber}集：${item.desc}` : item.desc
+            "
             :videoLink="getAwemeLink(item)"
             :thumbnailSrc="item.video?.cover?.url_list?.[0]"
             :videoDuration="formatMillisecondsToTime(item.video?.duration || 0)"

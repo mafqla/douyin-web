@@ -191,9 +191,7 @@ const handleModalClose = async (currentAwemeId: string) => {
   )
   if (videoElement) {
     const rect = videoElement.getBoundingClientRect()
-    const isInViewport =
-      rect.top >= 0 &&
-      rect.bottom <= window.innerHeight
+    const isInViewport = rect.top >= 0 && rect.bottom <= window.innerHeight
 
     // 如果不在可视区域内，滚动到该视频位置
     if (!isInViewport) {

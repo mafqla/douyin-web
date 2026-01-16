@@ -32,7 +32,6 @@ const handleSendCode = (email: string) => {
     }
   }, 1000)
 }
-
 </script>
 <template>
   <div class="code-login">

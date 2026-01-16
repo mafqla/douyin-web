@@ -1,7 +1,7 @@
 .xgplayer-autoplay-setting {
   width: 68px;
   height: 32px;
-  opacity: .9;
+  opacity: 0.9;
   justify-content: center;
   display: flex;
   text-align: center;
@@ -21,17 +21,17 @@
   .xg-switch {
     width: 24px;
     height: 14px;
-    color: rgba(229, 229, 234, .9);
+    color: rgba(229, 229, 234, 0.9);
     font-variant: tabular-nums;
-    -webkit-font-feature-settings: "tnum";
-    font-feature-settings: "tnum";
+    -webkit-font-feature-settings: 'tnum';
+    font-feature-settings: 'tnum';
     box-sizing: border-box;
     vertical-align: top;
     cursor: pointer;
     -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    background-color: rgba(229, 229, 234, .9);
+    background-color: rgba(229, 229, 234, 0.9);
     border: 1px solid transparent;
     border-radius: 50px;
     outline: none;
@@ -40,7 +40,7 @@
     font-size: 14px;
     line-height: 18px;
     list-style: none;
-    transition: all .36s;
+    transition: all 0.36s;
     display: inline-block;
     position: relative;
 
@@ -50,15 +50,14 @@
       height: 10px;
       box-sizing: border-box;
       cursor: pointer;
-      content: " ";
+      content: ' ';
       background-color: #fff;
       border-radius: 50px;
-      transition: all .36s cubic-bezier(.78, .14, .15, .86);
+      transition: all 0.36s cubic-bezier(0.78, 0.14, 0.15, 0.86);
       position: absolute;
       top: 1px;
       left: 2px;
-      box-shadow: 0 2px 4px rgba(0, 35, 11, .2);
-
+      box-shadow: 0 2px 4px rgba(0, 35, 11, 0.2);
     }
 
     &.xg-switch-checked {
@@ -92,7 +91,6 @@
   &:hover {
     .xgTips {
       visibility: visible;
-
     }
   }
 

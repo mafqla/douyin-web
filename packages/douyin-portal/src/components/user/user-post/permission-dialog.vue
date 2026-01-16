@@ -26,9 +26,12 @@ const emit = defineEmits<{
 const selectedPermission = ref(props.currentPermission)
 
 // 监听 currentPermission 变化
-watch(() => props.currentPermission, (val) => {
-  selectedPermission.value = val
-})
+watch(
+  () => props.currentPermission,
+  (val) => {
+    selectedPermission.value = val
+  }
+)
 
 // 权限选项
 const videoPermissions = [
@@ -71,7 +74,11 @@ const handleOverlayClick = (e: MouseEvent) => {
 <template>
   <Teleport to="body">
     <Transition name="fade">
-      <div v-if="modelValue" class="permission-dialog-overlay" @click="handleOverlayClick">
+      <div
+        v-if="modelValue"
+        class="permission-dialog-overlay"
+        @click="handleOverlayClick"
+      >
         <Transition name="scale">
           <div v-if="modelValue" class="permission-dialog">
             <div class="dialog-header">
@@ -96,14 +103,18 @@ const handleOverlayClick = (e: MouseEvent) => {
                   </span>
                   <span class="permission-label">
                     {{ item.label }}
-                    <span v-if="item.desc" class="permission-desc">· {{ item.desc }}</span>
+                    <span v-if="item.desc" class="permission-desc"
+                      >· {{ item.desc }}</span
+                    >
                   </span>
                 </label>
               </div>
             </div>
             <div class="dialog-footer">
               <button class="btn btn-cancel" @click="handleClose">取消</button>
-              <button class="btn btn-confirm" @click="handleConfirm">确认</button>
+              <button class="btn btn-confirm" @click="handleConfirm">
+                确认
+              </button>
             </div>
           </div>
         </Transition>

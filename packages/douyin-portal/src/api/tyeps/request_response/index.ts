@@ -21,4 +21,3 @@ export type BaseResponse<T = unknown> = {
    */
   requestId: string
 }
-

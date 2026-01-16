@@ -152,7 +152,7 @@ const handleCollectionEnter = () => {
 const handleCollectionLeave = () => {
   // 如果新建弹框打开，不关闭面板
   if (isCreateDialogOpen.value) return
-  
+
   collectionPanelTimer = setTimeout(() => {
     showCollectionPanel.value = false
   }, 150)
@@ -252,9 +252,11 @@ onUnmounted(() => {
 <template>
   <div
     class="video-action"
-    :style="{ transform: props.disableScale ? 'none' : `scale(${scale})`, transformOrigin: 'right bottom' }"
+    :style="{
+      transform: props.disableScale ? 'none' : `scale(${scale})`,
+      transformOrigin: 'right bottom'
+    }"
   >
-
     <div class="video-action-content">
       <slot />
       <!-- Swiper 控制按钮 -->

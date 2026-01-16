@@ -1,8 +1,6 @@
 import apiRequest from '../index'
 import type { IDataType } from '../types'
-import type {
-  IAddUserRequest,
-} from './types'
+import type { IAddUserRequest } from './types'
 
 /**
  * 增加新用户

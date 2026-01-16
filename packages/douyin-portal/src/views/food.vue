@@ -64,7 +64,8 @@ const showPersistentToast = () => {
 // 长文本内容
 const showLongTextToast = () => {
   Toast.info({
-    content: '这是一段很长的文本内容，用于测试 Toast 组件对长文本的处理能力。当文本内容过长时，应该能够正确换行显示，而不是溢出容器。',
+    content:
+      '这是一段很长的文本内容，用于测试 Toast 组件对长文本的处理能力。当文本内容过长时，应该能够正确换行显示，而不是溢出容器。',
     textMaxWidth: 300
   })
 }
@@ -150,10 +151,14 @@ const testMaxCount = () => {
 }
 
 // Light 主题各类型
-const showLightInfo = () => Toast.info({ content: 'Light 主题 Info', theme: 'light' })
-const showLightSuccess = () => Toast.success({ content: 'Light 主题 Success', theme: 'light' })
-const showLightWarning = () => Toast.warning({ content: 'Light 主题 Warning', theme: 'light' })
-const showLightError = () => Toast.error({ content: 'Light 主题 Error', theme: 'light' })
+const showLightInfo = () =>
+  Toast.info({ content: 'Light 主题 Info', theme: 'light' })
+const showLightSuccess = () =>
+  Toast.success({ content: 'Light 主题 Success', theme: 'light' })
+const showLightWarning = () =>
+  Toast.warning({ content: 'Light 主题 Warning', theme: 'light' })
+const showLightError = () =>
+  Toast.error({ content: 'Light 主题 Error', theme: 'light' })
 
 // ==================== DyButton 相关 ====================
 const buttonLoading = ref(false)
@@ -191,7 +196,11 @@ const handleLoadingClick = () => {
           <input class="demo-input" placeholder="Focus 触发" />
         </DyPopover>
 
-        <DyPopover trigger="custom" v-model:visible="popoverVisible" content="受控模式内容">
+        <DyPopover
+          trigger="custom"
+          v-model:visible="popoverVisible"
+          content="受控模式内容"
+        >
           <button class="demo-btn" @click="popoverVisible = !popoverVisible">
             Custom 触发 {{ popoverVisible ? '(显示)' : '(隐藏)' }}
           </button>
@@ -308,11 +317,19 @@ const handleLoadingClick = () => {
       </div>
       <div class="demo-row">
         <!-- 关闭时销毁 -->
-        <DyPopover trigger="click" content="关闭时销毁内容" :destroy-on-close="true">
+        <DyPopover
+          trigger="click"
+          content="关闭时销毁内容"
+          :destroy-on-close="true"
+        >
           <button class="demo-btn">destroyOnClose</button>
         </DyPopover>
         <!-- 自动调整位置 -->
-        <DyPopover position="bottom" content="自动调整位置（默认开启）" :auto-adjust-overflow="true">
+        <DyPopover
+          position="bottom"
+          content="自动调整位置（默认开启）"
+          :auto-adjust-overflow="true"
+        >
           <button class="demo-btn">autoAdjustOverflow</button>
         </DyPopover>
         <!-- 默认显示 -->
@@ -352,13 +369,27 @@ const handleLoadingClick = () => {
         </DyPopover>
 
         <!-- 确认框 -->
-        <DyPopover trigger="click" position="bottom" v-model:visible="popoverVisible2">
+        <DyPopover
+          trigger="click"
+          position="bottom"
+          v-model:visible="popoverVisible2"
+        >
           <template #content>
             <div class="confirm-box">
               <div class="confirm-box__text">确定要删除吗？</div>
               <div class="confirm-box__actions">
-                <button class="confirm-box__btn" @click="popoverVisible2 = false">取消</button>
-                <button class="confirm-box__btn confirm-box__btn--primary" @click="popoverVisible2 = false">确定</button>
+                <button
+                  class="confirm-box__btn"
+                  @click="popoverVisible2 = false"
+                >
+                  取消
+                </button>
+                <button
+                  class="confirm-box__btn confirm-box__btn--primary"
+                  @click="popoverVisible2 = false"
+                >
+                  确定
+                </button>
               </div>
             </div>
           </template>
@@ -370,7 +401,11 @@ const handleLoadingClick = () => {
     <section class="demo-section">
       <h3>Popover - 手动控制</h3>
       <div class="demo-row">
-        <DyPopover ref="popoverRef" trigger="custom" content="通过 ref 手动控制">
+        <DyPopover
+          ref="popoverRef"
+          trigger="custom"
+          content="通过 ref 手动控制"
+        >
           <button class="demo-btn">目标元素</button>
         </DyPopover>
         <button class="demo-btn" @click="showPopover">show()</button>
@@ -384,9 +419,15 @@ const handleLoadingClick = () => {
       <h3>Toast - 基础类型</h3>
       <div class="demo-row">
         <button class="demo-btn" @click="showInfoToast">Info</button>
-        <button class="demo-btn demo-btn--success" @click="showSuccessToast">Success</button>
-        <button class="demo-btn demo-btn--warning" @click="showWarningToast">Warning</button>
-        <button class="demo-btn demo-btn--error" @click="showErrorToast">Error</button>
+        <button class="demo-btn demo-btn--success" @click="showSuccessToast">
+          Success
+        </button>
+        <button class="demo-btn demo-btn--warning" @click="showWarningToast">
+          Warning
+        </button>
+        <button class="demo-btn demo-btn--error" @click="showErrorToast">
+          Error
+        </button>
       </div>
     </section>
 
@@ -394,9 +435,15 @@ const handleLoadingClick = () => {
       <h3>Toast - Light 主题</h3>
       <div class="demo-row">
         <button class="demo-btn" @click="showLightInfo">Light Info</button>
-        <button class="demo-btn demo-btn--success" @click="showLightSuccess">Light Success</button>
-        <button class="demo-btn demo-btn--warning" @click="showLightWarning">Light Warning</button>
-        <button class="demo-btn demo-btn--error" @click="showLightError">Light Error</button>
+        <button class="demo-btn demo-btn--success" @click="showLightSuccess">
+          Light Success
+        </button>
+        <button class="demo-btn demo-btn--warning" @click="showLightWarning">
+          Light Warning
+        </button>
+        <button class="demo-btn demo-btn--error" @click="showLightError">
+          Light Error
+        </button>
       </div>
     </section>
 
@@ -404,7 +451,9 @@ const handleLoadingClick = () => {
       <h3>Toast - 持续时间</h3>
       <div class="demo-row">
         <button class="demo-btn" @click="showCustomToast">5秒后关闭</button>
-        <button class="demo-btn" @click="showPersistentToast">不自动关闭</button>
+        <button class="demo-btn" @click="showPersistentToast">
+          不自动关闭
+        </button>
         <button class="demo-btn" @click="showCallbackToast">关闭回调</button>
       </div>
     </section>
@@ -414,7 +463,9 @@ const handleLoadingClick = () => {
       <div class="demo-row">
         <button class="demo-btn" @click="showLongTextToast">长文本</button>
         <button class="demo-btn" @click="showWidthToast">自定义宽度</button>
-        <button class="demo-btn" @click="showCustomIconToast">自定义图标</button>
+        <button class="demo-btn" @click="showCustomIconToast">
+          自定义图标
+        </button>
         <button class="demo-btn" @click="showNoIconToast">无图标</button>
       </div>
     </section>
@@ -422,9 +473,13 @@ const handleLoadingClick = () => {
     <section class="demo-section">
       <h3>Toast - 手动控制</h3>
       <div class="demo-row">
-        <button class="demo-btn" @click="showManualCloseToast">显示（无关闭按钮）</button>
+        <button class="demo-btn" @click="showManualCloseToast">
+          显示（无关闭按钮）
+        </button>
         <button class="demo-btn" @click="closeManualToast">手动关闭</button>
-        <button class="demo-btn demo-btn--error" @click="destroyAllToasts">销毁所有</button>
+        <button class="demo-btn demo-btn--error" @click="destroyAllToasts">
+          销毁所有
+        </button>
       </div>
     </section>
 
@@ -432,7 +487,9 @@ const handleLoadingClick = () => {
       <h3>Toast - 高级功能</h3>
       <div class="demo-row">
         <button class="demo-btn" @click="showMultipleToasts">连续弹出</button>
-        <button class="demo-btn" @click="testMaxCount">测试最大数量(8条)</button>
+        <button class="demo-btn" @click="testMaxCount">
+          测试最大数量(8条)
+        </button>
         <button class="demo-btn" @click="showHookToast">useToast Hook</button>
         <button class="demo-btn" @click="showFactoryToast">ToastFactory</button>
       </div>
@@ -496,21 +553,23 @@ const handleLoadingClick = () => {
 
     <section class="demo-section">
       <h3>DyButton - 按钮尺寸</h3>
-      <div class="demo-row" style="align-items: center;">
+      <div class="demo-row" style="align-items: center">
         <DyButton size="large" theme="solid" type="primary">Large</DyButton>
         <DyButton size="default" theme="solid" type="primary">Default</DyButton>
         <DyButton size="small" theme="solid" type="primary">Small</DyButton>
       </div>
-      <div class="demo-row" style="align-items: center;">
+      <div class="demo-row" style="align-items: center">
         <DyButton size="large" theme="outline" type="primary">Large</DyButton>
-        <DyButton size="default" theme="outline" type="primary">Default</DyButton>
+        <DyButton size="default" theme="outline" type="primary"
+          >Default</DyButton
+        >
         <DyButton size="small" theme="outline" type="primary">Small</DyButton>
       </div>
     </section>
 
     <section class="demo-section">
       <h3>DyButton - 块级按钮</h3>
-      <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; flex-direction: column; gap: 12px">
         <DyButton block theme="solid" type="primary">块级主要按钮</DyButton>
         <DyButton block theme="light" type="secondary">块级次要按钮</DyButton>
         <DyButton block theme="outline" type="primary">块级边框按钮</DyButton>
@@ -519,11 +578,21 @@ const handleLoadingClick = () => {
 
     <section class="demo-section">
       <h3>DyButton - 图标按钮</h3>
-      <div class="demo-row" style="align-items: center;">
+      <div class="demo-row" style="align-items: center">
         <DyButton theme="solid" type="primary">
           <template #icon>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 5v14M5 12h14"/>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 5v14M5 12h14" />
             </svg>
           </template>
           新增
@@ -531,22 +600,56 @@ const handleLoadingClick = () => {
         <DyButton theme="light" type="primary" icon-position="right">
           下一步
           <template #icon>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 18l6-6-6-6"/>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M9 18l6-6-6-6" />
             </svg>
           </template>
         </DyButton>
         <DyButton theme="solid" type="primary" aria-label="搜索">
           <template #icon>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
             </svg>
           </template>
         </DyButton>
         <DyButton theme="borderless" type="secondary" aria-label="设置">
           <template #icon>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+              />
             </svg>
           </template>
         </DyButton>
@@ -558,8 +661,12 @@ const handleLoadingClick = () => {
       <div class="demo-row">
         <DyButton disabled theme="light" type="primary">Light 禁用</DyButton>
         <DyButton disabled theme="solid" type="primary">Solid 禁用</DyButton>
-        <DyButton disabled theme="borderless" type="primary">Borderless 禁用</DyButton>
-        <DyButton disabled theme="outline" type="primary">Outline 禁用</DyButton>
+        <DyButton disabled theme="borderless" type="primary"
+          >Borderless 禁用</DyButton
+        >
+        <DyButton disabled theme="outline" type="primary"
+          >Outline 禁用</DyButton
+        >
       </div>
     </section>
 
@@ -569,7 +676,12 @@ const handleLoadingClick = () => {
         <DyButton loading theme="solid" type="primary">加载中</DyButton>
         <DyButton loading theme="light" type="primary">加载中</DyButton>
         <DyButton loading theme="outline" type="secondary">加载中</DyButton>
-        <DyButton :loading="buttonLoading" theme="solid" type="primary" @click="handleLoadingClick">
+        <DyButton
+          :loading="buttonLoading"
+          theme="solid"
+          type="primary"
+          @click="handleLoadingClick"
+        >
           {{ buttonLoading ? '提交中...' : '点击提交' }}
         </DyButton>
       </div>
@@ -578,9 +690,21 @@ const handleLoadingClick = () => {
     <section class="demo-section">
       <h3>DyButton - 事件处理</h3>
       <div class="demo-row">
-        <DyButton theme="solid" type="primary" @click="handleButtonClick">点击触发 Toast</DyButton>
-        <DyButton theme="light" type="warning" @click="() => Toast.warning('警告操作！')">警告操作</DyButton>
-        <DyButton theme="solid" type="danger" @click="() => Toast.error('危险操作！')">危险操作</DyButton>
+        <DyButton theme="solid" type="primary" @click="handleButtonClick"
+          >点击触发 Toast</DyButton
+        >
+        <DyButton
+          theme="light"
+          type="warning"
+          @click="() => Toast.warning('警告操作！')"
+          >警告操作</DyButton
+        >
+        <DyButton
+          theme="solid"
+          type="danger"
+          @click="() => Toast.error('危险操作！')"
+          >危险操作</DyButton
+        >
       </div>
     </section>
 
@@ -590,13 +714,23 @@ const handleLoadingClick = () => {
         <DyButton theme="solid" type="primary">保存</DyButton>
         <DyButton theme="light" type="tertiary">取消</DyButton>
       </div>
-      <div class="demo-row" style="margin-top: 12px;">
+      <div class="demo-row" style="margin-top: 12px">
         <DyButton theme="outline" type="secondary">上一步</DyButton>
         <DyButton theme="solid" type="primary" icon-position="right">
           下一步
           <template #icon>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 18l6-6-6-6"/>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M9 18l6-6-6-6" />
             </svg>
           </template>
         </DyButton>
@@ -617,21 +751,21 @@ const handleLoadingClick = () => {
 
     <section class="demo-section">
       <h3>DyButtonGroup - 组合尺寸</h3>
-      <div class="demo-row" style="align-items: center;">
+      <div class="demo-row" style="align-items: center">
         <DyButtonGroup size="large">
           <DyButton>大</DyButton>
           <DyButton>大</DyButton>
           <DyButton>大</DyButton>
         </DyButtonGroup>
       </div>
-      <div class="demo-row" style="align-items: center;">
+      <div class="demo-row" style="align-items: center">
         <DyButtonGroup size="default">
           <DyButton>默认</DyButton>
           <DyButton>默认</DyButton>
           <DyButton>默认</DyButton>
         </DyButtonGroup>
       </div>
-      <div class="demo-row" style="align-items: center;">
+      <div class="demo-row" style="align-items: center">
         <DyButtonGroup size="small">
           <DyButton>小</DyButton>
           <DyButton>小</DyButton>
@@ -684,8 +818,18 @@ const handleLoadingClick = () => {
           <DyButton theme="solid" type="primary">主操作</DyButton>
           <DyButton theme="solid" type="primary" aria-label="更多">
             <template #icon>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 9l6 6 6-6"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M6 9l6 6 6-6" />
               </svg>
             </template>
           </DyButton>
@@ -696,8 +840,18 @@ const handleLoadingClick = () => {
           <DyButton theme="outline" type="secondary">次要操作</DyButton>
           <DyButton theme="outline" type="secondary" aria-label="更多">
             <template #icon>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 9l6 6 6-6"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M6 9l6 6 6-6" />
               </svg>
             </template>
           </DyButton>
@@ -708,8 +862,18 @@ const handleLoadingClick = () => {
           <DyButton theme="solid" type="danger">危险操作</DyButton>
           <DyButton theme="solid" type="danger" aria-label="更多">
             <template #icon>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 9l6 6 6-6"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M6 9l6 6 6-6" />
               </svg>
             </template>
           </DyButton>

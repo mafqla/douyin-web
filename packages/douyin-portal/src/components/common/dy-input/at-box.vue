@@ -36,21 +36,24 @@ const fetchAtList = async (isLoadMore = false) => {
   }
 
   try {
-    const res = await apis.getAtList({ 
-      cursor: cursor.value, 
-      scene: 2, 
-      group_id: props.groupId 
+    const res = await apis.getAtList({
+      cursor: cursor.value,
+      scene: 2,
+      group_id: props.groupId
     })
-    
+
     if (res.user_list) {
       // 转换数据格式
       const users = res.user_list.map((user: IAtUser) => ({
         uid: user.uid,
         username: user.nickname,
-        userAvatar: user.avatar_thumb?.url_list?.[0] || user.avatar_168x168?.url_list?.[0] || '',
+        userAvatar:
+          user.avatar_thumb?.url_list?.[0] ||
+          user.avatar_168x168?.url_list?.[0] ||
+          '',
         isFriend: user.follower_status === 1 // 互相关注的是朋友
       }))
-      
+
       if (isLoadMore) {
         userList.value.push(...users)
       } else {
@@ -61,7 +64,7 @@ const fetchAtList = async (isLoadMore = false) => {
           return 0
         })
       }
-      
+
       cursor.value = res.cursor
       hasMore.value = res.has_more
     }
@@ -77,7 +80,7 @@ const fetchAtList = async (isLoadMore = false) => {
 const handleScroll = (e: Event) => {
   const target = e.target as HTMLElement
   const { scrollTop, scrollHeight, clientHeight } = target
-  
+
   // 距离底部 50px 时加载更多
   if (scrollHeight - scrollTop - clientHeight < 50) {
     fetchAtList(true)
@@ -110,7 +113,13 @@ onUnmounted(() => {
 })
 </script>
 <template>
-  <div class="at-box" ref="atBoxRef" @wheel.stop @touchmove.stop @scroll="handleScroll">
+  <div
+    class="at-box"
+    ref="atBoxRef"
+    @wheel.stop
+    @touchmove.stop
+    @scroll="handleScroll"
+  >
     <div class="at-box-inner" v-if="userList.length > 0">
       <div v-for="user in userList" :key="user.uid">
         <div class="user-avatar-box" @click="selectUser(user)">
@@ -121,17 +130,17 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
-    
+
     <!-- 首次加载 -->
     <div class="at-box-loading" v-if="loading">
       <Loading :show="true" />
     </div>
-    
+
     <!-- 加载更多 -->
     <div class="at-box-loading-more" v-if="loadingMore">
       <Loading :show="true" />
     </div>
-    
+
     <!-- 空状态 -->
     <div class="at-box-empty" v-if="!loading && userList.length === 0">
       <span>暂无关注的人</span>

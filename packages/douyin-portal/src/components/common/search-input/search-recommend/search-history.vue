@@ -100,7 +100,7 @@ const clearHistory = () => {
 .search-history {
   align-items: center;
   display: flex;
-  height:34px;
+  height: 34px;
   justify-content: space-between;
   padding: 0 10px;
   width: 100%;

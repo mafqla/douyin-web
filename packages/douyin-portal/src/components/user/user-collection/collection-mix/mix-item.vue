@@ -145,11 +145,16 @@ const handleAdd = (event: Event) => {
         <div class="mix-top">
           <p class="mix-title" :title="mix.mix_name">{{ mix.mix_name }}</p>
           <!-- 更新标签 -->
-          <span v-if="hasUpdate" class="update-tag">更新{{ updateCount }}集</span>
+          <span v-if="hasUpdate" class="update-tag"
+            >更新{{ updateCount }}集</span
+          >
         </div>
         <p class="mix-stats">{{ playCount }} 播放</p>
         <p class="mix-episode" v-if="episodeInfo">
-          {{ episodeInfo }}<span v-if="lastWatchInfo" class="last-watch">{{ lastWatchInfo }}</span>
+          {{ episodeInfo
+          }}<span v-if="lastWatchInfo" class="last-watch">{{
+            lastWatchInfo
+          }}</span>
         </p>
       </div>
 
@@ -281,7 +286,7 @@ const handleAdd = (event: Event) => {
     align-items: center;
     gap: 8px;
     margin-bottom: 20px;
-    
+
     .update-tag {
       flex-shrink: 0;
       background: linear-gradient(135deg, #ff2c55 0%, #ff0050 100%);

@@ -4,7 +4,15 @@
  * 使用纯 CSS 定位，支持自动调整位置
  */
 
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, useAttrs } from 'vue'
+import {
+  ref,
+  computed,
+  watch,
+  onMounted,
+  onBeforeUnmount,
+  nextTick,
+  useAttrs
+} from 'vue'
 import type { PopoverPosition, PopoverTrigger, PopoverTheme } from './types'
 
 defineOptions({
@@ -157,15 +165,24 @@ const adjustPosition = () => {
     if (spaceAbove >= popoverRect.height + spacing) {
       position = position.replace('bottom', 'top') as PopoverPosition
     }
-  } else if (baseDirection === 'top' && spaceAbove < popoverRect.height + spacing) {
+  } else if (
+    baseDirection === 'top' &&
+    spaceAbove < popoverRect.height + spacing
+  ) {
     if (spaceBelow >= popoverRect.height + spacing) {
       position = position.replace('top', 'bottom') as PopoverPosition
     }
-  } else if (baseDirection === 'left' && spaceLeft < popoverRect.width + spacing) {
+  } else if (
+    baseDirection === 'left' &&
+    spaceLeft < popoverRect.width + spacing
+  ) {
     if (spaceRight >= popoverRect.width + spacing) {
       position = position.replace('left', 'right') as PopoverPosition
     }
-  } else if (baseDirection === 'right' && spaceRight < popoverRect.width + spacing) {
+  } else if (
+    baseDirection === 'right' &&
+    spaceRight < popoverRect.width + spacing
+  ) {
     if (spaceLeft >= popoverRect.width + spacing) {
       position = position.replace('right', 'left') as PopoverPosition
     }
@@ -361,21 +378,21 @@ defineExpose({
   position: absolute;
   z-index: var(--popover-z-index, 1050);
   border-radius: 8px;
-  box-shadow:
-    0 6px 16px 0 rgba(0, 0, 0, 0.08),
-    0 3px 6px -4px rgba(0, 0, 0, 0.12),
-    0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08),
+    0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
   white-space: nowrap;
   animation: popover-fade-in 0.15s ease-out;
 
   @keyframes popover-fade-in {
     from {
       opacity: 0;
-      transform: translateX(var(--popover-translate-x, -50%)) translateY(var(--popover-translate-y, 0)) scale(0.96);
+      transform: translateX(var(--popover-translate-x, -50%))
+        translateY(var(--popover-translate-y, 0)) scale(0.96);
     }
     to {
       opacity: 1;
-      transform: translateX(var(--popover-translate-x, -50%)) translateY(var(--popover-translate-y, 0)) scale(1);
+      transform: translateX(var(--popover-translate-x, -50%))
+        translateY(var(--popover-translate-y, 0)) scale(1);
     }
   }
 
@@ -397,7 +414,7 @@ defineExpose({
     background-color: transparent;
     box-shadow: none;
     border-radius: 0;
-    
+
     .dy-popover__content {
       padding: 0;
     }

@@ -106,7 +106,6 @@ export interface TextExtraItem {
   sec_uid: string // 安全用户ID，可能用于内容安全或权限管理
 }
 
-
 export interface Sticker {
   animate_url: ImageURLs
   author_sec_uid: string

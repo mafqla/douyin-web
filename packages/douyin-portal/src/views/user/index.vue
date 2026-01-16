@@ -163,7 +163,11 @@ watchEffect(() => {
                 </div>
               </template>
               <template v-slot:taba-content>
-                <user-post :user_id="userId" :uid="userInfo.user?.uid" v-if="activeTab === 'posts'" />
+                <user-post
+                  :user_id="userId"
+                  :uid="userInfo.user?.uid"
+                  v-if="activeTab === 'posts'"
+                />
                 <user-like
                   :user_id="userId"
                   :uid="userInfo.user.uid"

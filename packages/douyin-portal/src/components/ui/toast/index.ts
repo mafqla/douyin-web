@@ -1,6 +1,11 @@
 import { createApp, reactive, h, type App, type VNode } from 'vue'
 import ToastContainer from './toast-container.vue'
-import type { ToastOptions, ToastConfig, ToastInstance, ToastType } from './types'
+import type {
+  ToastOptions,
+  ToastConfig,
+  ToastInstance,
+  ToastType
+} from './types'
 
 // 默认配置
 const defaultConfig: ToastConfig = {
@@ -59,7 +64,8 @@ function removeToast(id: number) {
 function addToast(type: ToastType, options: ToastOptions | string): number {
   ensureContainer()
 
-  const opts: ToastOptions = typeof options === 'string' ? { content: options } : options
+  const opts: ToastOptions =
+    typeof options === 'string' ? { content: options } : options
   const id = opts.id ?? ++toastId
 
   const instance: ToastInstance = {
@@ -153,10 +159,14 @@ function create(customConfig: ToastConfig) {
     localApp.mount(localEl)
   }
 
-  function addLocalToast(type: ToastType, options: ToastOptions | string): number {
+  function addLocalToast(
+    type: ToastType,
+    options: ToastOptions | string
+  ): number {
     ensureLocalContainer()
 
-    const opts: ToastOptions = typeof options === 'string' ? { content: options } : options
+    const opts: ToastOptions =
+      typeof options === 'string' ? { content: options } : options
     const id = opts.id ?? ++localId
 
     const instance: ToastInstance = {
@@ -178,8 +188,10 @@ function create(customConfig: ToastConfig) {
 
   return {
     info: (options: ToastOptions | string) => addLocalToast('info', options),
-    success: (options: ToastOptions | string) => addLocalToast('success', options),
-    warning: (options: ToastOptions | string) => addLocalToast('warning', options),
+    success: (options: ToastOptions | string) =>
+      addLocalToast('success', options),
+    warning: (options: ToastOptions | string) =>
+      addLocalToast('warning', options),
     error: (options: ToastOptions | string) => addLocalToast('error', options),
     close: (id: number) => {
       const index = localToasts.findIndex((t) => t.id === id)

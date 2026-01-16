@@ -201,8 +201,9 @@ export default class PlaybackPlugin extends Plugin {
           const formattedRate =
             item.rate % 1 === 0 ? item.rate.toFixed(1) : item.rate
           return `
-        <div class="xgplayer-playratio-item ${item.selected ? 'selected' : ''
-            }" data-id="${item.rate}">
+        <div class="xgplayer-playratio-item ${
+          item.selected ? 'selected' : ''
+        }" data-id="${item.rate}">
           ${formattedRate}x
         </div>
       `

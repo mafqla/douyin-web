@@ -87,7 +87,11 @@ watch(
 
 // 监听 hasMore 和 activeVideoIndex 变化，控制下一个按钮的禁用状态
 watch(
-  [() => props.hasMore, () => control.activeVideoIndex, () => control.videosNum],
+  [
+    () => props.hasMore,
+    () => control.activeVideoIndex,
+    () => control.videosNum
+  ],
   ([hasMore, activeIndex, videosNum]) => {
     // 当没有更多数据且已经是最后一个视频时，禁用下一个按钮
     control.stopScroll = hasMore === false && activeIndex >= videosNum - 1
@@ -131,7 +135,8 @@ onBeforeUnmount(() => {
 // 关闭弹框，移除 URL 的 modal_id 参数
 const handleClose = () => {
   // 获取当前播放的视频 ID
-  const currentAwemeId = list.value[control.activeVideoIndex]?.aweme_id || modalId.value
+  const currentAwemeId =
+    list.value[control.activeVideoIndex]?.aweme_id || modalId.value
 
   // 创建新的 query 对象，移除 modal_id
   const newQuery = { ...route.query }

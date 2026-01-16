@@ -55,7 +55,6 @@ const handleToggleSelectAll = () => {
   }
 }
 
-
 // 处理删除按钮点击
 const handleDelete = () => {
   if (selectedIds.value.size === 0) return
@@ -89,7 +88,12 @@ const handlePermission = () => {
 
 // 确认权限设置
 const confirmPermission = (permission: string) => {
-  console.log('设置权限:', permission, '作品 ID:', Array.from(selectedIds.value))
+  console.log(
+    '设置权限:',
+    permission,
+    '作品 ID:',
+    Array.from(selectedIds.value)
+  )
   showPermissionDialog.value = false
 }
 

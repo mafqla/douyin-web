@@ -215,7 +215,10 @@ const getFolderCover = (folder: ICollectsItem) => {
               <div class="folder-checkbox">
                 <div
                   class="checkbox-inner"
-                  :class="{ checked: isFolderSelected(folder), radio: singleSelect }"
+                  :class="{
+                    checked: isFolderSelected(folder),
+                    radio: singleSelect
+                  }"
                 >
                   <svg
                     v-if="isFolderSelected(folder)"

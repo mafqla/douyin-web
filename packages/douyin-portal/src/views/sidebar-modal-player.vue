@@ -28,9 +28,16 @@ const sidebarStore = useSidebarStore()
 const modalId = computed(() => route.query.modal_id as string)
 
 // 当前用于切换的列表类型（由 activeTab 决定，但排除 comment）
-const activeListType = computed<'folder' | 'works' | 'related' | 'collection' | 'props'>(() => {
+const activeListType = computed<
+  'folder' | 'works' | 'related' | 'collection' | 'props'
+>(() => {
   const tab = sidebarStore.activeTab
-  if (tab === 'folder' || tab === 'works' || tab === 'related' || tab === 'collection') {
+  if (
+    tab === 'folder' ||
+    tab === 'works' ||
+    tab === 'related' ||
+    tab === 'collection'
+  ) {
     return tab
   }
   // comment 不是视频列表，使用 props 列表
@@ -38,7 +45,9 @@ const activeListType = computed<'folder' | 'works' | 'related' | 'collection' | 
 })
 
 // 根据列表类型获取对应的列表
-const getListByType = (type: 'folder' | 'works' | 'related' | 'collection' | 'props') => {
+const getListByType = (
+  type: 'folder' | 'works' | 'related' | 'collection' | 'props'
+) => {
   switch (type) {
     case 'folder':
       return sidebarStore.folderVideoList
@@ -60,7 +69,9 @@ const activeVideoList = computed(() => {
 
 // 当前视频在活动列表中的索引（可能为 -1，表示不在当前列表中）
 const currentIndexInActiveList = computed(() => {
-  return activeVideoList.value.findIndex((item) => item.aweme_id === modalId.value)
+  return activeVideoList.value.findIndex(
+    (item) => item.aweme_id === modalId.value
+  )
 })
 
 // 在所有列表中查找当前视频
@@ -116,7 +127,9 @@ const initStoreState = () => {
   } else {
     // 当前视频不在活动列表中，使用 props.videoList 的长度
     control.videosNum = props.videoList.length
-    const propsIdx = props.videoList.findIndex((item) => item.aweme_id === modalId.value)
+    const propsIdx = props.videoList.findIndex(
+      (item) => item.aweme_id === modalId.value
+    )
     if (propsIdx >= 0) {
       isInternalUpdate = true
       control.activeVideoIndex = propsIdx
@@ -131,7 +144,11 @@ watch(
   () => sidebarStore.activeTab,
   () => {
     // 评论和合集 tab 不处理
-    if (sidebarStore.activeTab === 'comment' || sidebarStore.activeTab === 'collection') return
+    if (
+      sidebarStore.activeTab === 'comment' ||
+      sidebarStore.activeTab === 'collection'
+    )
+      return
 
     const newList = activeVideoList.value
     if (newList.length === 0) return
@@ -140,7 +157,9 @@ watch(
     control.videosNum = newList.length
 
     // 检查当前视频是否在新列表中
-    const newIndex = newList.findIndex((item) => item.aweme_id === modalId.value)
+    const newIndex = newList.findIndex(
+      (item) => item.aweme_id === modalId.value
+    )
 
     // 使用 isInternalUpdate 标记，防止触发视频切换
     isInternalUpdate = true

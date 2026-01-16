@@ -4,11 +4,11 @@ export function useTitle(title: string, restoreOnUnmount = true) {
   const cachedTitle = document.title
   const titleRef = ref(title)
 
-  watchEffect(() => { 
+  watchEffect(() => {
     document.title = titleRef.value
   })
   if (restoreOnUnmount) {
-    onUnmounted(() => { 
+    onUnmounted(() => {
       document.title = cachedTitle
     })
   }

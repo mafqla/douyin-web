@@ -32,7 +32,8 @@ request.interceptors.response.use(
       const data = response.data || {}
       // 确保列表字段有默认值，防止 undefined 导致的错误
       if (data.aweme_list === undefined) data.aweme_list = []
-      if (data.data === undefined && Array.isArray(response.data)) data.data = response.data
+      if (data.data === undefined && Array.isArray(response.data))
+        data.data = response.data
       return data
     }
     return response.data || {}

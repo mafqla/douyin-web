@@ -93,11 +93,10 @@ const handleNext = () => {
     position: relative;
     //width: 44px;
     border-radius: 18px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, .06);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.06);
 
     width: 36px;
     height: 80px;
-
 
     &:hover {
       opacity: 0.9;
@@ -118,7 +117,7 @@ const handleNext = () => {
         top: 7px;
         height: 26px !important;
         width: 26px !important;
-        color: var(  --xgplayer-playswitch-icon);
+        color: var(--xgplayer-playswitch-icon);
       }
     }
 
@@ -147,7 +146,7 @@ const handleNext = () => {
         top: 7px;
         height: 26px !important;
         width: 26px !important;
-        color: var(  --xgplayer-playswitch-icon);
+        color: var(--xgplayer-playswitch-icon);
       }
     }
 
@@ -159,4 +158,3 @@ const handleNext = () => {
   }
 }
 </style>
-

@@ -47,17 +47,37 @@ const imageLoadHandler = () => {
 </script>
 
 <template>
-  <div class="dy-avatar" :class="{ 'enable-transition': props.enableTransition }">
-    <a v-if="props.userLink" :href="props.userLink" class="avatar-link" target="_blank">
+  <div
+    class="dy-avatar"
+    :class="{ 'enable-transition': props.enableTransition }"
+  >
+    <a
+      v-if="props.userLink"
+      :href="props.userLink"
+      class="avatar-link"
+      target="_blank"
+    >
       <div class="avatar-wrapper" :class="sizeClass">
-        <img class="avatar-image" :src="props.src" :alt="`用户头像`" @error="imageErrorHandler" @load="imageLoadHandler"
-          v-show="!isImageLoadingFailed" />
+        <img
+          class="avatar-image"
+          :src="props.src"
+          :alt="`用户头像`"
+          @error="imageErrorHandler"
+          @load="imageLoadHandler"
+          v-show="!isImageLoadingFailed"
+        />
         <div class="default-img" v-if="isImageLoadingFailed"></div>
       </div>
     </a>
     <div v-else class="avatar-wrapper" :class="sizeClass">
-      <img class="avatar-image" :src="props.src" :alt="`用户头像`" @error="imageErrorHandler" @load="imageLoadHandler"
-        v-show="!isImageLoadingFailed" />
+      <img
+        class="avatar-image"
+        :src="props.src"
+        :alt="`用户头像`"
+        @error="imageErrorHandler"
+        @load="imageLoadHandler"
+        v-show="!isImageLoadingFailed"
+      />
       <div class="default-img" v-if="isImageLoadingFailed"></div>
     </div>
   </div>

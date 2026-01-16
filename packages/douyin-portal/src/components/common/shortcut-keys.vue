@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { reactive } from 'vue'
 
 const shortcuts = reactive([
   { action: '赞', keyBinding: 'Z/双击空格' },
@@ -24,20 +24,22 @@ const shortcuts = reactive([
   { action: '音量调整', keyBinding: 'Shift + / Shift -' },
   { action: '呼出快捷键列表', keyBinding: '?' },
   { action: '关闭快捷键列表', keyBinding: 'ESC' },
-  { action: '相关推荐', keyBinding: 'N' },
-]);
+  { action: '相关推荐', keyBinding: 'N' }
+])
 </script>
 
-
 <template>
-  <div class="shortcut-keys" >
-    <div class="shortcut-key-item" v-for="(key, index) in shortcuts" :key="index">
+  <div class="shortcut-keys">
+    <div
+      class="shortcut-key-item"
+      v-for="(key, index) in shortcuts"
+      :key="index"
+    >
       <span class="action">{{ key.action }}</span>
       <span class="key-binding">{{ key.keyBinding }}</span>
     </div>
   </div>
 </template>
-
 
 <style lang="scss" scoped>
 .shortcut-keys {

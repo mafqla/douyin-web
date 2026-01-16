@@ -63,7 +63,10 @@ const handleConfirm = () => {
         </div>
 
         <!-- 次要提示文本 -->
-        <div v-if="description || $slots.description" class="dialog-description">
+        <div
+          v-if="description || $slots.description"
+          class="dialog-description"
+        >
           <slot name="description">{{ description }}</slot>
         </div>
 
@@ -103,8 +106,7 @@ const handleConfirm = () => {
     z-index: 10;
     border-radius: 16px;
     padding: 24px;
-    animation: 0.4s cubic-bezier(0.34, 0.69, 0.1, 1) slideUp,
-      0.2s linear fadeIn;
+    animation: 0.4s cubic-bezier(0.34, 0.69, 0.1, 1) slideUp, 0.2s linear fadeIn;
     position: relative;
     box-shadow: 0 0 24px rgba(0, 0, 0, 0.1);
   }

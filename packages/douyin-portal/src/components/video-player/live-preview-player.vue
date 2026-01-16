@@ -531,7 +531,10 @@ watch(
             进入直播间
           </div>
         </div>
-        <div class="live-btn-time" v-if="playerSettings.isAutoContinuous && !isPaused">
+        <div
+          class="live-btn-time"
+          v-if="playerSettings.isAutoContinuous && !isPaused"
+        >
           {{ remainingTime }}秒后进入下一个直播间
         </div>
       </div>

@@ -63,8 +63,9 @@ class immersiveSwitch extends Plugin {
     return `<xg-icon class="xgplayer-immersive-switch-setting immersive-switch" data-state="normal">
     <div class="xgplayer-icon">
       <div class="xgplayer-setting-label">
-        <button aria-checked="true" class="xg-switch${isChecked ? ' xg-switch-checked' : ''
-      }"  
+        <button aria-checked="true" class="xg-switch${
+          isChecked ? ' xg-switch-checked' : ''
+        }"  
         aria-labelledby="xg-switch-pip" type="button">
           <span class="xg-switch-inner"></span>
         </button>

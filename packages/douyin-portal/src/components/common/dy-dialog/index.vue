@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { } from 'vue'
+import {} from 'vue'
 
-defineProps(
-  {
-    dialogTitle: String,
-  }
-)
+defineProps({
+  dialogTitle: String
+})
 const show = defineModel({ default: false, required: true })
 
 const emit = defineEmits(['close'])
@@ -14,7 +12,6 @@ const close = () => {
   show.value = false
   emit('close')
 }
-
 </script>
 <template>
   <Teleport to="body">
@@ -22,8 +19,10 @@ const close = () => {
       <div class="dialog-content">
         <div class="dialog-title">{{ dialogTitle }}</div>
         <svg-icon icon="close" class="icon" @click.self="close" />
-        <div class=" dialog-line" style="border-top-style: solid; border-top-width: 1px;">
-        </div>
+        <div
+          class="dialog-line"
+          style="border-top-style: solid; border-top-width: 1px"
+        ></div>
         <slot />
       </div>
     </div>
@@ -55,7 +54,9 @@ const close = () => {
     position: relative;
     background: var(--color-bg-b1);
     border-radius: 16px;
-    animation: 0.4s cubic-bezier(0.34, 0.69, 0.1, 1) 0s 1 normal none running scaleUp, 0.2s linear 0s 1 normal none running fadeIn;
+    animation: 0.4s cubic-bezier(0.34, 0.69, 0.1, 1) 0s 1 normal none running
+        scaleUp,
+      0.2s linear 0s 1 normal none running fadeIn;
   }
 
   @keyframes scaleUp {
@@ -77,7 +78,6 @@ const close = () => {
       opacity: 1;
     }
   }
-
 
   .icon {
     position: absolute;

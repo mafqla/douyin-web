@@ -1,7 +1,12 @@
 import type { CSSProperties, VNode } from 'vue'
 
 // 按钮类型
-export type ButtonType = 'primary' | 'secondary' | 'tertiary' | 'warning' | 'danger'
+export type ButtonType =
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
+  | 'warning'
+  | 'danger'
 
 // 按钮主题
 export type ButtonTheme = 'solid' | 'light' | 'borderless' | 'outline'

@@ -85,7 +85,11 @@ const handleMusicEnded = async (musicId: string) => {
   const currentIndex = musicList.value.findIndex((m) => m.id_str === musicId)
 
   // 如果播放到接近末尾（倒数3首内），且还有更多数据，则预加载
-  if (currentIndex >= musicList.value.length - 3 && hasMore.value && !isLoadingMore.value) {
+  if (
+    currentIndex >= musicList.value.length - 3 &&
+    hasMore.value &&
+    !isLoadingMore.value
+  ) {
     await getMusicList()
   }
 

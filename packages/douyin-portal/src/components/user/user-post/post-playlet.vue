@@ -93,7 +93,9 @@ useInfiniteScroll(
               />
               <div class="series-info-overlay">
                 <span class="episode-count">
-                  {{ series.updated_episode_count || series.total_episode_count }}集
+                  {{
+                    series.updated_episode_count || series.total_episode_count
+                  }}集
                 </span>
               </div>
             </div>

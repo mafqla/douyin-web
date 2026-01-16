@@ -60,7 +60,9 @@ const fetchExistingVideos = async () => {
       count,
       existingCursor.value
     )
-    existingVideoList.value = existingVideoList.value.concat(res.aweme_list || [])
+    existingVideoList.value = existingVideoList.value.concat(
+      res.aweme_list || []
+    )
     existingCursor.value = res.cursor
     existingHasMore.value = !!res.has_more
   } catch (error) {
@@ -89,7 +91,9 @@ const getUserCollectVideoList = async () => {
       apis.getUserCollectVideo(count, cursor.value),
       existingHasMore.value ? fetchExistingVideos() : Promise.resolve()
     ])
-    folderVideoList.value = folderVideoList.value.concat(collectRes.aweme_list || [])
+    folderVideoList.value = folderVideoList.value.concat(
+      collectRes.aweme_list || []
+    )
     cursor.value = collectRes.cursor
     hasMore.value = !!collectRes.has_more
   } catch (error) {

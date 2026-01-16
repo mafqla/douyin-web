@@ -15,17 +15,24 @@ const props = defineProps({
 })
 
 // 回复用户信息
-const replyTo = ref<{ 
-  uid: number | string; 
-  username: string; 
-  comment?: string;
-  cid?: string;
-  parentCid?: string;
-  sec_uid?: string;
+const replyTo = ref<{
+  uid: number | string
+  username: string
+  comment?: string
+  cid?: string
+  parentCid?: string
+  sec_uid?: string
 } | null>(null)
 
 // 设置回复用户
-const setReplyTo = (uid: number | string, username: string, comment?: string, cid?: string, parentCid?: string, sec_uid?: string) => {
+const setReplyTo = (
+  uid: number | string,
+  username: string,
+  comment?: string,
+  cid?: string,
+  parentCid?: string,
+  sec_uid?: string
+) => {
   replyTo.value = { uid, username, comment, cid, parentCid, sec_uid }
 }
 
@@ -55,7 +62,9 @@ const getCurrentUser = () => {
     sec_uid: '',
     nickname: '游客',
     avatar_thumb: {
-      url_list: ['https://p3-pc.douyinpic.com/aweme/100x100/aweme-avatar/default_avatar.jpeg'],
+      url_list: [
+        'https://p3-pc.douyinpic.com/aweme/100x100/aweme-avatar/default_avatar.jpeg'
+      ],
       uri: '',
       width: 100,
       height: 100
@@ -69,7 +78,10 @@ const getCurrentUser = () => {
 // 当前用户头像
 const currentUserAvatar = computed(() => {
   const user = getCurrentUser()
-  return user.avatar_thumb?.url_list?.[0] || 'https://p3-pc.douyinpic.com/aweme/100x100/aweme-avatar/default_avatar.jpeg'
+  return (
+    user.avatar_thumb?.url_list?.[0] ||
+    'https://p3-pc.douyinpic.com/aweme/100x100/aweme-avatar/default_avatar.jpeg'
+  )
 })
 
 // 当前用户主页链接
@@ -81,8 +93,8 @@ const currentUserLink = computed(() => {
 // 将图片文件转换为图片列表格式
 const convertImagesToImageList = (images: File[]): any[] | undefined => {
   if (!images || images.length === 0) return undefined
-  
-  return images.map(file => {
+
+  return images.map((file) => {
     const url = URL.createObjectURL(file)
     return {
       origin_url: { url_list: [url], uri: '', width: 0, height: 0 },
@@ -95,12 +107,16 @@ const convertImagesToImageList = (images: File[]): any[] | undefined => {
 }
 
 // 提交评论
-const submitComment = (data: { text: string; images: File[]; replyTo: any }) => {
+const submitComment = (data: {
+  text: string
+  images: File[]
+  replyTo: any
+}) => {
   if (!data.text.trim() && (!data.images || data.images.length === 0)) return
 
   const currentUser = getCurrentUser()
   const isReply = !!data.replyTo
-  
+
   const newComment: IComments = {
     cid: generateCid(),
     text: data.text,
@@ -109,15 +125,23 @@ const submitComment = (data: { text: string; images: File[]; replyTo: any }) => 
     digg_count: 0,
     status: 1,
     user: currentUser as any,
-    reply_id: isReply ? (data.replyTo?.parentCid || data.replyTo?.cid || '0') : '0',
+    reply_id: isReply
+      ? data.replyTo?.parentCid || data.replyTo?.cid || '0'
+      : '0',
     user_digged: 0,
     reply_comment: null,
     text_extra: [],
     reply_comment_total: 0,
     reply_to_reply_id: data.replyTo?.parentCid ? data.replyTo.cid : '0',
-    reply_to_username: data.replyTo?.parentCid ? data.replyTo?.username : undefined,
-    reply_to_userid: data.replyTo?.parentCid ? String(data.replyTo?.uid) : undefined,
-    reply_to_user_sec_id: data.replyTo?.parentCid ? data.replyTo?.sec_uid : undefined,
+    reply_to_username: data.replyTo?.parentCid
+      ? data.replyTo?.username
+      : undefined,
+    reply_to_userid: data.replyTo?.parentCid
+      ? String(data.replyTo?.uid)
+      : undefined,
+    reply_to_user_sec_id: data.replyTo?.parentCid
+      ? data.replyTo?.sec_uid
+      : undefined,
     is_author_digged: false,
     user_buried: false,
     is_hot: false,
@@ -131,9 +155,10 @@ const submitComment = (data: { text: string; images: File[]; replyTo: any }) => 
     commentList.value.unshift(newComment)
   } else {
     const parentCid = data.replyTo?.parentCid || data.replyTo?.cid
-    const parentComment = commentList.value.find(c => c.cid === parentCid)
+    const parentComment = commentList.value.find((c) => c.cid === parentCid)
     if (parentComment) {
-      parentComment.reply_comment_total = (parentComment.reply_comment_total || 0) + 1
+      parentComment.reply_comment_total =
+        (parentComment.reply_comment_total || 0) + 1
     }
     replyToAdd.value = { parentCid, reply: newComment }
   }
@@ -157,12 +182,19 @@ const allImages = computed(() => {
   commentList.value.forEach((comment) => {
     if (comment.image_list) {
       comment.image_list.forEach((item) => {
-        const url = item.origin_url?.url_list?.[1] ?? item.origin_url?.url_list?.[0] ?? item.medium_url?.url_list?.[2]
+        const url =
+          item.origin_url?.url_list?.[1] ??
+          item.origin_url?.url_list?.[0] ??
+          item.medium_url?.url_list?.[2]
         if (url) images.push({ url, alt: 'comment_img', cid: comment.cid })
       })
     }
     if (comment.sticker?.animate_url?.url_list?.[0]) {
-      images.push({ url: comment.sticker.animate_url.url_list[0], alt: 'sticker', cid: comment.cid })
+      images.push({
+        url: comment.sticker.animate_url.url_list[0],
+        alt: 'sticker',
+        cid: comment.cid
+      })
     }
   })
   return images
@@ -233,10 +265,7 @@ useInfiniteScroll(
             :src="currentUserAvatar"
             size="small"
           />
-          <dy-input 
-            :group-id="props.aweme_id"
-            @submit="submitComment"
-          />
+          <dy-input :group-id="props.aweme_id" @submit="submitComment" />
         </div>
 
         <div class="search-trend-container" v-if="relatedText != ''">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { } from 'vue'
+import {} from 'vue'
 
 const links = [
   {
@@ -34,8 +34,13 @@ const links = [
       <li v-for="(item, index) in links" :key="index">
         <div>
           <div class="cooperate-link-container">
-            <a :href="item.url" class="cooperate-link" target="_blank" rel="noopener nofollow noreferrer">{{ item.text
-              }}</a>
+            <a
+              :href="item.url"
+              class="cooperate-link"
+              target="_blank"
+              rel="noopener nofollow noreferrer"
+              >{{ item.text }}</a
+            >
             <div class="cooperate-link-icon"></div>
           </div>
         </div>

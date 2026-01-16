@@ -356,10 +356,10 @@ watch(
         newClarity === 'auto'
           ? '智能'
           : newClarity === '1080p'
-            ? '高清 1080P'
-            : newClarity === '720p'
-              ? '高清 720P'
-              : '标清 540P'
+          ? '高清 1080P'
+          : newClarity === '720p'
+          ? '高清 720P'
+          : '标清 540P'
       plugin.updateBtnText(plugin.currentClarity)
       plugin.renderClarityList()
     }

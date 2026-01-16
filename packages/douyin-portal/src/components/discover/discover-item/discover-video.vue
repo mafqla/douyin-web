@@ -61,7 +61,9 @@ const isLiveStreamError = ref(false)
 const livePlayerKey = ref(0)
 
 // 是否有可用的直播流
-const hasLiveStream = computed(() => props.liveStreamUrls && props.liveStreamUrls.length > 0)
+const hasLiveStream = computed(
+  () => props.liveStreamUrls && props.liveStreamUrls.length > 0
+)
 
 // 直播流加载错误处理
 const onLiveStreamError = () => {

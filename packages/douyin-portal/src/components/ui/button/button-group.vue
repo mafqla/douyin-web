@@ -16,11 +16,7 @@ const props = withDefaults(defineProps<ButtonGroupProps>(), {
 
 // 计算按钮组类名
 const groupClass = computed(() => {
-  return [
-    'dy-btn-group',
-    `dy-btn-group--size-${props.size}`,
-    props.className
-  ]
+  return ['dy-btn-group', `dy-btn-group--size-${props.size}`, props.className]
 })
 
 // 向子组件提供上下文
@@ -33,12 +29,7 @@ provide('buttonGroupContext', {
 </script>
 
 <template>
-  <div
-    :class="groupClass"
-    :style="style"
-    :aria-label="ariaLabel"
-    role="group"
-  >
+  <div :class="groupClass" :style="style" :aria-label="ariaLabel" role="group">
     <slot />
   </div>
 </template>

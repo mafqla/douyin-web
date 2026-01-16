@@ -74,24 +74,24 @@ const liveCover = computed(() => {
 const liveStreamUrls = computed(() => {
   const streamUrl = liveRoomInfo.value?.stream_url
   if (!streamUrl) return []
-  
+
   const urls: string[] = []
   const hlsMap = streamUrl.hls_pull_url_map
-  
+
   // 优先添加 HLS 流（兼容性更好）
   if (streamUrl.hls_pull_url) urls.push(streamUrl.hls_pull_url)
   if (hlsMap?.FULL_HD1) urls.push(hlsMap.FULL_HD1)
   if (hlsMap?.HD1) urls.push(hlsMap.HD1)
   if (hlsMap?.SD1) urls.push(hlsMap.SD1)
   if (hlsMap?.SD2) urls.push(hlsMap.SD2)
-  
+
   // 添加 FLV 流作为备用
   const flvMap = streamUrl.flv_pull_url
   if (flvMap?.FULL_HD1) urls.push(flvMap.FULL_HD1)
   if (flvMap?.HD1) urls.push(flvMap.HD1)
   if (flvMap?.SD1) urls.push(flvMap.SD1)
   if (flvMap?.SD2) urls.push(flvMap.SD2)
-  
+
   return [...new Set(urls)]
 })
 
@@ -108,7 +108,9 @@ const liveTitle = computed(() => {
 
 // 主播头像
 const anchorAvatar = computed(() => {
-  return liveRoomInfo.value?.owner?.avatar_thumb?.url_list?.[0] || props.authorAvatar
+  return (
+    liveRoomInfo.value?.owner?.avatar_thumb?.url_list?.[0] || props.authorAvatar
+  )
 })
 
 // 主播昵称
@@ -156,7 +158,11 @@ const handleClick = (event: MouseEvent) => {
         </div>
       </template>
       <template #default>
-        <a :href="videoLink" class="waterfall-videoCardContainer" @click="handleClick">
+        <a
+          :href="videoLink"
+          class="waterfall-videoCardContainer"
+          @click="handleClick"
+        >
           <div class="item-content">
             <discover-video
               :img="isLive ? liveCover : props.videoImg"

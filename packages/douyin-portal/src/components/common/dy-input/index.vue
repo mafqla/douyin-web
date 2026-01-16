@@ -9,7 +9,11 @@ const props = defineProps({
     default: '留下你的精彩评论吧'
   },
   replyTo: {
-    type: Object as () => { uid: number | string; username: string; comment?: string } | null,
+    type: Object as () => {
+      uid: number | string
+      username: string
+      comment?: string
+    } | null,
     default: null
   },
   groupId: {
@@ -73,14 +77,14 @@ async function submitComment() {
   // 提交内容，包含图片
   emits('submit', {
     text: textareaRef.value,
-    images: imageList.value.map(img => img.file),
+    images: imageList.value.map((img) => img.file),
     replyTo: props.replyTo
   })
 
   // 清空输入框的内容
   textareaRef.value = ''
   // 清空图片
-  imageList.value.forEach(img => URL.revokeObjectURL(img.url))
+  imageList.value.forEach((img) => URL.revokeObjectURL(img.url))
   imageList.value = []
 
   // 清空富文本的内容
@@ -266,12 +270,14 @@ watchEffect(() => {
   <div class="dy-input" :class="{ 'has-images': imageList.length > 0 }">
     <!-- 回复提示栏 - 只在有 replyTo 时显示 -->
     <div class="reply-hint" v-if="replyTo">
-      <span class="reply-text">回复@{{ replyTo.username }}: {{ replyTo.comment }}</span>
+      <span class="reply-text"
+        >回复@{{ replyTo.username }}: {{ replyTo.comment }}</span
+      >
       <span class="reply-close" @click="cancelReply">
         <svg-icon icon="close" class="close-icon" />
       </span>
     </div>
-    
+
     <div class="input-main">
       <div class="comment-input-left">
         <div class="richtext-container">
@@ -302,7 +308,7 @@ watchEffect(() => {
           </div>
         </div>
       </div>
-      
+
       <div class="comment-input-right-ct">
         <div class="comment-input-right-ct-content">
           <p class="over-limit" v-if="overLimit">-{{ overLimit }}</p>
@@ -333,10 +339,14 @@ watchEffect(() => {
         </div>
       </div>
     </div>
-    
+
     <!-- 图片预览区域 - 在输入框下方 -->
     <div class="image-preview-list" v-if="imageList.length > 0">
-      <div class="image-preview-item" v-for="(img, index) in imageList" :key="index">
+      <div
+        class="image-preview-item"
+        v-for="(img, index) in imageList"
+        :key="index"
+      >
         <img :src="img.url" alt="preview" />
         <span class="image-remove" @click="removeImage(index)">
           <svg-icon icon="close" class="remove-icon" />
@@ -351,7 +361,7 @@ watchEffect(() => {
       @user-selected="handleUserSelected"
       @close="isShowAt = false"
     />
-    
+
     <emoji-box
       v-if="isShowEmoji"
       @select-emoji="handleSelectEmoji"
@@ -397,7 +407,7 @@ watchEffect(() => {
       cursor: pointer;
       margin-left: 8px;
       opacity: 0.6;
-      
+
       &:hover {
         opacity: 1;
       }
@@ -454,7 +464,7 @@ watchEffect(() => {
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        
+
         &:hover {
           background: rgba(0, 0, 0, 0.8);
         }
