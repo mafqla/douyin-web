@@ -75,6 +75,10 @@ export interface IFollowingUser {
    */
   nickname: string
   /**
+   * @description 备注名（用户自定义的别名）
+   */
+  remark_name?: string | null
+  /**
    * @description 签名
    */
   signature?: string
@@ -563,7 +567,6 @@ export interface IFollowingUser {
    */
   video_icon?: IFollowingAvatar
 }
-
 
 /**
  * @description 头像信息

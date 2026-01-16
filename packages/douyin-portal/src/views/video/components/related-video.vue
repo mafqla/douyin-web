@@ -3,6 +3,7 @@ import apis from '@/api/apis'
 import type { IAuthor } from '@/api/tyeps/common/author'
 import type { IAwemeInfo } from '@/api/tyeps/common/aweme'
 import Loading from '@/components/common/loading.vue'
+import { VerifyBadge } from '@/components/common'
 import { useCount } from '@/hooks'
 import { formatMillisecondsToTime } from '@/utils/date-format'
 import { getAwemeLink } from '@/utils/aweme-link'
@@ -69,7 +70,9 @@ watch(
   () => props.awemeId,
   (newId, oldId) => {
     // 检查新视频是否已在列表中
-    const isInList = sidebarStore.relatedVideoList.some(item => item.aweme_id === newId)
+    const isInList = sidebarStore.relatedVideoList.some(
+      (item) => item.aweme_id === newId
+    )
     if (isInList) {
       // 如果在列表中，只更新 params.aweme_id，不重新请求
       params.aweme_id = newId
@@ -134,14 +137,7 @@ const handleLoadMoreClick = () => {
       <div class="info-content">
         <div class="username">
           <span class="username-text">{{ props.author.nickname }}</span>
-          <span
-            v-if="props.author.verification_type === 1"
-            class="verify-badge red"
-          ></span>
-          <span
-            v-else-if="props.author.verification_type === 2"
-            class="verify-badge yellow"
-          ></span>
+          <VerifyBadge :cert-info="props.author.account_cert_info" />
         </div>
         <p class="stats-container">
           <span class="stats-label">粉丝</span>
@@ -257,24 +253,6 @@ const handleLoadMoreClick = () => {
       font-size: 14px;
       font-weight: 400;
       line-height: 22px;
-    }
-
-    .verify-badge {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      margin-left: 4px;
-      flex-shrink: 0;
-
-      &.red {
-        background: url('https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/ies/douyin_web/media/douyin-pc-icons-color@ic_verify_red_filled.4ec9a1314e2180d3.svg')
-          no-repeat center / contain;
-      }
-
-      &.yellow {
-        background: url('https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/ies/douyin_web/media/douyin-pc-icons-color@ic_verify_yellow_outlined.4a5e14eb950c5d79.svg')
-          no-repeat center / contain;
-      }
     }
   }
 

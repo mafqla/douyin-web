@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import apis from '@/api/apis'
-import { Loading } from '@/components/common'
+import { Loading, VerifyBadge } from '@/components/common'
 import ImageGalleryPlayer from '@/components/video-player/ImageGalleryPlyer.vue'
 import VideoAction from '@/components/video-components/video-action/video-action.vue'
 import SwiperControl from '@/components/swiper/swiper-control.vue'
@@ -190,14 +190,7 @@ onUnmounted(() => {
             >
               {{ noteDetail.author.nickname }}
             </router-link>
-            <span
-              v-if="noteDetail.author.verification_type === 1"
-              class="verify-badge red"
-            ></span>
-            <span
-              v-else-if="noteDetail.author.verification_type === 2"
-              class="verify-badge yellow"
-            ></span>
+            <VerifyBadge :cert-info="noteDetail.author.account_cert_info" />
             <div class="user-stats">
               <span
                 >粉丝 <strong>{{ followers }}</strong></span
@@ -344,16 +337,6 @@ onUnmounted(() => {
       height: 14px;
       margin-left: 4px;
       flex-shrink: 0;
-
-      &.red {
-        background: url('https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/ies/douyin_web/media/douyin-pc-icons-color@ic_verify_red_filled.4ec9a1314e2180d3.svg')
-          no-repeat center / contain;
-      }
-
-      &.yellow {
-        background: url('https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/ies/douyin_web/media/douyin-pc-icons-color@ic_verify_yellow_outlined.4a5e14eb950c5d79.svg')
-          no-repeat center / contain;
-      }
     }
 
     .user-stats {

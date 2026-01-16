@@ -1,332 +1,504 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
+import apis from '@/api/apis'
+import type { IFollowingUser } from '@/api/tyeps/request_response/followingListRes'
+import { VerifyBadge } from '@/components/common'
+import Loading from '@/components/common/loading.vue'
 
-const props = defineProps({
-  connect: String,
-  user_id: Number,
-  user_sec_id: String,
-  followers_count: Number,
-  fans_count: Number
-})
-const connect = ref(props.connect)
+const props = defineProps<{
+  connect: string
+  user_id: string
+  user_sec_id: string
+  followers_count?: number
+  following_count?: number
+}>()
+
 const emit = defineEmits(['close'])
-//搜索框边距
-const margin = ref(0)
-//排序
-const sort = ref('综合排序')
-const sortList = ['综合排序', '最近关注', '最早关注']
-//是否显示排序
+
+// 当前 tab
+const activeTab = ref(props.connect)
+
+// 排序选项
+const sortOptions = [
+  { label: '综合排序', value: 4 },
+  { label: '最近关注', value: 1 },
+  { label: '最早关注', value: 3 }
+]
+const currentSort = ref(sortOptions[0])
 const isShowSort = ref(false)
-const handleSort = (type: string) => {
-  sort.value = type
-  isShowSort.value = false
+
+// 搜索关键词
+const searchKeyword = ref('')
+
+// 关注列表数据
+const followingList = ref<IFollowingUser[]>([])
+const followingLoading = ref(false)
+const followingOffset = ref(0)
+const followingHasMore = ref(true)
+
+// 粉丝列表数据
+const followerList = ref<IFollowingUser[]>([])
+const followerLoading = ref(false)
+const followerOffset = ref(0)
+const followerHasMore = ref(true)
+
+// 获取关注列表
+const getFollowingList = async (isLoadMore = false) => {
+  if (followingLoading.value) return
+  if (isLoadMore && !followingHasMore.value) return
+
+  followingLoading.value = true
+  try {
+    const res = await apis.getFollowingList({
+      user_id: props.user_id,
+      sec_user_id: props.user_sec_id,
+      count: 20,
+      offset: followingOffset.value,
+      min_time: 0,
+      max_time: 0,
+      source_type: currentSort.value.value,
+      is_top: 1
+    })
+
+    if (res?.followings) {
+      if (isLoadMore) {
+        // 去重
+        const existingIds = new Set(followingList.value.map((u) => u.uid))
+        const newUsers = res.followings.filter((u) => !existingIds.has(u.uid))
+        followingList.value.push(...newUsers)
+      } else {
+        followingList.value = res.followings
+      }
+      followingOffset.value += res.followings.length
+      followingHasMore.value = res.has_more ?? res.followings.length >= 20
+    } else {
+      followingHasMore.value = false
+    }
+  } catch (err) {
+    console.error('获取关注列表失败:', err)
+  } finally {
+    followingLoading.value = false
+  }
 }
 
-//切换选项卡
-const handleTab = (type: string) => {
-  connect.value = type
+// 获取粉丝列表
+const getFollowerList = async (isLoadMore = false) => {
+  if (followerLoading.value) return
+  if (isLoadMore && !followerHasMore.value) return
+
+  followerLoading.value = true
+  try {
+    const res = await apis.getFollowerList({
+      user_id: props.user_id,
+      sec_user_id: props.user_sec_id,
+      count: 20,
+      offset: followerOffset.value,
+      min_time: 0,
+      max_time: 0,
+      source_type: 1
+    })
+
+    if (res?.followers) {
+      if (isLoadMore) {
+        const existingIds = new Set(followerList.value.map((u) => u.uid))
+        const newUsers = res.followers.filter(
+          (u: IFollowingUser) => !existingIds.has(u.uid)
+        )
+        followerList.value.push(...newUsers)
+      } else {
+        followerList.value = res.followers
+      }
+      followerOffset.value += res.followers.length
+      followerHasMore.value = res.has_more ?? res.followers.length >= 20
+    } else {
+      followerHasMore.value = false
+    }
+  } catch (err) {
+    console.error('获取粉丝列表失败:', err)
+  } finally {
+    followerLoading.value = false
+  }
 }
-watchEffect(() => {
-  // console.log(sort.value)
-  if (connect.value === 'attent') {
-    margin.value = 24
+
+// 切换排序
+const handleSort = (option: (typeof sortOptions)[0]) => {
+  currentSort.value = option
+  isShowSort.value = false
+  // 重置并重新加载
+  followingList.value = []
+  followingOffset.value = 0
+  followingHasMore.value = true
+  getFollowingList()
+}
+
+// 切换 tab
+const handleTabChange = (tab: string) => {
+  activeTab.value = tab
+  if (tab === 'attent' && followingList.value.length === 0) {
+    getFollowingList()
+  } else if (tab === 'fans' && followerList.value.length === 0) {
+    getFollowerList()
+  }
+}
+
+// 滚动加载更多
+const handleScroll = (e: Event) => {
+  const target = e.target as HTMLElement
+  const { scrollTop, scrollHeight, clientHeight } = target
+  if (scrollHeight - scrollTop - clientHeight < 100) {
+    if (activeTab.value === 'attent') {
+      getFollowingList(true)
+    } else {
+      getFollowerList(true)
+    }
+  }
+}
+
+// 过滤后的列表
+const filteredFollowingList = computed(() => {
+  if (!searchKeyword.value) return followingList.value
+  const keyword = searchKeyword.value.toLowerCase()
+  return followingList.value.filter(
+    (u) =>
+      u.nickname?.toLowerCase().includes(keyword) ||
+      u.unique_id?.toLowerCase().includes(keyword) ||
+      u.short_id?.includes(keyword)
+  )
+})
+
+const filteredFollowerList = computed(() => {
+  if (!searchKeyword.value) return followerList.value
+  const keyword = searchKeyword.value.toLowerCase()
+  return followerList.value.filter(
+    (u) =>
+      u.nickname?.toLowerCase().includes(keyword) ||
+      u.unique_id?.toLowerCase().includes(keyword) ||
+      u.short_id?.includes(keyword)
+  )
+})
+
+// 当前显示的列表
+const currentList = computed(() => {
+  return activeTab.value === 'attent'
+    ? filteredFollowingList.value
+    : filteredFollowerList.value
+})
+
+const isLoading = computed(() => {
+  return activeTab.value === 'attent'
+    ? followingLoading.value
+    : followerLoading.value
+})
+
+const hasMore = computed(() => {
+  return activeTab.value === 'attent'
+    ? followingHasMore.value
+    : followerHasMore.value
+})
+
+// 获取头像
+const getAvatarUrl = (user: IFollowingUser) => {
+  return (
+    user.avatar_thumb?.url_list?.[0] ||
+    user.avatar_medium?.url_list?.[0] ||
+    user.avatar_larger?.url_list?.[0] ||
+    ''
+  )
+}
+
+// 获取关注状态文本
+const getFollowStatusText = (user: IFollowingUser) => {
+  if (user.follow_status === 2) return '相互关注'
+  if (user.follow_status === 1) return '已关注'
+  return '关注'
+}
+
+// 获取显示名称（粉丝列表优先显示备注名）
+const getDisplayName = (user: IFollowingUser) => {
+  // 如果是粉丝列表且有备注名，优先显示备注名
+  if (activeTab.value === 'fans' && user.remark_name) {
+    return user.remark_name
+  }
+  return user.nickname
+}
+
+// 高亮搜索关键词
+const highlightKeyword = (text: string) => {
+  if (!searchKeyword.value || !text) return text
+  const keyword = searchKeyword.value
+  const regex = new RegExp(
+    `(${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`,
+    'gi'
+  )
+  return text.replace(regex, '<span class="highlight">$1</span>')
+}
+
+// 获取抖音号
+const getDouyinId = (user: IFollowingUser) => {
+  return user.unique_id || user.short_id || ''
+}
+
+// 关注/取消关注用户
+const handleFollow = async (user: IFollowingUser) => {
+  const isFollowing = user.follow_status === 1 || user.follow_status === 2
+  const type = isFollowing ? 0 : 1
+
+  try {
+    // const res = await apis.followUser(user.uid, user.sec_uid, type)
+    // if (res.status_code === 0) {
+    //   // 更新本地状态
+    //   user.follow_status = res.follow_status
+    // }
+  } catch (err) {
+    console.error('关注操作失败:', err)
+  }
+}
+
+// 移除粉丝
+const handleRemoveFollower = async (user: IFollowingUser) => {
+  try {
+    await apis.removeFollower(user.uid, user.sec_uid)
+    // 从列表中移除
+    const index = followerList.value.findIndex((u) => u.uid === user.uid)
+    if (index > -1) {
+      followerList.value.splice(index, 1)
+    }
+  } catch (err) {
+    console.error('移除粉丝失败:', err)
+  }
+}
+
+// 解析认证标签
+const getCertLabel = (user: IFollowingUser) => {
+  if (!user.account_cert_info) return ''
+  try {
+    const parsed = JSON.parse(user.account_cert_info)
+    return parsed.label_text || ''
+  } catch {
+    return ''
+  }
+}
+
+// 初始化
+onMounted(() => {
+  if (activeTab.value === 'attent') {
+    getFollowingList()
   } else {
-    margin.value = 0
+    getFollowerList()
   }
 })
 
-//关注
-const isAttention = ref(true)
-const handleAttention = async (id: number) => {
-  // await attention(id)
-  isAttention.value = !isAttention.value
-}
-// 是否显示
-const isPopup = ref(false)
-const handlePopup = () => {
-  isPopup.value = !isPopup.value
-}
-
-
-// 
+// 监听 tab 变化
+watch(
+  () => props.connect,
+  (newVal) => {
+    activeTab.value = newVal
+    handleTabChange(newVal)
+  }
+)
 </script>
+
 <template>
   <div class="user-connections-popup">
-    <div class="close" @click="$emit('close')">
-      <svg
-        width="36"
-        height="36"
-        fill="#A9AAB7"
-        xmlns="http://www.w3.org/2000/svg"
-        class="u1O5vnab"
-        viewBox="0 0 36 36"
-      >
+    <div class="close" @click="emit('close')">
+      <svg width="36" height="36" viewBox="0 0 36 36">
         <path
           d="M22.133 23.776a1.342 1.342 0 101.898-1.898l-4.112-4.113 4.112-4.112a1.342 1.342 0 00-1.898-1.898l-4.112 4.112-4.113-4.112a1.342 1.342 0 10-1.898 1.898l4.113 4.112-4.113 4.113a1.342 1.342 0 001.898 1.898l4.113-4.113 4.112 4.113z"
-          fill="#0A0C20"
-        ></path>
+          fill="currentColor"
+        />
       </svg>
     </div>
+
     <div class="tab">
       <div class="tab-wrapper">
         <div class="content">
+          <!-- Tab 切换 -->
           <div class="tab-stats">
             <div
               class="tab-stats-text"
-              :class="{ active: connect === 'attent' }"
-              @click="handleTab('attent')"
+              :class="{ active: activeTab === 'attent' }"
+              @click="handleTabChange('attent')"
             >
-              关注({{ 0 }})
+              关注({{ following_count ?? 0 }})
             </div>
             <div
               class="tab-stats-text"
-              :class="{ active: connect === 'fans' }"
-              @click="handleTab('fans')"
+              :class="{ active: activeTab === 'fans' }"
+              @click="handleTabChange('fans')"
             >
-              粉丝({{ 0 }})
+              粉丝({{ followers_count ?? 0 }})
             </div>
           </div>
+
           <div class="bottom-border"></div>
+
+          <!-- 搜索和排序 -->
           <div class="input">
-            <div class="input-content" :style="{ marginRight: `${margin}px` }">
+            <div class="input-content" :class="{ expanded: searchKeyword }">
               <svg
                 width="24"
                 height="24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                class="search-icon"
                 viewBox="0 0 24 24"
+                class="search-icon"
               >
                 <path
                   fill-rule="evenodd"
                   clip-rule="evenodd"
                   d="M11 5.333a5.667 5.667 0 103.237 10.319l2.723 2.722a1 1 0 001.414-1.415l-2.722-2.722A5.667 5.667 0 0011 5.333zM7.333 11a3.667 3.667 0 117.334 0 3.667 3.667 0 01-7.334 0z"
-                  fill="#2F3035"
-                  fill-opacity="0.4"
-                ></path>
+                  fill="currentColor"
+                />
               </svg>
               <input
+                v-model="searchKeyword"
                 class="input-text"
                 type="text"
                 placeholder="搜索用户名字或抖音号"
               />
+              <svg
+                v-if="searchKeyword"
+                class="clear-icon"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                @click="searchKeyword = ''"
+              >
+                <circle cx="8" cy="8" r="8" fill="currentColor" opacity="0.3" />
+                <path
+                  d="M10.5 5.5L5.5 10.5M5.5 5.5L10.5 10.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
             </div>
+
+            <!-- 排序（仅关注列表显示且没有搜索关键词时） -->
             <div
+              v-show="activeTab === 'attent' && !searchKeyword"
               class="sort"
-              v-show="connect === 'attent'"
               @mouseenter="isShowSort = true"
             >
-              <svg
-                width="16"
-                height="14"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                class="sort-icon"
-              >
+              <svg width="16" height="14" viewBox="0 0 16 14" class="sort-icon">
                 <path
                   d="M.894 12.648H8.48a.812.812 0 00.785-.816.806.806 0 00-.785-.785H.894a.798.798 0 00-.815.785.798.798 0 00.785.816h.03zm0-4.934H8.48a.796.796 0 00.785-.806.806.806 0 00-.785-.785H.894a.796.796 0 00-.02 1.59h.02zm0-4.935H8.48a.796.796 0 00.785-.805.806.806 0 00-.785-.785H.894a.796.796 0 000 1.59zm11.948-1.437a.796.796 0 00-1.59 0v11.153a.793.793 0 001.264.642l3.059-2.232a.8.8 0 00.193-1.112.8.8 0 00-1.111-.193c-.01 0-.01.01-.02.01l-1.795 1.305V1.342z"
-                  fill="#2F3035"
-                  fill-opacity="0.9"
-                ></path>
+                  fill="currentColor"
+                />
               </svg>
-              <span class="sort-text">{{ sort }}</span>
+              <span class="sort-text">{{ currentSort.label }}</span>
               <ul
                 class="sort-list"
                 v-show="isShowSort"
                 @mouseleave="isShowSort = false"
               >
                 <li
-                  v-for="(option, index) in sortList"
-                  :key="index"
+                  v-for="option in sortOptions"
+                  :key="option.value"
+                  :class="{ active: currentSort.value === option.value }"
                   @click="handleSort(option)"
                 >
-                  {{ option }}
+                  {{ option.label }}
                 </li>
               </ul>
             </div>
           </div>
 
-          <div class="user-fans-container">
-            <div>
-              <div class="list-item">
-                <div class="list-avatar">
-                  <a
-                    href="//www.douyin.com/user/MS4wLjABAAAAISMJwLxAdIyVnQkkPT9Rv1PRzBraeitmytvKlmZWhmE"
-                    class="link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <div class="avatar-component size" data-e2e="live-avatar">
-                      <img
-                        src="//p11.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-avt-0015_bc601ef2bf2e2e10a18325c426183525"
-                        alt="赵露思头像"
-                        class="avatar-img"
-                      />
-                    </div>
-                  </a>
-                </div>
-                <div class="list-info">
-                  <div class="list-info-top">
-                    <div class="list-info-name">
-                      <a
-                        href="//www.douyin.com/user/MS4wLjABAAAAISMJwLxAdIyVnQkkPT9Rv1PRzBraeitmytvKlmZWhmE"
-                        class="link"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <span class="name-text">赵露思</span>
-                      </a>
-                    </div>
-                    <div class="list-info-type">
-                      <span class="type-icon"></span>
-                      <span class="type-text">演员</span>
-                    </div>
-                  </div>
-                  <div class="list-info-signature">
-                    <span class="signature-text">微博：赵露思的微博</span>
-                  </div>
-                </div>
-
-                <div class="list-action attention">
-                  <button
-                    class="content-btn"
-                    :class="{ follow: !isAttention }"
-                    @click="handleAttention(1)"
-                  >
-                    <div class="btn-text">
-                      {{ isAttention ? '已关注' : '关注' }}
-                    </div>
-                  </button>
-                  <button
-                    class="content-btn"
-                    :class="{
-                      popup: isPopup
-                    }"
-                    v-show="connect === 'fans'"
-                  >
-                    <div
-                      class="btn"
-                      :class="{ btnPopup: isPopup }"
-                      @click="handlePopup"
+          <!-- 用户列表 -->
+          <div class="user-list-container" @scroll="handleScroll">
+            <Loading
+              :show="isLoading && currentList.length === 0"
+              :isShowText="false"
+            >
+              <div v-if="currentList.length > 0">
+                <div
+                  v-for="user in currentList"
+                  :key="user.uid"
+                  class="list-item"
+                >
+                  <div class="list-avatar">
+                    <router-link
+                      :to="`/user/${user.sec_uid}`"
+                      class="link"
+                      @click="emit('close')"
                     >
-                      <div class="text">移除</div>
-                    </div>
+                      <div class="avatar-component">
+                        <img
+                          :src="getAvatarUrl(user)"
+                          :alt="user.nickname"
+                          class="avatar-img"
+                        />
+                      </div>
+                    </router-link>
+                  </div>
 
-                    <div class="pop-up-content" v-show="isPopup">
-                      <div class="pop-up-content-btn">
-                        <span class="btn-true" @click="handlePopup"
-                          >确认移除</span
+                  <div class="list-info">
+                    <div class="list-info-top">
+                      <div class="list-info-name">
+                        <router-link
+                          :to="`/user/${user.sec_uid}`"
+                          class="link"
+                          @click="emit('close')"
                         >
-                        <div class="split-line"></div>
-                        <span class="btn" @click="handlePopup">取消</span>
+                          <span
+                            class="name-text"
+                            v-html="highlightKeyword(getDisplayName(user))"
+                          ></span>
+                        </router-link>
+                        <VerifyBadge :cert-info="user.account_cert_info" />
+                      </div>
+                      <div class="list-info-type" v-if="getCertLabel(user)">
+                        <span class="type-text">{{ getCertLabel(user) }}</span>
                       </div>
                     </div>
-                  </button>
-                </div>
-              </div>
-              <div class="list-bottom" v-show="!isPopup"></div>
-
-              <div class="list-item">
-                <div class="list-avatar">
-                  <a
-                    href="//www.douyin.com/user/MS4wLjABAAAAISMJwLxAdIyVnQkkPT9Rv1PRzBraeitmytvKlmZWhmE"
-                    class="link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <div class="avatar-component size" data-e2e="live-avatar">
-                      <img
-                        src="//p11.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-avt-0015_bc601ef2bf2e2e10a18325c426183525"
-                        alt="赵露思头像"
-                        class="avatar-img"
-                      />
-                    </div>
-                  </a>
-                </div>
-                <div class="list-info">
-                  <div class="list-info-top">
-                    <div class="list-info-name">
-                      <a
-                        href="//www.douyin.com/user/MS4wLjABAAAAISMJwLxAdIyVnQkkPT9Rv1PRzBraeitmytvKlmZWhmE"
-                        class="link"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <span class="name-text">赵露思</span>
-                      </a>
-                    </div>
-                    <div class="list-info-type">
-                      <span class="type-icon-2"></span>
-                      <span class="type-text">演员</span>
-                    </div>
-                  </div>
-                  <div class="list-info-signature">
-                    <span class="signature-text">微博：赵露思的微博</span>
-                  </div>
-                </div>
-
-                <div class="list-action attention">
-                  <button
-                    class="content-btn"
-                    :class="{ follow: !isAttention }"
-                    @click="handleAttention(1)"
-                  >
-                    <div class="btn-text">
-                      {{ isAttention ? '相互关注' : '关注' }}
-                    </div>
-                  </button>
-                  <button
-                    class="content-btn"
-                    :class="{
-                      popup: isPopup
-                    }"
-                  >
                     <div
-                      class="btn"
-                      :class="{ btnPopup: isPopup }"
-                      @click="handlePopup"
+                      class="list-info-douyin-id"
+                      v-if="searchKeyword && getDouyinId(user)"
                     >
-                      <div class="text">移除</div>
+                      <span class="douyin-id-label">抖音号：</span>
+                      <span
+                        class="douyin-id-text"
+                        v-html="highlightKeyword(getDouyinId(user))"
+                      ></span>
                     </div>
-
-                    <div class="pop-up-content" v-show="isPopup">
-                      <div class="pop-up-content-btn">
-                        <span class="btn-true" @click="handlePopup"
-                          >确认移除</span
-                        >
-                        <div class="split-line"></div>
-                        <span class="btn" @click="handlePopup">取消</span>
-                      </div>
+                    <div class="list-info-signature" v-else-if="user.signature">
+                      <span class="signature-text">{{ user.signature }}</span>
                     </div>
-                  </button>
-                </div>
-              </div>
-              <div class="list-bottom" v-show="!isPopup"></div>
-              <div class="tip" v-show="isPopup">
-                <div class="tip-content">
-                  <svg
-                    width="16"
-                    height="16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M8 16A8 8 0 108 0a8 8 0 000 16zM7 3.678C7 3.301 7.41 3 7.924 3h.205c.514 0 .924.301.924.678v5.343c0 .377-.41.679-.924.679h-.205C7.411 9.7 7 9.398 7 9.02V3.678zm.3 8.878a.95.95 0 01-.3-.683.95.95 0 01.3-.684 1.073 1.073 0 011.453 0c.19.179.3.43.3.684a.95.95 0 01-.3.683 1.073 1.073 0 01-1.452 0z"
-                      fill="#C4C4C4"
-                    ></path>
-                  </svg>
-                  <span
-                    >移除粉丝后对方将不再关注你，且不会收到通知，你也不会被推荐给对方</span
-                  >
-                </div>
-                <div class="list-bottom"></div>
-              </div>
-            </div>
+                  </div>
 
-            <div class="nomore">暂时没有更多了</div>
+                  <div class="list-action">
+                    <button
+                      class="content-btn"
+                      :class="{ follow: user.follow_status === 0 }"
+                      @click="handleFollow(user)"
+                    >
+                      <span class="btn-text">{{
+                        getFollowStatusText(user)
+                      }}</span>
+                    </button>
+                    <button
+                      v-if="activeTab === 'fans'"
+                      class="content-btn remove-btn"
+                      @click="handleRemoveFollower(user)"
+                    >
+                      <span class="btn-text">移除</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 加载更多 -->
+                <div v-if="isLoading" class="loading-more">
+                  <Loading :show="true" :isShowText="false" />
+                </div>
+                <div v-else-if="!hasMore" class="nomore">暂时没有更多了</div>
+              </div>
+
+              <div v-else-if="!isLoading" class="empty">
+                <span>{{
+                  searchKeyword ? '未找到匹配的用户' : '暂无数据'
+                }}</span>
+              </div>
+            </Loading>
           </div>
+
           <div class="mask-bg"></div>
         </div>
       </div>
@@ -394,10 +566,22 @@ const handlePopup = () => {
         line-height: 26px;
         margin-bottom: 22px;
         margin-right: 40px;
+        position: relative;
 
         &.active,
         &:hover {
           color: var(--color-text-t1);
+        }
+
+        &.active::after {
+          content: '';
+          position: absolute;
+          bottom: -10px;
+          left: 0;
+          width: 100%;
+          height: 3px;
+          background-color: var(--color-primary);
+          border-radius: 1px;
         }
       }
     }
@@ -409,14 +593,21 @@ const handlePopup = () => {
       .input-content {
         align-items: center;
         background: var(--color-secondary-default);
-        border-radius: 4px;
+        border-radius: 6px;
         display: flex;
         flex: 1 1;
         height: 32px;
         transition: all 0.3s;
+        margin-right: 24px;
+
+        &.expanded {
+          margin-right: 0;
+          border-radius: 6px;
+        }
 
         .search-icon {
           margin-left: 6px;
+          flex-shrink: 0;
 
           path {
             fill: var(--color-text-t4);
@@ -424,25 +615,27 @@ const handlePopup = () => {
         }
 
         .input-text {
-          background: var(--color-tertiary-default);
+          background: transparent;
           border: none;
           border-radius: 4px;
           color: var(--color-text-t1);
           flex: 1 1;
           height: 32px;
-
-          //去除点击时的蓝色边框
           outline: none;
 
           &::placeholder {
             color: rgb(117, 117, 117);
-            text-overflow: inherit;
-            white-space-collapse: preserve;
-            text-wrap: nowrap;
-            overflow-wrap: normal;
-            line-height: initial !important;
-            -webkit-user-modify: read-only !important;
-            overflow: hidden;
+          }
+        }
+
+        .clear-icon {
+          margin-right: 8px;
+          cursor: pointer;
+          flex-shrink: 0;
+          color: var(--color-text-t3);
+
+          &:hover {
+            color: var(--color-text-t1);
           }
         }
       }
@@ -498,14 +691,16 @@ const handlePopup = () => {
             &:hover {
               color: var(--color-text-t0);
             }
+
+            &.active {
+              color: var(--color-primary);
+            }
           }
         }
 
         &:hover {
-          .sort-icon {
-            path {
-              fill: var(--color-primary-hover);
-            }
+          .sort-icon path {
+            fill: var(--color-primary-hover);
           }
 
           .sort-text {
@@ -539,16 +734,19 @@ const handlePopup = () => {
   }
 }
 
-.user-fans-container {
+.user-list-container {
   margin: 0 -34px -20px;
   overflow-x: hidden;
   overflow-y: scroll;
   padding: 0 28px 0 40px;
+  flex: 1;
 
   .list-item {
     align-items: center;
     display: flex;
     margin: 17px 0;
+    padding-bottom: 17px;
+    border-bottom: 1px solid var(--color-line-l3);
   }
 
   .list-avatar {
@@ -557,13 +755,15 @@ const handlePopup = () => {
     }
 
     .avatar-component {
-      border: 1px solid var(--color-line-l3) !important;
+      border: 1px solid var(--color-line-l3);
       border-radius: 50%;
       box-sizing: content-box;
       flex-grow: 0;
       flex-shrink: 0;
       overflow: hidden;
       position: relative;
+      height: 60px;
+      width: 60px;
 
       .avatar-img {
         height: 100%;
@@ -571,11 +771,6 @@ const handlePopup = () => {
         width: 100%;
         border-radius: 50%;
       }
-    }
-
-    .size {
-      height: 60px;
-      width: 60px;
     }
   }
 
@@ -587,12 +782,15 @@ const handlePopup = () => {
     .list-info-top {
       display: flex;
       margin: 4px 0;
+      align-items: center;
 
       .list-info-name {
         color: var(--color-text-t1);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        display: flex;
+        align-items: center;
 
         .link {
           position: relative;
@@ -606,44 +804,34 @@ const handlePopup = () => {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+
+            &:hover {
+              color: var(--color-primary);
+            }
+
+            :deep(.highlight) {
+              color: var(--color-primary);
+            }
           }
         }
       }
 
       .list-info-type {
-        flex: 1 1;
+        flex-shrink: 0;
         font-size: 12px;
         font-weight: 400;
         line-height: 20px;
-        min-width: 45px;
         overflow: hidden;
         white-space: nowrap;
-
         align-items: center;
         display: flex;
-        // flex-shrink: 0;
-        justify-content: flex-start;
-        margin-left: 16px;
-
-        .type-icon {
-          height: 16px;
-          width: 16px;
-          background: var(--type-icon-1) no-repeat 50% / contain;
-        }
-
-        .type-icon-2 {
-          height: 16px;
-          width: 16px;
-          background: var(--type-icon-2) no-repeat 50% / contain;
-        }
+        margin-left: 8px;
 
         .type-text {
           color: var(--color-text-t3);
-          flex: 1 1;
           font-size: 12px;
           font-weight: 400;
           line-height: 20px;
-          margin-left: 4px;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
@@ -659,8 +847,7 @@ const handlePopup = () => {
       white-space: nowrap;
 
       .signature-text {
-        color: var(--color-text-t1);
-
+        color: var(--color-text-t3);
         font-size: 12px;
         font-weight: 400;
         line-height: 20px;
@@ -669,40 +856,50 @@ const handlePopup = () => {
         white-space: nowrap;
       }
     }
+
+    .list-info-douyin-id {
+      margin: 4px 0;
+      font-size: 12px;
+      line-height: 20px;
+
+      .douyin-id-label {
+        color: var(--color-text-t3);
+      }
+
+      .douyin-id-text {
+        color: var(--color-text-t3);
+
+        :deep(.highlight) {
+          color: var(--color-primary);
+        }
+      }
+    }
   }
 
   .list-action {
     align-items: center;
     display: flex;
     justify-content: center;
-    width: 168px;
-
-    &.attention {
-      width: unset;
-    }
 
     .content-btn {
-      min-width: unset;
+      min-width: 88px;
+      width: 68px;
       opacity: 1;
       transition: all 0.2s;
-      width: 68px;
-
       background-color: var(--secondary-bg-color);
-      color: var(--color-text-t3);
-
-      border-radius: 4px;
+      color: var(--color-text-t1);
+      border-radius: 10px;
       font-size: 14px;
-      height: 32px;
-
+      height: 36px;
       align-items: center;
       border: 0;
       cursor: pointer;
       display: inline-flex;
       justify-content: center;
-      margin: 0 8px;
       outline: none;
       padding: 0 16px;
       position: relative;
+      margin: 0 8px;
 
       &:hover {
         background-color: var(--secondary-bg-color-hover);
@@ -717,110 +914,28 @@ const handlePopup = () => {
         }
       }
 
+      &.remove-btn {
+        margin-left: 8px;
+        min-width: auto;
+        color: var(--color-text-t3);
+
+        &:hover {
+          background-color: var(--color-bg-b3);
+          border-color: var(--color-line-l1);
+        }
+      }
+
       .btn-text {
         font-size: 14px;
         font-weight: 500;
-        min-width: 56px;
-      }
-
-      .btn {
-        .text {
-          font-size: 14px;
-          font-weight: 500;
-          min-width: 36px;
-        }
-
-        &.btnPopup {
-          opacity: 0;
-          transition: all 0.2s;
-          width: 0;
-          overflow: hidden;
-        }
-      }
-
-      &.popup {
-        min-width: 68px;
-        width: unset;
-      }
-
-      .pop-up-content {
-        align-items: center;
-        display: flex;
-        transition: all 0.2s;
-        width: 120px;
-
-        .pop-up-content-btn {
-          display: flex;
-
-          font-weight: 500;
-          min-width: 120px;
-
-          .btn-true,
-          .btn {
-            opacity: 1;
-            transition: all 0.2s;
-          }
-
-          .btn-true {
-            color: #ff2c55;
-            font-size: 14px;
-          }
-
-          .btn {
-            font-size: 14px;
-          }
-
-          .split-line {
-            opacity: 1;
-            transition: all 0.2s;
-            background-color: #c9c9cc;
-            display: block;
-            height: 11px;
-            margin: 4px 17px 0 17px;
-            position: relative;
-            width: 1px;
-          }
-        }
       }
     }
   }
 
-  .list-bottom {
-    background-color: var(--color-line-l3);
-    height: 1px;
-    min-height: 1px;
-    position: relative;
-    width: 100%;
-  }
-
-  .tip {
-    transition: height 0.3s;
-
-    .tip-content {
-      height: 41px;
-      margin: -8px 8px 12px 0;
-
-      align-items: center;
-      background: var(--color-bg-b3);
-      border-radius: 4px;
-      display: flex;
-      // height: 0;
-      justify-content: center;
-      transition: height 0.3s;
-
-      svg {
-        path {
-          fill: var(--color-text-t3);
-        }
-      }
-
-      span {
-        color: var(--color-text-t3);
-
-        font-weight: 400;
-        margin-left: 10px;
-      }
-    }
+  .loading-more {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
   }
 
   .nomore {
@@ -831,6 +946,15 @@ const handlePopup = () => {
     justify-content: center;
     line-height: 20px;
     min-height: 100px;
+  }
+
+  .empty {
+    align-items: center;
+    color: var(--color-text-t4);
+    display: flex;
+    font-size: 14px;
+    justify-content: center;
+    min-height: 200px;
   }
 }
 

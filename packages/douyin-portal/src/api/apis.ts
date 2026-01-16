@@ -38,12 +38,16 @@ import type { IVsRecordRes } from './tyeps/request_response/vsRecord'
 import type { IWatchLaterListRes } from './tyeps/request_response/watchLaterListRes'
 import type { IImRelationRes } from './tyeps/request_response/imRelationRes'
 import type { IImRelationParams } from './tyeps/request_params/imRelationParams'
-import type { IAtListRes, IAtListParams } from './tyeps/request_response/atListRes'
+import type {
+  IAtListRes,
+  IAtListParams
+} from './tyeps/request_response/atListRes'
 import type { ISeriesListRes } from './tyeps/request_response/seriesListRes'
 import type { IPrivateAwemeRes } from './tyeps/request_response/privateAwemeRes'
 import type { IFollowFeedRes } from './tyeps/request_response/followFeedRes'
 import type { IFollowFeedParams } from './tyeps/request_params/followFeedParams'
 import type { IFollowingListRes } from './tyeps/request_response/followingListRes'
+import type { IFollowerListRes } from './tyeps/request_response/followerListRes'
 import type { IFollowLiveFeedRes } from './tyeps/request_response/followLiveFeedRes'
 
 import urls from './urls'
@@ -237,10 +241,10 @@ export default {
   },
   /**
    * @description 获取用户粉丝列表
-   * @return {Promise<IUserPostRes>} 用户粉丝列表
+   * @return {Promise<IFollowerListRes>} 用户粉丝列表
    */
-  getFollowerList: (params: IFollowerParams): Promise<IUserPostRes> => {
-    return request.get(urls.user_follow, {
+  getFollowerList: (params: IFollowerParams): Promise<IFollowerListRes> => {
+    return request.get(urls.user_fans, {
       params
     })
   },
@@ -589,11 +593,48 @@ export default {
    * @param {string} scene 场景 aweme_pc_follow_top
    * @return {Promise<IFollowLiveFeedRes>} 关注直播列表
    */
-  getFollowLiveFeed: (scene: string = 'aweme_pc_follow_top'): Promise<IFollowLiveFeedRes> => {
+  getFollowLiveFeed: (
+    scene: string = 'aweme_pc_follow_top'
+  ): Promise<IFollowLiveFeedRes> => {
     return request.get(urls.follow_live_feed, {
       params: {
         scene
       }
+    })
+  },
+
+  /**
+   * @description 移除粉丝
+   * @param {string} user_id 要移除的粉丝用户ID
+   * @param {string} sec_user_id 要移除的粉丝sec_user_id
+   * @return {Promise<{ status_code: number }>} 移除结果
+   */
+  removeFollower: (
+    user_id: string,
+    sec_user_id: string
+  ): Promise<{ status_code: number }> => {
+    return request.post(urls.remove_follower, {
+      user_id,
+      sec_user_id
+    })
+  },
+
+  /**
+   * @description 关注/取消关注用户
+   * @param {string} user_id 用户ID
+   * @param {string} sec_user_id 用户sec_user_id
+   * @param {number} type 操作类型 1=关注 0=取消关注
+   * @return {Promise<{ status_code: number, follow_status: number }>} 操作结果
+   */
+  followUser: (
+    user_id: string,
+    sec_user_id: string,
+    type: number
+  ): Promise<{ status_code: number; follow_status: number }> => {
+    return request.post(urls.follow_user, {
+      user_id,
+      sec_user_id,
+      type
     })
   }
 }

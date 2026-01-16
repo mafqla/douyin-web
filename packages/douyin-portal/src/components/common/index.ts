@@ -7,6 +7,7 @@ import downloadBtn from './download-btn.vue'
 import HoverDropdown from './hover-dropdown/index.vue'
 import DySkeleton from './dy-skeleton/index.vue'
 import DySkeletonItem from './dy-skeleton/dy-skeleton-item.vue'
+import VerifyBadge from './verify-badge.vue'
 
 export {
   ListFooter,
@@ -17,5 +18,6 @@ export {
   downloadBtn,
   HoverDropdown,
   DySkeleton,
-  DySkeletonItem
+  DySkeletonItem,
+  VerifyBadge
 }

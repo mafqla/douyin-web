@@ -59,7 +59,10 @@ const getFollowingList = async (isLoadMore = false) => {
     })
 
     if (res?.followings) {
-      followingList.value.push(...res.followings)
+      // 去重：只添加不存在的用户
+      const existingIds = new Set(followingList.value.map((u) => u.uid))
+      const newUsers = res.followings.filter((u) => !existingIds.has(u.uid))
+      followingList.value.push(...newUsers)
       // 更新偏移量
       followingOffset.value += res.followings.length
       // 判断是否还有更多
@@ -294,7 +297,11 @@ const userVideoLoading = ref(false)
 
 // 加载更多用户视频
 const handleLoadMoreUserVideos = async () => {
-  if (userVideoLoading.value || !userVideoHasMore.value || !selectedUserId.value) {
+  if (
+    userVideoLoading.value ||
+    !userVideoHasMore.value ||
+    !selectedUserId.value
+  ) {
     return
   }
 

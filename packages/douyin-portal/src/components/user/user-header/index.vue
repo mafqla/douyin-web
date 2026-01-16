@@ -2,6 +2,7 @@
 import type { IUserDetailRes } from '@/api/tyeps/request_response/userDetailRes'
 import { type PropType, computed, ref } from 'vue'
 import dyAvatar from '@/components/common/dy-avatar.vue'
+import { VerifyBadge } from '@/components/common'
 import { useCount } from '@/hooks'
 import userConnectionsPopup from './user-connections-popup.vue'
 
@@ -93,9 +94,12 @@ const accountCertLabel = computed(() => {
       <div class="user-name">
         <h1 class="user-name-login">
           <span class="bage-name">{{ userInfo.user?.nickname }}</span>
+          <VerifyBadge
+            :cert-info="userInfo.user?.account_cert_info"
+            :size="16"
+          />
         </h1>
         <div class="user-bage" v-if="accountCertLabel">
-          <div class="bage-icon"></div>
           <span class="bage-name">{{ accountCertLabel }}</span>
         </div>
       </div>
@@ -115,7 +119,12 @@ const accountCertLabel = computed(() => {
         <modal :open="isOpenConnect" @close="isOpenConnect = false">
           <user-connections-popup
             :connect="connect"
+            :user_id="userInfo.user?.uid"
+            :user_sec_id="userInfo.user?.sec_uid"
+            :followers_count="userInfo.user?.mplatform_followers_count"
+            :following_count="userInfo.user?.following_count"
             @close="isOpenConnect = false"
+          />
           />
         </modal>
         <div class="user-item">
@@ -210,6 +219,9 @@ const accountCertLabel = computed(() => {
         margin-bottom: 14px;
       }
       .user-name-login {
+        display: flex;
+        align-items: center;
+
         span {
           color: var(--color-text-t1);
           display: block;
@@ -230,19 +242,11 @@ const accountCertLabel = computed(() => {
         display: flex;
         flex: 1;
 
-        .bage-icon {
-          height: 16px;
-          width: 16px;
-          text-indent: -99999px;
-          background: url(https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/ies/douyin_web/media/douyin-pc-icons-color@ic_verify_yellow_outlined.4a5e14eb950c5d79.svg)
-            50% / contain no-repeat;
-        }
         .bage-name {
           color: var(--color-text-t3);
           text-overflow: ellipsis;
           white-space: nowrap;
           flex: 1;
-          margin-left: 4px;
           font-size: 12px;
           font-weight: 400;
           line-height: 20px;

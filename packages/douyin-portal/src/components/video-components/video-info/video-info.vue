@@ -2,13 +2,14 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import type { ISegment } from '@/api/tyeps/common/aweme'
 import formatTime from '@/utils/date-format'
+import { VerifyBadge } from '@/components/common'
 
 const props = defineProps<{
   username: string
   uploadTime: string | number
   description: string
   textExtra: ISegment[]
-  verificationType?: number
+  accountCertInfo?: string | null
 }>()
 
 const videoInfoRef = ref<HTMLElement | null>(null)
@@ -49,14 +50,7 @@ onUnmounted(() => {
     <div class="video-info-top">
       <div class="video-info-author">
         <span>@{{ props.username }}</span>
-        <span
-          v-if="props.verificationType === 1"
-          class="verify-badge yellow "
-        ></span>
-        <span
-          v-else-if="props.verificationType === 2"
-          class="verify-badge  red"
-        ></span>
+        <VerifyBadge :cert-info="props.accountCertInfo" :size="16" />
       </div>
       <div class="video-info-time">
         <span> · {{ formatTime(props.uploadTime) }}</span>
@@ -102,24 +96,6 @@ onUnmounted(() => {
       &:hover {
         text-decoration: underline;
         background-color: transparent;
-      }
-
-      .verify-badge {
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        margin-left: 4px;
-        flex-shrink: 0;
-
-        &.red {
-          background: url('https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/ies/douyin_web/media/douyin-pc-icons-color@ic_verify_red_filled.4ec9a1314e2180d3.svg')
-            no-repeat center / contain;
-        }
-
-        &.yellow {
-          background: url('https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/ies/douyin_web/media/douyin-pc-icons-color@ic_verify_yellow_outlined.4a5e14eb950c5d79.svg')
-            no-repeat center / contain;
-        }
       }
     }
     @media (max-width: 1440px) {

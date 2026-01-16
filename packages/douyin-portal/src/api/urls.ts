@@ -75,6 +75,10 @@ export default {
   // 关注视频流
   follow_feed: '/aweme/v1/web/follow/feed/',
   // 关注直播列表
-  follow_live_feed: '/webcast/web/feed/follow/'
+  follow_live_feed: '/webcast/web/feed/follow/',
+  // 移除粉丝
+  remove_follower: '/aweme/v1/web/user/follower/remove/',
+  // 关注/取消关注用户
+  follow_user: '/aweme/v1/web/commit/follow/user/'
   // ----------------- 测试dy-url -----------------
 }
