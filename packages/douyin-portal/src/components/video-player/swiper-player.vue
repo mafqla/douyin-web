@@ -182,6 +182,7 @@ const thumbnail = computed(() => {
             :text-extra="props.awemeInfo?.text_extra ?? []"
             :account-cert-info="authorAccountCertInfo"
             :cooperation-info="props.awemeInfo.cooperation_info"
+            :author="props.awemeInfo.author"
             :is-image-text="props.awemeInfo.aweme_type === 68"
             :is-live-photo="props.awemeInfo.is_live_photo === 1"
           />
@@ -224,6 +225,7 @@ const thumbnail = computed(() => {
             :text-extra="props.awemeInfo?.text_extra ?? []"
             :account-cert-info="authorAccountCertInfo"
             :cooperation-info="props.awemeInfo.cooperation_info"
+            :author="props.awemeInfo.author"
             :is-image-text="props.awemeInfo.aweme_type === 68"
             :is-live-photo="props.awemeInfo.is_live_photo === 1"
           />

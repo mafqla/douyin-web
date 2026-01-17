@@ -79,6 +79,8 @@ export default {
   // 移除粉丝
   remove_follower: '/aweme/v1/web/user/follower/remove/',
   // 关注/取消关注用户
-  follow_user: '/aweme/v1/web/commit/follow/user/'
+  follow_user: '/aweme/v1/web/commit/follow/user/',
+  // 音乐详情
+  music_detail: '/aweme/v1/web/music/detail/'
   // ----------------- 测试dy-url -----------------
 }

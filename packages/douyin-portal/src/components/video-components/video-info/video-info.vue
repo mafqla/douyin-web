@@ -14,15 +14,21 @@ const props = defineProps<{
   cooperationInfo?: ICooperationInfo
   isImageText?: boolean
   isLivePhoto?: boolean
+  author?: any // 当前作者信息
 }>()
 
 const videoInfoRef = ref<HTMLElement | null>(null)
 const maxWidth = ref('485px')
 const minWidth = ref('285px')
 
-// 共创者列表
+// 共创者列表（包含当前作者）
 const coCreators = computed(() => {
-  return props.cooperationInfo?.co_creators || []
+  const creators = props.cooperationInfo?.co_creators || []
+  // 如果有共创信息且有作者信息，将作者添加到列表开头
+  if (creators.length > 0 && props.author) {
+    return [props.author, ...creators]
+  }
+  return creators
 })
 
 const calcMaxWidth = () => {

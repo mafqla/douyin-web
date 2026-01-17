@@ -1,39 +1,27 @@
 <script setup lang="ts">
-import type { PropType } from 'vue'
 import { ref, onUnmounted } from 'vue'
 import { Toast } from '@/components/ui/toast'
+import { useCount } from '@/hooks/useCount'
+import apis from '@/api/apis'
+import type { IMusicInfo } from '@/api/tyeps/request_response/musicDetailRes'
 
-const props = defineProps({
-  // 关注状态: 0-未关注, 1-已关注, 2-互相关注, 3-已关注(特殊)
-  isAttent: {
-    type: Number as PropType<number>,
-    default: 0
-  },
-  // 音乐名称
-  musicName: {
-    type: String,
-    default: ''
-  },
-  // 音乐使用人数
-  musicUseCount: {
-    type: [Number, String] as PropType<number | string>,
-    default: 0
-  },
-  // 视频ID
-  awemeId: {
-    type: String,
-    default: ''
-  },
-  // 用户ID
-  userId: {
-    type: String,
-    default: ''
-  },
-  // 音乐播放地址
-  musicPlayUrl: {
-    type: Array as PropType<string[]>,
-    default: () => []
-  }
+/** 组件 Props 接口 */
+interface Props {
+  /** 关注状态: 0-未关注, 1-已关注, 2-互相关注, 3-已关注(特殊) */
+  isAttent?: number
+  /** 音乐ID（用于获取音乐详情） */
+  musicId?: string
+  /** 视频ID */
+  awemeId?: string
+  /** 用户ID */
+  userId?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  isAttent: 0,
+  musicId: '',
+  awemeId: '',
+  userId: ''
 })
 
 const emit = defineEmits<{
@@ -50,6 +38,39 @@ const emit = defineEmits<{
 // 音乐播放状态
 const isPlaying = ref(false)
 const audioRef = ref<HTMLAudioElement | null>(null)
+
+// 音乐详情数据
+const musicDetailRef = ref<IMusicInfo | null>(null)
+const isLoadingMusicDetail = ref(false)
+
+// 获取音乐详情
+const fetchMusicDetail = async () => {
+  if (!props.musicId) {
+    return
+  }
+
+  // 如果已经加载过相同的音乐，不重复加载
+  if (musicDetailRef.value && musicDetailRef.value.id_str === props.musicId) {
+    return
+  }
+
+  isLoadingMusicDetail.value = true
+  
+  try {
+    const response = await apis.getMusicDetail(props.musicId, 1)
+    
+    if (response.status_code === 0 && response.music_info) {
+      musicDetailRef.value = response.music_info
+    }
+  } catch (error) {
+    console.error('获取音乐详情出错:', error)
+  } finally {
+    isLoadingMusicDetail.value = false
+  }
+}
+
+// 立即调用（在 setup 顶层，比 onBeforeMount 更早）
+fetchMusicDetail()
 
 // 处理推荐
 const handleRecommend = () => {
@@ -101,13 +122,15 @@ const handleCollectMusic = () => {
 
 // 播放/暂停音乐
 const togglePlayMusic = () => {
-  if (!props.musicPlayUrl?.length) {
+  const playUrls = musicDetailRef.value?.play_url?.url_list || []
+
+  if (!playUrls.length) {
     Toast.warning('暂无音乐播放地址')
     return
   }
 
   if (!audioRef.value) {
-    audioRef.value = new Audio(props.musicPlayUrl[0])
+    audioRef.value = new Audio(playUrls[0])
     audioRef.value.onended = () => {
       isPlaying.value = false
     }
@@ -126,7 +149,15 @@ const togglePlayMusic = () => {
 const isDownloading = ref(false)
 
 const downloadMusic = async () => {
-  if (!props.musicPlayUrl?.length) {
+  // 检查是否允许下载
+  if (musicDetailRef.value?.prevent_download) {
+    Toast.warning('该音乐不允许下载')
+    return
+  }
+
+  const playUrls = musicDetailRef.value?.play_url?.url_list || []
+
+  if (!playUrls.length) {
     Toast.warning('暂无音乐下载地址')
     return
   }
@@ -137,14 +168,13 @@ const downloadMusic = async () => {
   }
 
   isDownloading.value = true
-  const fileName = `${props.musicName || '原声音乐'}.mp3`
+  const fileName = `${musicDetailRef.value?.title || '原声音乐'}.mp3`
 
   Toast.info('正在下载原声...')
 
   // 遍历所有下载地址，直到成功
-  for (let i = 0; i < props.musicPlayUrl.length; i++) {
-    let url = props.musicPlayUrl[i]
-    console.log(`尝试下载音乐地址 ${i + 1}/${props.musicPlayUrl.length}:`, url)
+  for (let i = 0; i < playUrls.length; i++) {
+    let url = playUrls[i]
 
     // 将抖音相关域名转换为代理地址
     if (url.includes('douyin.com')) {
@@ -153,19 +183,15 @@ const downloadMusic = async () => {
 
     try {
       const response = await fetch(url)
-      console.log('响应状态:', response.status, response.statusText)
 
       if (!response.ok) {
-        console.warn(`地址 ${i + 1} 失败: ${response.status}`)
         continue
       }
 
       const blob = await response.blob()
-      console.log('Blob 大小:', blob.size, 'bytes')
 
       // 检查是否是有效的音频文件
       if (blob.size < 1000) {
-        console.warn(`地址 ${i + 1} 返回数据太小，跳过`)
         continue
       }
 
@@ -185,7 +211,6 @@ const downloadMusic = async () => {
       isDownloading.value = false
       return
     } catch (error) {
-      console.warn(`地址 ${i + 1} 下载失败:`, error)
       continue
     }
   }
@@ -410,9 +435,13 @@ onUnmounted(() => {
                 fill-opacity="0.8"
               ></path>
             </svg>
-            <span class="music-name">{{ musicName || '原声音乐' }}</span>
+            <span class="music-name">
+              {{ musicDetailRef?.title }}
+            </span>
           </div>
-          <div class="more-music-num">{{ musicUseCount }}人使用</div>
+          <div class="more-music-num">
+            {{ useCount(musicDetailRef?.user_count || 0) }}人使用
+          </div>
         </div>
       </div>
       <!-- 音乐操作按钮 -->

@@ -49,6 +49,7 @@ import type { IFollowFeedParams } from './tyeps/request_params/followFeedParams'
 import type { IFollowingListRes } from './tyeps/request_response/followingListRes'
 import type { IFollowerListRes } from './tyeps/request_response/followerListRes'
 import type { IFollowLiveFeedRes } from './tyeps/request_response/followLiveFeedRes'
+import type { IMusicDetailRes } from './tyeps/request_response/musicDetailRes'
 
 import urls from './urls'
 import type { IuserLocatePostParams } from './tyeps/request_params/userLocatePostParams'
@@ -635,6 +636,24 @@ export default {
       user_id,
       sec_user_id,
       type
+    })
+  },
+
+  /**
+   * @description 获取音乐详情
+   * @param {string} music_id 音乐ID
+   * @param {number} scene 场景 默认1
+   * @return {Promise<IMusicDetailRes>} 音乐详情
+   */
+  getMusicDetail: (
+    music_id: string,
+    scene: number = 1
+  ): Promise<IMusicDetailRes> => {
+    return request.get(urls.music_detail, {
+      params: {
+        music_id,
+        scene
+      }
     })
   }
 }
