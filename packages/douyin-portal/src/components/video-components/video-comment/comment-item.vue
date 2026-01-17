@@ -293,6 +293,65 @@ const handleCopyLink = () => {
   console.log('复制评论链接:', getCommentShareUrl())
   closeSharePanel()
 }
+
+// 图片 URL 索引映射，用于跟踪每张图片当前尝试的 URL 索引
+const imageUrlIndexMap = ref<Map<string, number>>(new Map())
+
+// 获取图片的所有可用 URL 列表
+const getImageUrls = (item: any): string[] => {
+  const urls: string[] = []
+  
+  // 收集所有可能的 URL
+  if (item.medium_url?.url_list) {
+    urls.push(...item.medium_url.url_list.filter((url: string) => url))
+  }
+  if (item.thumb_url?.url_list) {
+    urls.push(...item.thumb_url.url_list.filter((url: string) => url))
+  }
+  if (item.origin_url?.url_list) {
+    urls.push(...item.origin_url.url_list.filter((url: string) => url))
+  }
+  
+  // 去重
+  return [...new Set(urls)]
+}
+
+// 处理图片加载错误，自动切换到下一个 URL
+const handleImageError = (event: Event, imageKey: string, item: any) => {
+  const img = event.target as HTMLImageElement
+  const currentIndex = imageUrlIndexMap.value.get(imageKey) || 0
+  const allUrls = getImageUrls(item)
+  
+  // console.warn('图片加载失败，尝试下一个 URL:', {
+  //   currentUrl: img.src,
+  //   currentIndex,
+  //   totalUrls: allUrls.length
+  // })
+  
+  // 尝试下一个 URL
+  const nextIndex = currentIndex + 1
+  if (nextIndex < allUrls.length) {
+    imageUrlIndexMap.value.set(imageKey, nextIndex)
+    img.src = allUrls[nextIndex]
+  } else {
+    console.error('所有图片 URL 都加载失败:', {
+      commentId: props.cid,
+      imageItem: item,
+      allUrls
+    })
+    // 所有 URL 都失败了，显示占位符
+    img.style.opacity = '0.3'
+    img.style.background = 'var(--color-bg-b2)'
+  }
+}
+
+// 获取图片的初始 URL
+const getInitialImageUrl = (item: any, index: number): string => {
+  const imageKey = `${props.cid}-${index}`
+  imageUrlIndexMap.value.set(imageKey, 0)
+  const urls = getImageUrls(item)
+  return urls[0] || ''
+}
 </script>
 <template>
   <div class="comment-item">
@@ -360,17 +419,14 @@ const handleCopyLink = () => {
               <div
                 class="img-box"
                 v-for="(item, index) in props.image_list"
-                :key="item.medium_url.uri"
+                :key="`${props.cid}-${index}`"
               >
                 <div class="img-inner">
                   <img
-                    :src="
-                      item.medium_url.url_list[1] ??
-                      item.medium_url.url_list[0] ??
-                      item.origin_url.url_list[2]
-                    "
+                    :src="getInitialImageUrl(item, index)"
                     alt="comment_img"
                     @click="openPreview(index)"
+                    @error="(e) => handleImageError(e, `${props.cid}-${index}`, item)"
                   />
                 </div>
               </div>
@@ -706,6 +762,9 @@ const handleCopyLink = () => {
 
             .img-inner {
               position: relative;
+              background: var(--color-bg-b2);
+              border-radius: 8px;
+              overflow: hidden;
 
               img {
                 min-width: 90px;
@@ -715,6 +774,10 @@ const handleCopyLink = () => {
                 cursor: zoom-in;
                 justify-content: flex-start;
                 border-radius: 8px;
+                
+                &[src=""], &:not([src]) {
+                  opacity: 0;
+                }
               }
             }
           }

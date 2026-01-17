@@ -182,10 +182,14 @@ const allImages = computed(() => {
   commentList.value.forEach((comment) => {
     if (comment.image_list) {
       comment.image_list.forEach((item) => {
-        const url =
-          item.origin_url?.url_list?.[1] ??
-          item.origin_url?.url_list?.[0] ??
-          item.medium_url?.url_list?.[2]
+        // 收集所有可用的 URL
+        const urls: string[] = []
+        if (item.medium_url?.url_list) urls.push(...item.medium_url.url_list)
+        if (item.thumb_url?.url_list) urls.push(...item.thumb_url.url_list)
+        if (item.origin_url?.url_list) urls.push(...item.origin_url.url_list)
+        
+        // 使用第一个可用的 URL
+        const url = urls.find(u => u)
         if (url) images.push({ url, alt: 'comment_img', cid: comment.cid })
       })
     }

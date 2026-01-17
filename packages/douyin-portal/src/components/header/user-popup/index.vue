@@ -1,47 +1,48 @@
 <script setup lang="ts">
-const {
-  src,
-  nickname,
-  likeCount,
-  followersCount,
-  followingsCount,
-  postsCount
-} = defineProps({
-  isLogin: {
-    type: Boolean,
-    required: true,
-    default: false
-  },
-  src: {
-    type: String,
-    default: ''
-  },
-  nickname: {
-    type: String
-  },
-  likeCount: {
-    type: Number
-  },
-  // 关注
-  followingsCount: {
-    type: Number
-  },
-  // 粉丝
-  followersCount: {
-    type: Number
-  },
-  postsCount: {
-    type: Number
-  },
-  //收藏数量
-  collectCount: {
-    type: Number
-  },
-  // 稍后再看
-  watchLaterCount: {
-    type: Number
-  }
+import { ref } from 'vue'
+
+interface VideoPreview {
+  cover: string
+  title: string
+  id: string
+}
+
+interface Props {
+  isLogin: boolean
+  src?: string
+  nickname?: string
+  likeCount?: number
+  followingsCount?: number
+  followersCount?: number
+  postsCount?: number
+  collectCount?: number
+  watchLaterCount?: number
+  likeVideos?: VideoPreview[]
+  collectVideos?: VideoPreview[]
+  historyVideos?: VideoPreview[]
+  watchLaterVideos?: VideoPreview[]
+  myPostVideos?: VideoPreview[]
+}
+
+withDefaults(defineProps<Props>(), {
+  isLogin: false,
+  src: '',
+  nickname: '',
+  likeCount: 0,
+  followingsCount: 0,
+  followersCount: 0,
+  postsCount: 0,
+  collectCount: 0,
+  watchLaterCount: 0,
+  likeVideos: () => [],
+  collectVideos: () => [],
+  historyVideos: () => [],
+  watchLaterVideos: () => [],
+  myPostVideos: () => []
 })
+
+// 当前悬停的项目
+const hoveredItem = ref<string | null>('like') // 默认为 null，显示"我的喜欢"
 </script>
 <template>
   <div class="right-popover">
@@ -85,50 +86,131 @@ const {
             </div>
           </div>
           <div class="user-profile-actions">
-            <router-link to="/user/self?showTab=like" class="action-link">
-              <svg-icon class="icon" icon="like" />
-              <p class="action-link-text">我的喜欢</p>
-              <p class="action-link-num">
-                {{ likeCount }}
-              </p>
-              <svg-icon class="chevron-right" icon="chevron-right" />
-            </router-link>
-            <router-link
-              to="/user/self?showTab=favorite_collection"
-              class="action-link"
+            <!-- 我的喜欢 - 带视频预览 -->
+            <div 
+              class="action-section"
+              @mouseenter="hoveredItem = 'like'"
             >
-              <svg-icon class="icon" icon="my-collect" />
-              <p class="action-link-text">我的收藏</p>
-              <p class="action-link-num">
-                {{ collectCount }}
-              </p>
-              <svg-icon class="chevron-right" icon="chevron-right" />
-            </router-link>
-            <router-link to="/user/self?showTab=record" class="action-link">
-              <svg-icon class="icon" icon="history" />
-              <p class="action-link-text">观看历史</p>
-              <p class="action-link-num" v-if="isLogin">30天内</p>
-              <svg-icon class="chevron-right" icon="chevron-right" />
-            </router-link>
-            <router-link
-              to="/user/self?showTab=watch_later"
-              class="action-link"
+              <router-link to="/user/self?showTab=like" class="action-link-header">
+                <svg-icon class="icon" icon="like" />
+                <p class="action-link-text">我的喜欢</p>
+                <p class="action-link-num">{{ likeCount }}</p>
+                <svg-icon class="chevron-right" icon="chevron-right" />
+              </router-link>
+              <div class="video-preview-list" v-if="(hoveredItem === 'like') && likeVideos.length > 0">
+                <router-link
+                  v-for="video in likeVideos.slice(0, 3)"
+                  :key="video.id"
+                  :to="`/video/${video.id}`"
+                  class="video-preview-item"
+                >
+                  <img :src="video.cover" :alt="video.title" class="video-cover" />
+                  <p class="video-title">{{ video.title }}</p>
+                </router-link>
+              </div>
+            </div>
+
+            <!-- 我的收藏 - 带视频预览 -->
+            <div 
+              class="action-section"
+              @mouseenter="hoveredItem = 'collect'"
             >
-              <svg-icon class="icon" icon="watch-later" />
-              <p class="action-link-text">稍后再看</p>
-              <p class="action-link-num">
-                {{ watchLaterCount }}
-              </p>
-              <svg-icon class="chevron-right" icon="chevron-right" />
-            </router-link>
-            <router-link to="/user/self?showTab=posts" class="action-link">
-              <svg-icon class="icon" icon="zuopin" />
-              <p class="action-link-text">我的作品</p>
-              <p class="action-link-num">
-                {{ postsCount }}
-              </p>
-              <svg-icon class="chevron-right" icon="chevron-right" />
-            </router-link>
+              <router-link
+                to="/user/self?showTab=favorite_collection"
+                class="action-link-header"
+              >
+                <svg-icon class="icon" icon="my-collect" />
+                <p class="action-link-text">我的收藏</p>
+                <p class="action-link-num">{{ collectCount }}</p>
+                <svg-icon class="chevron-right" icon="chevron-right" />
+              </router-link>
+              <div class="video-preview-list" v-if="hoveredItem === 'collect' && collectVideos.length > 0">
+                <router-link
+                  v-for="video in collectVideos.slice(0, 3)"
+                  :key="video.id"
+                  :to="`/video/${video.id}`"
+                  class="video-preview-item"
+                >
+                  <img :src="video.cover" :alt="video.title" class="video-cover" />
+                  <p class="video-title">{{ video.title }}</p>
+                </router-link>
+              </div>
+            </div>
+
+            <!-- 观看历史 - 带视频预览 -->
+            <div 
+              class="action-section"
+              @mouseenter="hoveredItem = 'history'"
+            >
+              <router-link to="/user/self?showTab=record" class="action-link-header">
+                <svg-icon class="icon" icon="history" />
+                <p class="action-link-text">观看历史</p>
+                <p class="action-link-num" v-if="isLogin">30天内</p>
+                <svg-icon class="chevron-right" icon="chevron-right" />
+              </router-link>
+              <div class="video-preview-list" v-if="hoveredItem === 'history' && historyVideos.length > 0">
+                <router-link
+                  v-for="video in historyVideos.slice(0, 3)"
+                  :key="video.id"
+                  :to="`/video/${video.id}`"
+                  class="video-preview-item"
+                >
+                  <img :src="video.cover" :alt="video.title" class="video-cover" />
+                  <p class="video-title">{{ video.title }}</p>
+                </router-link>
+              </div>
+            </div>
+
+            <!-- 稍后再看 - 带视频预览 -->
+            <div 
+              class="action-section"
+              @mouseenter="hoveredItem = 'watchLater'"
+            >
+              <router-link
+                to="/user/self?showTab=watch_later"
+                class="action-link-header"
+              >
+                <svg-icon class="icon" icon="watch-later" />
+                <p class="action-link-text">稍后再看</p>
+                <p class="action-link-num">{{ watchLaterCount }}</p>
+                <svg-icon class="chevron-right" icon="chevron-right" />
+              </router-link>
+              <div class="video-preview-list" v-if="hoveredItem === 'watchLater' && watchLaterVideos.length > 0">
+                <router-link
+                  v-for="video in watchLaterVideos.slice(0, 3)"
+                  :key="video.id"
+                  :to="`/video/${video.id}`"
+                  class="video-preview-item"
+                >
+                  <img :src="video.cover" :alt="video.title" class="video-cover" />
+                  <p class="video-title">{{ video.title }}</p>
+                </router-link>
+              </div>
+            </div>
+
+            <!-- 我的作品 - 带视频预览 -->
+            <div 
+              class="action-section"
+              @mouseenter="hoveredItem = 'posts'"
+            >
+              <router-link to="/user/self?showTab=posts" class="action-link-header">
+                <svg-icon class="icon" icon="zuopin" />
+                <p class="action-link-text">我的作品</p>
+                <p class="action-link-num">{{ postsCount }}</p>
+                <svg-icon class="chevron-right" icon="chevron-right" />
+              </router-link>
+              <div class="video-preview-list" v-if="hoveredItem === 'posts' && myPostVideos.length > 0">
+                <router-link
+                  v-for="video in myPostVideos.slice(0, 3)"
+                  :key="video.id"
+                  :to="`/video/${video.id}`"
+                  class="video-preview-item"
+                >
+                  <img :src="video.cover" :alt="video.title" class="video-cover" />
+                  <p class="video-title">{{ video.title }}</p>
+                </router-link>
+              </div>
+            </div>
           </div>
 
           <div class="divider"></div>
@@ -305,6 +387,91 @@ const {
         margin-bottom: 8px;
       }
 
+      // 带视频预览的区域
+      .action-section {
+        color: var(--color-text-t1);
+        background-color: var(--color-bg-b2);
+        border-radius: 12px;
+        padding: 8px;
+        position: relative;
+
+        &:hover {
+          color: var(--color-text-t0);
+          background-color: var(--color-bg-b3);
+        }
+
+        .action-link-header {
+          align-items: center;
+          display: flex;
+          color: inherit;
+        }
+
+        .video-preview-list {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
+          margin-top: 12px;
+          padding: 4px 0;
+          animation: fadeInUp 0.3s ease-out;
+
+          .video-preview-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            animation: fadeIn 0.3s ease-out;
+            min-width: 0;
+
+            .video-cover {
+              width: 100%;
+              height: auto;
+              aspect-ratio: 9 / 16;
+              object-fit: cover;
+              display: block;
+              border-radius: 6px;
+            }
+
+            .video-title {
+              margin-top: 4px;
+              font-size: 11px;
+              line-height: 14px;
+              color: var(--color-text-t2);
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              width: 100%;
+            }
+
+            &:hover {
+              .video-title {
+                color: var(--color-text-t1);
+              }
+            }
+          }
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+      }
+
+      // 普通操作链接
       .action-link {
         color: var(--color-text-t1);
         background-color: var(--color-bg-b2);
@@ -318,31 +485,31 @@ const {
           color: var(--color-text-t0);
           background-color: var(--color-bg-b3);
         }
+      }
 
-        .icon {
-          width: 24px;
-          height: 24px;
-        }
+      .icon {
+        width: 24px;
+        height: 24px;
+      }
 
-        .action-link-text {
-          margin-left: 4px;
-          font-size: 14px;
-          font-weight: 400;
-          line-height: 22px;
-        }
+      .action-link-text {
+        margin-left: 4px;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 22px;
+      }
 
-        .action-link-num {
-          text-align: right;
-          font-size: 13px;
-          font-weight: 500;
-          line-height: 21px;
-          flex: 1 1 0%;
-        }
+      .action-link-num {
+        text-align: right;
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 21px;
+        flex: 1 1 0%;
+      }
 
-        .chevron-right {
-          width: 16px;
-          height: 17px;
-        }
+      .chevron-right {
+        width: 16px;
+        height: 17px;
       }
     }
 
