@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import QRCode from 'qrcode'
 import apis from '@/api/apis'
 import type { IImAvatarInfo } from '@/api/tyeps/request_response/imRelationRes'
 import type { BitRate } from '@/api/tyeps/common/video'
 import { Toast } from '@/components/ui/toast'
-import { userStore } from '@/stores/user'
 import { Loading } from '@/components/common'
 
 // 分享面板中使用的简化用户类型
@@ -61,34 +59,52 @@ const emit = defineEmits<{
   (e: 'searchBlur'): void
 }>()
 
-const store = userStore()
-
-// 生成的二维码 DataURL
+// 生成的二维码 URL
 const generatedQrcode = ref('')
+// 是否正在加载二维码
+const isLoadingQrcode = ref(false)
 
-// 根据 shareUrl 生成二维码
-const generateQrcode = async () => {
-  if (!props.shareUrl) {
+// 根据 awemeId 获取二维码
+const fetchQrcode = async () => {
+  if (!props.awemeId) {
     generatedQrcode.value = ''
     return
   }
+  
+  // 如果已经有二维码，不重复请求
+  if (generatedQrcode.value) {
+    return
+  }
+
+  isLoadingQrcode.value = true
   try {
-    generatedQrcode.value = await QRCode.toDataURL(props.shareUrl, {
-      width: 180,
-      margin: 1,
-      color: {
-        dark: '#000000',
-        light: '#ffffff'
-      }
+    const res = await apis.getQrcodeInfo({
+      app_name: 'aweme',
+      schema_type: 1, // 1=视频类型
+      object_id: props.awemeId,
+      qrcode_type: 1
     })
+    
+    if (res.status_code === 0 && res.qrcode_url?.url_list?.length > 0) {
+      // 使用返回的第一个二维码URL
+      generatedQrcode.value = res.qrcode_url.url_list[0]
+    } else {
+      console.error('获取二维码失败:', res)
+      generatedQrcode.value = ''
+    }
   } catch (error) {
-    console.error('生成二维码失败:', error)
+    console.error('获取二维码失败:', error)
     generatedQrcode.value = ''
+  } finally {
+    isLoadingQrcode.value = false
   }
 }
 
-// 监听 shareUrl 变化，重新生成二维码
-watch(() => props.shareUrl, generateQrcode, { immediate: true })
+// 监听 awemeId 变化，重新获取二维码
+watch(() => props.awemeId, () => {
+  generatedQrcode.value = '' // 清空旧的二维码
+  fetchQrcode()
+}, { immediate: true })
 
 // 搜索关键词
 const searchQuery = ref('')

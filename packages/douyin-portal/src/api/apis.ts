@@ -665,6 +665,8 @@ export default {
    * @return {Promise<IQrcodeRes>} 二维码信息
    */
   getQrcodeInfo: (params: IQrcodeParams): Promise<IQrcodeRes> => {
-    return request.post(urls.qrcode_info, params)
+    return request.get(urls.qrcode_info, {
+      params
+    })
   }
 }
