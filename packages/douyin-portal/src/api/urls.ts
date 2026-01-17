@@ -81,6 +81,8 @@ export default {
   // 关注/取消关注用户
   follow_user: '/aweme/v1/web/commit/follow/user/',
   // 音乐详情
-  music_detail: '/aweme/v1/web/music/detail/'
+  music_detail: '/aweme/v1/web/music/detail/',
+  // 获取二维码
+  qrcode_info: '/aweme/v1/web/fancy/qrcode/info/'
   // ----------------- 测试dy-url -----------------
 }

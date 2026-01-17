@@ -50,6 +50,8 @@ import type { IFollowingListRes } from './tyeps/request_response/followingListRe
 import type { IFollowerListRes } from './tyeps/request_response/followerListRes'
 import type { IFollowLiveFeedRes } from './tyeps/request_response/followLiveFeedRes'
 import type { IMusicDetailRes } from './tyeps/request_response/musicDetailRes'
+import type { IQrcodeParams } from './tyeps/request_params/qrcodeParams'
+import type { IQrcodeRes } from './tyeps/request_response/qrcodeRes'
 
 import urls from './urls'
 import type { IuserLocatePostParams } from './tyeps/request_params/userLocatePostParams'
@@ -655,5 +657,14 @@ export default {
         scene
       }
     })
+  },
+
+  /**
+   * @description 获取二维码
+   * @param {IQrcodeParams} params 二维码参数
+   * @return {Promise<IQrcodeRes>} 二维码信息
+   */
+  getQrcodeInfo: (params: IQrcodeParams): Promise<IQrcodeRes> => {
+    return request.post(urls.qrcode_info, params)
   }
 }
