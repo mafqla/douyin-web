@@ -380,6 +380,14 @@ const resetStreamState = () => {
  * 处理视频错误事件
  */
 const onError = () => {
+  // 防止在切换过程中重复触发
+  if (isSwitchingStream.value) {
+    console.log('[LivePreview] 正在切换流，忽略错误事件')
+    return
+  }
+
+  console.error('[LivePreview] 播放错误，尝试切换备用流')
+  
   // 尝试切换到备用流
   if (hasAlternativeStream.value && switchToNextStream()) {
     streamCheckMessage.value = '正在切换备用线路...'

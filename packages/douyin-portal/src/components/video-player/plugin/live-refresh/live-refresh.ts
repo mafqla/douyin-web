@@ -74,7 +74,7 @@ class LiveRefresh extends Plugin {
   /**
    * 执行刷新操作
    */
-  refresh = () => {
+  refresh = async () => {
     if (this.isRefreshing) return
 
     this.isRefreshing = true
@@ -95,13 +95,23 @@ class LiveRefresh extends Plugin {
 
     // 重新加载视频
     try {
-      // 方法1：直接重新设置 src
+      // 先暂停播放，避免 AbortError
+      if (wasPlaying) {
+        player.pause()
+      }
+
+      // 等待一小段时间确保暂停完成
+      await new Promise((resolve) => setTimeout(resolve, 100))
+
+      // 重新设置 src（直播流不需要保存 currentTime）
       player.src = currentUrl
 
-      // 如果之前在播放，则继续播放
+      // 等待加载完成后再播放
       if (wasPlaying) {
-        player.play().catch(() => {
-          // 忽略自动播放失败
+        player.once('loadedmetadata', () => {
+          player.play().catch((err) => {
+            console.warn('[LiveRefresh] 自动播放失败:', err)
+          })
         })
       }
 
