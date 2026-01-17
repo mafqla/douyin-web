@@ -26,7 +26,9 @@
     "uuid": "^9.0.0",
     "vue": "^3.4.21",
     "vue-router": "^4.1.6",
-    "xgplayer": "^3.0.8"
+    "xgplayer": "^3.0.8",
+    "xgplayer-flv": "^3.0.23",
+    "xgplayer-hls": "^3.0.23"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.4",

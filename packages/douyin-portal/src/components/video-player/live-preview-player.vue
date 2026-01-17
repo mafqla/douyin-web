@@ -5,6 +5,8 @@ import type { ILiveStreamInfo } from '@/api/tyeps/common/aweme'
 import { videosCtrolStore } from '@/stores/videos-control'
 import { playerSettingStore } from '@/stores/player-setting'
 import LiveRefresh from './plugin/live-refresh/live-refresh'
+import HlsPlugin from 'xgplayer-hls'
+import FlvPlugin from 'xgplayer-flv'
 
 interface LivePreviewPlayerProps {
   url: string | string[]
@@ -38,7 +40,26 @@ const playerOptions = {
     'claritySwitch'
   ],
   isLive: true, // 标记为直播模式
-  plugins: [LiveRefresh] // 直播刷新插件
+  // HLS 直播配置
+  hls: {
+    retryCount: 3,
+    retryDelay: 1000,
+    loadTimeout: 10000,
+    targetLatency: 5, // 目标延迟 5 秒
+    maxLatency: 10, // 最大延迟 10 秒
+    disconnectTime: 0 // 暂停时立即断流
+  },
+  // FLV 直播配置
+  flv: {
+    retryCount: 3,
+    retryDelay: 1000,
+    loadTimeout: 10000,
+    targetLatency: 5,
+    maxLatency: 10,
+    disconnectTime: 0,
+    maxReaderInterval: 5000
+  },
+  plugins: [HlsPlugin, FlvPlugin, LiveRefresh] // HLS、FLV 和直播刷新插件
 }
 
 // 直播流状态

@@ -182,6 +182,8 @@ const thumbnail = computed(() => {
             :text-extra="props.awemeInfo?.text_extra ?? []"
             :account-cert-info="authorAccountCertInfo"
             :cooperation-info="props.awemeInfo.cooperation_info"
+            :is-image-text="props.awemeInfo.aweme_type === 68"
+            :is-live-photo="props.awemeInfo.is_live_photo === 1"
           />
           <video-action
             v-if="!playerSettings.isImmersive"
@@ -222,6 +224,8 @@ const thumbnail = computed(() => {
             :text-extra="props.awemeInfo?.text_extra ?? []"
             :account-cert-info="authorAccountCertInfo"
             :cooperation-info="props.awemeInfo.cooperation_info"
+            :is-image-text="props.awemeInfo.aweme_type === 68"
+            :is-live-photo="props.awemeInfo.is_live_photo === 1"
           />
           <video-action
             v-if="!playerSettings.isImmersive"

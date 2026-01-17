@@ -12,6 +12,8 @@ const props = defineProps<{
   textExtra: ISegment[]
   accountCertInfo?: string | null
   cooperationInfo?: ICooperationInfo
+  isImageText?: boolean
+  isLivePhoto?: boolean
 }>()
 
 const videoInfoRef = ref<HTMLElement | null>(null)
@@ -61,6 +63,26 @@ onUnmounted(() => {
       </div>
       <div class="video-info-time">
         <span> · {{ formatTime(props.uploadTime) }}</span>
+      </div>
+      <!-- 图文标签 -->
+      <div v-if="props.isImageText" class="image-text-badge">
+        <span class="image-text-icon">
+          <svg width="12" height="12" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12">
+            <path d="M1.455 0C.65 0 0 .651 0 1.455V8c0 .803.651 1.455 1.455 1.455H8c.803 0 1.455-.652 1.455-1.455V1.455C9.455.65 8.803 0 8 0H1.455z" fill="#fff"></path>
+            <path d="M4 12a1.455 1.455 0 0 1-1.455-1.454h5.819a2.182 2.182 0 0 0 2.181-2.182V2.545C11.35 2.545 12 3.197 12 4v5.09A2.909 2.909 0 0 1 9.09 12H4z" fill="#fff"></path>
+          </svg>
+        </span>
+        <span class="image-text-label">图文</span>
+      </div>
+      <!-- 动图标签 -->
+      <div v-if="props.isLivePhoto" class="live-photo-badge">
+        <span class="live-photo-icon">
+          <svg width="12" height="12" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12">
+            <path d="M6 0C2.686 0 0 2.686 0 6s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6zm0 10.8A4.805 4.805 0 0 1 1.2 6 4.805 4.805 0 0 1 6 1.2 4.805 4.805 0 0 1 10.8 6 4.805 4.805 0 0 1 6 10.8z" fill="#fff"></path>
+            <path d="M4.8 3.6v4.8L8.4 6 4.8 3.6z" fill="#fff"></path>
+          </svg>
+        </span>
+        <span class="live-photo-label">动图</span>
       </div>
       <!-- 共创标签 -->
       <div v-if="coCreators.length > 0" class="co-creation-tag">
@@ -141,6 +163,41 @@ onUnmounted(() => {
       padding: 0 10px;
       font-size: 14px;
       white-space: nowrap;
+    }
+
+    .image-text-badge,
+    .live-photo-badge {
+      margin-left: 8px;
+      display: flex;
+      align-items: center;
+      height: 20px;
+      padding: 0 6px;
+      white-space: nowrap;
+      background: linear-gradient(270deg, rgba(255, 255, 255, .25) 0%, rgba(255, 255, 255, .12) 100%);
+      border: .5px solid rgba(255, 255, 255, .16);
+      border-radius: 4px;
+      color: var(--color-const-text-white);
+      text-shadow: 0 0 1px rgba(0, 0, 0, .6);
+      font-family: PingFang SC, DFPKingGothicGB-Medium, sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 20px;
+
+      .image-text-icon,
+      .live-photo-icon {
+        display: inline-flex;
+        align-items: center;
+        margin-right: 4px;
+
+        svg {
+          display: block;
+        }
+      }
+
+      .image-text-label,
+      .live-photo-label {
+        line-height: 1;
+      }
     }
 
     .co-creation-tag {

@@ -427,6 +427,12 @@ importers:
       xgplayer:
         specifier: ^3.0.8
         version: 3.0.23(core-js@3.47.0)
+      xgplayer-flv:
+        specifier: ^3.0.23
+        version: 3.0.23(core-js@3.47.0)(xgplayer@3.0.23)
+      xgplayer-hls:
+        specifier: ^3.0.23
+        version: 3.0.23(core-js@3.47.0)(xgplayer@3.0.23)
     devDependencies:
       '@rushstack/eslint-patch':
         specifier: ^1.1.4
@@ -9868,6 +9874,12 @@ packages:
   /concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
+  /concat-typed-array@1.0.2:
+    resolution: {integrity: sha512-aC878bxeWSlrY6h60cCDwBUXpKwovZrB7+C4+VHNO1CIXW2gBLxbQ757jWtOXUscLGgYI8R84N6uy9fTJPe+0g==}
+    engines: {node: '>=0.10.0'}
+    deprecated: 'WARNING: This package has been renamed to typed-array-concat.'
+    dev: false
+
   /concaveman@1.2.1:
     resolution: {integrity: sha512-PwZYKaM/ckQSa8peP5JpVr7IMJ4Nn/MHIaWUjP4be+KoZ7Botgs8seAZGpmaOM+UZXawcdYRao/px9ycrCihHw==}
     dependencies:
@@ -10021,6 +10033,10 @@ packages:
       shebang-command: 2.0.0
       which: 2.0.2
     dev: true
+
+  /crypto-es@1.2.7:
+    resolution: {integrity: sha512-UUqiVJ2gUuZFmbFsKmud3uuLcNP2+Opt+5ysmljycFCyhA0+T16XJmo1ev/t5kMChMqWh7IEvURNCqsg+SjZGQ==}
+    dev: false
 
   /css-functions-list@3.2.3:
     resolution: {integrity: sha512-IQOkD3hbR5KrN93MtcYuad6YPuTSUhntLHDuLEbFWE+ff2/XSZNdZG+LcbbIW5AXKg/WFIfYItIzVoHngHXZzA==}
@@ -18798,6 +18814,41 @@ packages:
       utf-8-validate:
         optional: true
 
+  /xgplayer-flv@3.0.23(core-js@3.47.0)(xgplayer@3.0.23):
+    resolution: {integrity: sha512-CyjUsgSmHZt51RoA+hywFOnQ0A1ADMOdZV7KCkblqIvn/AMb0xvDzJvFDjgHK795ZauwMyTeebakYuNI0S/yDw==}
+    peerDependencies:
+      core-js: '>=3.12.1'
+      xgplayer: '>=3.0.1'
+    dependencies:
+      core-js: 3.47.0
+      eventemitter3: 4.0.7
+      xgplayer: 3.0.23(core-js@3.47.0)
+      xgplayer-streaming-shared: 3.0.23(core-js@3.47.0)
+      xgplayer-transmuxer: 3.0.23(core-js@3.47.0)
+    dev: false
+
+  /xgplayer-hls@3.0.23(core-js@3.47.0)(xgplayer@3.0.23):
+    resolution: {integrity: sha512-jpoGeStytjnzESH5CUNKCVQ3pqQjr3+qAz99Cf8CCHheqprp+PwiUcY7ewvv4YT09IGMcF3+jKptbjdtTetuEg==}
+    peerDependencies:
+      core-js: '>=3.12.1'
+      xgplayer: 3.0.23
+    dependencies:
+      core-js: 3.47.0
+      eventemitter3: 4.0.7
+      xgplayer: 3.0.23(core-js@3.47.0)
+      xgplayer-streaming-shared: 3.0.23(core-js@3.47.0)
+      xgplayer-transmuxer: 3.0.23(core-js@3.47.0)
+    dev: false
+
+  /xgplayer-streaming-shared@3.0.23(core-js@3.47.0):
+    resolution: {integrity: sha512-j14MKqjSpEisd97hAV8ykg+txSkECZ3Z6AtCxZnRT4Jj0G5QRZAObAA1IIHv7wPN4tjNdtGm9odHiQOpsYYXuw==}
+    peerDependencies:
+      core-js: '>=3.12.1'
+    dependencies:
+      core-js: 3.47.0
+      eventemitter3: 4.0.7
+    dev: false
+
   /xgplayer-subtitles@3.0.23(core-js@3.47.0):
     resolution: {integrity: sha512-deGdV75giVzfTTdG9XATmji39NHwKTpEelWt2rRx/RyXGgU2bQFp0Ft7yWaK2Uu8A/WVrP5fpxEAj4MstREMkQ==}
     peerDependencies:
@@ -18805,6 +18856,17 @@ packages:
     dependencies:
       core-js: 3.47.0
       eventemitter3: 4.0.7
+    dev: false
+
+  /xgplayer-transmuxer@3.0.23(core-js@3.47.0):
+    resolution: {integrity: sha512-BVI0FT96nWUwJ7cYyT2bK7CSp6PWdztgb9kO0dIcCoJUBU5yxelqoKd43luHFFAM73GyYZ0hCm/Yw/GSjQrPJA==}
+    peerDependencies:
+      core-js: '>=3.12.1'
+    dependencies:
+      '@babel/runtime': 7.28.6
+      concat-typed-array: 1.0.2
+      core-js: 3.47.0
+      crypto-es: 1.2.7
     dev: false
 
   /xgplayer@3.0.23(core-js@3.47.0):

@@ -108,7 +108,9 @@ export default defineConfig(({ command, mode }) => {
             // 工具库
             'utils-vendor': ['axios', '@vueuse/core', 'qs'],
             // 播放器单独打包（体积较大）
-            'xgplayer': ['xgplayer']
+            'xgplayer': ['xgplayer'],
+            'xgplayer-hls': ['xgplayer-hls'],
+            'xgplayer-flv': ['xgplayer-flv']
           }
         }
       },

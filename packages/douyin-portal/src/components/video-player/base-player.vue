@@ -105,6 +105,7 @@ const playerOptions = ref<IPlayerOptions>({
   closePauseVideoFocus: true,
   closePlayerVideoBlur: true,
   closeVideoDblclick: true,
+  // @ts-ignore
   keyShortcut: {
     seekStep: 0 // 禁用左右方向键快进/后退
   },
@@ -792,7 +793,7 @@ xg-start-inner {
     xg-icon.immersive-switch .xgplayer-setting-label,
     xg-icon.xgplayer-picture-in-picture-setting
       .xgplayer-icon-picture-in-picture,
-    xg-icon .xgplayer-playback-setting {
+    xg-icon .xgplayer-playback-setting, xg-icon.xgplayer-clarity-switch {
       opacity: 0.3;
     }
   }

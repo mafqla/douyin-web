@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import type { ISegment } from '@/api/tyeps/common/aweme'
 
 interface IProps {
@@ -16,41 +16,76 @@ const addShow = ref(false)
 
 // 检查文本内容是否溢出
 const checkOverflow = () => {
-  if (!textEl.value) return
+  if (!spanText.value) return
+  
   // 只在未展开状态下检查是否需要显示按钮
   if (!expanded.value) {
-    const text = textEl.value
-    // 获取文本的行高
-    const style = getComputedStyle(text)
-    const lineHeight = parseFloat(style.lineHeight) || 22
-    // 计算文本实际需要的行数
-    const actualLines = text.scrollHeight / lineHeight
-    // 获取允许的最大行数（默认2行）
-    const maxLines = 2
-    // 如果实际行数超过最大行数，显示按钮
-    const isOverflow = actualLines > maxLines + 0.5
-    shouldShowButton.value = isOverflow
-    addShow.value = isOverflow
+    const container = spanText.value
+    
+    // 等待下一帧，确保渲染完成
+    requestAnimationFrame(() => {
+      // 再等待一帧
+      requestAnimationFrame(() => {
+        // 直接比较 scrollHeight 和 clientHeight
+        const scrollHeight = container.scrollHeight
+        const clientHeight = container.clientHeight
+        
+        // 计算差值
+        const diff = scrollHeight - clientHeight
+        
+        // 只有当差值大于 5px 时才认为是真正溢出
+        // 这样可以避免由于亚像素、行高计算误差导致的误判
+        const isOverflow = diff > 5
+        
+        shouldShowButton.value = isOverflow
+        addShow.value = isOverflow
+        
+        // console.log('Overflow check:', {
+        //   scrollHeight,
+        //   clientHeight,
+        //   isOverflow,
+        //   diff,
+        //   description: props.description.substring(0, 50)
+        // })
+      })
+    })
   }
 }
 
 // 监听容器尺寸变化
 onMounted(() => {
-  // 延迟检查，确保 DOM 渲染完成
-  requestAnimationFrame(() => {
+  // 使用更长的延迟确保 DOM 完全渲染和样式应用完成
+  setTimeout(() => {
     checkOverflow()
-  })
+  }, 200)
+  
   const resizeObserver = new ResizeObserver(() => {
-    checkOverflow()
+    // 延迟检查，避免频繁触发
+    setTimeout(() => {
+      checkOverflow()
+    }, 100)
   })
-  if (textEl.value) {
-    resizeObserver.observe(textEl.value)
+  
+  if (spanText.value) {
+    resizeObserver.observe(spanText.value)
   }
 })
 
-// watchEffect(() => {
-//   console.log(shouldShowButton.value)
-// })
+// 监听 description 变化，重新检查溢出
+watch(
+  () => props.description,
+  () => {
+    // 重置状态
+    expanded.value = false
+    shouldShowButton.value = false
+    addShow.value = false
+    // 延迟检查，确保 DOM 更新完成
+    setTimeout(() => {
+      checkOverflow()
+    }, 200)
+  }
+)
+
 const toggleExpand = () => {
   expanded.value = !expanded.value
   // 展开后仍需显示按钮（用于收起）
@@ -109,7 +144,7 @@ const formattedDescription = computed(() => {
   <div class="video-title">
     <div
       class="ellipsis-expand"
-      :class="{ 'text-expanded': expanded }"
+      :class="{ 'text-expanded': expanded, 'has-button': shouldShowButton }"
       ref="spanText"
     >
       <div class="btn-content" :class="{ show: addShow }">
@@ -132,16 +167,18 @@ const formattedDescription = computed(() => {
 .ellipsis-expand {
   max-height: calc(2 * 22px + 2px);
   max-height: calc(var(--lineClamp) * var(--lineHeight) + 2px);
-  -webkit-line-clamp: 2;
-  -webkit-line-clamp: var(--lineClamp);
-  -webkit-box-orient: vertical;
-  display: -webkit-box;
   position: relative;
   text-align: justify;
-  text-overflow: ellipsis;
   width: 100%;
   overflow: hidden;
   pointer-events: all;
+  box-sizing: border-box;
+
+  /* 默认使用 line-clamp（会显示省略号） */
+  -webkit-line-clamp: var(--lineClamp);
+  line-clamp: var(--lineClamp);
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
 
   &::before {
     content: '';
@@ -150,9 +187,19 @@ const formattedDescription = computed(() => {
     height: calc(100% - var(--lineHeight) + 1px);
     width: 0px;
   }
+  
+  /* 当有展开按钮时，不使用 line-clamp（不显示省略号） */
+  &.has-button {
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+    display: block;
+  }
+  
   &.text-expanded {
     max-height: 748px;
     -webkit-line-clamp: 34;
+    line-clamp: 34;
+    display: -webkit-box;
   }
 }
 
@@ -169,7 +216,6 @@ const formattedDescription = computed(() => {
 }
 
 .btn-content {
-  // margin-left: -4px;
   position: relative;
   height: 20px;
   align-items: center;
@@ -178,14 +224,12 @@ const formattedDescription = computed(() => {
   clear: both;
 
   .btn {
-    // color: var(--color-text-t3);
     color: rgba(255, 255, 255, 0.9);
     font-weight: 400;
     height: 20px;
     line-height: 20px;
     width: 40px;
     min-width: 40px;
-    // background: var(--color-secondary-default);
     background: rgba(255, 255, 255, 0.15);
     border-width: initial;
     border-style: none;
@@ -246,8 +290,8 @@ const formattedDescription = computed(() => {
 //   }
 // }
 
-.video-desc-swiper {
-}
+// .video-desc-swiper {
+// }
 .video-info-desc {
   &.search {
     .tag {

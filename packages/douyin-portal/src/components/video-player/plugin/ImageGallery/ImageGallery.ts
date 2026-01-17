@@ -1036,7 +1036,22 @@ export class ImageGalleryPlugin extends Plugin {
   }
 
   private onKeydown = (e: KeyboardEvent) => {
-    // console.log('键盘事件:', e.key)
+    // 检查当前播放器是否是激活的
+    // 如果播放器不是当前激活的，不处理键盘事件
+    if (!this.player || this.player.paused) {
+      return
+    }
+
+    // 检查焦点是否在输入框等元素上
+    const target = e.target as HTMLElement
+    if (
+      target.tagName === 'INPUT' ||
+      target.tagName === 'TEXTAREA' ||
+      target.isContentEditable
+    ) {
+      return
+    }
+
     // 添加防抖，防止快速按键导致的问题
     if (this.keydownCooldown) return
 
@@ -1044,6 +1059,9 @@ export class ImageGalleryPlugin extends Plugin {
     if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
       e.preventDefault()
       e.stopPropagation()
+    } else {
+      // 不是左右键，不处理
+      return
     }
 
     this.keydownCooldown = true
