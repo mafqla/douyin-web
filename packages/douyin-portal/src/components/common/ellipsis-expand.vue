@@ -17,11 +17,11 @@ const addShow = ref(false)
 // 检查文本内容是否溢出
 const checkOverflow = () => {
   if (!spanText.value) return
-  
+
   // 只在未展开状态下检查是否需要显示按钮
   if (!expanded.value) {
     const container = spanText.value
-    
+
     // 等待下一帧，确保渲染完成
     requestAnimationFrame(() => {
       // 再等待一帧
@@ -29,17 +29,17 @@ const checkOverflow = () => {
         // 直接比较 scrollHeight 和 clientHeight
         const scrollHeight = container.scrollHeight
         const clientHeight = container.clientHeight
-        
+
         // 计算差值
         const diff = scrollHeight - clientHeight
-        
+
         // 只有当差值大于 5px 时才认为是真正溢出
         // 这样可以避免由于亚像素、行高计算误差导致的误判
         const isOverflow = diff > 5
-        
+
         shouldShowButton.value = isOverflow
         addShow.value = isOverflow
-        
+
         // console.log('Overflow check:', {
         //   scrollHeight,
         //   clientHeight,
@@ -58,14 +58,14 @@ onMounted(() => {
   setTimeout(() => {
     checkOverflow()
   }, 200)
-  
+
   const resizeObserver = new ResizeObserver(() => {
     // 延迟检查，避免频繁触发
     setTimeout(() => {
       checkOverflow()
     }, 100)
   })
-  
+
   if (spanText.value) {
     resizeObserver.observe(spanText.value)
   }
@@ -187,14 +187,14 @@ const formattedDescription = computed(() => {
     height: calc(100% - var(--lineHeight) + 1px);
     width: 0px;
   }
-  
+
   /* 当有展开按钮时，不使用 line-clamp（不显示省略号） */
   &.has-button {
     -webkit-line-clamp: unset;
     line-clamp: unset;
     display: block;
   }
-  
+
   &.text-expanded {
     max-height: 748px;
     -webkit-line-clamp: 34;
@@ -238,6 +238,7 @@ const formattedDescription = computed(() => {
     padding: 0px !important;
     border-radius: 4px;
     cursor: pointer;
+    margin-left: 6px;
   }
 }
 </style>

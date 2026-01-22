@@ -55,10 +55,10 @@ const fetchMusicDetail = async () => {
   }
 
   isLoadingMusicDetail.value = true
-  
+
   try {
     const response = await apis.getMusicDetail(props.musicId, 1)
-    
+
     if (response.status_code === 0 && response.music_info) {
       musicDetailRef.value = response.music_info
     }
@@ -68,9 +68,9 @@ const fetchMusicDetail = async () => {
     isLoadingMusicDetail.value = false
   }
 }
-
-// 立即调用（在 setup 顶层，比 onBeforeMount 更早）
-fetchMusicDetail()
+onMounted(() => {
+  fetchMusicDetail()
+})
 
 // 处理推荐
 const handleRecommend = () => {
