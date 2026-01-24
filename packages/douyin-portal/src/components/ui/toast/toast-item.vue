@@ -124,14 +124,16 @@ onBeforeUnmount(() => {
 .dy-toast {
   display: flex;
   align-items: center;
-  padding: 10px 16px;
-  border-radius: 6px;
+  padding: 12px 20px;
+  border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   pointer-events: auto;
   margin-bottom: 12px;
   opacity: 0;
   transform: translateY(-100%);
   transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  min-width: 200px;
+  max-width: 400px;
 
   &--visible {
     opacity: 1;
@@ -143,6 +145,15 @@ onBeforeUnmount(() => {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(8px);
     color: rgba(0, 0, 0, 0.85);
+    
+    // info 类型使用深色背景（匹配截图 - 深灰色半透明）
+    &.dy-toast--info {
+      background: rgba(60, 63, 75, 0.95);
+      backdrop-filter: blur(10px);
+      color: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+    }
   }
 
   // 浅色填充主题
@@ -175,8 +186,9 @@ onBeforeUnmount(() => {
   &__content {
     flex: 1;
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.6;
     word-break: break-word;
+    text-align: center;
   }
 
   &__close {
@@ -194,6 +206,15 @@ onBeforeUnmount(() => {
 
     &:hover {
       color: rgba(0, 0, 0, 0.75);
+    }
+  }
+  
+  // 深色背景下的关闭按钮颜色
+  &--normal.dy-toast--info &__close {
+    color: rgba(255, 255, 255, 0.65);
+    
+    &:hover {
+      color: rgba(255, 255, 255, 0.9);
     }
   }
 }

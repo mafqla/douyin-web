@@ -4,6 +4,7 @@ import { type PropType, computed, ref } from 'vue'
 import dyAvatar from '@/components/common/dy-avatar.vue'
 import { VerifyBadge } from '@/components/common'
 import { useCount } from '@/hooks'
+import { Toast } from '@/components/ui'
 import userConnectionsPopup from './user-connections-popup.vue'
 
 const props = defineProps({
@@ -58,7 +59,14 @@ const openConnectionsPopup = (name: string) => {
       name === 'fans'
         ? '由于该用户隐私设置，粉丝列表不可见'
         : '由于该用户隐私设置，关注列表不可见'
-    console.log(message)
+    
+    // 直接使用 Toast，默认配置已经是居中显示
+    Toast.info({
+      content: message,
+      duration: 3000,
+      showClose: false,
+      icon: null
+    })
   }
 }
 
@@ -156,6 +164,8 @@ const accountCertLabel = computed(() => {
               icon="small-man"
               class="user-account-icon"
             />
+            <span v-if="userInfo.user?.gender === 2" >女</span>
+            <span v-if="userInfo.user?.gender === 1" >男</span>
             <span v-if="userInfo.user?.user_age && userInfo.user?.user_age > 0"
               >{{ userInfo.user?.user_age }}岁</span
             >
@@ -331,6 +341,18 @@ const accountCertLabel = computed(() => {
         align-items: baseline;
         display: flex;
         justify-content: flex-start;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          .user-info-text {
+            color: var(--color-text-t2);
+          }
+          
+          .user-number {
+            color: var(--color-text-t0);
+          }
+        }
 
         .user-text {
           color: var(--color-text-t3);
