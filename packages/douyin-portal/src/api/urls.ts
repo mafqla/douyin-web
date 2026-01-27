@@ -4,6 +4,7 @@ export default {
 
   // ----------------- 测试dy-url -----------------
   search: `/aweme/v1/web/general/search/single/`,
+  //search: `/aweme/v1/web/general/search/stream/`,
   suggest_words: `/aweme/v1/web/api/suggest_words/`,
   //首页视频流,
   home_feed: `/aweme/v2/web/module/feed/`,

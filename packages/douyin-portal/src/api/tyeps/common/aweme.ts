@@ -77,6 +77,16 @@ export interface ICooperationInfo {
   tag: string
 }
 
+// 作者声明/风险提示信息
+export interface IRiskInfo {
+  content: string // 声明文字，如 "作者声明：虚构演绎，仅供娱乐"
+  icon_url: string // 图标 URL
+  risk_sink: boolean
+  type: number // 类型标识
+  vote: boolean
+  warn: boolean // 是否警告
+}
+
 export interface IAwemeInfo {
   aweme_id: string // 视频ID
   desc: string // 视频描述
@@ -94,6 +104,8 @@ export interface IAwemeInfo {
   share_info: IShareInfo // 分享信息
   // 共创信息
   cooperation_info?: ICooperationInfo
+  // 作者声明/风险提示信息
+  risk_infos?: IRiskInfo
   // 直播
   cell_room: {
     rawdata: string // 原始 JSON 字符串，解析后为 ILiveStreamInfo

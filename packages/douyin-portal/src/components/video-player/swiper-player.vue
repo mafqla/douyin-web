@@ -185,6 +185,7 @@ const thumbnail = computed(() => {
             :author="props.awemeInfo.author"
             :is-image-text="props.awemeInfo.aweme_type === 68"
             :is-live-photo="props.awemeInfo.is_live_photo === 1"
+            :risk-infos="props.awemeInfo.risk_infos"
           />
           <video-action
             v-if="!playerSettings.isImmersive"
@@ -228,6 +229,7 @@ const thumbnail = computed(() => {
             :author="props.awemeInfo.author"
             :is-image-text="props.awemeInfo.aweme_type === 68"
             :is-live-photo="props.awemeInfo.is_live_photo === 1"
+            :risk-infos="props.awemeInfo.risk_infos"
           />
           <video-action
             v-if="!playerSettings.isImmersive"

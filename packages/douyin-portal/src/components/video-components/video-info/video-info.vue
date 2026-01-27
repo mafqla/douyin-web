@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
-import type { ISegment, ICooperationInfo } from '@/api/tyeps/common/aweme'
+import type { ISegment, ICooperationInfo, IRiskInfo } from '@/api/tyeps/common/aweme'
 import formatTime from '@/utils/date-format'
 import { VerifyBadge } from '@/components/common'
 import CoCreators from './co-creators.vue'
@@ -15,6 +15,7 @@ const props = defineProps<{
   isImageText?: boolean
   isLivePhoto?: boolean
   author?: any // 当前作者信息
+  riskInfos?: IRiskInfo // 作者声明/风险提示
 }>()
 
 const videoInfoRef = ref<HTMLElement | null>(null)
@@ -105,12 +106,25 @@ onUnmounted(() => {
     <!-- 共创用户列表 -->
     <CoCreators :creators="coCreators" />
 
+
+
     <ellipsis-expand
       style="--lineClamp: 2; --lineHeight: 22px; --maxHeight: 44px"
       class="video-desc-swiper"
       :description="props.description"
       :text-extra="props.textExtra"
     />
+    <!-- 作者声明 -->
+    <div v-if="props.riskInfos?.content" class="author-declaration">
+      <div class="declaration-link">
+        <img
+          v-if="props.riskInfos.icon_url"
+          :src="props.riskInfos.icon_url"
+          class="declaration-icon"
+        />
+        <div class="declaration-text">{{ props.riskInfos.content }}</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -242,6 +256,38 @@ onUnmounted(() => {
   .video-info {
     .video-info-top {
       margin-bottom: calc(-4px + 0.416667vw) !important;
+    }
+  }
+}
+
+// 作者声明样式
+.author-declaration {
+  margin-top: 8px;
+  position: relative;
+
+  .declaration-link {
+    height: 22px;
+    cursor: default;
+    align-items: center;
+    display: flex;
+    text-decoration: none;
+
+    .declaration-icon {
+      width: 14px;
+      height: 14px;
+      object-fit: contain;
+      opacity: 0.75;
+      margin-right: 2px;
+    }
+
+    .declaration-text {
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+      color: rgba(255, 255, 255, 0.6);
+      font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 22px;
     }
   }
 }
